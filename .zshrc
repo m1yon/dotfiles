@@ -65,3 +65,13 @@ export PATH="$PNPM_HOME:$PATH"
 
 # Docker Desktop
 source /Users/michael/.docker/init-zsh.sh || true
+
+# gpg
+export GPG_TTY=$(tty)
+
+# import other files
+if [ -f ~/.zshsecrets ]; then
+    source ~/.zshsecrets
+else
+    print "404: ~/.zshsecrets not found."
+fi
