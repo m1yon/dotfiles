@@ -63,5 +63,5 @@ alias anipr="open https://github.com/anify-app/anify/pulls/m1yon"
 export PNPM_HOME="/Users/michael/Library/pnpm"
 export PATH="$PNPM_HOME:$PATH"
 
-Docker Desktop
+# Docker Desktop
 source /Users/michael/.docker/init-zsh.sh || true
