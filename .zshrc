@@ -29,3 +29,6 @@ eval "$(zoxide init zsh)"
 
 # atuin init
 eval "$(atuin init zsh)"
+
+# fzf init
+source <(fzf --zsh)
