@@ -1,0 +1,15 @@
+[user]
+	email = mlyon360@gmail.com
+	name = Michael Lyon
+[core]
+  editor = nvim -f
+[merge]
+  ff = only
+[push]
+  autoSetupRemote = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
