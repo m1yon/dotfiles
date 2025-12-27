@@ -9,6 +9,10 @@ alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 alias ls="eza"
 alias cd="z"
 
+# tool shortcuts
+alias lg="lazygit"
+alias lgdf='lazygit --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
+
 # nvm
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -22,3 +26,6 @@ prompt pure
 
 # zoxide init
 eval "$(zoxide init zsh)"
+
+# atuin init
+eval "$(atuin init zsh)"
