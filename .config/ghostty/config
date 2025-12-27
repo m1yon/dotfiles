@@ -1,0 +1,5 @@
+window-colorspace = display-p3
+confirm-close-surface = false
+
+keybind = performable:ctrl+c=copy_to_clipboard
+keybind = ctrl+v=paste_from_clipboard  
