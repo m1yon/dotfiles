@@ -1,9 +1,9 @@
-alias ezsh="nvim ~/.zshrc"
-alias ehypr="nvim ~/.config/hypr/hyprland.conf"
-
 alias src="source ~/.zshrc"
 
 alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
+
+# package management
+alias cyay="yay -Yc" # cleans orphaned packages from both standard and AUR
 
 # tool replacements
 alias ls="eza"
