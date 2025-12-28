@@ -8,3 +8,5 @@ keybind = ctrl+shift+d=scroll_page_down
 
 clipboard-read = allow
 clipboard-write = allow
+
+font-family = 'JetBrainsMono Nerd Font'
