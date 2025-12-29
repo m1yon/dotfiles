@@ -8,6 +8,7 @@ alias cyay="yay -Yc" # cleans orphaned packages from both standard and AUR
 # tool replacements
 alias ls="eza"
 alias cd="z"
+alias task="go-task"
 
 # tool shortcuts
 alias lg="lazygit"
@@ -32,3 +33,9 @@ eval "$(atuin init zsh)"
 
 # fzf init
 source <(fzf --zsh)
+
+# add bin to path
+export PATH="$HOME/.local/bin:$PATH"
+
+# set default man pager
+export MANPAGER='nvim +Man!'
