@@ -283,5 +283,5 @@ end)
 -- Theme =====================================================================
 now(function()
   add("folke/tokyonight.nvim")
-  vim.cmd('colorscheme tokyonight')
+  vim.cmd('colorscheme tokyonight-night')
 end)
