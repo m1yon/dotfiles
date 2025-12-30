@@ -9,7 +9,7 @@ keybind = ctrl+shift+d=scroll_page_down
 clipboard-read = allow
 clipboard-write = allow
 
-theme = Dracula
+theme = TokyoNight
 font-family = "JetBrainsMono Nerd Font"
 font-family-bold = "JetBrainsMono Nerd Font Bold"
 font-family-italic = "JetBrainsMono Nerd Font Italic"
