@@ -1,8 +1,8 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: Roboto, Helvetica, Arial, sans-serif;
-  font-size: 13px;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 12px;
   min-height: 0;
 }
 
@@ -24,22 +24,23 @@ tooltip label {
 }
 
 .modules-right {
-  background-color: #16161e;
+  background-color: rgba(22, 22, 30, 0.7);
+  border-radius: 10px;
   margin-right: 12px;
   margin-top: 6px;
   padding: 5px;
 }
 
 #workspaces button {
-  background-color: #16161e;
+  background-color: rgba(22, 22, 30, 0.7);
+  border-radius: 5px;
   padding: 5px;
   margin-right: 1px;
   color: white;
 }
 
 #workspaces .active {
-  background: #698cd6;
-  color: black;
+  background: rgba(22, 22, 30, 1);
 }
 
 #mode,
