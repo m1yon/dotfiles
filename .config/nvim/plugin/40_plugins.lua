@@ -279,3 +279,9 @@ later(function()
   add("windwp/nvim-ts-autotag")
   require("nvim-ts-autotag").setup()
 end)
+
+-- Theme =====================================================================
+now(function()
+  add("folke/tokyonight.nvim")
+  vim.cmd('colorscheme tokyonight')
+end)
