@@ -39,3 +39,8 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # set default man pager
 export MANPAGER='nvim +Man!'
+
+# start hyprland on boot
+if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
+  exec hyprland
+fi
