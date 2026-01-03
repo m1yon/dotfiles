@@ -44,3 +44,13 @@ export MANPAGER='nvim +Man!'
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
   exec hyprland
 fi
+
+# bun completions
+[ -s "/home/michael/.bun/_bun" ] && source "/home/michael/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# opencode
+export PATH=/home/michael/.opencode/bin:$PATH
