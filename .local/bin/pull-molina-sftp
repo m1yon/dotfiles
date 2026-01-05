@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Check if variables are set
+if [[ -z "$MOLINA_PATH" ]]; then
+    echo "Error: Secrets not loaded."
+    exit 1
+fi
+
+echo "Downloading files to: $(pwd)"
+
+sftp molina <<EOF
+cd "$MOLINA_PATH"
+get -r *
+bye
+EOF

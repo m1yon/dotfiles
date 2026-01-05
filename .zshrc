@@ -1,3 +1,8 @@
+# Source secrets if the file exists
+if [ -f ~/.secrets ]; then
+    source ~/.secrets
+fi
+
 alias src="source ~/.zshrc"
 
 alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
