@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Decode all PGP files in a given directory
+# Usage: ./decode-pgp.sh <directory>
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <directory>"
+    exit 1
+fi
+
+DIR="$1"
+
+if [ ! -d "$DIR" ]; then
+    echo "Error: '$DIR' is not a valid directory"
+    exit 1
+fi
+
+# Find and decode all PGP files (.pgp, .gpg, .asc)
+found=0
+for file in "$DIR"/*.pgp "$DIR"/*.gpg "$DIR"/*.asc; do
+    # Skip if no matches (glob didn't expand)
+    [ -e "$file" ] || continue
+    
+    found=1
+    output="${file%.*}"
+    echo "Decoding: $file -> $output"
+    
+    if gpg --decrypt --output "$output" "$file" 2>/dev/null; then
+        echo "  Success: $output"
+    else
+        echo "  Failed to decode: $file"
+    fi
+done
+
+if [ $found -eq 0 ]; then
+    echo "No PGP files (.pgp, .gpg, .asc) found in '$DIR'"
+    exit 0
+fi
+
+echo "Done."
