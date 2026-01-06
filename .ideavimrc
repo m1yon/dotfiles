@@ -1,0 +1,394 @@
+" ┌─────────────────────────────────────────────┐
+" │ IdeaVim Configuration (based on MiniMax)   │
+" └─────────────────────────────────────────────┘
+"
+" This config replicates keymaps from the Neovim MiniMax config for DataGrip.
+" Place this file at ~/.ideavimrc
+
+" ============================================================================
+" Options (from plugin/10_options.lua)
+" ============================================================================
+
+" General
+let mapleader = " "
+set mouse=a
+set undolevels=1000
+
+" UI
+set number
+set relativenumber
+set cursorline
+set scrolloff=10
+set sidescrolloff=5
+set nowrap
+
+" Editing
+set autoindent
+set smartindent
+set expandtab
+set shiftwidth=2
+set tabstop=2
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+
+" IdeaVim specific settings
+set ideajoin
+set idearefactormode=keep
+set ideamarks
+set ideastatusicon=gray
+
+" Enable IdeaVim plugins
+set surround        " vim-surround emulation (sa, sd, sr)
+set commentary      " vim-commentary emulation (gc, gcc)
+set highlightedyank " Brief highlight on yank
+set argtextobj      " Argument text object (aa, ia)
+set textobj-entire  " Entire buffer text object (ae, ie)
+set matchit         " Extended % matching
+set exchange        " vim-exchange emulation (cx, cxx)
+set multiple-cursors " Multiple cursors support
+set ReplaceWithRegister " gr to replace with register
+set which-key       " Show available keybindings
+
+" Which-key settings
+set notimeout
+let g:WhichKey_ShowVimActions = "true"
+let g:WhichKey_DefaultDelay = 0
+
+" ============================================================================
+" General Mappings (from plugin/20_keymaps.lua)
+" ============================================================================
+
+" Half page up/down and center
+nnoremap <C-u> <C-u>zz
+nnoremap <C-d> <C-d>zz
+
+" Paste linewise before/after current line
+nnoremap [p :put!<CR>
+nnoremap ]p :put<CR>
+
+" Window navigation (from mini.basics)
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Insert/Command mode navigation with Alt (from mini.basics)
+inoremap <M-h> <Left>
+inoremap <M-j> <Down>
+inoremap <M-k> <Up>
+inoremap <M-l> <Right>
+cnoremap <M-h> <Left>
+cnoremap <M-j> <Down>
+cnoremap <M-k> <Up>
+cnoremap <M-l> <Right>
+
+" Save with Ctrl-s (from mini.basics)
+inoremap <C-s> <Esc>:w<CR>
+nnoremap <C-s> :w<CR>
+
+" Copy/Paste from system clipboard (from mini.basics)
+nnoremap gy "+y
+xnoremap gy "+y
+nnoremap gp "+p
+xnoremap gp "+p
+nnoremap gP "+P
+xnoremap gP "+P
+
+" Add empty lines (from mini.basics)
+nnoremap go o<Esc>k
+nnoremap gO O<Esc>j
+
+" Better escape
+inoremap jk <Esc>
+inoremap kj <Esc>
+
+" Keep visual selection when indenting
+xnoremap < <gv
+xnoremap > >gv
+
+" Move lines in visual mode (from mini.move)
+xnoremap J :m '>+1<CR>gv=gv
+xnoremap K :m '<-2<CR>gv=gv
+xnoremap H <gv
+xnoremap L >gv
+
+" Search centering
+nnoremap n nzzzv
+nnoremap N Nzzzv
+
+" Toggle options (from mini.basics \x mappings)
+nnoremap \h :set hlsearch!<CR>
+nnoremap \w :set wrap!<CR>
+nnoremap \n :set number!<CR>
+nnoremap \r :set relativenumber!<CR>
+
+" ============================================================================
+" Leader Mappings (from plugin/20_keymaps.lua)
+" ============================================================================
+
+" Which-key group descriptions
+let g:WhichKeyDesc_buffer = "<leader>b +Buffer"
+let g:WhichKeyDesc_explore = "<leader>e +Explore/Edit"
+let g:WhichKeyDesc_find = "<leader>f +Find"
+let g:WhichKeyDesc_git = "<leader>g +Git"
+let g:WhichKeyDesc_language = "<leader>l +Language"
+let g:WhichKeyDesc_other = "<leader>o +Other"
+let g:WhichKeyDesc_refactor = "<leader>r +Refactor"
+let g:WhichKeyDesc_terminal = "<leader>t +Terminal"
+let g:WhichKeyDesc_window = "<leader>w +Window"
+let g:WhichKeyDesc_database = "<leader>d +Database"
+
+" b - Buffer
+let g:WhichKeyDesc_buffer_alternate = "<leader>ba Alternate buffer"
+let g:WhichKeyDesc_buffer_delete = "<leader>bd Delete buffer"
+let g:WhichKeyDesc_buffer_wipeout = "<leader>bw Wipeout buffer"
+nnoremap <leader>ba <C-^>
+nnoremap <leader>bd :action CloseContent<CR>
+nnoremap <leader>bD :action CloseContent<CR>
+nnoremap <leader>bw :action CloseAllEditors<CR>
+nnoremap <leader>bn :action NextTab<CR>
+nnoremap <leader>bp :action PreviousTab<CR>
+
+" f - Find (using IDE actions)
+let g:WhichKeyDesc_find_files = "<leader>ff Find files"
+let g:WhichKeyDesc_find_grep = "<leader>fg Grep live"
+let g:WhichKeyDesc_find_grep_word = "<leader>fG Grep current word"
+let g:WhichKeyDesc_find_buffers = "<leader>fb Buffers"
+let g:WhichKeyDesc_find_actions = "<leader>fa Actions"
+let g:WhichKeyDesc_find_recent = "<leader>fr Recent files"
+let g:WhichKeyDesc_find_symbols = "<leader>fs Symbols"
+let g:WhichKeyDesc_find_doc_symbols = "<leader>fS Symbols (document)"
+nnoremap <leader>ff :action GotoFile<CR>
+nnoremap <leader>fg :action FindInPath<CR>
+nnoremap <leader>fG :action FindUsages<CR>
+nnoremap <leader>fb :action RecentFiles<CR>
+nnoremap <leader>fa :action GotoAction<CR>
+nnoremap <leader>fr :action RecentFiles<CR>
+nnoremap <leader>fR :action FindUsages<CR>
+nnoremap <leader>fs :action GotoSymbol<CR>
+nnoremap <leader>fS :action FileStructurePopup<CR>
+nnoremap <leader>fc :action GotoClass<CR>
+nnoremap <leader>fh :action HelpTopics<CR>
+nnoremap <leader>fl :action RecentLocations<CR>
+nnoremap <leader>fm :action Git.Menu<CR>
+
+" g - Git
+let g:WhichKeyDesc_git_status = "<leader>gs Show at cursor"
+let g:WhichKeyDesc_git_diff = "<leader>gd Diff"
+let g:WhichKeyDesc_git_log = "<leader>gl Log"
+let g:WhichKeyDesc_git_blame = "<leader>gb Blame"
+let g:WhichKeyDesc_git_commit = "<leader>gc Commit"
+nnoremap <leader>gs :action Vcs.ShowTabbedFileHistory<CR>
+nnoremap <leader>gd :action Compare.SameVersion<CR>
+nnoremap <leader>gD :action Compare.LastVersion<CR>
+nnoremap <leader>gl :action Vcs.Show.Log<CR>
+nnoremap <leader>gL :action Vcs.ShowTabbedFileHistory<CR>
+nnoremap <leader>gb :action Annotate<CR>
+nnoremap <leader>gc :action CheckinProject<CR>
+nnoremap <leader>gC :action Git.Commit.And.Push.Executor<CR>
+nnoremap <leader>gp :action Vcs.Push<CR>
+nnoremap <leader>gP :action Git.Pull<CR>
+nnoremap <leader>gf :action Git.Fetch<CR>
+nnoremap <leader>go :action Github.Open.In.Browser<CR>
+nnoremap <leader>gg :action ActivateVersionControlToolWindow<CR>
+nnoremap <leader>ga :action Git.Add<CR>
+
+" l - Language/LSP
+let g:WhichKeyDesc_language_actions = "<leader>la Actions"
+let g:WhichKeyDesc_language_diagnostic = "<leader>ld Diagnostic popup"
+let g:WhichKeyDesc_language_format = "<leader>lf Format"
+let g:WhichKeyDesc_language_hover = "<leader>lh Hover"
+let g:WhichKeyDesc_language_rename = "<leader>lr Rename"
+let g:WhichKeyDesc_language_references = "<leader>lR References"
+let g:WhichKeyDesc_language_source = "<leader>ls Source definition"
+let g:WhichKeyDesc_language_type = "<leader>lt Type definition"
+let g:WhichKeyDesc_language_impl = "<leader>li Implementation"
+nnoremap <leader>la :action ShowIntentionActions<CR>
+nnoremap <leader>ld :action ShowErrorDescription<CR>
+nnoremap <leader>lf :action ReformatCode<CR>
+xnoremap <leader>lf :action ReformatCode<CR>
+nnoremap <leader>lh :action QuickJavaDoc<CR>
+nnoremap <leader>li :action GotoImplementation<CR>
+nnoremap <leader>lr :action RenameElement<CR>
+nnoremap <leader>lR :action FindUsages<CR>
+nnoremap <leader>ls :action GotoDeclaration<CR>
+nnoremap <leader>lt :action GotoTypeDeclaration<CR>
+nnoremap <leader>lp :action ParameterInfo<CR>
+
+" r - Refactor
+let g:WhichKeyDesc_refactor_menu = "<leader>rr Refactor menu"
+let g:WhichKeyDesc_refactor_rename = "<leader>rn Rename"
+let g:WhichKeyDesc_refactor_extract_method = "<leader>rm Extract method"
+let g:WhichKeyDesc_refactor_extract_var = "<leader>rv Extract variable"
+let g:WhichKeyDesc_refactor_inline = "<leader>ri Inline"
+nnoremap <leader>rr :action Refactorings.QuickListPopupAction<CR>
+nnoremap <leader>rn :action RenameElement<CR>
+nnoremap <leader>rm :action ExtractMethod<CR>
+xnoremap <leader>rm :action ExtractMethod<CR>
+nnoremap <leader>rv :action IntroduceVariable<CR>
+xnoremap <leader>rv :action IntroduceVariable<CR>
+nnoremap <leader>ri :action Inline<CR>
+nnoremap <leader>rc :action IntroduceConstant<CR>
+nnoremap <leader>rf :action IntroduceField<CR>
+nnoremap <leader>rp :action IntroduceParameter<CR>
+nnoremap <leader>rs :action ChangeSignature<CR>
+
+" o - Other
+let g:WhichKeyDesc_other_zoom = "<leader>oz Zoom toggle"
+let g:WhichKeyDesc_other_trim = "<leader>ot Trim trailspace"
+nnoremap <leader>oz :action ToggleDistractionFreeMode<CR>
+nnoremap <leader>ot :action com.intellij.codeInsight.actions.ReformatCodeAction<CR>
+nnoremap <leader>or :action RestartIde<CR>
+nnoremap <leader>oi :action InvalidateCaches<CR>
+
+" t - Terminal
+let g:WhichKeyDesc_terminal_vertical = "<leader>tt Terminal (vertical)"
+let g:WhichKeyDesc_terminal_horizontal = "<leader>tT Terminal (horizontal)"
+nnoremap <leader>tt :action ActivateTerminalToolWindow<CR>
+nnoremap <leader>tT :action Terminal.OpenInTerminal<CR>
+
+" w - Window
+let g:WhichKeyDesc_window_split_v = "<leader>wv Split vertical"
+let g:WhichKeyDesc_window_split_h = "<leader>ws Split horizontal"
+let g:WhichKeyDesc_window_close = "<leader>wc Close window"
+let g:WhichKeyDesc_window_only = "<leader>wo Only window"
+let g:WhichKeyDesc_window_max = "<leader>wm Maximize"
+nnoremap <leader>wv :action SplitVertically<CR>
+nnoremap <leader>ws :action SplitHorizontally<CR>
+nnoremap <leader>wc :action Unsplit<CR>
+nnoremap <leader>wo :action UnsplitAll<CR>
+nnoremap <leader>wm :action MaximizeEditorInSplit<CR>
+nnoremap <leader>ww :action NextSplitter<CR>
+nnoremap <leader>wW :action PrevSplitter<CR>
+
+" d - Database (DataGrip specific)
+let g:WhichKeyDesc_database_console = "<leader>dc New console"
+let g:WhichKeyDesc_database_execute = "<leader>de Execute"
+let g:WhichKeyDesc_database_refresh = "<leader>dr Refresh"
+nnoremap <leader>dc :action Console.Jdbc.NewConsole<CR>
+nnoremap <leader>de :action Console.Jdbc.Execute<CR>
+xnoremap <leader>de :action Console.Jdbc.Execute<CR>
+nnoremap <leader>dr :action DatabaseView.Refresh<CR>
+nnoremap <leader>ds :action DatabaseView.PropertiesAction<CR>
+nnoremap <leader>dd :action ActivateDatabaseToolWindow<CR>
+nnoremap <leader>dq :action DatabaseView.Diagrams.QuickDiagram<CR>
+
+" ============================================================================
+" Navigation Mappings (from mini.bracketed)
+" ============================================================================
+
+" Buffer navigation
+nnoremap [b :action PreviousTab<CR>
+nnoremap ]b :action NextTab<CR>
+nnoremap [B :action GoToTab1<CR>
+nnoremap ]B :action GoToLastTab<CR>
+
+" Diagnostic/Error navigation
+nnoremap [d :action GotoPreviousError<CR>
+nnoremap ]d :action GotoNextError<CR>
+
+" Git hunk navigation (changes)
+nnoremap [c :action VcsShowPrevChangeMarker<CR>
+nnoremap ]c :action VcsShowNextChangeMarker<CR>
+
+" Method navigation
+nnoremap [m :action MethodUp<CR>
+nnoremap ]m :action MethodDown<CR>
+
+" Search result navigation
+nnoremap [q :action PreviousOccurence<CR>
+nnoremap ]q :action NextOccurence<CR>
+
+" ============================================================================
+" g-prefix Mappings
+" ============================================================================
+
+" Go to definition/declaration
+nnoremap gd :action GotoDeclaration<CR>
+nnoremap gD :action GotoTypeDeclaration<CR>
+nnoremap gi :action GotoImplementation<CR>
+nnoremap gr :action FindUsages<CR>
+nnoremap gR :action ShowUsages<CR>
+
+" Comment (handled by commentary plugin, but adding explicit mapping)
+nmap gc <Plug>CommentaryLine
+xmap gc <Plug>Commentary
+
+" ============================================================================
+" Visual Mode Mappings
+" ============================================================================
+
+" Sort selection (from mini.operators gs)
+xnoremap gs :action EditorSortLines<CR>
+
+" ============================================================================
+" Additional IDE Mappings
+" ============================================================================
+
+" Quick actions
+nnoremap K :action QuickJavaDoc<CR>
+nnoremap <C-k> :action ParameterInfo<CR>
+inoremap <C-k> <C-o>:action ParameterInfo<CR>
+
+" Jump back/forward (like <C-o> and <C-i> in Neovim)
+nnoremap <C-o> :action Back<CR>
+nnoremap <C-i> :action Forward<CR>
+
+" Escape to clear search highlighting
+nnoremap <Esc> :nohlsearch<CR><Esc>
+
+" Run/Debug
+nnoremap <leader>xr :action Run<CR>
+nnoremap <leader>xd :action Debug<CR>
+nnoremap <leader>xs :action Stop<CR>
+nnoremap <leader>xb :action ToggleLineBreakpoint<CR>
+
+" Quick switch between files
+nnoremap <leader><leader> :action RecentFiles<CR>
+
+" Close all notifications
+nnoremap <leader>nc :action CloseAllNotifications<CR>
+
+" ============================================================================
+" Text Objects (enhanced with plugins)
+" ============================================================================
+
+" Argument text object (from argtextobj plugin)
+" Usage: daa (delete an argument), cia (change inner argument)
+
+" Entire buffer text object (from textobj-entire plugin)
+" Usage: dae (delete entire buffer), yie (yank inner entire)
+
+" Function text object (DataGrip/IDE approximation)
+" Usage: Navigate with [m and ]m, select with vim-textobj-function if available
+
+" ============================================================================
+" Surround Mappings (from mini.surround)
+" ============================================================================
+
+" The surround plugin is enabled above. Usage:
+" sa{motion}{char} - Add surround (e.g., saiw" adds quotes around word)
+" sd{char}         - Delete surround (e.g., sd" deletes surrounding quotes)
+" sr{old}{new}     - Replace surround (e.g., sr"' changes " to ')
+
+" Note: IdeaVim surround uses slightly different mappings:
+" ys{motion}{char} - Add surround
+" ds{char}         - Delete surround
+" cs{old}{new}     - Change surround
+
+" ============================================================================
+" DataGrip/Database Specific
+" ============================================================================
+
+" Execute current statement
+nnoremap <C-CR> :action Console.Jdbc.Execute<CR>
+inoremap <C-CR> <C-o>:action Console.Jdbc.Execute<CR>
+
+" Execute entire script
+nnoremap <C-S-CR> :action Console.Jdbc.Execute.2<CR>
+
+" Quick table operations
+nnoremap <leader>dt :action DatabaseView.OpenDdlInConsole<CR>
+nnoremap <leader>di :action DatabaseView.GenerateInsertStatement<CR>
