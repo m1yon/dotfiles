@@ -3,7 +3,7 @@ if [ -f ~/.secrets ]; then
     source ~/.secrets
 fi
 
-alias src="source ~/.zshrc"
+alias src="source ~/.zshrc && source ~/.zshenv"
 
 # nvm bash completion (nvm itself is loaded in .zshenv)
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
