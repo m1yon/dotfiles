@@ -33,3 +33,6 @@ fi
 
 # bun completions
 [ -s "/home/michael/.bun/_bun" ] && source "/home/michael/.bun/_bun"
+
+# completion styles
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
