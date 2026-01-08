@@ -28,7 +28,7 @@ export MANPAGER='nvim +Man!'
 
 # start hyprland on boot
 if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
-  exec hyprland
+  exec start-hyprland
 fi
 
 # bun completions
