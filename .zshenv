@@ -12,6 +12,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.opencode/bin:$PATH"
+export PATH="$HOME/.config/opencode/command/scripts/bin:$PATH"
 
 # ENV variables
 export EDITOR="nvim"

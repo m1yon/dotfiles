@@ -1,3 +1,4 @@
+#! /usr/bin/env bun
 import { Octokit } from "octokit";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -27,7 +28,9 @@ async function getAuthToken(): Promise<string> {
   const exitCode = await proc.exited;
 
   if (exitCode !== 0) {
-    throw new Error("Failed to get auth token. Are you logged in with `gh auth login`?");
+    throw new Error(
+      "Failed to get auth token. Are you logged in with `gh auth login`?",
+    );
   }
 
   return output.trim();
