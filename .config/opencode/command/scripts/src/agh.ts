@@ -36,23 +36,11 @@ async function getAuthToken(): Promise<string> {
   return output.trim();
 }
 
-const argv = await yargs(hideBin(process.argv))
-  .option("pr", {
-    alias: "p",
-    type: "number",
-    description: "Pull request number",
-    demandOption: true,
-  })
-  .help()
-  .parseAsync();
+async function getPrFeedback(prNumber: number) {
+  const authToken = await getAuthToken();
+  const octokit = new Octokit({ auth: authToken });
+  const { owner, repo } = await getRepoInfo();
 
-const authToken = await getAuthToken();
-const octokit = new Octokit({ auth: authToken });
-
-const { owner: OWNER, repo: REPO } = await getRepoInfo();
-const PR_NUMBER = argv.pr;
-
-async function getPrComments() {
   const query = `
     query($owner: String!, $name: String!, $number: Int!) {
       repository(owner: $owner, name: $name) {
@@ -90,9 +78,9 @@ async function getPrComments() {
   `;
 
   const response: any = await octokit.graphql(query, {
-    owner: OWNER,
-    name: REPO,
-    number: PR_NUMBER,
+    owner,
+    name: repo,
+    number: prNumber,
   });
 
   const pr = response.repository.pullRequest;
@@ -148,4 +136,24 @@ async function getPrComments() {
   console.log(allInteraction);
 }
 
-getPrComments();
+yargs(hideBin(process.argv))
+  .scriptName("agh")
+  .usage("$0 <command> [options]")
+  .command(
+    "get-pr-feedback",
+    "Get feedback comments from a pull request",
+    (yargs) => {
+      return yargs.option("pr", {
+        alias: "p",
+        type: "number",
+        description: "Pull request number",
+        demandOption: true,
+      });
+    },
+    async (argv) => {
+      await getPrFeedback(argv.pr);
+    },
+  )
+  .demandCommand(1, "You need to specify a command")
+  .help()
+  .parseAsync();
