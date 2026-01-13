@@ -212,15 +212,9 @@ yargs(hideBin(process.argv))
   .command(
     "get-pr-feedback",
     "Get feedback comments from a pull request (infers PR from current branch)",
-    (yargs) => {
-      return yargs.option("pr", {
-        alias: "p",
-        type: "number",
-        description: "Pull request number (optional, inferred from current branch if not provided)",
-      });
-    },
-    async (argv) => {
-      const prNumber = argv.pr ?? await getCurrentPrNumber();
+    () => {},
+    async () => {
+      const prNumber = await getCurrentPrNumber();
       await getPrFeedback(prNumber);
     },
   )
@@ -229,11 +223,6 @@ yargs(hideBin(process.argv))
     "Reply to a comment on a pull request",
     (yargs) => {
       return yargs
-        .option("pr", {
-          alias: "p",
-          type: "number",
-          description: "Pull request number (optional, inferred from current branch if not provided)",
-        })
         .option("comment-id", {
           alias: "c",
           type: "number",
@@ -255,7 +244,7 @@ yargs(hideBin(process.argv))
         });
     },
     async (argv) => {
-      const prNumber = argv.pr ?? await getCurrentPrNumber();
+      const prNumber = await getCurrentPrNumber();
       await replyToComment(
         prNumber,
         argv["comment-id"],
