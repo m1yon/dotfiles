@@ -15,6 +15,7 @@ export PATH="$HOME/.opencode/bin:$PATH"
 
 # ENV variables
 export EDITOR="nvim"
+export AWS_SDK_LOAD_CONFIG=1
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
