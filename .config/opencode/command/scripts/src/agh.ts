@@ -54,6 +54,36 @@ async function getCurrentPrNumber(): Promise<number> {
   return data.number;
 }
 
+async function getFileContentAtCommit(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  commitSha: string,
+  path: string,
+): Promise<string | null> {
+  try {
+    const response = await octokit.rest.repos.getContent({
+      owner,
+      repo,
+      path,
+      ref: commitSha,
+    });
+
+    if ("content" in response.data && response.data.type === "file") {
+      return Buffer.from(response.data.content, "base64").toString("utf-8");
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function extractLines(content: string, startLine: number, endLine: number): string {
+  const lines = content.split("\n");
+  // Lines are 1-indexed from GitHub
+  return lines.slice(startLine - 1, endLine).join("\n");
+}
+
 async function getPrFeedback(prNumber: number) {
   const authToken = await getAuthToken();
   const octokit = new Octokit({ auth: authToken });
@@ -63,6 +93,7 @@ async function getPrFeedback(prNumber: number) {
     query($owner: String!, $name: String!, $number: Int!) {
       repository(owner: $owner, name: $name) {
         pullRequest(number: $number) {
+          headRefOid
           # 1. General Timeline Comments (issue comments - not inline code comments)
           comments(last: 100) {
             nodes {
@@ -110,6 +141,7 @@ async function getPrFeedback(prNumber: number) {
   });
 
   const pr = response.repository.pullRequest;
+  const headCommitSha = pr.headRefOid;
 
   // --- PROCESSING & FILTERING ---
 
@@ -124,13 +156,25 @@ async function getPrFeedback(prNumber: number) {
     url: c.url,
   }));
 
-  // 2. Flatten Reviews and their nested Inline Comments
-  const reviewData = pr.reviews.nodes.flatMap((review: any) => {
-    const items = [];
+  // Cache for file contents to avoid fetching the same file multiple times
+  const fileContentCache: Map<string, string | null> = new Map();
 
+  async function getFileContent(path: string): Promise<string | null> {
+    if (fileContentCache.has(path)) {
+      return fileContentCache.get(path)!;
+    }
+    const content = await getFileContentAtCommit(octokit, owner, repo, headCommitSha, path);
+    fileContentCache.set(path, content);
+    return content;
+  }
+
+  // 2. Flatten Reviews and their nested Inline Comments
+  const reviewData: any[] = [];
+
+  for (const review of pr.reviews.nodes) {
     // Add the Review Summary (if it has text) - these cannot be replied to directly
     if (review.body && review.body !== "") {
-      items.push({
+      reviewData.push({
         type: `Review (${review.state})`,
         commentType: null, // Review summaries cannot be replied to
         commentId: null,
@@ -143,14 +187,24 @@ async function getPrFeedback(prNumber: number) {
 
     // Add the Inline Comments associated with this review (these are review comments, reply via pulls API)
     if (review.comments.nodes.length > 0) {
-      review.comments.nodes.forEach((comment: any) => {
+      for (const comment of review.comments.nodes) {
         // Determine line range for the comment
         // GitHub uses 'line' for single-line comments, 'startLine' and 'line' for multi-line
         const endLine = comment.line || comment.originalLine;
         const startLine = comment.startLine || comment.originalStartLine || endLine;
         const isMultiLine = startLine && endLine && startLine !== endLine;
 
-        items.push({
+        // Fetch the referenced code
+        let referencedCode: string | undefined;
+        if (comment.path && endLine) {
+          const fileContent = await getFileContent(comment.path);
+          if (fileContent) {
+            const actualStartLine = isMultiLine ? startLine : endLine;
+            referencedCode = extractLines(fileContent, actualStartLine, endLine).replace(/[\t\n]/g, ' ');
+          }
+        }
+
+        reviewData.push({
           type: `Inline Code`,
           commentType: "review" as const,
           commentId: comment.databaseId,
@@ -159,14 +213,13 @@ async function getPrFeedback(prNumber: number) {
           path: comment.path,
           line: isMultiLine ? undefined : endLine,
           lineRange: isMultiLine ? { start: startLine, end: endLine } : undefined,
+          referencedCode,
           date: comment.createdAt,
           url: comment.url,
         });
-      });
+      }
     }
-
-    return items;
-  });
+  }
 
   // 3. Combine, Filter, and Sort
   const allInteraction = [...generalComments, ...reviewData]
