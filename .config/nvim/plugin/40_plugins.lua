@@ -121,12 +121,11 @@ now_if_args(function()
   vim.lsp.enable({
     "gopls",
     "lua_ls",
-    "pyright",
+    "basedpyright",
     "terraformls",
     "yamlls",
     "tailwindcss",
     "eslint",
-    "grammarly",
   })
 end)
 
