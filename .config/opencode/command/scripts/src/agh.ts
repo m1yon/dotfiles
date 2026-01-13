@@ -84,7 +84,60 @@ function extractLines(content: string, startLine: number, endLine: number): stri
   return lines.slice(startLine - 1, endLine).join("\n");
 }
 
-async function getPrFeedback(prNumber: number) {
+async function reactToComment(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  commentId: number,
+  commentType: "review" | "issue",
+  reaction: "+1" | "eyes",
+) {
+  if (commentType === "review") {
+    await octokit.rest.reactions.createForPullRequestReviewComment({
+      owner,
+      repo,
+      comment_id: commentId,
+      content: reaction,
+    });
+  } else {
+    await octokit.rest.reactions.createForIssueComment({
+      owner,
+      repo,
+      comment_id: commentId,
+      content: reaction,
+    });
+  }
+}
+
+async function getCommentReactions(
+  octokit: Octokit,
+  owner: string,
+  repo: string,
+  commentId: number,
+  commentType: "review" | "issue",
+): Promise<string[]> {
+  try {
+    if (commentType === "review") {
+      const response = await octokit.rest.reactions.listForPullRequestReviewComment({
+        owner,
+        repo,
+        comment_id: commentId,
+      });
+      return response.data.map((r) => r.content);
+    } else {
+      const response = await octokit.rest.reactions.listForIssueComment({
+        owner,
+        repo,
+        comment_id: commentId,
+      });
+      return response.data.map((r) => r.content);
+    }
+  } catch {
+    return [];
+  }
+}
+
+async function getPrFeedback(prNumber: number, markAsSeen: boolean) {
   const authToken = await getAuthToken();
   const octokit = new Octokit({ auth: authToken });
   const { owner, repo } = await getRepoInfo();
@@ -226,50 +279,47 @@ async function getPrFeedback(prNumber: number) {
     .filter((item) => item.user !== "coderabbitai") // <--- The Filter
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // 4. Output
+  // 4. Mark comments as seen (add eyes emoji) if requested
+  if (markAsSeen) {
+    for (const item of allInteraction) {
+      if (item.commentId && item.commentType) {
+        const reactions = await getCommentReactions(
+          octokit,
+          owner,
+          repo,
+          item.commentId,
+          item.commentType,
+        );
+        // Only add eyes if we haven't reacted yet
+        if (!reactions.includes("eyes") && !reactions.includes("+1")) {
+          await reactToComment(
+            octokit,
+            owner,
+            repo,
+            item.commentId,
+            item.commentType,
+            "eyes",
+          );
+        }
+      }
+    }
+  }
+
+  // 5. Output
   console.log(JSON.stringify(allInteraction, null, 2));
 }
 
-async function replyToComment(
+async function markCommentAsDone(
   prNumber: number,
   commentId: number,
   commentType: "review" | "issue",
-  body: string,
 ) {
   const authToken = await getAuthToken();
   const octokit = new Octokit({ auth: authToken });
   const { owner, repo } = await getRepoInfo();
 
-  if (commentType === "review") {
-    // Reply to an inline code review comment
-    const response = await octokit.rest.pulls.createReplyForReviewComment({
-      owner,
-      repo,
-      pull_number: prNumber,
-      comment_id: commentId,
-      body,
-    });
-    console.log(JSON.stringify({
-      success: true,
-      url: response.data.html_url,
-      id: response.data.id,
-    }, null, 2));
-  } else {
-    // Reply to a general issue comment (create a new issue comment)
-    // Note: GitHub doesn't have threaded replies for issue comments,
-    // so we create a new comment that quotes/references the original
-    const response = await octokit.rest.issues.createComment({
-      owner,
-      repo,
-      issue_number: prNumber,
-      body,
-    });
-    console.log(JSON.stringify({
-      success: true,
-      url: response.data.html_url,
-      id: response.data.id,
-    }, null, 2));
-  }
+  await reactToComment(octokit, owner, repo, commentId, commentType, "+1");
+  console.log(JSON.stringify({ success: true, commentId, reaction: "+1" }, null, 2));
 }
 
 yargs(hideBin(process.argv))
@@ -278,21 +328,28 @@ yargs(hideBin(process.argv))
   .command(
     "get-pr-feedback",
     "Get feedback comments from a pull request (infers PR from current branch)",
-    () => {},
-    async () => {
+    (yargs) => {
+      return yargs.option("mark-as-seen", {
+        alias: "s",
+        type: "boolean",
+        description: "Add eyes emoji to comments that haven't been seen yet",
+        default: false,
+      });
+    },
+    async (argv) => {
       const prNumber = await getCurrentPrNumber();
-      await getPrFeedback(prNumber);
+      await getPrFeedback(prNumber, argv["mark-as-seen"]);
     },
   )
   .command(
-    "reply-to-comment",
-    "Reply to a comment on a pull request",
+    "mark-done",
+    "Mark a comment as done with a thumbs up reaction",
     (yargs) => {
       return yargs
         .option("comment-id", {
           alias: "c",
           type: "number",
-          description: "The comment ID to reply to (from get-pr-feedback output)",
+          description: "The comment ID to mark as done (from get-pr-feedback output)",
           demandOption: true,
         })
         .option("type", {
@@ -301,21 +358,14 @@ yargs(hideBin(process.argv))
           choices: ["review", "issue"] as const,
           description: "The type of comment: 'review' for inline code comments, 'issue' for general comments",
           demandOption: true,
-        })
-        .option("body", {
-          alias: "b",
-          type: "string",
-          description: "The reply message body",
-          demandOption: true,
         });
     },
     async (argv) => {
       const prNumber = await getCurrentPrNumber();
-      await replyToComment(
+      await markCommentAsDone(
         prNumber,
         argv["comment-id"],
         argv.type as "review" | "issue",
-        argv.body,
       );
     },
   )
