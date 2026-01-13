@@ -36,6 +36,24 @@ async function getAuthToken(): Promise<string> {
   return output.trim();
 }
 
+async function getCurrentPrNumber(): Promise<number> {
+  const proc = Bun.spawn(["gh", "pr", "view", "--json", "number"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const output = await new Response(proc.stdout).text();
+  const exitCode = await proc.exited;
+
+  if (exitCode !== 0) {
+    throw new Error(
+      "Failed to get PR number. Is the current branch associated with a pull request?",
+    );
+  }
+
+  const data = JSON.parse(output);
+  return data.number;
+}
+
 async function getPrFeedback(prNumber: number) {
   const authToken = await getAuthToken();
   const octokit = new Octokit({ auth: authToken });
@@ -141,17 +159,17 @@ yargs(hideBin(process.argv))
   .usage("$0 <command> [options]")
   .command(
     "get-pr-feedback",
-    "Get feedback comments from a pull request",
+    "Get feedback comments from a pull request (infers PR from current branch)",
     (yargs) => {
       return yargs.option("pr", {
         alias: "p",
         type: "number",
-        description: "Pull request number",
-        demandOption: true,
+        description: "Pull request number (optional, inferred from current branch if not provided)",
       });
     },
     async (argv) => {
-      await getPrFeedback(argv.pr);
+      const prNumber = argv.pr ?? await getCurrentPrNumber();
+      await getPrFeedback(prNumber);
     },
   )
   .demandCommand(1, "You need to specify a command")
