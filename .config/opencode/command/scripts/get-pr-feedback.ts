@@ -18,6 +18,21 @@ async function getRepoInfo(): Promise<{ owner: string; repo: string }> {
   return { owner: data.owner.login, repo: data.name };
 }
 
+async function getAuthToken(): Promise<string> {
+  const proc = Bun.spawn(["gh", "auth", "token"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const output = await new Response(proc.stdout).text();
+  const exitCode = await proc.exited;
+
+  if (exitCode !== 0) {
+    throw new Error("Failed to get auth token. Are you logged in with `gh auth login`?");
+  }
+
+  return output.trim();
+}
+
 const argv = await yargs(hideBin(process.argv))
   .option("pr", {
     alias: "p",
@@ -28,8 +43,8 @@ const argv = await yargs(hideBin(process.argv))
   .help()
   .parseAsync();
 
-// Bun automatically loads GITHUB_TOKEN from your .env file
-const octokit = new Octokit({ auth: Bun.env.GITHUB_TOKEN });
+const authToken = await getAuthToken();
+const octokit = new Octokit({ auth: authToken });
 
 const { owner: OWNER, repo: REPO } = await getRepoInfo();
 const PR_NUMBER = argv.pr;
