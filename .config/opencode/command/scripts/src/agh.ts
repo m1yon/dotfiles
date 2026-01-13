@@ -88,6 +88,10 @@ async function getPrFeedback(prNumber: number) {
                   databaseId
                   body
                   path
+                  line
+                  startLine
+                  originalLine
+                  originalStartLine
                   createdAt
                   url
                 }
@@ -140,12 +144,21 @@ async function getPrFeedback(prNumber: number) {
     // Add the Inline Comments associated with this review (these are review comments, reply via pulls API)
     if (review.comments.nodes.length > 0) {
       review.comments.nodes.forEach((comment: any) => {
+        // Determine line range for the comment
+        // GitHub uses 'line' for single-line comments, 'startLine' and 'line' for multi-line
+        const endLine = comment.line || comment.originalLine;
+        const startLine = comment.startLine || comment.originalStartLine || endLine;
+        const isMultiLine = startLine && endLine && startLine !== endLine;
+
         items.push({
-          type: `Inline Code (${comment.path})`,
+          type: `Inline Code`,
           commentType: "review" as const,
           commentId: comment.databaseId,
           user: review.author.login,
           body: comment.body,
+          path: comment.path,
+          line: isMultiLine ? undefined : endLine,
+          lineRange: isMultiLine ? { start: startLine, end: endLine } : undefined,
           date: comment.createdAt,
           url: comment.url,
         });
