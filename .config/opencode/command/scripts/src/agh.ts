@@ -105,18 +105,24 @@ async function getPrFeedback(prNumber: number) {
               url
             }
           }
-          # 2. Reviews (Summaries + Inline Comments)
+          # 2. Reviews (Summaries only - inline comments fetched via reviewThreads)
           reviews(last: 50) {
             nodes {
               author { login }
               body # The summary text
               state
               submittedAt
-              # The inline code comments nested inside this review
+            }
+          }
+          # 3. Review Threads (Inline Comments with resolved status)
+          reviewThreads(last: 100) {
+            nodes {
+              isResolved
               comments(last: 50) {
                 nodes {
                   id
                   databaseId
+                  author { login }
                   body
                   path
                   line
@@ -168,7 +174,7 @@ async function getPrFeedback(prNumber: number) {
     return content;
   }
 
-  // 2. Flatten Reviews and their nested Inline Comments
+  // 2. Flatten Reviews (summaries only)
   const reviewData: any[] = [];
 
   for (const review of pr.reviews.nodes) {
@@ -184,41 +190,51 @@ async function getPrFeedback(prNumber: number) {
         url: null,
       });
     }
+  }
 
-    // Add the Inline Comments associated with this review (these are review comments, reply via pulls API)
-    if (review.comments.nodes.length > 0) {
-      for (const comment of review.comments.nodes) {
-        // Determine line range for the comment
-        // GitHub uses 'line' for single-line comments, 'startLine' and 'line' for multi-line
-        const endLine = comment.line || comment.originalLine;
-        const startLine = comment.startLine || comment.originalStartLine || endLine;
-        const isMultiLine = startLine && endLine && startLine !== endLine;
+  // 3. Flatten Review Threads (Inline Comments) - only include unresolved threads
+  for (const thread of pr.reviewThreads.nodes) {
+    // Skip resolved threads
+    if (thread.isResolved) {
+      continue;
+    }
 
-        // Fetch the referenced code
-        let referencedCode: string | undefined;
-        if (comment.path && endLine) {
-          const fileContent = await getFileContent(comment.path);
-          if (fileContent) {
-            const actualStartLine = isMultiLine ? startLine : endLine;
-            referencedCode = extractLines(fileContent, actualStartLine, endLine).replace(/[\t\n]/g, ' ');
-          }
-        }
+    // Get the first comment in the thread (the original review comment)
+    // We only include the first comment as that's the actionable feedback
+    const comment = thread.comments.nodes[0];
+    if (!comment) {
+      continue;
+    }
 
-        reviewData.push({
-          type: `Inline Code`,
-          commentType: "review" as const,
-          commentId: comment.databaseId,
-          user: review.author.login,
-          body: comment.body,
-          path: comment.path,
-          line: isMultiLine ? undefined : endLine,
-          lineRange: isMultiLine ? { start: startLine, end: endLine } : undefined,
-          referencedCode,
-          date: comment.createdAt,
-          url: comment.url,
-        });
+    // Determine line range for the comment
+    // GitHub uses 'line' for single-line comments, 'startLine' and 'line' for multi-line
+    const endLine = comment.line || comment.originalLine;
+    const startLine = comment.startLine || comment.originalStartLine || endLine;
+    const isMultiLine = startLine && endLine && startLine !== endLine;
+
+    // Fetch the referenced code
+    let referencedCode: string | undefined;
+    if (comment.path && endLine) {
+      const fileContent = await getFileContent(comment.path);
+      if (fileContent) {
+        const actualStartLine = isMultiLine ? startLine : endLine;
+        referencedCode = extractLines(fileContent, actualStartLine, endLine).replace(/[\t\n]/g, ' ');
       }
     }
+
+    reviewData.push({
+      type: `Inline Code`,
+      commentType: "review" as const,
+      commentId: comment.databaseId,
+      user: comment.author.login,
+      body: comment.body,
+      path: comment.path,
+      line: isMultiLine ? undefined : endLine,
+      lineRange: isMultiLine ? { start: startLine, end: endLine } : undefined,
+      referencedCode,
+      date: comment.createdAt,
+      url: comment.url,
+    });
   }
 
   // 3. Combine, Filter, and Sort
