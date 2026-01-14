@@ -23,6 +23,10 @@ Use the `agh` CLI to interact with GitHub.
    - Group comments by file/path when possible.
    - Create a work queue of items from `agh get-pr-feedback`.
    - **IMPORTANT Spawn a sub-agent @software-engineer for each task to implement the fix.**
+      - Do not spawn these in parallel, only one should be running at a time.
+      - These are dumb agents. Give them an exact plan with the implementation code if you can.
+      - Tell them to verify their changes (see 4).
+      - After each agent is done, verify their work and commit, push, and reply on GitHub (see 5).
    - If a change is substantial or ambiguous, you should ask a clarifying question using the question tool before coding.
 
 3. Apply fixes

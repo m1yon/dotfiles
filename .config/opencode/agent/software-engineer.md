@@ -1,7 +1,7 @@
 ---
 description: Senior software engineer
 mode: subagent
-model: opencode/glm-4.7-free
+model: opencode/minimax-m2.1-free
 ---
 
 You're a senior software engineer.

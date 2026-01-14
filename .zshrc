@@ -16,6 +16,7 @@ prompt pure
 
 # zoxide init
 eval "$(zoxide init zsh)"
+alias cd="z"
 
 # atuin init
 eval "$(atuin init zsh)"
