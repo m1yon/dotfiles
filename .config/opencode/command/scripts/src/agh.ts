@@ -78,7 +78,11 @@ async function getFileContentAtCommit(
   }
 }
 
-function extractLines(content: string, startLine: number, endLine: number): string {
+function extractLines(
+  content: string,
+  startLine: number,
+  endLine: number,
+): string {
   const lines = content.split("\n");
   // Lines are 1-indexed from GitHub
   return lines.slice(startLine - 1, endLine).join("\n");
@@ -169,7 +173,13 @@ async function getPrFeedback(prNumber: number) {
     if (fileContentCache.has(path)) {
       return fileContentCache.get(path)!;
     }
-    const content = await getFileContentAtCommit(octokit, owner, repo, headCommitSha, path);
+    const content = await getFileContentAtCommit(
+      octokit,
+      owner,
+      repo,
+      headCommitSha,
+      path,
+    );
     fileContentCache.set(path, content);
     return content;
   }
@@ -218,7 +228,11 @@ async function getPrFeedback(prNumber: number) {
       const fileContent = await getFileContent(comment.path);
       if (fileContent) {
         const actualStartLine = isMultiLine ? startLine : endLine;
-        referencedCode = extractLines(fileContent, actualStartLine, endLine).replace(/[\t\n]/g, ' ');
+        referencedCode = extractLines(
+          fileContent,
+          actualStartLine,
+          endLine,
+        ).replace(/[\t\n]/g, " ");
       }
     }
 
@@ -239,7 +253,9 @@ async function getPrFeedback(prNumber: number) {
 
   // 3. Combine, Filter, and Sort
   const allInteraction = [...generalComments, ...reviewData]
-    .filter((item) => item.user !== "coderabbitai") // <--- The Filter
+    .filter(
+      (item) => item.user !== "coderabbitai" || item.commentType === "review",
+    ) // <--- The Filter
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // 4. Output
@@ -265,11 +281,17 @@ async function replyToComment(
       comment_id: commentId,
       body,
     });
-    console.log(JSON.stringify({
-      success: true,
-      url: response.data.html_url,
-      id: response.data.id,
-    }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          success: true,
+          url: response.data.html_url,
+          id: response.data.id,
+        },
+        null,
+        2,
+      ),
+    );
   } else {
     // Reply to a general issue comment (create a new issue comment)
     // Note: GitHub doesn't have threaded replies for issue comments,
@@ -280,11 +302,17 @@ async function replyToComment(
       issue_number: prNumber,
       body,
     });
-    console.log(JSON.stringify({
-      success: true,
-      url: response.data.html_url,
-      id: response.data.id,
-    }, null, 2));
+    console.log(
+      JSON.stringify(
+        {
+          success: true,
+          url: response.data.html_url,
+          id: response.data.id,
+        },
+        null,
+        2,
+      ),
+    );
   }
 }
 
@@ -308,14 +336,16 @@ yargs(hideBin(process.argv))
         .option("comment-id", {
           alias: "c",
           type: "number",
-          description: "The comment ID to reply to (from get-pr-feedback output)",
+          description:
+            "The comment ID to reply to (from get-pr-feedback output)",
           demandOption: true,
         })
         .option("type", {
           alias: "t",
           type: "string",
           choices: ["review", "issue"] as const,
-          description: "The type of comment: 'review' for inline code comments, 'issue' for general comments",
+          description:
+            "The type of comment: 'review' for inline code comments, 'issue' for general comments",
           demandOption: true,
         })
         .option("body", {
