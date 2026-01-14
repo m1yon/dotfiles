@@ -22,7 +22,7 @@ Use the `agh` CLI to interact with GitHub.
 2. Triage and dispatch sub-agents (one per comment)
    - Group comments by file/path when possible.
    - Create a work queue of items from `agh get-pr-feedback`.
-   - Use a sub-agent @software-engineer for each task to implement the fix.
+   - **IMPORTANT Spawn a sub-agent @software-engineer for each task to implement the fix.**
    - If a change is substantial or ambiguous, you should ask a clarifying question using the question tool before coding.
 
 3. Apply fixes
