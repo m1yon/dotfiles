@@ -6,10 +6,10 @@ padding=20,30
 max-icon-size=32
 font=sans-serif 14px
 text-color=#f8f8f2
-background-color=#00000099
+background-color=#00000055
 border-size=1
 border-radius=8
-border-color=#44444499
+border-color=#444444
 
 [urgency=critical]
 default-timeout=0
