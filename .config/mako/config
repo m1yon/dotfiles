@@ -1,17 +1,17 @@
 anchor=top-right
-default-timeout=9000
+default-timeout=5000
 width=420
-outer-margin=20
-padding=10,15
-border-size=2
+outer-margin=10,20
+padding=20,30
 max-icon-size=32
 font=sans-serif 14px
 text-color=#f8f8f2
-border-color=#8BE9FD
-background-color=#16181d
+background-color=#00000099
+border-size=1
+border-radius=8
+border-color=#44444499
 
 [urgency=critical]
-border-color=#FF5555
 default-timeout=0
 layer=overlay
 
