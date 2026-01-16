@@ -14,9 +14,12 @@
       "format": "{:%d %b  %I:%M %p}",
     },
     "wireplumber": {
-      "format": "{volume}%",
-      "format-muted": "",
-      "max-volume": 150,
+      "format": "{icon}  {volume}%",
+      "format-muted": " ",
+      "format-icons": {
+        "default": ["", " ", " "]
+      },
+      "max-volume": 100,
       "scroll-step": 0.2
     }
 }
