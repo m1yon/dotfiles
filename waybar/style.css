@@ -1,51 +1,56 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: "Liberation Sans";
-  font-size: 14px;
+  font-family: "Inter";
+  font-size: 12px;
   min-height: 0;
 }
 
 window#waybar {
-  background: none;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 tooltip {
   background: rgba(43, 48, 59, 0.5);
   border: 1px solid rgba(100, 114, 125, 0.5);
 }
+
 tooltip label {
   color: white;
 }
 
-.modules-left {
-  margin-left: 8px;
-  margin-top: 6px;
-}
+/* left modules */
 
-.modules-right {
-  border-radius: 10px;
-  margin-right: 8px;
-  margin-top: 6px;
-  padding: 5px;
+.modules-left {
+  margin: 6px 8px;
+
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 #workspaces button {
-  border-radius: 5px;
-  padding: 5px;
-  margin-right: 1px;
+  font-weight: 400;
+  padding: 4px;
   color: white;
 }
 
 #workspaces .active {
-  background: rgba(255, 255, 255, 0.1);
+  font-weight: 600;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
 }
 
-#mode,
+/* right modules */
+
+.modules-right {
+  margin: 6px 8px;
+}
+
 #clock,
-#battery {
-  padding: 0 10px;
-}
-
-#clock {
+#wireplumber {
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-left: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
 }

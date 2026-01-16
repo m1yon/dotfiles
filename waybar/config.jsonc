@@ -2,7 +2,7 @@
     "layer": "top",
     "modules-left": ["hyprland/workspaces", "hyprland/submap"],
     "modules-center": [],
-    "modules-right": ["tray", "wireplumber", "clock"],
+    "modules-right": ["wireplumber", "clock"],
     "sway/window": {
         "max-length": 50
     },
@@ -11,7 +11,7 @@
         "format-icons": ["", "", "", "", ""]
     },
     "clock": {
-      "format": "{:L%A, %d %B - %I:%M %p}",
+      "format": "{:%d %b  %I:%M %p}",
     },
     "wireplumber": {
       "format": "{volume}%",
