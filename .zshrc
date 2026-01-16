@@ -27,13 +27,13 @@ source <(fzf --zsh)
 # set default man pager
 export MANPAGER='nvim +Man!'
 
-# start hyprland on boot
-if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" -eq 1 ]; then
-  exec start-hyprland
-fi
-
 # bun completions
 [ -s "/home/michael/.bun/_bun" ] && source "/home/michael/.bun/_bun"
 
 # completion styles
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+
+# uwsm auto-start
+if uwsm check may-start; then
+    exec uwsm start hyprland.desktop
+fi

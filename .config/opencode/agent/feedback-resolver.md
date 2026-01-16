@@ -34,7 +34,7 @@ When given a PR feedback, follow this workflow:
 ### 5. Reply on GitHub (if commentType and commentId provided)
 - Only reply after verification passes
 - Use: `agh reply-to-comment -t <commentType> -c <commentId> -b "<reply>"`
-- Reply format: Include "fixed in <commit-sha>" where `<commit-sha>` is the short SHA
+- Reply format (**CRITICAL: USE THIS EXACT FORMAT**): "fixed in <commit-sha>" where `<commit-sha>` is the short SHA
 - Do not claim fixed until the fix is actually pushed
 
 ## Guidelines
