@@ -2,12 +2,11 @@
   border: none;
   border-radius: 0;
   font-family: "Inter";
-  font-size: 12px;
   min-height: 0;
 }
 
 window#waybar {
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.3);
 }
 
 tooltip {
@@ -20,37 +19,47 @@ tooltip label {
 }
 
 /* left modules */
-
 .modules-left {
   margin: 6px 8px;
 
   border-radius: 6px;
-  background-color: rgba(255, 255, 255, 0.1);
 }
 
-#workspaces button {
-  font-weight: 400;
-  padding: 4px;
-  color: white;
-}
+/* center modules */
+.modules-center {
+  margin: 6px 0px;
 
-#workspaces .active {
-  font-weight: 600;
-  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#workspaces {
+  padding: 0px 6px;
+  font-size: 9px;
+}
+#workspaces button {
+  all: unset;
+  padding: 0px 6px;
+  color: alpha(#ffffff, 0.3);
+  transition: all 0.2s ease;
+}
+#workspaces button.empty {
+  color: rgba(0, 0, 0, 0.3);
+}
+#workspaces button.active {
+  color: #ffffff;
 }
 
 /* right modules */
-
 .modules-right {
   margin: 6px 8px;
 }
 
 #clock,
 #wireplumber {
-  font-weight: 600;
+  font-weight: 700;
   border-radius: 6px;
+  font-size: 12px;
   padding: 4px 8px;
-  margin-left: 8px;
   background-color: rgba(255, 255, 255, 0.1);
 }

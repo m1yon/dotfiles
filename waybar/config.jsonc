@@ -1,10 +1,15 @@
 {
     "layer": "top",
-    "modules-left": ["hyprland/workspaces", "hyprland/submap"],
-    "modules-center": [],
-    "modules-right": ["wireplumber", "clock"],
-    "sway/window": {
-        "max-length": 50
+    "modules-left": ["clock"],
+    "modules-center": ["hyprland/workspaces", "hyprland/submap"],
+    "modules-right": ["wireplumber", ],
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "format-icons": {
+            "active": "",
+            "default": "",
+            "empty": ""
+        },
     },
     "battery": {
         "format": "{capacity}% {icon}",
