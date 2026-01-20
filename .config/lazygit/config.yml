@@ -1,0 +1,29 @@
+git:
+  branchLogCmd: git log --graph --color=always --abbrev-commit --decorate --date=iso --pretty=medium {{branchName}} --
+  allBranchesLogCmds:
+    - git log --all --graph --color=always --abbrev-commit --decorate --date=iso --pretty=medium
+  pagers:
+    - externalDiffCommand: difft --color=always --display=inline --syntax-highlight=on --tab-width=2
+update:
+  method: never
+notARepository: 'quit'
+promptToReturnFromSubprocess: false
+gui:
+  scrollHeight: 10
+  timeFormat: '2006-01-02 15:04:05 MST'
+  theme:
+    selectedLineBgColor:
+      - reverse
+    selectedRangeBgColor:
+      - reverse
+  showFileTree: false
+  nerdFontsVersion: 3
+  skipRewordInEditorWarning: true
+  border: 'double'
+  showCommandLog: false
+  tabWidth: 1
+keybinding:
+  files:
+    # swap default bindings
+    commitChanges: 'C'
+    commitChangesWithEditor: 'c'
