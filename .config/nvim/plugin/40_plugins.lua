@@ -284,3 +284,14 @@ now(function()
   add("folke/tokyonight.nvim")
   vim.cmd('colorscheme tokyonight-night')
 end)
+
+-- Code Review =====================================================================
+later(function()
+  add({
+    source = "georgeguimaraes/review.nvim",
+    depends = {
+      "esmuellert/codediff.nvim",
+      "MunifTanjim/nui.nvim",
+    },
+  })
+end)
