@@ -18,6 +18,7 @@ export PATH="$HOME/go/bin:$PATH"
 export EDITOR="nvim"
 export AWS_SDK_LOAD_CONFIG=1
 export OPENCODE_EXPERIMENTAL_PLAN_MODE=1
+export AGENT_BROWSER_EXECUTABLE_PATH="/usr/bin/google-chrome-stable"
 
 # NVM
 export NVM_DIR="$HOME/.nvm"
