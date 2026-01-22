@@ -3,6 +3,7 @@
 	name = Michael Lyon
 [core]
   editor = nvim -f
+	excludesfile = /home/michael/.gitignore_global
 [merge]
   ff = only
 [push]
