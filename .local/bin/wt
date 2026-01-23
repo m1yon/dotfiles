@@ -1,0 +1,127 @@
+#!/bin/bash
+
+# 1. Locate the git root (Required for all commands)
+repo_root=$(git rev-parse --show-toplevel 2>/dev/null)
+if [[ -z "$repo_root" ]]; then
+    echo "❌ Error: Not inside a git repository."
+    exit 1
+fi
+
+worktrees_dir="$repo_root/.worktrees"
+
+# ---------------------------------------------------------
+# SUBCOMMAND: CLEAN (Remove ALL worktrees)
+# ---------------------------------------------------------
+if [[ "$1" == "clean" ]]; then
+    if [[ ! -d "$worktrees_dir" ]]; then
+        echo "✨ No worktrees found to clean."
+        exit 0
+    fi
+
+    echo "🧹 Cleaning all worktrees in .worktrees/..."
+    
+    # Enable nullglob to handle empty directories gracefully
+    shopt -s nullglob
+    
+    for target in "$worktrees_dir"/*; do
+        if [[ -d "$target" ]]; then
+            branch_name=$(basename "$target")
+            
+            # 1. Remove the worktree (force in case of uncommitted changes)
+            git worktree remove "$target" --force 2>/dev/null
+            
+            # 2. Delete the branch
+            # We mute errors in case the branch was already deleted manually
+            git branch -D "$branch_name" >/dev/null 2>&1
+            
+            echo "   🔥 Removed: $branch_name"
+        fi
+    done
+
+    # Remove the parent folder if it's empty
+    rmdir "$worktrees_dir" 2>/dev/null
+    echo "✨ All clear."
+    exit 0
+
+# ---------------------------------------------------------
+# SUBCOMMAND: RM (Remove SINGLE worktree)
+# ---------------------------------------------------------
+elif [[ "$1" == "rm" ]]; then
+    shift # Remove 'rm'
+    branch="$1"
+
+    if [[ -z "$branch" ]]; then
+        echo "Usage: wt rm <branch-name>"
+        exit 1
+    fi
+
+    target_dir="$worktrees_dir/$branch"
+
+    if [[ -d "$target_dir" ]]; then
+        echo "🔥 Removing worktree folder..."
+        git worktree remove "$target_dir" --force
+    else
+        echo "⚠️  Worktree folder not found at: $target_dir (checking branch only)"
+    fi
+
+    if git show-ref --verify --quiet "refs/heads/$branch"; then
+        echo "🔥 Deleting git branch '$branch'..."
+        git branch -D "$branch"
+    else
+        echo "⚠️  Branch '$branch' not found."
+    fi
+
+    echo "✅ Cleanup complete for '$branch'."
+    exit 0
+
+# ---------------------------------------------------------
+# DEFAULT: CREATE (Auto-named worktree)
+# ---------------------------------------------------------
+else
+    # Get the current branch name
+    current_branch=$(git branch --show-current)
+    if [[ -z "$current_branch" ]]; then
+        echo "❌ Error: Could not determine current branch (Detached HEAD?)."
+        exit 1
+    fi
+
+    mkdir -p "$worktrees_dir"
+
+    # Find the next available index
+    index=1
+    while true; do
+        candidate="${current_branch}-wt-${index}"
+        target_dir="$worktrees_dir/$candidate"
+
+        branch_exists=0
+        if git show-ref --verify --quiet "refs/heads/$candidate"; then branch_exists=1; fi
+        
+        dir_exists=0
+        if [[ -d "$target_dir" ]]; then dir_exists=1; fi
+
+        if [[ $branch_exists -eq 1 || $dir_exists -eq 1 ]]; then
+            ((index++))
+        else
+            branch="$candidate"
+            break
+        fi
+    done
+
+    echo "🌳 Creating worktree: $branch"
+    
+    if ! git worktree add "$target_dir" -b "$branch"; then
+        echo "❌ Failed to create worktree."
+        exit 1
+    fi
+
+    echo "📄 Copying .env files..."
+    cp "$repo_root"/.env* "$target_dir/" 2>/dev/null
+
+    if [[ -f "$repo_root/bun.lockb" || -f "$repo_root/bun.lock" ]]; then
+        echo "🥯 Bun project detected. Installing dependencies..."
+        (cd "$target_dir" && bun install)
+    fi
+
+    echo "✅ Ready!"
+    echo "   cd $target_dir"
+fi
