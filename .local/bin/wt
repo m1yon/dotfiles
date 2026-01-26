@@ -10,9 +10,26 @@ fi
 worktrees_dir="$repo_root/.worktrees"
 
 # ---------------------------------------------------------
+# SUBCOMMAND: HELP / No args
+# ---------------------------------------------------------
+if [[ -z "$1" || "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
+    echo "Usage: wt <command> [args]"
+    echo ""
+    echo "Commands:"
+    echo "  create    Create a new worktree (auto-named based on current branch)"
+    echo "  rm        Remove a single worktree and its branch"
+    echo "  clean     Remove all worktrees in .worktrees/"
+    echo ""
+    echo "Examples:"
+    echo "  wt create           Create worktree named <branch>-wt-1"
+    echo "  wt rm my-branch     Remove worktree and branch 'my-branch'"
+    echo "  wt clean            Remove all worktrees"
+    exit 0
+
+# ---------------------------------------------------------
 # SUBCOMMAND: CLEAN (Remove ALL worktrees)
 # ---------------------------------------------------------
-if [[ "$1" == "clean" ]]; then
+elif [[ "$1" == "clean" ]]; then
     if [[ ! -d "$worktrees_dir" ]]; then
         echo "✨ No worktrees found to clean."
         exit 0
@@ -75,9 +92,9 @@ elif [[ "$1" == "rm" ]]; then
     exit 0
 
 # ---------------------------------------------------------
-# DEFAULT: CREATE (Auto-named worktree)
+# SUBCOMMAND: CREATE (Auto-named worktree)
 # ---------------------------------------------------------
-else
+elif [[ "$1" == "create" ]]; then
     # Get the current branch name
     current_branch=$(git branch --show-current)
     if [[ -z "$current_branch" ]]; then
@@ -124,4 +141,12 @@ else
 
     echo "✅ Ready!"
     echo "   cd $target_dir"
+
+# ---------------------------------------------------------
+# UNKNOWN COMMAND
+# ---------------------------------------------------------
+else
+    echo "Unknown command: $1"
+    echo "Run 'wt --help' for usage."
+    exit 1
 fi
