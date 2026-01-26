@@ -1,7 +1,6 @@
 ---
 description: Resolve current PR feedback
 agent: build
-model: opencode/minimax-m2.1-free
 ---
 
 You are working on a branch that has an associated GitHub PR.
