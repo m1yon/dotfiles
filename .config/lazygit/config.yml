@@ -3,7 +3,7 @@ git:
   allBranchesLogCmds:
     - git log --all --graph --color=always --abbrev-commit --decorate --date=iso --pretty=medium
   pagers:
-    - pager: delta --dark --paging=never --line-numbers
+    - pager: delta --dark --paging=never --line-numbers --tabs=2
       colorArg: always
     - externalDiffCommand: difft --color=always
 update:
