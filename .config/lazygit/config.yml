@@ -3,14 +3,16 @@ git:
   allBranchesLogCmds:
     - git log --all --graph --color=always --abbrev-commit --decorate --date=iso --pretty=medium
   pagers:
-    - externalDiffCommand: difft --color=always --display=inline --syntax-highlight=on --tab-width=2
+    - pager: delta --dark --paging=never --line-numbers
+      colorArg: always
+    - externalDiffCommand: difft --color=always
 update:
   method: never
-notARepository: 'quit'
+notARepository: "quit"
 promptToReturnFromSubprocess: false
 gui:
   scrollHeight: 10
-  timeFormat: '2006-01-02 15:04:05 MST'
+  timeFormat: "2006-01-02 15:04:05 MST"
   theme:
     selectedLineBgColor:
       - reverse
@@ -19,11 +21,11 @@ gui:
   showFileTree: false
   nerdFontsVersion: 3
   skipRewordInEditorWarning: true
-  border: 'double'
+  border: "double"
   showCommandLog: false
   tabWidth: 1
 keybinding:
   files:
     # swap default bindings
-    commitChanges: 'C'
-    commitChangesWithEditor: 'c'
+    commitChanges: "C"
+    commitChangesWithEditor: "c"
