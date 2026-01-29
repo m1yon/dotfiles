@@ -1,0 +1,61 @@
+#!/bin/bash
+# Ralph Wiggum - Long-running AI agent loop
+# Usage: ./ralph [--model MODEL] [--message MESSAGE] [max_iterations]
+
+set -e
+
+# Defaults
+MAX_ITERATIONS=10
+MODEL="opencode/claude-opus-4-5"
+MESSAGE=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --model)
+      MODEL="$2"
+      shift 2
+      ;;
+    --message)
+      MESSAGE="$2"
+      shift 2
+      ;;
+    *)
+      MAX_ITERATIONS="$1"
+      shift
+      ;;
+  esac
+done
+
+echo "Starting Ralph - Max iterations: $MAX_ITERATIONS, Model: $MODEL"
+
+for i in $(seq 1 $MAX_ITERATIONS); do
+  echo ""
+  echo "==============================================================="
+  echo "  Ralph Iteration $i of $MAX_ITERATIONS"
+  echo "==============================================================="
+
+  # Build opencode flags
+  OPENCODE_FLAGS="--agent build --model $MODEL --command ralph-loop"
+  if [[ -n "$MESSAGE" ]]; then
+    OPENCODE_FLAGS="$OPENCODE_FLAGS --message $MESSAGE"
+  fi
+
+  # Run opencode with the ralph prompt
+  OUTPUT=$(eval opencode run $OPENCODE_FLAGS 2>&1 | tee /dev/stderr) || true
+  
+  # Check for completion signal
+  if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
+    echo ""
+    echo "Ralph completed all tasks!"
+    echo "Completed at iteration $i of $MAX_ITERATIONS"
+    exit 0
+  fi
+  
+  echo "Iteration $i complete. Continuing..."
+  sleep 2
+done
+
+echo ""
+echo "Ralph reached max iterations ($MAX_ITERATIONS) without completing all tasks."
+exit 1
