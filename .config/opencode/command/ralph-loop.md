@@ -8,20 +8,20 @@ You are an autonomous coding agent working on a software project.
 
 ## Your Task
 
-1. Read the PRD at `.ignore/prd.json` (in the root of the project)
-2. Read the progress log at `.ignore/progress.txt` (check Codebase Patterns section first)
+1. Read the PRD at `ralph/prd.json` (in the root of the project)
+2. Read the progress log at `ralph/progress.txt` (check Codebase Patterns section first)
 3. Check you're on the correct branch from PRD `branchName`. If not, check it out or create from main.
 4. Pick the **highest priority** user story where `passes: false`
 5. Implement that single user story
 6. Run quality checks (e.g., typecheck, lint, test - use whatever your project requires)
 7. Update AGENTS.md files if you discover reusable patterns (see below)
 8. If checks pass, commit ALL changes with message: `feat: [Story ID] - [Story Title]`
-9. Update the PRD at `.ignore/prd.json` to set `passes: true` for the completed story
-10. Append your progress to `.ignore/progress.txt`
+9. Update the PRD at `ralph/prd.json` to set `passes: true` for the completed story
+10. Append your progress to `ralph/progress.txt`
 
 ## Progress Report Format
 
-APPEND to `.ignore/progress.txt` (never replace, always append):
+APPEND to `ralph/progress.txt` (never replace, always append):
 ```
 ## [Date/Time] - [Story ID]
 - What was implemented
@@ -36,7 +36,7 @@ The learnings section is critical - it helps future iterations avoid repeating m
 
 ## Consolidate Patterns
 
-If you discover a **reusable pattern** that future iterations should know, add it to the `## Codebase Patterns` section at the TOP of `.ignore/progress.txt` (create it if it doesn't exist). This section should consolidate the most important learnings:
+If you discover a **reusable pattern** that future iterations should know, add it to the `## Codebase Patterns` section at the TOP of `ralph/progress.txt` (create it if it doesn't exist). This section should consolidate the most important learnings:
 
 ```
 ## Codebase Patterns
@@ -69,7 +69,7 @@ Before committing, check if any edited files have learnings worth preserving in 
 **Do NOT add:**
 - Story-specific implementation details
 - Temporary debugging notes
-- Information already in `.ignore/progress.txt`
+- Information already in `ralph/progress.txt`
 
 Only update AGENTS.md if you have **genuinely reusable knowledge** that would help future work in that directory.
 
@@ -94,4 +94,4 @@ If there are still stories with `passes: false`, end your response normally (ano
 - Work on ONE story per iteration
 - Commit frequently
 - Keep CI green
-- Read the Codebase Patterns section in `.ignore/progress.txt` before starting
+- Read the Codebase Patterns section in `ralph/progress.txt` before starting
