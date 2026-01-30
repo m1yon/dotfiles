@@ -25,6 +25,11 @@ while [[ $# -gt 0 ]]; do
       NO_RALPH_PROMPT=true
       shift
       ;;
+    --*)
+      echo "Error: Unknown flag '$1'"
+      echo "Usage: ./ralph [--model MODEL] [--message MESSAGE] [--no-ralph-prompt] [max_iterations]"
+      exit 1
+      ;;
     *)
       MAX_ITERATIONS="$1"
       shift
@@ -33,6 +38,10 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo "Starting Ralph - Max iterations: $MAX_ITERATIONS, Model: $MODEL"
+
+if [[ "$NO_RALPH_PROMPT" == "true" ]]; then
+  echo "Note: Ralph prompt disabled (--no-ralph-prompt flag accepted)"
+fi
 
 for i in $(seq 1 $MAX_ITERATIONS); do
   echo ""
