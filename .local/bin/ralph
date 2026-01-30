@@ -1,6 +1,6 @@
 #!/bin/bash
 # Ralph Wiggum - Long-running AI agent loop
-# Usage: ./ralph [--model MODEL] [--message MESSAGE] [max_iterations]
+# Usage: ./ralph [--model MODEL] [--message MESSAGE] [--no-ralph-prompt] [max_iterations]
 
 set -e
 
@@ -8,6 +8,7 @@ set -e
 MAX_ITERATIONS=10
 MODEL="opencode/claude-opus-4-5"
 MESSAGE=""
+NO_RALPH_PROMPT=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -19,6 +20,10 @@ while [[ $# -gt 0 ]]; do
     --message)
       MESSAGE="$2"
       shift 2
+      ;;
+    --no-ralph-prompt)
+      NO_RALPH_PROMPT=true
+      shift
       ;;
     *)
       MAX_ITERATIONS="$1"
@@ -36,7 +41,10 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "==============================================================="
 
   # Build opencode flags
-  OPENCODE_FLAGS="--agent build --model $MODEL --command ralph-loop"
+  OPENCODE_FLAGS="--agent build --model $MODEL"
+  if [[ "$NO_RALPH_PROMPT" == "false" ]]; then
+    OPENCODE_FLAGS="$OPENCODE_FLAGS --command ralph-loop"
+  fi
   if [[ -n "$MESSAGE" ]]; then
     OPENCODE_FLAGS="$OPENCODE_FLAGS --message $MESSAGE"
   fi
