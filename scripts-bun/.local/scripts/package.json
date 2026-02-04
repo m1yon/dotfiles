@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "build": "bun run scripts/build.ts"
+  },
   "dependencies": {
     "@aws-sdk/client-ecs": "^3.x",
     "@aws-sdk/client-eventbridge": "^3.x",
