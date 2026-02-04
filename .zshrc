@@ -37,3 +37,18 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 if uwsm check may-start; then
     exec uwsm start hyprland.desktop
 fi
+
+# link scripts to bin
+~/.local/bin/refresh-scripts > /dev/null
+
+# NVM
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+
+# Aliases
+alias ls="eza"
+alias lg="lazygit"
+alias lgdf='lazygit --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
+alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
+alias cyay="yay -Yc"
