@@ -49,6 +49,4 @@ export NVM_DIR="$HOME/.nvm"
 # Aliases
 alias ls="eza"
 alias lg="lazygit"
-alias lgdf='lazygit --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
-alias dotfiles='/usr/bin/git --git-dir="$HOME/.dotfiles/" --work-tree="$HOME"'
 alias cyay="yay -Yc"
