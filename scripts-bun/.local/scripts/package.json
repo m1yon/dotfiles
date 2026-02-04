@@ -3,8 +3,17 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "dependencies": {
+    "@aws-sdk/client-ecs": "^3.x",
+    "@aws-sdk/client-eventbridge": "^3.x",
+    "@aws-sdk/client-scheduler": "^3.983.0",
+    "@aws-sdk/credential-provider-ini": "^3.x",
+    "@inquirer/prompts": "^7.x",
+    "yargs": "^17.x"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/yargs": "^17.x"
   },
   "peerDependencies": {
     "typescript": "^5"
