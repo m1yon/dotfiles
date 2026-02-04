@@ -38,13 +38,9 @@ if uwsm check may-start; then
     exec uwsm start hyprland.desktop
 fi
 
-# link scripts to bin
-~/.local/bin/refresh-scripts > /dev/null
-
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
 
 # Aliases
 alias ls="eza"
