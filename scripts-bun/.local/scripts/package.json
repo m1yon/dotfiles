@@ -12,6 +12,7 @@
     "@aws-sdk/client-scheduler": "^3.983.0",
     "@aws-sdk/credential-provider-ini": "^3.x",
     "@inquirer/prompts": "^7.x",
+    "octokit": "^5.0.5",
     "yargs": "^17.x"
   },
   "devDependencies": {

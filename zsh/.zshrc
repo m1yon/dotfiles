@@ -46,3 +46,5 @@ export NVM_DIR="$HOME/.nvm"
 alias ls="eza"
 alias lg="lazygit"
 alias cyay="yay -Yc"
+
+. "$HOME/.local/share/../bin/env"
