@@ -126,8 +126,11 @@ MiniDeps.later(function() vim.diagnostic.config(diagnostic_opts) end)
 -- Enable autoread
 vim.opt.autoread = true
 
--- Trigger `checktime` on specific events
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "CursorHold", "CursorHoldI" }, {
+-- Trigger `checktime` when Neovim regains focus (picks up external changes on alt-tab).
+-- Intentionally limited to FocusGained to avoid aggressive buffer reloads on
+-- BufEnter/CursorHold which can trigger LSP actions (e.g. ESLint fixAll) mid-edit
+-- and remove not-yet-referenced imports.
+vim.api.nvim_create_autocmd("FocusGained", {
   pattern = "*",
   command = "if mode() != 'c' | checktime | endif",
 })
