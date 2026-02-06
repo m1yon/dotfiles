@@ -3,7 +3,7 @@
   "autoupdate": true,
   "agent": {
     "explore": {
-      "model": "opencode/glm-4.7"
+      "model": "opencode/kimi-k2.5"
     }
   },
   "provider": {

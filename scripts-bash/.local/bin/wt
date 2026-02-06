@@ -45,7 +45,11 @@ elif [[ "$1" == "clean" ]]; then
             branch_name=$(basename "$target")
             
             # 1. Remove the worktree (force in case of uncommitted changes)
-            git worktree remove "$target" --force 2>/dev/null
+            if ! git worktree remove --force "$target" 2>/dev/null; then
+                # Fallback: manually remove the directory and let git prune handle the rest
+                rm -rf "$target"
+                needs_prune=1
+            fi
             
             # 2. Delete the branch
             # We mute errors in case the branch was already deleted manually
@@ -54,6 +58,11 @@ elif [[ "$1" == "clean" ]]; then
             echo "   🔥 Removed: $branch_name"
         fi
     done
+
+    # Clean up any stale worktree references after manual removal
+    if [[ "${needs_prune:-0}" -eq 1 ]]; then
+        git worktree prune
+    fi
 
     # Remove the parent folder if it's empty
     rmdir "$worktrees_dir" 2>/dev/null
