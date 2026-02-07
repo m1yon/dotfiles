@@ -1,9 +1,10 @@
 #!/usr/bin/env bun
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { select, confirm } from "@inquirer/prompts";
 import { existsSync, readdirSync } from "node:fs";
 import { mkdir, rm, rmdir } from "node:fs/promises";
-import { basename, join } from "node:path";
+import { join } from "node:path";
 
 class WtError extends Error {
   constructor(message: string) {
@@ -145,12 +146,90 @@ async function handleCreate(): Promise<void> {
 }
 
 // ---------------------------------------------------------
+// SUBCOMMAND: LIST
+// ---------------------------------------------------------
+
+interface WorktreeEntry {
+  path: string;
+  commit: string;
+  branch: string | null;
+  bare: boolean;
+}
+
+function parseWorktreeList(output: string): WorktreeEntry[] {
+  const entries: WorktreeEntry[] = [];
+  const blocks = output.split("\n\n").filter(Boolean);
+  for (const block of blocks) {
+    const lines = block.split("\n");
+    const pathLine = lines.find((l) => l.startsWith("worktree "));
+    const commitLine = lines.find((l) => l.startsWith("HEAD "));
+    const branchLine = lines.find((l) => l.startsWith("branch "));
+    const isBare = lines.some((l) => l.trim() === "bare");
+    if (!pathLine) continue;
+    entries.push({
+      path: pathLine.replace("worktree ", ""),
+      commit: commitLine ? commitLine.replace("HEAD ", "").slice(0, 8) : "",
+      branch: branchLine
+        ? branchLine.replace("branch ", "").replace("refs/heads/", "")
+        : null,
+      bare: isBare,
+    });
+  }
+  return entries;
+}
+
+async function handleList(): Promise<void> {
+  const output = await exec(["git", "worktree", "list", "--porcelain"]);
+  const entries = parseWorktreeList(output);
+
+  if (entries.length === 0) {
+    console.log("No worktrees found.");
+    return;
+  }
+
+  const repoRoot = await getRepoRoot();
+  const currentBranch = await getCurrentBranch();
+
+  for (const entry of entries) {
+    const rel = entry.path.startsWith(repoRoot)
+      ? entry.path.slice(repoRoot.length + 1) || "."
+      : entry.path;
+    const branchLabel = entry.branch ?? "(detached)";
+    const current = entry.branch === currentBranch ? " *" : "";
+    console.log(`  ${entry.commit}  ${branchLabel}${current}\t${rel}`);
+  }
+}
+
+// ---------------------------------------------------------
 // SUBCOMMAND: RM
 // ---------------------------------------------------------
-async function handleRm(branch: string): Promise<void> {
+async function pickWorktreeBranch(): Promise<string> {
   const repoRoot = await getRepoRoot();
   const worktreesDir = join(repoRoot, ".worktrees");
-  const targetDir = join(worktreesDir, branch);
+
+  if (!existsSync(worktreesDir)) {
+    throw new WtError("No .worktrees/ directory found.");
+  }
+
+  const entries = readdirSync(worktreesDir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .map((e) => e.name);
+
+  if (entries.length === 0) {
+    throw new WtError("No worktrees found in .worktrees/.");
+  }
+
+  return select({
+    message: "Select a worktree to remove",
+    choices: entries.map((name) => ({ name, value: name })),
+  });
+}
+
+async function handleRm(branch: string | undefined): Promise<void> {
+  const resolvedBranch = branch ?? (await pickWorktreeBranch());
+  const repoRoot = await getRepoRoot();
+  const worktreesDir = join(repoRoot, ".worktrees");
+  const targetDir = join(worktreesDir, resolvedBranch);
 
   if (existsSync(targetDir)) {
     console.log("🔥 Removing worktree folder...");
@@ -161,21 +240,21 @@ async function handleRm(branch: string): Promise<void> {
     );
   }
 
-  if (await branchExists(branch)) {
-    console.log(`🔥 Deleting git branch '${branch}'...`);
-    const out = await exec(["git", "branch", "-D", branch]);
+  if (await branchExists(resolvedBranch)) {
+    console.log(`🔥 Deleting git branch '${resolvedBranch}'...`);
+    const out = await exec(["git", "branch", "-D", resolvedBranch]);
     if (out) console.log(out);
   } else {
-    console.log(`⚠️  Branch '${branch}' not found.`);
+    console.log(`⚠️  Branch '${resolvedBranch}' not found.`);
   }
 
-  console.log(`✅ Cleanup complete for '${branch}'.`);
+  console.log(`✅ Cleanup complete for '${resolvedBranch}'.`);
 }
 
 // ---------------------------------------------------------
 // SUBCOMMAND: CLEAN
 // ---------------------------------------------------------
-async function handleClean(): Promise<void> {
+async function handleClean(force: boolean): Promise<void> {
   const repoRoot = await getRepoRoot();
   const worktreesDir = join(repoRoot, ".worktrees");
 
@@ -184,14 +263,35 @@ async function handleClean(): Promise<void> {
     return;
   }
 
-  console.log("🧹 Cleaning all worktrees in .worktrees/...");
+  const entries = readdirSync(worktreesDir, { withFileTypes: true }).filter(
+    (e) => e.isDirectory()
+  );
 
-  const entries = readdirSync(worktreesDir, { withFileTypes: true });
+  if (entries.length === 0) {
+    console.log("✨ No worktrees found to clean.");
+    return;
+  }
+
+  console.log("The following worktrees will be removed:");
+  for (const entry of entries) {
+    console.log(`  - ${entry.name}`);
+  }
+
+  if (!force) {
+    const confirmed = await confirm({
+      message: `Remove ${entries.length} worktree${entries.length > 1 ? "s" : ""}?`,
+      default: false,
+    });
+    if (!confirmed) {
+      console.log("Aborted.");
+      return;
+    }
+  }
+
+  console.log("🧹 Cleaning all worktrees in .worktrees/...");
   let needsPrune = false;
 
   for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-
     const branchName = entry.name;
     const target = join(worktreesDir, branchName);
 
@@ -245,29 +345,45 @@ async function main() {
       }
     )
     .command(
-      "rm <branch>",
-      "Remove a single worktree and its branch",
+      "rm [branch]",
+      "Remove a single worktree and its branch (interactive if no branch given)",
       (yargs) =>
         yargs.positional("branch", {
           type: "string",
           description: "Branch name to remove",
-          demandOption: true,
         }),
       async (argv) => {
-        await handleRm(argv.branch as string);
+        await handleRm(argv.branch as string | undefined);
       }
     )
     .command(
       "clean",
       "Remove all worktrees in .worktrees/",
+      (yargs) =>
+        yargs.option("force", {
+          alias: "f",
+          type: "boolean",
+          description: "Skip confirmation prompt",
+          default: false,
+        }),
+      async (argv) => {
+        await handleClean(argv.force);
+      }
+    )
+    .command(
+      ["list", "ls"],
+      "List all worktrees",
       () => {},
       async () => {
-        await handleClean();
+        await handleList();
       }
     )
     .example("$0 create", "Create worktree named <branch>-wt-1")
+    .example("$0 rm", "Interactively select a worktree to remove")
     .example("$0 rm my-branch", "Remove worktree and branch 'my-branch'")
-    .example("$0 clean", "Remove all worktrees")
+    .example("$0 list", "List all worktrees")
+    .example("$0 clean", "Remove all worktrees (with confirmation)")
+    .example("$0 clean --force", "Remove all worktrees without confirmation")
     .demandCommand(1, "Please specify a command.")
     .strict()
     .help()
