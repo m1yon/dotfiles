@@ -141,8 +141,18 @@ async function handleCreate(): Promise<void> {
     if (install.stderr) console.error(install.stderr);
   }
 
-  console.log("✅ Ready!");
-  console.log(`   cd ${targetDir!}`);
+  console.log("✅ Ready! Spawning subshell...");
+
+  const shell = process.env.SHELL || "/bin/sh";
+  const subshell = Bun.spawn([shell], {
+    cwd: targetDir!,
+    stdin: "inherit",
+    stdout: "inherit",
+    stderr: "inherit",
+    env: { ...process.env, WT_WORKTREE: branch! },
+  });
+  const code = await subshell.exited;
+  process.exit(code);
 }
 
 // ---------------------------------------------------------
