@@ -74,13 +74,23 @@ async function branchExists(name: string): Promise<boolean> {
   return result.exitCode === 0;
 }
 
+/** Check if a ref (branch, tag, commit SHA, etc.) is valid */
+async function refExists(ref: string): Promise<boolean> {
+  const result = await run(["git", "rev-parse", "--verify", `${ref}^{commit}`]);
+  return result.exitCode === 0;
+}
+
 // ---------------------------------------------------------
 // SUBCOMMAND: CREATE
 // ---------------------------------------------------------
-async function handleCreate(): Promise<void> {
+async function handleCreate(base?: string): Promise<void> {
   const repoRoot = await getRepoRoot();
   const worktreesDir = join(repoRoot, ".worktrees");
   const currentBranch = await getCurrentBranch();
+
+  if (base && !(await refExists(base))) {
+    throw new WtError(`Base ref '${base}' does not exist.`);
+  }
 
   await mkdir(worktreesDir, { recursive: true });
 
@@ -106,16 +116,15 @@ async function handleCreate(): Promise<void> {
     }
   }
 
-  console.log(`🌳 Creating worktree: ${branch}`);
+  console.log(
+    `🌳 Creating worktree: ${branch}` + (base ? ` (from ${base})` : "")
+  );
 
-  const result = await run([
-    "git",
-    "worktree",
-    "add",
-    targetDir!,
-    "-b",
-    branch!,
-  ]);
+  const worktreeCmd = ["git", "worktree", "add", targetDir!, "-b", branch!];
+  if (base) {
+    worktreeCmd.push(base);
+  }
+  const result = await run(worktreeCmd);
   if (result.exitCode !== 0) {
     throw new WtError(`Failed to create worktree.\n${result.stderr}`);
   }
@@ -369,9 +378,15 @@ async function main() {
     .command(
       "create",
       "Create a new worktree (auto-named based on current branch)",
-      () => {},
-      async () => {
-        await handleCreate();
+      (yargs) =>
+        yargs.option("base", {
+          alias: "b",
+          type: "string",
+          description:
+            "Base branch, tag, or commit to create the worktree from (defaults to HEAD)",
+        }),
+      async (argv) => {
+        await handleCreate(argv.base);
       }
     )
     .command(
@@ -409,6 +424,7 @@ async function main() {
       }
     )
     .example("$0 create", "Create worktree named <branch>-wt-1")
+    .example("$0 create --base main", "Create worktree branching from main")
     .example("$0 rm", "Interactively select a worktree to remove")
     .example("$0 rm my-branch", "Remove worktree and branch 'my-branch'")
     .example("$0 list", "List all worktrees")
