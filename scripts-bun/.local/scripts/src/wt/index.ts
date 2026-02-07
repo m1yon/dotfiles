@@ -129,14 +129,34 @@ async function handleCreate(): Promise<void> {
     await Bun.write(dest, Bun.file(src));
   }
 
-  // Detect bun project and install dependencies
+  // Detect project type and install dependencies
   const hasBunLock =
     existsSync(join(repoRoot, "bun.lockb")) ||
     existsSync(join(repoRoot, "bun.lock"));
+  const hasNpmLock = existsSync(join(repoRoot, "package-lock.json"));
+  const hasPnpmLock = existsSync(join(repoRoot, "pnpm-lock.yaml"));
+  const hasGoMod = existsSync(join(repoRoot, "go.mod"));
 
   if (hasBunLock) {
     console.log("🥯 Bun project detected. Installing dependencies...");
     const install = await run(["bun", "install"], { cwd: targetDir! });
+    if (install.stdout) console.log(install.stdout);
+    if (install.stderr) console.error(install.stderr);
+  } else if (hasPnpmLock) {
+    console.log("📦 pnpm project detected. Installing dependencies...");
+    const install = await run(["pnpm", "install"], { cwd: targetDir! });
+    if (install.stdout) console.log(install.stdout);
+    if (install.stderr) console.error(install.stderr);
+  } else if (hasNpmLock) {
+    console.log("📦 npm project detected. Installing dependencies...");
+    const install = await run(["npm", "install"], { cwd: targetDir! });
+    if (install.stdout) console.log(install.stdout);
+    if (install.stderr) console.error(install.stderr);
+  }
+
+  if (hasGoMod) {
+    console.log("🐹 Go project detected. Downloading modules...");
+    const install = await run(["go", "mod", "download"], { cwd: targetDir! });
     if (install.stdout) console.log(install.stdout);
     if (install.stderr) console.error(install.stderr);
   }
