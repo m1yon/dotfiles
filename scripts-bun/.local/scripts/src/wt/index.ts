@@ -46,21 +46,25 @@ async function exec(
 }
 
 async function getRepoRoot(): Promise<string> {
-  const result = await run(["git", "rev-parse", "--show-toplevel"]);
-  if (result.exitCode !== 0 || !result.stdout) {
+  try {
+    const root = await exec(["git", "rev-parse", "--show-toplevel"]);
+    if (!root) throw new Error();
+    return root;
+  } catch {
     throw new WtError("Not inside a git repository.");
   }
-  return result.stdout;
 }
 
 async function getCurrentBranch(): Promise<string> {
-  const result = await run(["git", "branch", "--show-current"]);
-  if (result.exitCode !== 0 || !result.stdout) {
+  try {
+    const branch = await exec(["git", "branch", "--show-current"]);
+    if (!branch) throw new Error();
+    return branch;
+  } catch {
     throw new WtError(
       "Could not determine current branch (Detached HEAD?)."
     );
   }
-  return result.stdout;
 }
 
 async function branchExists(name: string): Promise<boolean> {
@@ -124,10 +128,7 @@ async function handleCreate(base?: string): Promise<void> {
   if (base) {
     worktreeCmd.push(base);
   }
-  const result = await run(worktreeCmd);
-  if (result.exitCode !== 0) {
-    throw new WtError(`Failed to create worktree.\n${result.stderr}`);
-  }
+  await exec(worktreeCmd);
 
   // Copy .env files
   console.log("📄 Copying .env files...");
