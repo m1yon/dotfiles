@@ -3,5 +3,15 @@ show_hidden = true
 
 [opener]
 edit = [
-  { run = "nvim $0", for = "unix", block = true },
+  { run = "nvim %s", for = "unix", block = true },
+]
+open_microsoft_cloud = [
+    { run = '/home/michael/.local/bin/od-open %s', orphan = true, desc = "Open in Microsoft Cloud" },
+]
+
+[open]
+prepend_rules = [
+    { url = "*.xlsx", use =  ["open","open_microsoft_cloud"] },
+    { url = "*.docx", use =  ["open", "open_microsoft_cloud"] },
+    { url = "*.pptx", use =  ["open","open_microsoft_cloud"] },
 ]
