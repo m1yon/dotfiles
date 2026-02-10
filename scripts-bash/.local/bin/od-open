@@ -1,0 +1,52 @@
+#!/bin/bash
+
+# Get the absolute path of the file
+FILE_PATH=$(realpath "$1")
+
+# --- CONFIGURATION BLOCKS ---
+
+# CASE 1: Care Coordinators (SharePoint Site / Shared Library)
+if [[ "$FILE_PATH" == *"/onedrive/carecoordinators"* ]]; then
+    
+    # 1. The local folder for this sync
+    LOCAL_ROOT="/home/michael/onedrive/carecoordinators"
+    
+    # 2. The Web URL for this specific library
+    #    FINDING THIS: Go to the Care Coordinators SharePoint site > Documents.
+    #    The URL usually looks like: https://mecatherapies.sharepoint.com/sites/CareCoordinators/Shared%20Documents
+    #    IMPORTANT: Do not include the specific file name, just the folder root.
+    WEB_BASE="https://mecatherapies.sharepoint.com/sites/CareCoordinators/Shared%20Documents"
+
+# CASE 2: Personal (Your Business OneDrive)
+elif [[ "$FILE_PATH" == *"/onedrive/personal"* ]]; then
+    
+    LOCAL_ROOT="/home/michael/onedrive/personal"
+    # This is the URL that we confirmed works for you
+    WEB_BASE="https://mecatherapies-my.sharepoint.com/personal/michael_lyon_mecatherapies_com/Documents"
+
+else
+    # Fallback if file is somewhere else
+    notify-send "OneDrive Error" "File is not in a recognized OneDrive sync folder."
+    exit 1
+fi
+
+# ---------------------------
+
+# Calculate Relative Path
+# We remove the LOCAL_ROOT from the FILE_PATH
+REL_PATH="${FILE_PATH#$LOCAL_ROOT}"
+
+# URL Encode the path
+# This handles spaces and special characters safely
+ENCODED_PATH=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))" "$REL_PATH")
+
+# Construct the URL
+# We verify if WEB_BASE ends in a slash or not to avoid double slashes
+if [[ "$WEB_BASE" == */ ]]; then
+    FINAL_URL="${WEB_BASE}${ENCODED_PATH}?web=1"
+else
+    FINAL_URL="${WEB_BASE}/${ENCODED_PATH}?web=1"
+fi
+
+# Open in Browser
+xdg-open "$FINAL_URL"

@@ -6,7 +6,7 @@ set -e
 
 # Defaults
 MAX_ITERATIONS=10
-MODEL="opencode/claude-opus-4-5"
+MODEL="opencode/kimi-k2.5-free"
 MESSAGE=""
 NO_RALPH_PROMPT=false
 
@@ -50,7 +50,7 @@ for i in $(seq 1 $MAX_ITERATIONS); do
   echo "==============================================================="
 
   # Build opencode flags
-  OPENCODE_FLAGS="--agent build --model $MODEL"
+  OPENCODE_FLAGS="--print-logs --log-level ERROR --agent build --model $MODEL"
   if [[ "$NO_RALPH_PROMPT" == "false" ]]; then
     OPENCODE_FLAGS="$OPENCODE_FLAGS --command ralph-loop"
   fi
