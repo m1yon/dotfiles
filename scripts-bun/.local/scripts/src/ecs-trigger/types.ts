@@ -44,6 +44,7 @@ export interface TaskExecutionResult {
   containers: ContainerInfo[];
   createdAt: Date | undefined;
   startedAt: Date | undefined;
+  consoleUrl: string;
 }
 
 export interface CLIOptions {

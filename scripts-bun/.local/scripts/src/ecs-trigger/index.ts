@@ -238,6 +238,9 @@ async function handleExecuteMode(
 
   // Output result
   console.log(JSON.stringify(result, null, 2));
+
+  // Display clickable console link
+  console.error(`\nAWS Console: ${result.consoleUrl}`);
 }
 
 main().catch((error) => {

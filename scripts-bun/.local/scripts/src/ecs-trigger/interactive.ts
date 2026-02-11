@@ -7,7 +7,7 @@ export async function selectCluster(clusters: ClusterInfo[]): Promise<ClusterInf
   }
 
   if (clusters.length === 1) {
-    return clusters[0];
+    return clusters[0]!;
   }
 
   const choice = await select({
@@ -54,7 +54,7 @@ export async function selectScheduledTask(
   }
 
   if (tasks.length === 1) {
-    return tasks[0];
+    return tasks[0]!;
   }
 
   const choice = await select({

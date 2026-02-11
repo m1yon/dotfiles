@@ -98,7 +98,7 @@ export async function runScheduledTask(
     }
 
     const startedTask = response.tasks[0];
-    if (!startedTask.taskArn) {
+    if (!startedTask?.taskArn) {
       throw new TaskStartError("Task started but no ARN returned");
     }
 
@@ -148,6 +148,10 @@ async function waitForTaskStart(
       }
 
       const task = response.tasks[0];
+      if (!task) {
+        throw new TaskStartError("Task not found during polling");
+      }
+
       const status = task.lastStatus;
 
       if (verbose) {
@@ -188,11 +192,23 @@ async function waitForTaskStart(
     })
   );
 
-  if (response.tasks && response.tasks.length > 0) {
-    return response.tasks[0];
+  const lastTask = response.tasks?.[0];
+  if (lastTask) {
+    return lastTask;
   }
 
   throw new TaskStartError("Task polling timed out");
+}
+
+function buildConsoleUrl(taskArn: string, clusterArn: string): string {
+  // taskArn format: arn:aws:ecs:<region>:<account>:task/<cluster-name>/<task-id>
+  // clusterArn format: arn:aws:ecs:<region>:<account>:cluster/<cluster-name>
+  const arnParts = taskArn.split(":");
+  const region = arnParts[3] || "us-east-1";
+  const clusterName = clusterArn.split("/").pop() || "";
+  const taskId = taskArn.split("/").pop() || "";
+
+  return `https://${region}.console.aws.amazon.com/ecs/v2/clusters/${clusterName}/tasks/${taskId}`;
 }
 
 function formatTaskResult(task: Task): TaskExecutionResult {
@@ -217,6 +233,7 @@ function formatTaskResult(task: Task): TaskExecutionResult {
     containers,
     createdAt: task.createdAt,
     startedAt: task.startedAt,
+    consoleUrl: buildConsoleUrl(task.taskArn!, task.clusterArn!),
   };
 }
 

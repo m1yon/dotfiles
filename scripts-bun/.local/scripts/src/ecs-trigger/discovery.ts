@@ -210,8 +210,8 @@ async function discoverFromEventBridgeScheduler(
 
       // Convert Scheduler's network config to ECS format
       let networkConfiguration: EcsNetworkConfiguration | undefined;
-      if (ecsParams.NetworkConfiguration?.AwsvpcConfiguration) {
-        const awsvpc = ecsParams.NetworkConfiguration.AwsvpcConfiguration;
+      if (ecsParams.NetworkConfiguration?.awsvpcConfiguration) {
+        const awsvpc = ecsParams.NetworkConfiguration.awsvpcConfiguration;
         networkConfiguration = {
           awsvpcConfiguration: {
             subnets: awsvpc.Subnets,
@@ -254,14 +254,12 @@ function convertNetworkConfiguration(
 ): EcsNetworkConfiguration | undefined {
   if (!ebConfig) return undefined;
 
-  // Handle both possible casings - SDK types say AwsvpcConfiguration but API returns awsvpcConfiguration
-  const awsvpc = (ebConfig as any).awsvpcConfiguration || ebConfig.AwsvpcConfiguration;
+  const awsvpc = ebConfig.awsvpcConfiguration;
   if (!awsvpc) return undefined;
 
-  // Handle both possible casings for the inner properties too
-  const subnets = awsvpc.Subnets || awsvpc.subnets;
-  const securityGroups = awsvpc.SecurityGroups || awsvpc.securityGroups;
-  const assignPublicIp = awsvpc.AssignPublicIp || awsvpc.assignPublicIp;
+  const subnets = awsvpc.Subnets;
+  const securityGroups = awsvpc.SecurityGroups;
+  const assignPublicIp = awsvpc.AssignPublicIp;
 
   if (!subnets?.length) return undefined;
 
@@ -340,7 +338,7 @@ export async function findScheduledTaskByRule(
  */
 function getTaskDefinitionFamily(taskDefinitionArn: string): string {
   const match = taskDefinitionArn.match(/task-definition\/([^:]+)/);
-  return match ? match[1] : taskDefinitionArn;
+  return match?.[1] ?? taskDefinitionArn;
 }
 
 /**
