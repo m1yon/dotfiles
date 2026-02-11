@@ -32,7 +32,8 @@ async function main() {
     .option("region", {
       alias: "r",
       type: "string",
-      description: "AWS region (defaults to profile region)",
+      default: "us-east-1",
+      description: "AWS region",
     })
     .option("cluster", {
       alias: "c",
