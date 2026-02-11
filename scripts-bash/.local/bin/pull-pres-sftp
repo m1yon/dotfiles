@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# Check if variables are set
+if [[ -z "$PRES_PATH" ]]; then
+    echo "Error: Secrets not loaded."
+    exit 1
+fi
+
+echo "Downloading files to: $(pwd)"
+
+sftp presbyterian-prod <<EOF
+cd "$PRES_PATH"
+get -r *
+bye
+EOF
