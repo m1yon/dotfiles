@@ -1,4 +1,7 @@
 #!/bin/bash
+# ---
+# description: Long-running AI agent loop using opencode
+# ---
 # Ralph Wiggum - Long-running AI agent loop
 # Usage: ./ralph [--model MODEL] [--message MESSAGE] [--no-ralph-prompt] [max_iterations]
 

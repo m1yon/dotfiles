@@ -1,4 +1,7 @@
 #!/usr/bin/env bun
+// ---
+// description: Manage git worktrees (create, list, remove, clean)
+// ---
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { select, confirm } from "@inquirer/prompts";

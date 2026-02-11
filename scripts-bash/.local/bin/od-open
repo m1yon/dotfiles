@@ -1,4 +1,7 @@
 #!/bin/bash
+# ---
+# description: Open OneDrive files in the browser via SharePoint URLs
+# ---
 
 # Get the absolute path of the file
 FILE_PATH=$(realpath "$1")

@@ -1,4 +1,7 @@
 #! /usr/bin/env bun
+// ---
+// description: Fetch and reply to GitHub PR feedback
+// ---
 import { Octokit } from "octokit";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";

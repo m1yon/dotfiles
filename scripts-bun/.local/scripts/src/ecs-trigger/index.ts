@@ -1,4 +1,7 @@
 #!/usr/bin/env bun
+// ---
+// description: Discover and trigger AWS ECS scheduled tasks
+// ---
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import type { CLIOptions, ScheduledTask, ClusterInfo } from "./types";

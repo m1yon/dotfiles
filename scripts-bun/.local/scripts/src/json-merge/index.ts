@@ -1,4 +1,7 @@
 #!/usr/bin/env bun
+// ---
+// description: Deep merge two JSON files with sorted keys
+// ---
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { deepMerge, sortKeysDeep } from "./merge.ts";

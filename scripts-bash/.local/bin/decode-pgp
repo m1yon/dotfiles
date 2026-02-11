@@ -1,4 +1,7 @@
 #!/bin/bash
+# ---
+# description: Decode all PGP files in a directory
+# ---
 
 # Decode all PGP files in a given directory
 # Usage: ./decode-pgp.sh <directory>

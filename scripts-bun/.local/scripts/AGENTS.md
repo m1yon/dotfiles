@@ -26,10 +26,24 @@ mkdir src/my-tool
 bun run build  # Creates bin/my-tool
 ```
 
+### Front Matter
+
+Every script must include a front matter block with a description. This is parsed by `ls-scripts` to display a summary of all available scripts. Place it immediately after the shebang line:
+
+```typescript
+#!/usr/bin/env bun
+// ---
+// description: Short description of what the script does
+// ---
+```
+
 ### Entry Point Template
 
 ```typescript
 #!/usr/bin/env bun
+// ---
+// description: Example tool that does something useful
+// ---
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 

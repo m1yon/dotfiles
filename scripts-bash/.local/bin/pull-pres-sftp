@@ -1,4 +1,7 @@
 #!/bin/bash
+# ---
+# description: Download files from Presbyterian SFTP server
+# ---
 
 # Check if variables are set
 if [[ -z "$PRES_PATH" ]]; then

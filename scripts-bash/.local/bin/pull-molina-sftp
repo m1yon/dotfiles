@@ -1,4 +1,7 @@
 #!/bin/bash
+# ---
+# description: Download files from Molina SFTP server
+# ---
 
 # Check if variables are set
 if [[ -z "$MOLINA_PATH" ]]; then
