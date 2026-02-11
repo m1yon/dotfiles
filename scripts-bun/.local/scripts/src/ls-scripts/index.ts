@@ -160,10 +160,31 @@ async function main() {
   const maxName = Math.max(...allScripts.map((s) => s.name.length));
   const maxLabel = Math.max(...allScripts.map((s) => s.label.length));
 
+  const useColor = process.stdout.isTTY ?? false;
+
+  const c = {
+    reset: useColor ? "\x1b[0m" : "",
+    bold: useColor ? "\x1b[1m" : "",
+    cyan: useColor ? "\x1b[36m" : "",
+    yellow: useColor ? "\x1b[33m" : "",
+    green: useColor ? "\x1b[32m" : "",
+    dim: useColor ? "\x1b[2m" : "",
+  };
+
+  const labelColors: Record<string, string> = {
+    bash: useColor ? "\x1b[33m" : "", // yellow
+    bun: useColor ? "\x1b[35m" : "", // magenta
+  };
+
   for (const script of allScripts) {
-    const nameCol = script.name.padEnd(maxName);
-    const labelCol = `(${script.label})`.padEnd(maxLabel + 2);
-    const descCol = script.description ?? "";
+    const nameCol = `${c.bold}${c.cyan}${script.name.padEnd(maxName)}${c.reset}`;
+    const labelColor = labelColors[script.label] ?? c.dim;
+    const labelCol = `${labelColor}(${script.label})${c.reset}`.padEnd(
+      maxLabel + 2 + (labelColor.length + c.reset.length),
+    );
+    const descCol = script.description
+      ? `${c.dim}${script.description}${c.reset}`
+      : "";
     console.log(`${nameCol}  ${labelCol}  ${descCol}`);
   }
 }
