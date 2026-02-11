@@ -5,7 +5,7 @@ agent: build
 
 You are working on a branch that has an associated GitHub PR.
 
-Your goal: orchestrate resolving PR feedback by dispatching sub-agents to handle each comment.
+Your goal: orchestrate resolving PR feedback by dispatching sub-agents in parallel to handle each comment.
 
 Use the `agh` CLI to interact with GitHub.
 
@@ -22,7 +22,7 @@ Use the `agh` CLI to interact with GitHub.
    - Group comments by file/path when possible.
    - Create a work queue of items from `agh get-pr-feedback`.
    - **Spawn a sub-agent @feedback-resolver for each task.**
-     - Do not spawn these in parallel, only one should be running at a time.
+     - Spawn these in parralel, all at the same time.
      - The sub-agent knows how to handle the tasks, it just needs context from you. Provide the sub-agent with **only** the following information:
        - The full comment text and context
        - The `commentType` and `commentId` for GitHub reply

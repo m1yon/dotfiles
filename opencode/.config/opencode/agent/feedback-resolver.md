@@ -26,6 +26,7 @@ When given a PR feedback, follow this workflow:
 - Repeat verification until it passes (or report blockers)
 
 ### 4. Commit and Push
+- IMPORTANT: Only stages files that YOU CHANGED. Other agents are running in parralel, do not commit their changes.
 - Create a commit with a clear message describing the change
 - Push immediately after each fix
 - Note the commit SHA for the GitHub reply
@@ -40,3 +41,8 @@ When given a PR feedback, follow this workflow:
 - Be thorough but efficient
 - Ask clarifying questions if requirements are ambiguous
 - Report blockers clearly if you cannot complete the task
+
+## Note
+- There may be sub-agents running in parralel that are also editing files and resolving issues. When linting/type-checking, scope it down to the files you edited and/or files that may be effected.
+- If you believe sub-agents are effecting your work, you can use git to check if that is true.
+- If sub-agents make your work impossible without having to change their code, return early with your issues.
