@@ -1,17 +1,33 @@
+"$schema" = "https://yazi-rs.github.io/schemas/yazi.json"
+
 [mgr]
 show_hidden = true
 
 [opener]
-edit = [
-  { run = "nvim %s", for = "unix", block = true },
+open_in_nvim = [
+  { run = "nvim %s", for = "unix", block = true, desc = "Open in Neovim" },
 ]
 open_microsoft_cloud = [
-    { run = '/home/michael/.local/bin/od-open %s', orphan = true, desc = "Open in Microsoft Cloud" },
+  { run = '/home/michael/.local/bin/od-open %s', orphan = true, desc = "Open in Microsoft Cloud" },
 ]
 
 [open]
 prepend_rules = [
-    { url = "*.xlsx", use =  ["open","open_microsoft_cloud"] },
-    { url = "*.docx", use =  ["open", "open_microsoft_cloud"] },
-    { url = "*.pptx", use =  ["open","open_microsoft_cloud"] },
+  { url = "*.xlsx", use = [
+    "open",
+    "open_microsoft_cloud",
+  ] },
+  { url = "*.docx", use = [
+    "open",
+    "open_microsoft_cloud",
+  ] },
+  { url = "*.pptx", use = [
+    "open",
+    "open_microsoft_cloud",
+  ] },
+
+  { url = "*.csv", use = [
+    "open",
+    "open_in_nvim",
+  ] },
 ]

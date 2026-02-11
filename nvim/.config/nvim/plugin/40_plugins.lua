@@ -127,6 +127,7 @@ now_if_args(function()
     "tailwindcss",
     "eslint",
     "vtsls",
+    "taplo"
   })
 end)
 
