@@ -33,11 +33,6 @@ export MANPAGER='nvim +Man!'
 # completion styles
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 
-# uwsm auto-start
-if uwsm check may-start; then
-    exec uwsm start hyprland.desktop
-fi
-
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
@@ -47,4 +42,7 @@ alias ls="eza"
 alias lg="lazygit"
 alias cyay="yay -Yc"
 
-. "$HOME/.local/share/../bin/env"
+# uwsm auto-start
+if uwsm check may-start; then
+  exec uwsm start hyprland.desktop
+fi
