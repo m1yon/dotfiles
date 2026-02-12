@@ -6,6 +6,9 @@ export PATH="$HOME/.opencode/bin:$PATH"
 export PATH="$HOME/.config/opencode/command/scripts/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 
+# Remove duplicates from PATH
+typeset -U PATH
+
 # ENV variables
 export EDITOR="nvim"
 export BUN_INSTALL="$HOME/.bun"
