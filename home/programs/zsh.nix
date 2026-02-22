@@ -19,5 +19,8 @@
     zoxide = {
         enable = true;
     };
+    atuin = {
+        enable = true;
+    };
   };
 }
