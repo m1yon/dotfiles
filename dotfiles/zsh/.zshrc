@@ -8,9 +8,6 @@ alias src="source ~/.zshrc && source ~/.zshenv"
 # nvm bash completion (nvm itself is loaded in .zshenv)
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-# fzf init
-source <(fzf --zsh)
-
 # set default man pager
 export MANPAGER='nvim +Man!'
 
