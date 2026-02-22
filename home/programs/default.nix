@@ -4,5 +4,6 @@
     ./git.nix
     ./neovim.nix
     ./lazygit.nix
+    ./zsh.nix
   ];
 }

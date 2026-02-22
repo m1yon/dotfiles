@@ -78,12 +78,14 @@
   # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  programs.zsh.enable = true;
   users.users.michael = {
     isNormalUser = true;
     description = "Michael";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
     ];
+    shell = pkgs.zsh;
   };
 
   # Allow unfree packages
