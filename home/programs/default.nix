@@ -7,5 +7,6 @@
     ./zsh.nix
     ./yazi.nix
     ./hyprland.nix
+    ./foot.nix
   ];
 }

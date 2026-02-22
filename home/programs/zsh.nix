@@ -34,8 +34,5 @@
     yazi = {
         enable = true;
     };
-    foot = {
-        enable = true;
-    };
   };
 }
