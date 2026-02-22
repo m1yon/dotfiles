@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   # TODO please change the username & home directory to your own
@@ -23,8 +23,14 @@
   #     xxx
   # '';
 
+  home.packages = [
+    # Install the default package exported by the opencode flake
+    inputs.opencode.packages.${pkgs.system}.default
+  ];
+
   imports = [
     ./programs
+    ./opencode.nix
   ];
 
   home.sessionVariables = {
