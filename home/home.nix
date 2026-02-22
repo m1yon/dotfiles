@@ -27,6 +27,15 @@
     ./programs
   ];
 
+  home.sessionVariables = {
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+    MANPAGER = "nvim +Man!";
+    AWS_SDK_LOAD_CONFIG = 1;
+  };
+
+  home.sessionPath = {
+  }
 
   # basic configuration of git, please change to your own
   programs.git = {
