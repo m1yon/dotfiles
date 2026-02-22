@@ -3,23 +3,8 @@ if [ -f ~/.secrets ]; then
     source ~/.secrets
 fi
 
-alias src="source ~/.zshrc && source ~/.zshenv"
-
-# nvm bash completion (nvm itself is loaded in .zshenv)
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-
 # set default man pager
 export MANPAGER='nvim +Man!'
-
-# bun completions
-[ -s "/home/michael/.bun/_bun" ] && source "/home/michael/.bun/_bun"
-
-# completion styles
-zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-
-# NVM
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 # uwsm auto-start
 if uwsm check may-start; then

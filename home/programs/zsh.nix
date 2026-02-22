@@ -11,6 +11,7 @@
         lg = "lazygit";
         rebuild = "nixos-rebuild switch --flake ~/GitHub/dotfiles --use-remote-sudo";
         cd = "z";
+        src = "source ~/.zshrc";
       };
     };
     starship = {
