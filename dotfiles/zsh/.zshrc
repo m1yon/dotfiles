@@ -8,16 +8,6 @@ alias src="source ~/.zshrc && source ~/.zshenv"
 # nvm bash completion (nvm itself is loaded in .zshenv)
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-# pure
-fpath+=($HOME/.zsh/pure)
-autoload -Uz promptinit
-promptinit
-prompt pure
-
-# zoxide init
-eval "$(zoxide init zsh)"
-alias cd="z"
-
 # atuin init
 eval "$(atuin init zsh)"
 
@@ -39,7 +29,6 @@ export NVM_DIR="$HOME/.nvm"
 
 # Aliases
 alias ls="eza"
-alias lg="lazygit"
 alias cyay="yay -Yc"
 
 # uwsm auto-start
