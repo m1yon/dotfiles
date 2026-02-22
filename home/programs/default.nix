@@ -6,5 +6,6 @@
     ./lazygit.nix
     ./zsh.nix
     ./yazi.nix
+    ./hyprland.nix
   ];
 }

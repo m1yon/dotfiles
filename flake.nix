@@ -16,11 +16,15 @@
     opencode = {
       url = "github:anomalyco/opencode/dev";
     };
+    hyprland = {
+      url = "github:hyprwm/Hyprland";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, opencode, ... }@inputs: {
     # Please replace my-nixos with your hostname
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit inputs; };
       modules = [
         ./nixos/configuration.nix
 
