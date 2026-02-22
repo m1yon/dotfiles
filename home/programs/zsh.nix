@@ -26,10 +26,12 @@
     eza = {
         enable = true;
     };
-
     fzf = {
         enable = true;
         enableZshIntegration = true;
+    };
+    yazi = {
+        enable = true;
     };
   };
 }

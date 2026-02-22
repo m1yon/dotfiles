@@ -34,9 +34,6 @@
     AWS_SDK_LOAD_CONFIG = 1;
   };
 
-  home.sessionPath = {
-  }
-
   # basic configuration of git, please change to your own
   programs.git = {
     enable = true;
