@@ -22,5 +22,8 @@
     atuin = {
         enable = true;
     };
+    eza = {
+        enable = true;
+    };
   };
 }

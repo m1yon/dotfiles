@@ -8,9 +8,6 @@ alias src="source ~/.zshrc && source ~/.zshenv"
 # nvm bash completion (nvm itself is loaded in .zshenv)
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
-# atuin init
-eval "$(atuin init zsh)"
-
 # fzf init
 source <(fzf --zsh)
 
@@ -26,10 +23,6 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 # NVM
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-
-# Aliases
-alias ls="eza"
-alias cyay="yay -Yc"
 
 # uwsm auto-start
 if uwsm check may-start; then
