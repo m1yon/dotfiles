@@ -41,6 +41,9 @@
     LC_TELEPHONE = "en_US.UTF-8";
     LC_TIME = "en_US.UTF-8";
   };
+  
+services.xserver.displayManager.sddm.enable = true; #This line enables sddm
+services.xserver.enable = true; # Might need this for Xwayland  
 
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
@@ -50,6 +53,7 @@
   programs.hyprland = {
     enable = true;
     withUWSM = true;
+ xwayland.enable = true;  
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
