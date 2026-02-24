@@ -42,8 +42,8 @@
     LC_TIME = "en_US.UTF-8";
   };
   
-services.xserver.displayManager.sddm.enable = true; #This line enables sddm
-services.xserver.enable = true; # Might need this for Xwayland  
+  services.xserver.displayManager.sddm.enable = true; #This line enables sddm
+  services.xserver.enable = true; # Might need this for Xwayland  
 
   nix.settings = {
     substituters = ["https://hyprland.cachix.org"];
@@ -53,7 +53,7 @@ services.xserver.enable = true; # Might need this for Xwayland
   programs.hyprland = {
     enable = true;
     withUWSM = true;
- xwayland.enable = true;  
+    xwayland.enable = true;  
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
@@ -99,6 +99,7 @@ services.xserver.enable = true; # Might need this for Xwayland
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     git
+    psmisc
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
   ];
