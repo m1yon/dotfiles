@@ -453,6 +453,26 @@
         "type": "github"
       }
     },
+    "nix-wrapper-modules": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1771743990,
+        "narHash": "sha256-KNTuqLytdRE0MVhM1hd3IJTlcOG6In/6klbiEDWYOaA=",
+        "owner": "BirdeeHub",
+        "repo": "nix-wrapper-modules",
+        "rev": "0ea455457dac3de9129498f5c50a35153ab56484",
+        "type": "github"
+      },
+      "original": {
+        "owner": "BirdeeHub",
+        "repo": "nix-wrapper-modules",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1770841267,
@@ -529,6 +549,7 @@
         "home-manager": "home-manager",
         "hyprland": "hyprland",
         "llm-agents": "llm-agents",
+        "nix-wrapper-modules": "nix-wrapper-modules",
         "nixpkgs": "nixpkgs_3"
       }
     },

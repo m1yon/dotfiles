@@ -105,7 +105,6 @@ vim.filetype.add({
 --
 -- Here Neovim itself is a client (see `:h vim.lsp`). Language servers need to
 -- be installed separately based on your OS, CLI tools, and preferences.
--- See note about 'mason.nvim' at the bottom of the file.
 --
 -- Neovim's team collects commonly used configurations for most language servers
 -- inside 'neovim/nvim-lspconfig' plugin.
@@ -213,19 +212,6 @@ later(function()
 end)
 
 -- Honorable mentions =========================================================
-
--- 'mason-org/mason.nvim' (a.k.a. "Mason") is a great tool (package manager) for
--- installing external language servers, formatters, and linters. It provides
--- a unified interface for installing, updating, and deleting such programs.
---
--- The caveat is that these programs will be set up to be mostly used inside Neovim.
--- If you need them to work elsewhere, consider using other package managers.
---
--- You can use it like so:
-now_if_args(function()
-  add("mason-org/mason.nvim")
-  require("mason").setup()
-end)
 
 -- Beautiful, usable, well maintained color schemes outside of 'mini.nvim' and
 -- have full support of its highlight groups. Use if you don't like 'miniwinter'

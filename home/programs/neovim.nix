@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  inputs,
   dotfilesPath,
   ...
 }:
@@ -10,9 +11,32 @@ let
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
 in
 {
-  programs.neovim = {
+  imports = [
+    inputs.nix-wrapper-modules.homeModules.neovim
+  ];
+
+  wrappers.neovim = {
     enable = true;
+    extraPackages = with pkgs; [
+      gopls
+      lua-language-server
+      basedpyright
+      terraform-ls
+      yaml-language-server
+      tailwindcss-language-server
+      vscode-langservers-extracted
+      vtsls
+      taplo
+      golangci-lint
+      gofumpt
+      gotools
+      golines
+      prettierd
+      stylua
+      ruff
+    ];
   };
+
   home.file = {
     ".config/nvim/".source = outOfStore "${dotfiles}/nvim";
   };
