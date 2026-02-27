@@ -9,7 +9,6 @@
     zsh = {
       enable = true;
       shellAliases = {
-        lg = "lazygit";
         cd = "z";
         src = "source ~/.zshrc";
       };
