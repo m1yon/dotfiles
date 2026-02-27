@@ -1,0 +1,27 @@
+{
+  ...
+}:
+{
+  services.mako = {
+    enable = true;
+    settings = {
+      anchor = "top-right";
+      default-timeout = 5000;
+      width = 420;
+      outer-margin = "10,20";
+      padding = "20,30";
+      max-icon-size = 32;
+      font = "sans-serif 14px";
+      text-color = "#f8f8f2";
+      background-color = "#00000055";
+      border-size = 1;
+      border-radius = 8;
+      border-color = "#444444";
+
+      "urgency=critical" = {
+        default-timeout = 0;
+        layer = "overlay";
+      };
+    };
+  };
+}

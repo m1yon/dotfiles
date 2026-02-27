@@ -38,6 +38,7 @@ in
 
   imports = [
     ./programs
+    ./services
   ];
 
   home.sessionVariables = {
