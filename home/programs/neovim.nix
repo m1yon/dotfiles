@@ -18,6 +18,7 @@ in
   wrappers.neovim = {
     enable = true;
     extraPackages = with pkgs; [
+      gcc
       gopls
       lua-language-server
       basedpyright

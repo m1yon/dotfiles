@@ -66,8 +66,23 @@ now_if_args(function()
     return #vim.api.nvim_get_runtime_file("parser/" .. lang .. ".*", false) == 0
   end
   local to_install = vim.tbl_filter(isnt_installed, languages)
-  if #to_install > 0 then
-    require("nvim-treesitter").install(to_install)
+  local has_c_compiler = vim.fn.executable("cc") == 1
+    or vim.fn.executable("gcc") == 1
+    or vim.fn.executable("clang") == 1
+
+  local has_missing_parsers = #to_install > 0
+  if has_missing_parsers then
+    if has_c_compiler then
+      require("nvim-treesitter").install(to_install)
+    end
+
+    if not has_c_compiler and not vim.g.treesitter_no_compiler_warned then
+      vim.g.treesitter_no_compiler_warned = true
+      vim.notify(
+        "nvim-treesitter: skipping parser install (no C compiler found; install cc/gcc/clang)",
+        vim.log.levels.WARN
+      )
+    end
   end
 
   -- Enable tree-sitter after opening a file for a target language
