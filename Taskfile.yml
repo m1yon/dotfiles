@@ -12,6 +12,11 @@ tasks:
     desc: Rebuild Home Manager configuration independently
     cmd: nix run home-manager -- switch --flake {{.FLAKE_DIR}}
 
+  format:
+    desc: Format all Nix files with nixfmt
+    dir: "{{.FLAKE_DIR}}"
+    cmd: git ls-files '*.nix' | xargs -r nixfmt
+
   update-llm-agents:
     desc: Update the llm-agents flake input and rebuild
     cmds:
