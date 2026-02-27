@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, username, ... }:
 
 {
   imports =
@@ -92,7 +92,7 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   programs.zsh.enable = true;
-  users.users.michael = {
+  users.users.${username} = {
     isNormalUser = true;
     description = "Michael";
     extraGroups = [ "networkmanager" "wheel" ];

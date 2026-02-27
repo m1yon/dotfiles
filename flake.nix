@@ -26,10 +26,15 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, llm-agents, ... }@inputs: {
+  outputs = { self, nixpkgs, home-manager, llm-agents, ... }@inputs:
+    let
+      username = "michael";
+      dotfilesPath = "/home/${username}/GitHub/dotfiles";
+    in
+    {
     # Please replace my-nixos with your hostname
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs; };
+      specialArgs = { inherit inputs username dotfilesPath; };
       modules = [
         ./nixos/configuration.nix
 
@@ -40,9 +45,9 @@
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
 
-            home-manager.users.michael = import ./home/home.nix;
+            home-manager.users.${username} = import ./home/home.nix;
 
-            home-manager.extraSpecialArgs = { inherit inputs; };
+            home-manager.extraSpecialArgs = { inherit inputs username dotfilesPath; };
           }
       ];
     };

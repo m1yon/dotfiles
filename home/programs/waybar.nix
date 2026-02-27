@@ -1,7 +1,7 @@
-{ config, pkgs, ... }:
+{ config, pkgs, dotfilesPath, ... }:
 
 let
-  dotfiles = "/home/michael/GitHub/dotfiles/dotfiles";
+  dotfiles = "${dotfilesPath}/dotfiles";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
 in
 {
@@ -9,6 +9,6 @@ in
     enable = true;
   };
   home.file = {
-    "waybar/".source = outOfStore "${dotfiles}/waybar";
+    ".config/waybar/".source = outOfStore "${dotfiles}/waybar";
   };
 }

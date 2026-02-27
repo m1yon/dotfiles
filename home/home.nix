@@ -1,9 +1,8 @@
-{ config, pkgs, inputs, ... }:
+{ config, pkgs, inputs, username, ... }:
 
 {
-  # TODO please change the username & home directory to your own
-  home.username = "michael";
-  home.homeDirectory = "/home/michael";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
 
   # Import files from the current configuration directory into the Nix store,
   # and create symbolic links pointing to those store files in the Home directory.
