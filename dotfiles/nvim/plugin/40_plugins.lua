@@ -29,86 +29,87 @@ local now_if_args = _G.Config.now_if_args
 --
 -- Add these plugins now if file (and not 'mini.starter') is shown after startup.
 now_if_args(function()
-  add({
-    source = "nvim-treesitter/nvim-treesitter",
-    -- Update tree-sitter parser after plugin is updated
-    hooks = {
-      post_checkout = function()
-        vim.cmd("TSUpdate")
-      end,
-    },
-  })
-  add({
-    source = "nvim-treesitter/nvim-treesitter-textobjects",
-    -- Use `main` branch since `master` branch is frozen, yet still default
-    -- It is needed for compatibility with 'nvim-treesitter' `main` branch
-    checkout = "main",
-  })
+	add({
+		source = "nvim-treesitter/nvim-treesitter",
+		-- Update tree-sitter parser after plugin is updated
+		hooks = {
+			post_checkout = function()
+				vim.cmd("TSUpdate")
+			end,
+		},
+	})
+	add({
+		source = "nvim-treesitter/nvim-treesitter-textobjects",
+		-- Use `main` branch since `master` branch is frozen, yet still default
+		-- It is needed for compatibility with 'nvim-treesitter' `main` branch
+		checkout = "main",
+	})
 
-  -- Define languages which will have parsers installed and auto enabled
-  local languages = {
-    -- These are already pre-installed with Neovim. Used as an example.
-    "lua",
-    "vimdoc",
-    "markdown",
-    "markdown_inline",
-    "go",
-    "typescript",
-    "javascript",
-    "json",
-    -- Add here more languages with which you want to use tree-sitter
-    -- To see available languages:
-    -- - Execute `:=require('nvim-treesitter').get_available()`
-    -- - Visit 'SUPPORTED_LANGUAGES.md' file at
-    --   https://github.com/nvim-treesitter/nvim-treesitter/blob/main
-  }
-  local isnt_installed = function(lang)
-    return #vim.api.nvim_get_runtime_file("parser/" .. lang .. ".*", false) == 0
-  end
-  local to_install = vim.tbl_filter(isnt_installed, languages)
-  local has_c_compiler = vim.fn.executable("cc") == 1
-    or vim.fn.executable("gcc") == 1
-    or vim.fn.executable("clang") == 1
+	-- Define languages which will have parsers installed and auto enabled
+	local languages = {
+		-- These are already pre-installed with Neovim. Used as an example.
+		"lua",
+		"vimdoc",
+		"markdown",
+		"markdown_inline",
+		"go",
+		"typescript",
+		"javascript",
+		"json",
+		"nix",
+		-- Add here more languages with which you want to use tree-sitter
+		-- To see available languages:
+		-- - Execute `:=require('nvim-treesitter').get_available()`
+		-- - Visit 'SUPPORTED_LANGUAGES.md' file at
+		--   https://github.com/nvim-treesitter/nvim-treesitter/blob/main
+	}
+	local isnt_installed = function(lang)
+		return #vim.api.nvim_get_runtime_file("parser/" .. lang .. ".*", false) == 0
+	end
+	local to_install = vim.tbl_filter(isnt_installed, languages)
+	local has_c_compiler = vim.fn.executable("cc") == 1
+		or vim.fn.executable("gcc") == 1
+		or vim.fn.executable("clang") == 1
 
-  local has_missing_parsers = #to_install > 0
-  if has_missing_parsers then
-    if has_c_compiler then
-      require("nvim-treesitter").install(to_install)
-    end
+	local has_missing_parsers = #to_install > 0
+	if has_missing_parsers then
+		if has_c_compiler then
+			require("nvim-treesitter").install(to_install)
+		end
 
-    if not has_c_compiler and not vim.g.treesitter_no_compiler_warned then
-      vim.g.treesitter_no_compiler_warned = true
-      vim.notify(
-        "nvim-treesitter: skipping parser install (no C compiler found; install cc/gcc/clang)",
-        vim.log.levels.WARN
-      )
-    end
-  end
+		if not has_c_compiler and not vim.g.treesitter_no_compiler_warned then
+			vim.g.treesitter_no_compiler_warned = true
+			vim.notify(
+				"nvim-treesitter: skipping parser install (no C compiler found; install cc/gcc/clang)",
+				vim.log.levels.WARN
+			)
+		end
+	end
 
-  -- Enable tree-sitter after opening a file for a target language
-  local filetypes = {}
-  for _, lang in ipairs(languages) do
-    for _, ft in ipairs(vim.treesitter.language.get_filetypes(lang)) do
-      table.insert(filetypes, ft)
-    end
-  end
-  local ts_start = function(ev)
-    vim.treesitter.start(ev.buf)
-  end
-  _G.Config.new_autocmd("FileType", filetypes, ts_start, "Start tree-sitter")
+	-- Enable tree-sitter after opening a file for a target language
+	local filetypes = {}
+	for _, lang in ipairs(languages) do
+		for _, ft in ipairs(vim.treesitter.language.get_filetypes(lang)) do
+			table.insert(filetypes, ft)
+		end
+	end
+	local ts_start = function(ev)
+		vim.treesitter.start(ev.buf)
+	end
+	_G.Config.new_autocmd("FileType", filetypes, ts_start, "Start tree-sitter")
 end)
 
 -- add syntax highliting for .env.* files
 vim.filetype.add({
-  extension = {
-    env = "sh",
-  },
-  filename = {
-    [".env"] = "sh",
-  },
-  pattern = {
-    ["%.env%.[%w_.-]+"] = "sh",
-  },
+	extension = {
+		env = "sh",
+	},
+	filename = {
+		[".env"] = "sh",
+	},
+	pattern = {
+		["%.env%.[%w_.-]+"] = "sh",
+	},
 })
 
 -- Language servers ===========================================================
@@ -126,52 +127,52 @@ vim.filetype.add({
 --
 -- Add it now if file (and not 'mini.starter') is shown after startup.
 now_if_args(function()
-  add("neovim/nvim-lspconfig")
+	add("neovim/nvim-lspconfig")
 
-  -- Use `:h vim.lsp.enable()` to automatically enable language server based on
-  -- the rules provided by 'nvim-lspconfig'.
-  -- Use `:h vim.lsp.config()` or 'ftplugin/lsp/' directory to configure servers.
-  -- Uncomment and tweak the following `vim.lsp.enable()` call to enable servers.
-  vim.lsp.enable({
-    "gopls",
-    "lua_ls",
-    "basedpyright",
-    "terraformls",
-    "yamlls",
-    "tailwindcss",
-    "eslint",
-    "vtsls",
-    "taplo"
-  })
+	-- Use `:h vim.lsp.enable()` to automatically enable language server based on
+	-- the rules provided by 'nvim-lspconfig'.
+	-- Use `:h vim.lsp.config()` or 'ftplugin/lsp/' directory to configure servers.
+	-- Uncomment and tweak the following `vim.lsp.enable()` call to enable servers.
+	vim.lsp.enable({
+		"gopls",
+		"lua_ls",
+		"basedpyright",
+		"terraformls",
+		"yamlls",
+		"tailwindcss",
+		"eslint",
+		"vtsls",
+		"taplo",
+	})
 end)
 
 later(function()
-  add("dmmulroy/ts-error-translator.nvim")
-  require("ts-error-translator").setup({})
+	add("dmmulroy/ts-error-translator.nvim")
+	require("ts-error-translator").setup({})
 end)
 
 -- Linting ====================================================================
 later(function()
-  add("mfussenegger/nvim-lint")
-  local lint = require("lint")
-  lint.linters_by_ft = {
-    go = { "golangcilint" },
-  }
+	add("mfussenegger/nvim-lint")
+	local lint = require("lint")
+	lint.linters_by_ft = {
+		go = { "golangcilint" },
+	}
 
-  -- Create autocommand which carries out the actual linting
-  -- on the specified events.
-  local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-  vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
-    group = lint_augroup,
-    callback = function()
-      -- Only run the linter in buffers that you can modify in order to
-      -- avoid superfluous noise, notably within the handy LSP pop-ups that
-      -- describe the hovered symbol using Markdown.
-      if vim.bo.modifiable then
-        lint.try_lint()
-      end
-    end,
-  })
+	-- Create autocommand which carries out the actual linting
+	-- on the specified events.
+	local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+	vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+		group = lint_augroup,
+		callback = function()
+			-- Only run the linter in buffers that you can modify in order to
+			-- avoid superfluous noise, notably within the handy LSP pop-ups that
+			-- describe the hovered symbol using Markdown.
+			if vim.bo.modifiable then
+				lint.try_lint()
+			end
+		end,
+	})
 end)
 
 -- Formatting =================================================================
@@ -183,34 +184,35 @@ end)
 -- The 'stevearc/conform.nvim' plugin is a good and maintained solution for easier
 -- formatting setup.
 later(function()
-  add("stevearc/conform.nvim")
+	add("stevearc/conform.nvim")
 
-  -- See also:
-  -- - `:h Conform`
-  -- - `:h conform-options`
-  -- - `:h conform-formatters`
-  require("conform").setup({
-    -- Map of filetype to formatters
-    formatters_by_ft = {
-      go = { "gofumpt", "goimports", "golines" },
-      typescriptreact = { "prettierd" },
-      typescript = { "prettierd" },
-      javascript = { "prettierd" },
-      json = { "prettierd" },
-      lua = { "stylua" },
-      python = { "ruff_fix", "ruff_format" },
-      yaml = { "prettierd" },
-      css = { "prettierd" },
-    },
+	-- See also:
+	-- - `:h Conform`
+	-- - `:h conform-options`
+	-- - `:h conform-formatters`
+	require("conform").setup({
+		-- Map of filetype to formatters
+		formatters_by_ft = {
+			go = { "gofumpt", "goimports", "golines" },
+			typescriptreact = { "prettierd" },
+			typescript = { "prettierd" },
+			javascript = { "prettierd" },
+			json = { "prettierd" },
+			lua = { "stylua" },
+			python = { "ruff_fix", "ruff_format" },
+			yaml = { "prettierd" },
+			css = { "prettierd" },
+			nix = { "nixfmt" },
+		},
 
-    formatters = {},
+		formatters = {},
 
-    format_on_save = {
-      -- These options will be passed to conform.format()
-      timeout_ms = 500,
-      lsp_format = "first",
-    },
-  })
+		format_on_save = {
+			-- These options will be passed to conform.format()
+			timeout_ms = 500,
+			lsp_format = "first",
+		},
+	})
 end)
 
 -- Snippets ===================================================================
@@ -223,7 +225,7 @@ end)
 -- 'mini.snippets' is designed to work with it as seamlessly as possible.
 -- See `:h MiniSnippets.gen_loader.from_lang()`.
 later(function()
-  add("rafamadriz/friendly-snippets")
+	add("rafamadriz/friendly-snippets")
 end)
 
 -- Honorable mentions =========================================================
@@ -243,50 +245,50 @@ end)
 
 -- AI =====================================================================
 later(function()
-  add({
-    source = "zbirenbaum/copilot.lua",
-  })
-  require("copilot").setup({
-    suggestion = {
-      enabled = true,
-      auto_trigger = true,
-      hide_during_completion = false,
-      debounce = 75,
-      trigger_on_accept = true,
-      keymap = {
-        accept = "<C-a>",
-        accept_word = false,
-        accept_line = false,
-        next = "<M-]>",
-        prev = "<M-[>",
-        dismiss = "<C-]>",
-      },
-    },
-    filetypes = {
-      yaml = true,
-    },
-  })
+	add({
+		source = "zbirenbaum/copilot.lua",
+	})
+	require("copilot").setup({
+		suggestion = {
+			enabled = true,
+			auto_trigger = true,
+			hide_during_completion = false,
+			debounce = 75,
+			trigger_on_accept = true,
+			keymap = {
+				accept = "<C-a>",
+				accept_word = false,
+				accept_line = false,
+				next = "<M-]>",
+				prev = "<M-[>",
+				dismiss = "<C-]>",
+			},
+		},
+		filetypes = {
+			yaml = true,
+		},
+	})
 end)
 
 -- HTML/JSX =====================================================================
 later(function()
-  add("windwp/nvim-ts-autotag")
-  require("nvim-ts-autotag").setup()
+	add("windwp/nvim-ts-autotag")
+	require("nvim-ts-autotag").setup()
 end)
 
 -- Theme =====================================================================
 now(function()
-  add("folke/tokyonight.nvim")
-  vim.cmd('colorscheme tokyonight-night')
+	add("folke/tokyonight.nvim")
+	vim.cmd("colorscheme tokyonight-night")
 end)
 
 -- Code Review =====================================================================
 later(function()
-  add({
-    source = "georgeguimaraes/review.nvim",
-    depends = {
-      "esmuellert/codediff.nvim",
-      "MunifTanjim/nui.nvim",
-    },
-  })
+	add({
+		source = "georgeguimaraes/review.nvim",
+		depends = {
+			"esmuellert/codediff.nvim",
+			"MunifTanjim/nui.nvim",
+		},
+	})
 end)
