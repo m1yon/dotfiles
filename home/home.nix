@@ -22,8 +22,7 @@
   #     xxx
   # '';
 
-  home.packages = with pkgs; [
-    go-task
+  home.packages = [
   ];
 
   imports = [

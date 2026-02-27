@@ -2,6 +2,7 @@
   imports = [
     ./browsers.nix
     ./git.nix
+    ./go-task.nix
     ./neovim.nix
     ./lazygit.nix
     ./opencode.nix
