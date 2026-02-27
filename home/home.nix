@@ -2,10 +2,15 @@
   config,
   pkgs,
   inputs,
+  osConfig ? null,
   username,
   ...
 }:
 
+let
+  hyprlandPackages = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system};
+  useSystemHyprland = osConfig != null && (osConfig.programs.hyprland.enable or false);
+in
 {
   home.username = username;
   home.homeDirectory = "/home/${username}";
@@ -46,9 +51,9 @@
   wayland.windowManager.hyprland.enable = true;
   wayland.windowManager.hyprland.systemd.enable = false;
   wayland.windowManager.hyprland.package =
-    inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+    if useSystemHyprland then null else hyprlandPackages.hyprland;
   wayland.windowManager.hyprland.portalPackage =
-    inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    if useSystemHyprland then null else hyprlandPackages.xdg-desktop-portal-hyprland;
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage
