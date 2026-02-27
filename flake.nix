@@ -51,5 +51,16 @@
           }
       ];
     };
+
+    # Standalone Home Manager configuration
+    # Use with: home-manager switch --flake .
+    # Works on non-NixOS systems (plain Linux, WSL, etc.)
+    homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      extraSpecialArgs = { inherit inputs username dotfilesPath; };
+      modules = [
+        ./home/home.nix
+      ];
+    };
   };
 }
