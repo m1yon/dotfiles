@@ -3,34 +3,35 @@
   config,
   username,
   ...
-}: {
+}:
+{
   programs = {
     zsh = {
       enable = true;
-       shellAliases = {
+      shellAliases = {
         lg = "lazygit";
         cd = "z";
         src = "source ~/.zshrc";
       };
     };
     starship = {
-        enable = true;
+      enable = true;
     };
     zoxide = {
-        enable = true;
+      enable = true;
     };
     atuin = {
-        enable = true;
+      enable = true;
     };
     eza = {
-        enable = true;
+      enable = true;
     };
     fzf = {
-        enable = true;
-        enableZshIntegration = true;
+      enable = true;
+      enableZshIntegration = true;
     };
     yazi = {
-        enable = true;
+      enable = true;
     };
   };
 }

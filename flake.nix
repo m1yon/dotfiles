@@ -26,19 +26,26 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, llm-agents, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      home-manager,
+      llm-agents,
+      ...
+    }@inputs:
     let
       username = "michael";
       dotfilesPath = "/home/${username}/GitHub/dotfiles";
     in
     {
-    # Please replace my-nixos with your hostname
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit inputs username dotfilesPath; };
-      modules = [
-        ./nixos/configuration.nix
+      # Please replace my-nixos with your hostname
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs username dotfilesPath; };
+        modules = [
+          ./nixos/configuration.nix
 
-	  # make home-manager as a module of nixos
+          # make home-manager as a module of nixos
           # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
           home-manager.nixosModules.home-manager
           {
@@ -49,21 +56,21 @@
 
             home-manager.extraSpecialArgs = { inherit inputs username dotfilesPath; };
           }
-      ];
-    };
-
-    # Standalone Home Manager configuration
-    # Use with: home-manager switch --flake .
-    # Works on non-NixOS systems (plain Linux, WSL, etc.)
-    homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
-      pkgs = import nixpkgs {
-        system = "x86_64-linux";
-        config.allowUnfree = true;
+        ];
       };
-      extraSpecialArgs = { inherit inputs username dotfilesPath; };
-      modules = [
-        ./home/home.nix
-      ];
+
+      # Standalone Home Manager configuration
+      # Use with: home-manager switch --flake .
+      # Works on non-NixOS systems (plain Linux, WSL, etc.)
+      homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
+        pkgs = import nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+        extraSpecialArgs = { inherit inputs username dotfilesPath; };
+        modules = [
+          ./home/home.nix
+        ];
+      };
     };
-  };
 }

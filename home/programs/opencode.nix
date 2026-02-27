@@ -1,4 +1,10 @@
-{ config, pkgs, inputs, dotfilesPath, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  dotfilesPath,
+  ...
+}:
 
 let
   dotfiles = "${dotfilesPath}/dotfiles";

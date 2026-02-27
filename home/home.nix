@@ -1,4 +1,10 @@
-{ config, pkgs, inputs, username, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  username,
+  ...
+}:
 
 {
   home.username = username;
@@ -39,9 +45,10 @@
   # hyprland
   wayland.windowManager.hyprland.enable = true;
   wayland.windowManager.hyprland.systemd.enable = false;
-  wayland.windowManager.hyprland.package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-  wayland.windowManager.hyprland.portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
-
+  wayland.windowManager.hyprland.package =
+    inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+  wayland.windowManager.hyprland.portalPackage =
+    inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
 
   # This value determines the home Manager release that your
   # configuration is compatible with. This helps avoid breakage
