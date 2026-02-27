@@ -8,8 +8,18 @@ tasks:
     desc: Rebuild NixOS and switch to new configuration
     cmd: nixos-rebuild switch --flake {{.FLAKE_DIR}} --sudo
 
-  update-opencode:
-    desc: Update the opencode flake input and rebuild
+  rebuild-home:
+    desc: Rebuild Home Manager configuration independently
+    cmd: nix run home-manager -- switch --flake {{.FLAKE_DIR}}
+
+  update-llm-agents:
+    desc: Update the llm-agents flake input and rebuild
     cmds:
       - nix flake update llm-agents --flake {{.FLAKE_DIR}}
+      - task: rebuild
+
+  update-nixpkgs:
+    desc: Update the nixpkgs flake input and rebuild
+    cmds:
+      - nix flake update nixpkgs --flake {{.FLAKE_DIR}}
       - task: rebuild

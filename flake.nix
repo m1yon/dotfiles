@@ -56,7 +56,10 @@
     # Use with: home-manager switch --flake .
     # Works on non-NixOS systems (plain Linux, WSL, etc.)
     homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
       extraSpecialArgs = { inherit inputs username dotfilesPath; };
       modules = [
         ./home/home.nix
