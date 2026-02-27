@@ -24,13 +24,10 @@
   # '';
 
   home.packages = [
-    # Install the default package exported by the opencode flake
-    inputs.opencode.packages.${pkgs.system}.default
   ];
 
   imports = [
     ./programs
-    ./opencode.nix
   ];
 
   home.sessionVariables = {

@@ -12,7 +12,7 @@
         rebuild = "nixos-rebuild switch --flake ~/GitHub/dotfiles --use-remote-sudo";
         cd = "z";
         src = "source ~/.zshrc";
-        update-opencode = "nix flake update opencode --flake ~/GitHub/dotfiles && rebuild";
+        update-opencode = "nix flake update llm-agents --flake ~/GitHub/dotfiles && rebuild";
       };
     };
     starship = {

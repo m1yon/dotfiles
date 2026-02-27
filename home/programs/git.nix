@@ -15,7 +15,7 @@
 
   programs.git = {
     enable = true;
-    userName = "Michael Lyon";
-    userEmail = "mlyon360@gmail.com";
+    settings.user.name = "Michael Lyon";
+    settings.user.email = "mlyon360@gmail.com";
   };
 }

@@ -1,14 +1,14 @@
-
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 let
   dotfiles = "/home/michael/GitHub/dotfiles/dotfiles";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
 in
 {
-  programs.lazygit = {
-    enable = true;
-  };
+  home.packages = [
+    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
+  ];
+
   home.file = {
     ".config/opencode/".source = outOfStore "${dotfiles}/opencode";
   };
