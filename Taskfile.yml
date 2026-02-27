@@ -1,0 +1,15 @@
+version: "3"
+
+vars:
+  FLAKE_DIR: ~/GitHub/dotfiles
+
+tasks:
+  rebuild:
+    desc: Rebuild NixOS and switch to new configuration
+    cmd: nixos-rebuild switch --flake {{.FLAKE_DIR}} --sudo
+
+  update-opencode:
+    desc: Update the opencode flake input and rebuild
+    cmds:
+      - nix flake update llm-agents --flake {{.FLAKE_DIR}}
+      - task: rebuild

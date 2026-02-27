@@ -9,10 +9,8 @@
       enable = true;
        shellAliases = {
         lg = "lazygit";
-        rebuild = "nixos-rebuild switch --flake ~/GitHub/dotfiles --sudo";
         cd = "z";
         src = "source ~/.zshrc";
-        update-opencode = "nix flake update llm-agents --flake ~/GitHub/dotfiles && rebuild";
       };
     };
     starship = {
