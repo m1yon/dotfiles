@@ -40,13 +40,6 @@
     AWS_SDK_LOAD_CONFIG = 1;
   };
 
-  # basic configuration of git, please change to your own
-  programs.git = {
-    enable = true;
-    userName = "Michael Lyon";
-    userEmail = "mlyon360@gmail.com";
-  };
-
   # hyprland
   wayland.windowManager.hyprland.enable = true;
   wayland.windowManager.hyprland.systemd.enable = false;
