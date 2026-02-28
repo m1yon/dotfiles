@@ -11,6 +11,6 @@ let
 in
 {
   home.file = {
-    ".config/hypr/".source = outOfStore "${dotfiles}/hyprland";
+    ".config/hypr/hyprland.conf".source = outOfStore "${dotfiles}/hyprland/hyprland.conf";
   };
 }
