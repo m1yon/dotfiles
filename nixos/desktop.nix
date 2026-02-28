@@ -46,6 +46,7 @@
   environment.systemPackages = with pkgs; [
     git
     psmisc
+    jq
   ];
 
   fonts.packages = with pkgs; [
