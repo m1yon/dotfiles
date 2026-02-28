@@ -19,7 +19,7 @@ interface ScriptSource {
 
 const SOURCES: ScriptSource[] = [
   {
-    binDir: join(homedir(), "dotfiles/scripts-bash/.local/bin"),
+    binDir: join(homedir(), "dotfiles/scripts-bash"),
     label: "bash",
     skipBinaries: true,
     // bash scripts are their own source
@@ -28,14 +28,14 @@ const SOURCES: ScriptSource[] = [
     },
   },
   {
-    binDir: join(homedir(), "dotfiles/scripts-bun/.local/scripts/bin"),
+    binDir: join(homedir(), "dotfiles/scripts-bun/bin"),
     label: "bun",
     skipBinaries: false,
     // bun scripts compile from src/<name>/index.ts
     resolveSource(name) {
       return join(
         homedir(),
-        "dotfiles/scripts-bun/.local/scripts/src",
+        "dotfiles/scripts-bun/src",
         name,
         "index.ts",
       );
