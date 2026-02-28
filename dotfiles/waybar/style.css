@@ -3,11 +3,11 @@
   border-radius: 0;
   font-family: "Inter";
   min-height: 0;
-  color: white;
 }
 
 window#waybar {
   background-color: rgba(0, 0, 0, 0.3);
+  color: white;
 }
 
 tooltip {
