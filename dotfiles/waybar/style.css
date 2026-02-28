@@ -3,6 +3,7 @@
   border-radius: 0;
   font-family: "Inter";
   min-height: 0;
+  color: white;
 }
 
 window#waybar {

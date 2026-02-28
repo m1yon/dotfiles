@@ -21,9 +21,6 @@
     LC_TIME = "en_US.UTF-8";
   };
 
-  services.displayManager.sddm.enable = true;
-  services.xserver.enable = true;
-
   programs.hyprland = {
     enable = true;
     withUWSM = true;
@@ -35,6 +32,14 @@
 
   programs.uwsm.waylandCompositors.hyprland.binPath =
     lib.mkForce "/run/current-system/sw/bin/start-hyprland";
+
+  programs.uwsm.enable = true;
+
+  programs.zsh.loginShellInit = lib.mkAfter ''
+    if uwsm check may-start; then
+      exec uwsm start hyprland-uwsm.desktop
+    fi
+  '';
 
   services.printing.enable = true;
 
