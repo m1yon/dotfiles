@@ -1,19 +1,45 @@
-{
-  config,
-  pkgs,
-  dotfilesPath,
-  ...
-}:
+{ ... }:
 
-let
-  dotfiles = "${dotfilesPath}/dotfiles";
-  outOfStore = config.lib.file.mkOutOfStoreSymlink;
-in
 {
   programs.lazygit = {
     enable = true;
-  };
-  home.file = {
-    ".config/lazygit/".source = outOfStore "${dotfiles}/lazygit";
+    settings = {
+      git = {
+        branchLogCmd = "git log --graph --color=always --abbrev-commit --decorate --date=iso --pretty=medium {{branchName}} --";
+        allBranchesLogCmds = [
+          "git log --all --graph --color=always --abbrev-commit --decorate --date=iso --pretty=medium"
+        ];
+        pagers = [
+          {
+            pager = "delta --dark --paging=never --line-numbers --tabs=2";
+            colorArg = "always";
+          }
+          {
+            externalDiffCommand = "difft --color=always";
+          }
+        ];
+      };
+      update.method = "never";
+      notARepository = "quit";
+      promptToReturnFromSubprocess = false;
+      gui = {
+        scrollHeight = 10;
+        timeFormat = "2006-01-02 15:04:05 MST";
+        theme = {
+          selectedLineBgColor = [ "reverse" ];
+          selectedRangeBgColor = [ "reverse" ];
+        };
+        showFileTree = false;
+        nerdFontsVersion = 3;
+        skipRewordInEditorWarning = true;
+        border = "double";
+        showCommandLog = false;
+        tabWidth = 1;
+      };
+      keybinding.files = {
+        commitChanges = "C";
+        commitChangesWithEditor = "c";
+      };
+    };
   };
 }
