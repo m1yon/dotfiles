@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   inputs,
   ...
@@ -31,6 +32,9 @@
     portalPackage =
       inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
+
+  programs.uwsm.waylandCompositors.hyprland.binPath =
+    lib.mkForce "/run/current-system/sw/bin/start-hyprland";
 
   services.printing.enable = true;
 
