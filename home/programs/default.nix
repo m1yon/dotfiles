@@ -13,5 +13,6 @@
     ./hyprland.nix
     ./foot.nix
     ./waybar.nix
+    ./vicinae.nix
   ];
 }
