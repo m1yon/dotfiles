@@ -10,6 +10,7 @@
     ./neovim.nix
     ./lazygit.nix
     ./opencode.nix
+    ./teams-for-linux.nix
     ./thunderbird.nix
     ./zsh.nix
     ./yazi.nix
