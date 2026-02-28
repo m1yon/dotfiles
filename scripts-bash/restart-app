@@ -3,5 +3,27 @@
 # description: Kill and restart an application via uwsm-app
 # ---
 
-pkill -x "$1"
-setsid uwsm-app -- "$1" >/dev/null 2>&1 &
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: restart-app <app> [args...]"
+  exit 1
+fi
+
+app="$1"
+shift || true
+app_name="$(basename "$app")"
+
+# Nix packages are often wrapped and run as .<name>-wrapped.
+pkill -x -u "$USER" "$app_name" >/dev/null 2>&1 || true
+pkill -x -u "$USER" ".${app_name}-wrapped" >/dev/null 2>&1 || true
+
+# Give old processes a moment to exit before relaunch.
+for _ in {1..20}; do
+  if ! pgrep -x -u "$USER" "$app_name" >/dev/null 2>&1 && ! pgrep -x -u "$USER" ".${app_name}-wrapped" >/dev/null 2>&1; then
+    break
+  fi
+  sleep 0.1
+done
+
+setsid uwsm-app -- "$app" "$@" >/dev/null 2>&1 &
