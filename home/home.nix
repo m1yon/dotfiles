@@ -39,6 +39,11 @@ in
   imports = [
     ./programs
     ./services
+    ./scripts
+  ];
+
+  home.sessionPath = [
+    "$HOME/.local/bin"
   ];
 
   home.sessionVariables = {

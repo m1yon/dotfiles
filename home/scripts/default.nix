@@ -1,0 +1,5 @@
+{
+  imports = [
+    ./scripts-bash.nix
+  ];
+}

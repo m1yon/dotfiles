@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# ---
+# description: Kill and restart an application via uwsm-app
+# ---
+
+pkill -x "$1"
+setsid uwsm-app -- "$1" >/dev/null 2>&1 &
