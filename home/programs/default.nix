@@ -1,7 +1,9 @@
 {
   imports = [
     ./browsers.nix
+    ./btm.nix
     ./bun.nix
+    ./datagrip.nix
     ./git.nix
     ./go-task.nix
     ./nixfmt.nix
