@@ -25,6 +25,7 @@
           "font.name.monospace.x-unicode" = "JetBrains Mono";
           "font.name-list.monospace.x-unicode" = "JetBrains Mono";
           "font.size.monospace.x-unicode" = 14;
+          "mailnews.start_page.enabled" = false;
         };
       };
     };
