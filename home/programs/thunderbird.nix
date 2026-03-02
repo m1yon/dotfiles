@@ -54,7 +54,41 @@
         settings = id: {
           "mail.smtpserver.smtp_${id}.authMethod" = 10;
           "mail.server.server_${id}.authMethod" = 10;
+          "mail.server.server_${id}.using_subscription" = false;
         };
+        perIdentitySettings = id: {
+          "mail.identity.id_${id}.archive_folder" =
+            "imap://michael.lyon%40mecatherapies.com@outlook.office365.com/Archive";
+          "mail.identity.id_${id}.archive_granularity" = 0;
+          "mail.identity.id_${id}.archive_keep_folder_structure" = false;
+          "mail.identity.id_${id}.archives_folder_picker_mode" = "1";
+        };
+        messageFilters = [
+          {
+            name = "Events";
+            enabled = true;
+            type = "17";
+            action = "Move to folder";
+            actionValue = "imap://michael.lyon%40mecatherapies.com@outlook.office365.com/Events";
+            condition = "AND (body,contains,path=/calendar/item)";
+          }
+          {
+            name = "Microsoft";
+            enabled = true;
+            type = "17";
+            action = "Move to folder";
+            actionValue = "imap://michael.lyon%40mecatherapies.com@outlook.office365.com/Microsoft";
+            condition = "OR (from,contains,MSSecurity-noreply@microsoft.com) OR (from,contains,flow-noreply@microsoft.com)";
+          }
+          {
+            name = "AWS";
+            enabled = true;
+            type = "17";
+            action = "Move to folder";
+            actionValue = "imap://michael.lyon%40mecatherapies.com@outlook.office365.com/AWS";
+            condition = "AND (from,contains,aws.com)";
+          }
+        ];
       };
     };
   };
