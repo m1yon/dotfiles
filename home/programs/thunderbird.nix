@@ -70,7 +70,7 @@
             type = "17";
             action = "Move to folder";
             actionValue = "imap://michael.lyon%40mecatherapies.com@outlook.office365.com/Events";
-            condition = "AND (body,contains,path=/calendar/item)";
+            condition = "OR (body,contains,path=/calendar/item) OR (body,contains,Join with Google Meet)";
           }
           {
             name = "Microsoft";
