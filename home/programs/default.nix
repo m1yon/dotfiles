@@ -1,5 +1,6 @@
 {
   imports = [
+    ./awscli.nix
     ./browsers.nix
     ./btm.nix
     ./bun.nix
@@ -10,6 +11,7 @@
     ./neovim.nix
     ./lazygit.nix
     ./opencode.nix
+    ./sops.nix
     ./teams-for-linux.nix
     ./thunderbird.nix
     ./zsh.nix

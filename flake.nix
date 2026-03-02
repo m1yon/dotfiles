@@ -28,6 +28,10 @@
       url = "github:BirdeeHub/nix-wrapper-modules";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -36,6 +40,7 @@
       nixpkgs,
       home-manager,
       llm-agents,
+      sops-nix,
       ...
     }@inputs:
     let
@@ -59,6 +64,9 @@
             home-manager.users.${username} = import ./home/home.nix;
 
             home-manager.extraSpecialArgs = { inherit inputs username dotfilesPath; };
+            home-manager.sharedModules = [
+              inputs.sops-nix.homeManagerModules.sops
+            ];
           }
         ];
       };
@@ -73,6 +81,7 @@
         };
         extraSpecialArgs = { inherit inputs username dotfilesPath; };
         modules = [
+          inputs.sops-nix.homeManagerModules.sops
           ./home/home.nix
         ];
       };
