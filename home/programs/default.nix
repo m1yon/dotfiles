@@ -7,6 +7,7 @@
     ./bun.nix
     ./direnv.nix
     ./datagrip.nix
+    ./discord.nix
     ./eza.nix
     ./fzf.nix
     ./git.nix
