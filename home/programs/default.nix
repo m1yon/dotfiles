@@ -6,6 +6,7 @@
     ./bun.nix
     ./datagrip.nix
     ./git.nix
+    ./gpg.nix
     ./go-task.nix
     ./gtk.nix
     ./nixfmt.nix
