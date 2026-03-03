@@ -10,5 +10,6 @@
     ./bluetooth.nix
     ./users.nix
     ./ssh.nix
+    ./development.nix
   ];
 }

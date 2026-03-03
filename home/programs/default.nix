@@ -5,6 +5,7 @@
     ./browsers.nix
     ./btm.nix
     ./bun.nix
+    ./direnv.nix
     ./datagrip.nix
     ./eza.nix
     ./fzf.nix
