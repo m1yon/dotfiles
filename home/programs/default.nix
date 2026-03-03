@@ -7,6 +7,7 @@
     ./datagrip.nix
     ./git.nix
     ./go-task.nix
+    ./gtk.nix
     ./nixfmt.nix
     ./neovim.nix
     ./lazygit.nix
