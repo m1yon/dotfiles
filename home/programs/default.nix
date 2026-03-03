@@ -14,6 +14,7 @@
     ./lazygit.nix
     ./opencode.nix
     ./sops.nix
+    ./ssh.nix
     ./teams-for-linux.nix
     ./thunderbird.nix
     ./zsh.nix

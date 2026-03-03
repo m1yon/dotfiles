@@ -5,3 +5,7 @@ creation_rules:
     key_groups:
       - age:
           - *michael
+  - path_regex: secrets/ssh_config$
+    key_groups:
+      - age:
+          - *michael
