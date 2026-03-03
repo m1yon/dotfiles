@@ -53,6 +53,7 @@ in
     MANPAGER = "nvim +Man!";
     AWS_SDK_LOAD_CONFIG = 1;
     NIX_CONFIG_DIR = nixConfigDir;
+    NIXOS_OZONE_WL = "1";
   };
 
   # hyprland

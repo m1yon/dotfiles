@@ -20,6 +20,7 @@
     ./lazygit.nix
     ./opencode.nix
     ./sftp.nix
+    ./slack.nix
     ./sops.nix
     ./ssh.nix
     ./starship.nix
