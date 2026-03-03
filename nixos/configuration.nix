@@ -8,5 +8,6 @@
     ./desktop.nix
     ./audio.nix
     ./users.nix
+    ./ssh.nix
   ];
 }
