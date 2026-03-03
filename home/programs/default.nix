@@ -21,6 +21,7 @@
     ./sops.nix
     ./ssh.nix
     ./starship.nix
+    ./tealdeer.nix
     ./teams-for-linux.nix
     ./thunderbird.nix
     ./zsh.nix
