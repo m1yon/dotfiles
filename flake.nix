@@ -9,6 +9,8 @@
   inputs = {
     # NixOS official package source, using the nixos-25.11 branch here
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
+    # Unstable channel for packages that need newer versions
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     # home-manager, used for managing user configuration
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
@@ -46,12 +48,19 @@
     let
       username = "michael";
       dotfilesPath = "/home/${username}/GitHub/dotfiles";
+      unstableOverlay = final: prev: {
+        yazi =
+          (import inputs.nixpkgs-unstable {
+            system = prev.system;
+          }).yazi;
+      };
     in
     {
       # Please replace my-nixos with your hostname
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs username dotfilesPath; };
         modules = [
+          { nixpkgs.overlays = [ unstableOverlay ]; }
           ./nixos/configuration.nix
 
           # make home-manager as a module of nixos
@@ -78,6 +87,7 @@
         pkgs = import nixpkgs {
           system = "x86_64-linux";
           config.allowUnfree = true;
+          overlays = [ unstableOverlay ];
         };
         extraSpecialArgs = { inherit inputs username dotfilesPath; };
         modules = [

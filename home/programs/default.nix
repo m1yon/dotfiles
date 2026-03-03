@@ -10,6 +10,7 @@
     ./gtk.nix
     ./nixfmt.nix
     ./neovim.nix
+    ./onlyoffice.nix
     ./lazygit.nix
     ./opencode.nix
     ./sops.nix
