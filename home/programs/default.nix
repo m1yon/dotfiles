@@ -13,6 +13,7 @@
     ./onlyoffice.nix
     ./lazygit.nix
     ./opencode.nix
+    ./sftp.nix
     ./sops.nix
     ./ssh.nix
     ./teams-for-linux.nix

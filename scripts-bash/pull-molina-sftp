@@ -4,7 +4,7 @@
 # ---
 
 # Check if variables are set
-if [[ -z "$MOLINA_PATH" ]]; then
+if [[ -z "$MOLINA_SFTP_FROM_PATH" ]]; then
     echo "Error: Secrets not loaded."
     exit 1
 fi
@@ -12,7 +12,7 @@ fi
 echo "Downloading files to: $(pwd)"
 
 sftp molina <<EOF
-cd "$MOLINA_PATH"
+cd "$MOLINA_SFTP_FROM_PATH"
 get -r *
 bye
 EOF

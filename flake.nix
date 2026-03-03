@@ -51,7 +51,7 @@
       unstableOverlay = final: prev: {
         yazi =
           (import inputs.nixpkgs-unstable {
-            system = prev.system;
+            system = prev.stdenv.hostPlatform.system;
           }).yazi;
       };
     in
