@@ -47,7 +47,7 @@
     }@inputs:
     let
       username = "michael";
-      dotfilesPath = "/home/${username}/GitHub/dotfiles";
+      nixConfigDir = "/home/${username}/GitHub/dotfiles";
       unstableOverlay = final: prev: {
         yazi =
           (import inputs.nixpkgs-unstable {
@@ -58,7 +58,7 @@
     {
       # Please replace my-nixos with your hostname
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs username dotfilesPath; };
+        specialArgs = { inherit inputs username nixConfigDir; };
         modules = [
           { nixpkgs.overlays = [ unstableOverlay ]; }
           ./nixos/configuration.nix
@@ -72,7 +72,7 @@
 
             home-manager.users.${username} = import ./home/home.nix;
 
-            home-manager.extraSpecialArgs = { inherit inputs username dotfilesPath; };
+            home-manager.extraSpecialArgs = { inherit inputs username nixConfigDir; };
             home-manager.sharedModules = [
               inputs.sops-nix.homeManagerModules.sops
             ];
@@ -89,7 +89,7 @@
           config.allowUnfree = true;
           overlays = [ unstableOverlay ];
         };
-        extraSpecialArgs = { inherit inputs username dotfilesPath; };
+        extraSpecialArgs = { inherit inputs username nixConfigDir; };
         modules = [
           inputs.sops-nix.homeManagerModules.sops
           ./home/home.nix

@@ -4,6 +4,7 @@
   inputs,
   osConfig ? null,
   username,
+  nixConfigDir,
   ...
 }:
 
@@ -51,6 +52,7 @@ in
     VISUAL = "nvim";
     MANPAGER = "nvim +Man!";
     AWS_SDK_LOAD_CONFIG = 1;
+    NIX_CONFIG_DIR = nixConfigDir;
   };
 
   # hyprland

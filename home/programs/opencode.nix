@@ -2,12 +2,12 @@
   config,
   pkgs,
   inputs,
-  dotfilesPath,
+  nixConfigDir,
   ...
 }:
 
 let
-  dotfiles = "${dotfilesPath}/dotfiles";
+  dotfiles = "${nixConfigDir}/dotfiles";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
 in
 {

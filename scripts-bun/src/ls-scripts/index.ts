@@ -4,7 +4,6 @@
 // ---
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
-import { homedir } from "node:os";
 
 interface ScriptSource {
   /** Directory containing the executables */
@@ -17,9 +16,15 @@ interface ScriptSource {
   resolveSource: (name: string) => string;
 }
 
+const DOTFILES_ROOT = process.env["NIX_CONFIG_DIR"];
+if (!DOTFILES_ROOT) {
+  console.error("NIX_CONFIG_DIR is not set. Set it to your dotfiles root.");
+  process.exit(1);
+}
+
 const SOURCES: ScriptSource[] = [
   {
-    binDir: join(homedir(), "dotfiles/scripts-bash"),
+    binDir: join(DOTFILES_ROOT, "scripts-bash"),
     label: "bash",
     skipBinaries: true,
     // bash scripts are their own source
@@ -28,17 +33,12 @@ const SOURCES: ScriptSource[] = [
     },
   },
   {
-    binDir: join(homedir(), "dotfiles/scripts-bun/bin"),
+    binDir: join(DOTFILES_ROOT, "scripts-bun/bin"),
     label: "bun",
     skipBinaries: false,
     // bun scripts compile from src/<name>/index.ts
     resolveSource(name) {
-      return join(
-        homedir(),
-        "dotfiles/scripts-bun/src",
-        name,
-        "index.ts",
-      );
+      return join(DOTFILES_ROOT!, "scripts-bun/src", name, "index.ts");
     },
   },
 ];

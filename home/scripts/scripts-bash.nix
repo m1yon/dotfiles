@@ -1,6 +1,6 @@
 {
   config,
-  dotfilesPath,
+  nixConfigDir,
   ...
 }:
 
@@ -9,7 +9,7 @@ let
 in
 {
   home.file.".local/bin" = {
-    source = outOfStore "${dotfilesPath}/scripts-bash";
+    source = outOfStore "${nixConfigDir}/scripts-bash";
     recursive = true;
   };
 }

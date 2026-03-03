@@ -1,10 +1,10 @@
 {
-  dotfilesPath,
+  nixConfigDir,
   ...
 }:
 
 let
-  wallpaper = "${dotfilesPath}/wallpapers/sky-grass.jpg";
+  wallpaper = "${nixConfigDir}/wallpapers/sky-grass.jpg";
 in
 {
   services.hyprpaper = {

@@ -1,10 +1,10 @@
 {
-  dotfilesPath,
+  nixConfigDir,
   ...
 }:
 
 {
   home.sessionPath = [
-    "${dotfilesPath}/scripts-bun/bin"
+    "${nixConfigDir}/scripts-bun/bin"
   ];
 }
