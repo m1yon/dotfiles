@@ -1,10 +1,13 @@
 {
   imports = [
+    ./atuin.nix
     ./awscli.nix
     ./browsers.nix
     ./btm.nix
     ./bun.nix
     ./datagrip.nix
+    ./eza.nix
+    ./fzf.nix
     ./git.nix
     ./gpg.nix
     ./go-task.nix
@@ -17,6 +20,7 @@
     ./sftp.nix
     ./sops.nix
     ./ssh.nix
+    ./starship.nix
     ./teams-for-linux.nix
     ./thunderbird.nix
     ./zsh.nix
@@ -25,5 +29,6 @@
     ./foot.nix
     ./waybar.nix
     ./vicinae.nix
+    ./zoxide.nix
   ];
 }
