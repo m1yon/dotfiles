@@ -3,7 +3,7 @@
   "autoupdate": true,
   "agent": {
     "explore": {
-      "model": "opencode/kimi-k2.5"
+      "model": "openai/gpt-5.3-codex"
     }
   },
   "provider": {

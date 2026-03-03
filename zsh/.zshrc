@@ -41,8 +41,3 @@ export NVM_DIR="$HOME/.nvm"
 alias ls="eza"
 alias lg="lazygit"
 alias cyay="yay -Yc"
-
-# uwsm auto-start
-if uwsm check may-start; then
-  exec uwsm start hyprland.desktop
-fi

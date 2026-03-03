@@ -8,3 +8,8 @@ export PATH="$HOME/go/bin:$PATH"
 
 # Remove duplicates from PATH
 typeset -U PATH
+
+# uwsm auto-start
+if uwsm check may-start; then
+  exec uwsm start hyprland.desktop
+fi
