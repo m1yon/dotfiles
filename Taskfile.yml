@@ -27,6 +27,10 @@ tasks:
     desc: Run all setup tasks for a fresh machine
     cmds:
       - task: sops-age-key
+      - task: onedrive-reauth
+        vars: { CLI_ARGS: personal }
+      - task: onedrive-reauth
+        vars: { CLI_ARGS: carecoordinators }
 
   sops-age-key:
     desc: Convert SSH ed25519 key to age key for sops CLI
@@ -43,3 +47,16 @@ tasks:
     cmds:
       - nix flake update nixpkgs --flake {{.FLAKE_DIR}}
       - task: rebuild
+
+  onedrive-reauth:
+    desc: "Re-authenticate an OneDrive instance (usage: task onedrive-reauth -- personal|carecoordinators)"
+    cmds:
+      - systemctl --user stop onedrive-{{.CLI_ARGS}}
+      - onedrive --confdir=~/.config/onedrive-{{.CLI_ARGS}} --reauth --sync
+      - systemctl --user start onedrive-{{.CLI_ARGS}}
+
+  onedrive-status:
+    desc: Show status of all OneDrive sync services
+    cmds:
+      - systemctl --user status onedrive-personal --no-pager
+      - systemctl --user status onedrive-carecoordinators --no-pager
