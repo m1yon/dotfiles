@@ -35,8 +35,8 @@ tasks:
       - test -s ~/.config/sops/age/keys.txt
 
   sops-edit:
-    desc: Edit the sops secrets file
-    cmd: sops {{.FLAKE_DIR}}/secrets/secrets.yaml
+    desc: "Edit a sops secrets file (usage: task sops-edit -- aws.yaml)"
+    cmd: sops {{.FLAKE_DIR}}/secrets/{{.CLI_ARGS}}
 
   update-nixpkgs:
     desc: Update the nixpkgs flake input and rebuild

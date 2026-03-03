@@ -6,9 +6,9 @@
 
 {
   sops.secrets = {
-    aws_sso_start_url = { };
-    aws_sso_account_id_paradis_dev = { };
-    aws_sso_account_id_paradis_prod = { };
+    aws_sso_start_url.sopsFile = ../../secrets/aws.yaml;
+    aws_sso_account_id_paradis_dev.sopsFile = ../../secrets/aws.yaml;
+    aws_sso_account_id_paradis_prod.sopsFile = ../../secrets/aws.yaml;
   };
 
   sops.templates."aws-config" = {
