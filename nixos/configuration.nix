@@ -7,6 +7,7 @@
     ./networking.nix
     ./desktop.nix
     ./audio.nix
+    ./bluetooth.nix
     ./users.nix
     ./ssh.nix
   ];
