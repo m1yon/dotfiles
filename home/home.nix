@@ -34,6 +34,14 @@ in
   #     xxx
   # '';
 
+  home.pointerCursor = {
+    name = "rose-pine-hyprcursor";
+    package = inputs.rose-pine-hyprcursor.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    size = 24;
+    gtk.enable = true;
+    hyprcursor.enable = true;
+  };
+
   home.packages = [
   ];
 

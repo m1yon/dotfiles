@@ -22,6 +22,7 @@
     ./sftp.nix
     ./slack.nix
     ./sops.nix
+    ./spotify.nix
     ./ssh.nix
     ./starship.nix
     ./tealdeer.nix
