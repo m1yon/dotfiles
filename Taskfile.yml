@@ -42,6 +42,12 @@ tasks:
     desc: "Edit a sops secrets file (usage: task sops-edit -- aws.yaml)"
     cmd: sops {{.FLAKE_DIR}}/secrets/{{.CLI_ARGS}}
 
+  update-all:
+    desc: Update all flake inputs and rebuild
+    cmds:
+      - nix flake update --flake {{.FLAKE_DIR}}
+      - task: rebuild
+
   update-nixpkgs:
     desc: Update the nixpkgs flake input and rebuild
     cmds:
