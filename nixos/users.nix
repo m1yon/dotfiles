@@ -11,7 +11,6 @@
     isNormalUser = true;
     description = "Michael";
     extraGroups = [
-      "networkmanager"
       "wheel"
     ];
     packages = with pkgs; [ ];
