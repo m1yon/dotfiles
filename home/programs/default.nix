@@ -16,6 +16,7 @@
     ./gtk.nix
     ./nixfmt.nix
     ./neovim.nix
+    ./obsidian.nix
     ./onlyoffice.nix
     ./lazygit.nix
     ./opencode.nix
