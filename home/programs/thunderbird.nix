@@ -1,12 +1,31 @@
-{ ... }:
+{
+  pkgs,
+  ...
+}:
 
+let
+  tbkeys-lite = pkgs.stdenvNoCC.mkDerivation {
+    pname = "tbkeys-lite";
+    version = "2.4.3";
+    src = pkgs.fetchurl {
+      url = "https://addons.thunderbird.net/thunderbird/downloads/file/1044591/tbkeys_lite-2.4.3-tb.xpi";
+      hash = "sha256-Qs3+ro5Og3JaREKIHA8A/0dZqgPc19cdVaIABY4qFlA=";
+    };
+    dontUnpack = true;
+    installPhase = ''
+      install -D "$src" "$out/share/mozilla/extensions/{ec8030f7-c20a-464f-9b0e-13a3a9e97384}/tbkeys-lite@addons.thunderbird.net.xpi"
+    '';
+  };
+in
 {
   programs.thunderbird = {
     enable = true;
     profiles = {
       default = {
         isDefault = true;
+        extensions = [ tbkeys-lite ];
         settings = {
+          "extensions.autoDisableScopes" = 0;
           "mail.pane_config.dynamic" = 0;
           "mail.threadpane.listview" = 1;
           "extensions.activeThemeID" = "thunderbird-compact-dark@mozilla.org";
