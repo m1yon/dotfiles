@@ -276,12 +276,6 @@ later(function()
 	require("nvim-ts-autotag").setup()
 end)
 
--- Theme =====================================================================
-now(function()
-	add("folke/tokyonight.nvim")
-	vim.cmd("colorscheme tokyonight-night")
-end)
-
 -- Code Review =====================================================================
 later(function()
 	add({
