@@ -43,6 +43,7 @@ in
     ".config/nvim/".source = outOfStore "${dotfiles}/nvim";
     ".local/share/nvim/stylix-base16.lua".text = ''
       return {
+        variant = "${config.stylix.polarity}",
         base00 = "${colors.base00}",
         base01 = "${colors.base01}",
         base02 = "${colors.base02}",

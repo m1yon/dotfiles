@@ -1,9 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
   stylix = {
     enable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/rose-pine.yaml";
+    base16Scheme = "${inputs.tt-schemes}/base16/tokyo-night-dark.yaml";
     polarity = "dark";
 
     fonts = {
