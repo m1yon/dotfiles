@@ -5,6 +5,7 @@
     ./browsers.nix
     ./btm.nix
     ./bun.nix
+    ./claude-code.nix
     ./direnv.nix
     ./datagrip.nix
     ./discord.nix
