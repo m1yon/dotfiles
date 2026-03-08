@@ -35,6 +35,7 @@
     ./yazi.nix
     ./hyprland.nix
     ./foot.nix
+    ./stylix.nix
     ./waybar.nix
     ./vicinae.nix
     ./zoxide.nix

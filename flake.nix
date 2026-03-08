@@ -38,6 +38,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    stylix = {
+      url = "github:danth/stylix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -79,6 +83,7 @@
             home-manager.extraSpecialArgs = { inherit inputs username nixConfigDir; };
             home-manager.sharedModules = [
               inputs.sops-nix.homeManagerModules.sops
+              inputs.stylix.homeModules.stylix
             ];
           }
         ];
@@ -96,6 +101,7 @@
         extraSpecialArgs = { inherit inputs username nixConfigDir; };
         modules = [
           inputs.sops-nix.homeManagerModules.sops
+          inputs.stylix.homeModules.stylix
           ./home/home.nix
         ];
       };
