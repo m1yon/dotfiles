@@ -16,5 +16,6 @@
 
     autoEnable = false;
     targets.foot.enable = true;
+    targets.gtk.enable = true;
   };
 }
