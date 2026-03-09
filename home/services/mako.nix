@@ -19,7 +19,7 @@
       border-color = "#444444";
 
       "urgency=critical" = {
-        default-timeout = 0;
+        default-timeout = 5000;
         layer = "overlay";
       };
     };
