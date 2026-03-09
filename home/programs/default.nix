@@ -6,6 +6,7 @@
     ./btm.nix
     ./bun.nix
     ./claude-code.nix
+    ./claude-desktop.nix
     ./direnv.nix
     ./datagrip.nix
     ./discord.nix

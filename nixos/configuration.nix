@@ -11,5 +11,6 @@
     ./users.nix
     ./ssh.nix
     ./development.nix
+    ./kvm.nix
   ];
 }
