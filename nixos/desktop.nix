@@ -47,6 +47,8 @@
       thunar-archive-plugin
     ];
   };
+
+  environment.sessionVariables.TERMINAL = "foot";
   programs.xfconf.enable = true;
   programs.dconf.enable = true;
   services.gvfs.enable = true;
@@ -59,7 +61,7 @@
     psmisc
     jq
     unzip
-    xfce.xarchiver
+    file-roller
   ];
 
   fonts.packages = with pkgs; [
