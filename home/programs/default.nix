@@ -7,6 +7,7 @@
     ./bun.nix
     ./claude-code.nix
     ./claude-desktop.nix
+    ./claude-devtools.nix
     ./coderabbit.nix
     ./direnv.nix
     ./datagrip.nix
