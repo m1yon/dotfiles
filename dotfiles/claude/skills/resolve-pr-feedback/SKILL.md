@@ -37,6 +37,22 @@ Uses the `agh` CLI tool for all GitHub interactions.
 
 4. If no feedback items remain, report **"No unresolved feedback found"** and stop.
 
+5. **Record the current branch and HEAD** for use throughout the workflow:
+   ```bash
+   PR_BRANCH=$(git symbolic-ref --short HEAD)
+   PR_HEAD=$(git rev-parse HEAD)
+   ```
+   Store these values — they are needed in Phase 4 (worktree setup) and Phase 5 (pre-cherry-pick validation).
+
+6. **Clean up stale worktrees** from previous runs:
+   ```bash
+   git worktree prune
+   ```
+   Also remove any leftover `worktree-agent-*` branches:
+   ```bash
+   git branch --list 'worktree-agent-*' | xargs -r git branch -D
+   ```
+
 ---
 
 ## Phase 2: Triage
@@ -119,7 +135,13 @@ Uses the `agh` CLI tool for all GitHub interactions.
    ```
    You are resolving PR feedback on the following file(s). For each feedback item, make the fix and create a commit.
 
-   Branch: {pr_branch}
+   CRITICAL — Branch setup:
+   The worktree may not be on the correct branch. Before doing anything else, run:
+     git checkout {pr_branch}
+   Then verify you are at the expected commit:
+     git rev-parse HEAD
+   Expected HEAD: {pr_head}
+   If HEAD does not match, STOP and report the mismatch. Do NOT proceed with fixes on the wrong base.
 
    Feedback items to fix:
 
@@ -132,7 +154,8 @@ Uses the `agh` CLI tool for all GitHub interactions.
    "fix: {one-line summary of fix} (PR feedback #{item_number})"
 
    IMPORTANT:
-   - Read the file(s) before making changes
+   - Read the file(s) before making changes — verify the file content matches the referenced code
+   - If the file content does not match the referenced code, STOP and report the mismatch
    - One commit per feedback item
    - Keep fixes minimal — only change what the feedback asks for
    - Do not refactor surrounding code
@@ -154,21 +177,28 @@ Uses the `agh` CLI tool for all GitHub interactions.
       > {comment body}
       ```
 
-   b. **Cherry-pick without committing:**
+   b. **Verify HEAD before cherry-picking.** Confirm the main worktree is still on the PR branch:
+      ```bash
+      git symbolic-ref --short HEAD  # must match {pr_branch}
+      git rev-parse HEAD             # must match expected commit
+      ```
+      If HEAD has been displaced (e.g., onto a `worktree-agent-*` branch), recover with `git checkout {pr_branch}` before proceeding.
+
+   c. **Cherry-pick without committing:**
       ```bash
       git cherry-pick --no-commit {commit_sha}
       ```
       This stages all changes from the fix without creating a commit.
 
-   c. **Handle conflicts.** If the cherry-pick produces conflicts:
+   d. **Handle conflicts.** If the cherry-pick produces conflicts:
       1. Analyze the conflicts and resolve them.
       2. Stage the resolution with `git add`.
       3. Inform the user: "Cherry-pick had conflicts — I resolved them. Run `git diff --staged` to review the full result including my conflict resolution."
 
-   d. **Prompt review:**
+   e. **Prompt review:**
       Tell the user: "Changes are staged. Run `git diff --staged` to review."
 
-   e. **AskUserQuestion** with context — show the original feedback and a brief summary of what the fix does, then ask for approval:
+   f. **AskUserQuestion** with context — show the original feedback and a brief summary of what the fix does, then ask for approval:
       ```
       **Original feedback** (@{user}): {comment body}
       **Fix summary:** {1-sentence description of what the fix changed}
@@ -176,7 +206,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
       approve (enter) / drop / or type feedback to redo:
       ```
 
-   f. **Act on response:**
+   g. **Act on response:**
       - **approve** (or `"y"`, `"yes"`, `"ok"`, `""`): Commit the staged changes:
         ```bash
         git commit -m "fix: {one-line summary} (PR feedback #{item_number})"
@@ -247,3 +277,6 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't show diffs inline during review — let the user review with `git diff --staged`.
 - Don't forget to discard staged changes for dropped items — use `git reset && git checkout -- . && git clean -fd`.
 - Don't forget to reply + resolve fixed items after committing (Phase 6 step 2).
+- Don't trust `isolation: "worktree"` to use the current branch — it may default to the repo's default branch. Always explicitly checkout `{pr_branch}` in the worktree agent and verify HEAD matches `{pr_head}`.
+- Don't skip stale worktree cleanup — leftover `worktree-agent-*` branches from previous runs can cause branch lock conflicts and confusing state.
+- Don't cherry-pick without first verifying `git symbolic-ref --short HEAD` matches the PR branch — a failed cherry-pick or reset can displace HEAD onto a worktree branch.
