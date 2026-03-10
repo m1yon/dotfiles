@@ -166,9 +166,9 @@ Uses the `agh` CLI tool for all GitHub interactions.
         ```
       - **drop**: Discard the staged changes:
         ```bash
-        git reset HEAD && git checkout -- .
+        git reset && git checkout -- . && git clean -fd
         ```
-      - **redo [guidance]**: Discard the staged changes (`git reset HEAD && git checkout -- .`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
+      - **redo [guidance]**: Discard the staged changes (`git reset && git checkout -- . && git clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
 
 2. After all fixes are reviewed, collect any redo items and run another review pass. Repeat until no more redos remain.
 
@@ -228,5 +228,5 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't use a generic dismissal for all junk items — tailor each reply to the specific comment.
 - Don't commit in the main worktree during the fix phase — all fixes happen in isolated worktrees.
 - Don't show diffs inline during review — let the user review with `git diff --staged`.
-- Don't forget to discard staged changes for dropped items — use `git reset HEAD && git checkout -- .`.
+- Don't forget to discard staged changes for dropped items — use `git reset && git checkout -- . && git clean -fd`.
 - Don't forget to reply + resolve fixed items after committing (Phase 6 step 2).
