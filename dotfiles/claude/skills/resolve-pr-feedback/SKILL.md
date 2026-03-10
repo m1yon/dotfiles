@@ -41,43 +41,35 @@ Uses the `agh` CLI tool for all GitHub interactions.
 
 ## Phase 2: Triage
 
-1. Read each feedback item and categorize it into one of two buckets:
+1. Read each feedback item and assign a severity level:
 
-   **Likely Real Issues** (will fix):
-   - Bug reports, logic errors, missing edge cases
-   - Style/naming suggestions that improve clarity
-   - Requests to add tests, error handling, or documentation
-   - Actionable code suggestions (suggestion blocks, "consider doing X")
-   - Security or performance concerns
+   | Emoji | Severity | Examples |
+   |-------|----------|----------|
+   | 🔴 | **Critical** | Security vulnerabilities, data loss, crashes, SQL injection |
+   | 🟠 | **Important** | Bug reports, logic errors, missing edge cases |
+   | 🟡 | **Moderate** | Style/naming improvements, missing tests, error handling |
+   | 🟢 | **Low** | Nitpicks, formatting, minor suggestions |
+   | ⚪ | **Info** | "LGTM", acknowledgments, discussion, already-answered questions |
 
-   **Likely Junk** (will dismiss and resolve):
-   - Nitpicks that are purely subjective with no clear improvement
-   - Questions that were already answered in a later comment
-   - Outdated feedback that no longer applies to current code
-   - "Looks good" / acknowledgment comments with no action needed
-   - Comments that are just discussion, not requesting changes
-
-2. Present the triage to the user as a numbered list per category:
+2. Present ALL feedback items in a single numbered list, sorted by severity (critical first):
 
    ```
-   ## Likely Real Issues (fix)
-   1. @alice — src/handler.go:42 — missing nil check on user input
-   2. @bob — internal/db/query.go:118 — SQL injection risk in dynamic query
-   3. @alice — (PR comment) — add integration test for the new endpoint
+   ## PR Feedback (5 items — all will be fixed unless you exclude some)
 
-   ## Likely Junk (dismiss)
-   4. @bob — src/handler.go:10 — "maybe rename this variable?" (subjective)
-   5. @carol — (review) — "LGTM" (no action needed)
+   1. 🔴 @bob — internal/db/query.go:118 — SQL injection risk in dynamic query
+   2. 🟠 @alice — src/handler.go:42 — missing nil check on user input
+   3. 🟡 @alice — (PR comment) — add integration test for the new endpoint
+   4. 🟢 @bob — src/handler.go:10 — suggests using custom error type
+   5. ⚪ @carol — (review) — "LGTM"
    ```
 
-3. Use **AskUserQuestion** to let the user confirm or reclassify:
-   - Prompt: `"Confirm triage or reclassify (e.g., 'fix 4 — junk 2' or 'looks good'):"`
+3. Use **AskUserQuestion** to let the user choose which items to skip:
+   - Prompt: `"All items will be fixed by default. Enter numbers to ignore (e.g., '4 5'), or press enter to fix all:"`
    - Parse the response:
-     - `"looks good"` or `"ok"` or `"confirm"` — proceed as-is
-     - `"fix N"` — move item N from junk to fix
-     - `"junk N"` — move item N from fix to junk
-     - Combined: `"fix 4 — junk 2"` — apply both reclassifications
-   - After reclassification, do NOT re-prompt. Proceed to the next phase.
+     - Empty / `"ok"` / `"all"` — fix all items
+     - Space-separated numbers (e.g., `"4 5"`) — ignore those items (dismiss + resolve)
+   - After selection, do NOT re-prompt. Proceed to the next phase.
+   - Items the user chooses to ignore are treated as **dismissed** (Phase 3). All remaining items are treated as **fixes** (Phase 4).
 
 ---
 
