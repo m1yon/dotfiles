@@ -131,59 +131,59 @@ Uses the `agh` CLI tool for all GitHub interactions.
 
 ---
 
-## Phase 5: Batched Review
+## Phase 5: Interactive Staged Review
 
-1. Present each fix to the user **one at a time**:
+1. Present each fix to the user **one at a time**. For each fix:
 
-   ```
-   ### Fix {N}/{total}: {path}:{line}
+   a. **Announce the fix:**
+      ```
+      ### Fix {N}/{total}: {path}:{line}
 
-   **Original feedback** (@{user}):
-   > {comment body}
+      **Original feedback** (@{user}):
+      > {comment body}
+      ```
 
-   **Diff:**
-   {git diff for this commit — use: git -C {worktree_path} show {commit_sha} --stat --patch}
+   b. **Cherry-pick without committing:**
+      ```bash
+      git cherry-pick --no-commit {commit_sha}
+      ```
+      This stages all changes from the fix without creating a commit.
 
-   **approve** / **drop** / **redo** (with guidance)?
-   ```
+   c. **Handle conflicts.** If the cherry-pick produces conflicts:
+      1. Analyze the conflicts and resolve them.
+      2. Stage the resolution with `git add`.
+      3. Inform the user: "Cherry-pick had conflicts — I resolved them. Run `git diff --staged` to review the full result including my conflict resolution."
 
-2. Use **AskUserQuestion** for each fix. Parse the response:
-   - **approve** (or `"y"`, `"yes"`, `"ok"`, `""`): Mark as approved.
-   - **drop**: Mark as dropped — do not apply this commit.
-   - **redo [guidance]**: Resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit.
+   d. **Prompt review:**
+      Tell the user: "Changes are staged. Run `git diff --staged` to review."
 
-3. After all fixes are reviewed, collect any redo items and run another review pass. Repeat until no more redos remain.
+   e. **AskUserQuestion** — approve / drop / redo (with guidance).
+
+   f. **Act on response:**
+      - **approve** (or `"y"`, `"yes"`, `"ok"`, `""`): Commit the staged changes:
+        ```bash
+        git commit -m "fix: {one-line summary} (PR feedback #{item_number})"
+        ```
+      - **drop**: Discard the staged changes:
+        ```bash
+        git reset HEAD && git checkout -- .
+        ```
+      - **redo [guidance]**: Discard the staged changes (`git reset HEAD && git checkout -- .`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
+
+2. After all fixes are reviewed, collect any redo items and run another review pass. Repeat until no more redos remain.
 
 ---
 
-## Phase 6: Apply Approved Fixes & Cleanup
+## Phase 6: Cleanup & Resolve
 
-1. **Cherry-pick approved commits** onto the PR branch. For each approved commit, in the order they were reviewed:
-   ```bash
-   git cherry-pick {commit_sha}
-   ```
-
-2. **Handle cherry-pick conflicts.** If a cherry-pick conflict occurs:
-   1. Show the conflict to the user with `git diff`
-   2. Analyze the conflict and suggest a resolution
-   3. Use **AskUserQuestion** to ask the user for approval before applying the resolution
-   4. If approved, resolve and continue:
-      ```bash
-      git add . && git cherry-pick --continue
-      ```
-   5. If rejected, skip this commit:
-      ```bash
-      git cherry-pick --abort
-      ```
-
-3. **Clean up worktrees.** After all cherry-picks are applied (or skipped), remove all worktrees:
+1. **Clean up worktrees.** After all fixes are reviewed and committed (or dropped), remove all worktrees:
    - Worktrees with no remaining changes are cleaned up automatically by the Agent tool with `isolation: "worktree"`.
    - For worktrees with unapplied commits (dropped items), clean up manually:
      ```bash
      git worktree remove {worktree_path} --force
      ```
 
-4. **Reply to fixed items** on GitHub. For each approved fix, reply to the original comment acknowledging the fix:
+2. **Reply to fixed items** on GitHub. For each approved fix, reply to the original comment acknowledging the fix:
    ```bash
    agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Fixed in {commit_sha_short}."
    ```
@@ -192,7 +192,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
    agh resolve-thread --thread-id THREAD_ID
    ```
 
-5. **Present a final summary** to the user:
+3. **Present a final summary** to the user:
 
    ```
    ## PR Feedback Resolution Complete
@@ -205,7 +205,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
    Push changes? (y/n)
    ```
 
-6. Use **AskUserQuestion** to ask whether to push. If the user says yes, push the branch:
+4. Use **AskUserQuestion** to ask whether to push. If the user says yes, push the branch:
    ```bash
    git push
    ```
@@ -227,5 +227,5 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't resolve threads for general PR comments — only items with a `threadId` can be resolved.
 - Don't use a generic dismissal for all junk items — tailor each reply to the specific comment.
 - Don't commit in the main worktree during the fix phase — all fixes happen in isolated worktrees.
-- Don't cherry-pick dropped commits — only apply approved ones.
+- Don't forget to discard staged changes for dropped items — use `git reset HEAD && git checkout -- .`.
 - Don't forget to reply + resolve fixed items after cherry-picking (Phase 6 step 4).
