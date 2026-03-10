@@ -1,6 +1,6 @@
 ---
 name: resolve-pr-feedback
-description: Use when the user wants to resolve, address, or fix PR review feedback, PR comments, or code review suggestions — fetches review comments from GitHub, triages into fix vs dismiss, applies fixes in parallel worktrees with batched review
+description: Use when the user wants to resolve, address, or fix PR review feedback, PR comments, or code review suggestions — fetches review comments from GitHub, triages into fix vs dismiss, applies fixes in parallel worktrees with interactive staged review
 ---
 
 # Resolve PR Feedback
@@ -227,5 +227,6 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't resolve threads for general PR comments — only items with a `threadId` can be resolved.
 - Don't use a generic dismissal for all junk items — tailor each reply to the specific comment.
 - Don't commit in the main worktree during the fix phase — all fixes happen in isolated worktrees.
+- Don't show diffs inline during review — let the user review with `git diff --staged`.
 - Don't forget to discard staged changes for dropped items — use `git reset HEAD && git checkout -- .`.
-- Don't forget to reply + resolve fixed items after cherry-picking (Phase 6 step 4).
+- Don't forget to reply + resolve fixed items after committing (Phase 6 step 2).
