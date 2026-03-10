@@ -51,15 +51,26 @@ Uses the `agh` CLI tool for all GitHub interactions.
    | 🟢 | **Low** | Nitpicks, formatting, minor suggestions |
    | ⚪ | **Info** | "LGTM", acknowledgments, discussion, already-answered questions |
 
-2. Present ALL feedback items in a single numbered list, sorted by severity (critical first):
+2. Present ALL feedback items in a single numbered list, sorted by severity (critical first). Each item should include enough context for the user to decide whether it's worth fixing — include the reviewer's comment (quoted or summarized) and the referenced code if available:
 
    ```
    ## PR Feedback (5 items — all will be fixed unless you exclude some)
 
    1. 🔴 @bob — internal/db/query.go:118 — SQL injection risk in dynamic query
+      > "The query string is built with fmt.Sprintf using user input directly — this is injectable."
+      Code: `db.Query(fmt.Sprintf("SELECT * FROM users WHERE name = '%s'", name))`
+
    2. 🟠 @alice — src/handler.go:42 — missing nil check on user input
+      > "req.Body could be nil here, this will panic on POST requests with no body."
+      Code: `json.NewDecoder(req.Body).Decode(&input)`
+
    3. 🟡 @alice — (PR comment) — add integration test for the new endpoint
+      > "Can we add a test that hits /api/tasks with auth headers to cover the happy path?"
+
    4. 🟢 @bob — src/handler.go:10 — suggests using custom error type
+      > "Minor: could use a typed error here instead of fmt.Errorf for better downstream handling."
+      Code: `return fmt.Errorf("invalid input: %s", msg)`
+
    5. ⚪ @carol — (review) — "LGTM"
    ```
 
@@ -157,7 +168,13 @@ Uses the `agh` CLI tool for all GitHub interactions.
    d. **Prompt review:**
       Tell the user: "Changes are staged. Run `git diff --staged` to review."
 
-   e. **AskUserQuestion** — approve / drop / redo (with guidance).
+   e. **AskUserQuestion** with context — show the original feedback and a brief summary of what the fix does, then ask for approval:
+      ```
+      **Original feedback** (@{user}): {comment body}
+      **Fix summary:** {1-sentence description of what the fix changed}
+
+      approve (enter) / drop / or type feedback to redo:
+      ```
 
    f. **Act on response:**
       - **approve** (or `"y"`, `"yes"`, `"ok"`, `""`): Commit the staged changes:
@@ -168,7 +185,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
         ```bash
         git reset && git checkout -- . && git clean -fd
         ```
-      - **redo [guidance]**: Discard the staged changes (`git reset && git checkout -- . && git clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
+      - **anything else** (redo): Treat the entire response as guidance. Discard the staged changes (`git reset && git checkout -- . && git clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
 
 2. After all fixes are reviewed, collect any redo items and run another review pass. Repeat until no more redos remain.
 
