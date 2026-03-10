@@ -17,5 +17,6 @@ in
 
   home.file = {
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
+    ".claude/skills".source = outOfStore "${dotfiles}/claude/skills";
   };
 }

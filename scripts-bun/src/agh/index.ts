@@ -124,6 +124,7 @@ async function getPrFeedback(prNumber: number) {
           # 3. Review Threads (Inline Comments with resolved status)
           reviewThreads(last: 100) {
             nodes {
+              id
               isResolved
               comments(last: 50) {
                 nodes {
@@ -243,6 +244,7 @@ async function getPrFeedback(prNumber: number) {
       type: `Inline Code`,
       commentType: "review" as const,
       commentId: comment.databaseId,
+      threadId: thread.id,
       user: comment.author.login,
       body: comment.body,
       path: comment.path,
@@ -319,6 +321,31 @@ async function replyToComment(
   }
 }
 
+async function resolveThread(threadId: string) {
+  const authToken = await getAuthToken();
+  const octokit = new Octokit({ auth: authToken });
+
+  const mutation = `
+    mutation($threadId: ID!) {
+      resolveReviewThread(input: { threadId: $threadId }) {
+        thread { isResolved }
+      }
+    }
+  `;
+
+  const response: any = await octokit.graphql(mutation, { threadId });
+  console.log(
+    JSON.stringify(
+      {
+        success: true,
+        resolved: response.resolveReviewThread.thread.isResolved,
+      },
+      null,
+      2,
+    ),
+  );
+}
+
 yargs(hideBin(process.argv))
   .scriptName("agh")
   .usage("$0 <command> [options]")
@@ -366,6 +393,22 @@ yargs(hideBin(process.argv))
         argv.type as "review" | "issue",
         argv.body,
       );
+    },
+  )
+  .command(
+    "resolve-thread",
+    "Resolve a review thread on a pull request",
+    (yargs) => {
+      return yargs.option("thread-id", {
+        alias: "t",
+        type: "string",
+        description:
+          "The GraphQL node ID of the review thread (from get-pr-feedback output)",
+        demandOption: true,
+      });
+    },
+    async (argv) => {
+      await resolveThread(argv["thread-id"]);
     },
   )
   .demandCommand(1, "You need to specify a command")
