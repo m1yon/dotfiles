@@ -48,7 +48,7 @@
     ];
   };
 
-  environment.sessionVariables.TERMINAL = "foot";
+  environment.sessionVariables.TERMINAL = "ghostty";
   programs.xfconf.enable = true;
   programs.dconf.enable = true;
   services.gvfs.enable = true;

@@ -37,7 +37,7 @@
     ./zsh.nix
     ./yazi.nix
     ./hyprland.nix
-    ./foot.nix
+    ./ghostty.nix
     ./stylix.nix
     ./waybar.nix
     ./vicinae.nix

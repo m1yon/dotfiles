@@ -1,9 +1,9 @@
 {
-  programs.foot = {
+  programs.ghostty = {
     enable = true;
   };
 
   xdg.configFile."xfce4/helpers.rc".text = ''
-    TerminalEmulator=foot
+    TerminalEmulator=ghostty
   '';
 }
