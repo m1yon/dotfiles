@@ -66,6 +66,10 @@ tooltip label {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+#battery {
+  margin-right: 4px;
+}
+
 #battery.warning {
   color: #f1fa8c;
 }
