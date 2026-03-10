@@ -2,7 +2,7 @@
     "layer": "top",
     "modules-left": ["clock"],
     "modules-center": ["hyprland/workspaces", "hyprland/submap"],
-    "modules-right": ["wireplumber", ],
+    "modules-right": ["battery", "wireplumber"],
     "hyprland/workspaces": {
         "format": "{icon}",
         "format-icons": {
@@ -13,7 +13,15 @@
     },
     "battery": {
         "format": "{capacity}% {icon}",
-        "format-icons": ["", "", "", "", ""]
+        "format-charging": "{capacity}% 󰂄",
+        "format-full": "{capacity}% 󰁹",
+        "format-icons": ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
+        "states": {
+            "warning": 30,
+            "critical": 15
+        },
+        "tooltip-format": "{timeTo} — {capacity}%",
+        "interval": 30
     },
     "clock": {
       "format": "{:%d %b  %I:%M %p}",
