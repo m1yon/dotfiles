@@ -7,7 +7,7 @@ description: Use when the user wants to resolve, address, or fix PR review feedb
 
 Fetch all unresolved review feedback on a pull request, triage items into fix vs dismiss, then apply fixes and resolve threads.
 
-Uses the `agh` CLI tool (`scripts-bun/src/agh/index.ts`) for all GitHub interactions.
+Uses the `agh` CLI tool for all GitHub interactions.
 
 ---
 
@@ -15,7 +15,7 @@ Uses the `agh` CLI tool (`scripts-bun/src/agh/index.ts`) for all GitHub interact
 
 1. Run `agh get-pr-feedback` (infers PR from current branch via `gh pr view`):
    ```bash
-   bun run scripts-bun/src/agh/index.ts get-pr-feedback
+   agh get-pr-feedback
    ```
 
    If the current branch has no PR, `agh` will error. Use **AskUserQuestion** to ask the user which branch to check out, or have them provide a PR number.
@@ -87,7 +87,7 @@ Uses the `agh` CLI tool (`scripts-bun/src/agh/index.ts`) for all GitHub interact
 
    a. **Reply** using `agh reply-to-comment`:
       ```bash
-      bun run scripts-bun/src/agh/index.ts reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "dismissal message"
+      agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "dismissal message"
       ```
       - `--comment-id`: the item's `commentId`
       - `--type`: the item's `commentType` (`"review"` or `"issue"`)
@@ -98,7 +98,7 @@ Uses the `agh` CLI tool (`scripts-bun/src/agh/index.ts`) for all GitHub interact
 
    b. **Resolve the thread** (for items with a `threadId`) using `agh resolve-thread`:
       ```bash
-      bun run scripts-bun/src/agh/index.ts resolve-thread --thread-id THREAD_ID
+      agh resolve-thread --thread-id THREAD_ID
       ```
       If no `threadId` is available for an item (general PR comments, review summaries), skip the resolve step and just reply.
 
@@ -193,11 +193,11 @@ Uses the `agh` CLI tool (`scripts-bun/src/agh/index.ts`) for all GitHub interact
 
 4. **Reply to fixed items** on GitHub. For each approved fix, reply to the original comment acknowledging the fix:
    ```bash
-   bun run scripts-bun/src/agh/index.ts reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Fixed in {commit_sha_short}."
+   agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Fixed in {commit_sha_short}."
    ```
    Then resolve the thread if it has a `threadId`:
    ```bash
-   bun run scripts-bun/src/agh/index.ts resolve-thread --thread-id THREAD_ID
+   agh resolve-thread --thread-id THREAD_ID
    ```
 
 5. **Present a final summary** to the user:
