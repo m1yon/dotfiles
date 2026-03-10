@@ -14,5 +14,38 @@
       }
     }
   },
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "permissions": {
+    "allow": [
+      "Bash(npm *)",
+      "Bash(npm *)",
+      "Bash(npx *)",
+      "Bash(bun *)",
+      "Bash(bunx *)",
+      "Bash(make *)",
+      "Bash(task *)",
+      "Bash(go *)",
+      "Bash(nix *)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git branch*)",
+      "Bash(git show*)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/.env.local)",
+      "Edit(**/.env)",
+      "Edit(**/.env.*)",
+      "Edit(**/.env.local)",
+      "Write(**/.env)",
+      "Write(**/.env.*)",
+      "Write(**/.env.local)",
+      "Bash(cat *.env*)",
+      "Bash(echo * > *.env*)",
+      "Bash(cp *.env*)",
+      "Bash(mv *.env*)"
+    ]
+  }
 }
