@@ -12,5 +12,6 @@
     ./ssh.nix
     ./development.nix
     ./kvm.nix
+    ./power.nix
   ];
 }
