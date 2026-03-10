@@ -62,6 +62,7 @@
     jq
     unzip
     file-roller
+    brightnessctl
   ];
 
   fonts.packages = with pkgs; [

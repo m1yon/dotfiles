@@ -12,6 +12,7 @@
     description = "Michael";
     extraGroups = [
       "wheel"
+      "video"
     ];
     packages = with pkgs; [ ];
     shell = pkgs.zsh;
