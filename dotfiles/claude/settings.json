@@ -31,7 +31,9 @@
       "Bash(git diff*)",
       "Bash(git branch*)",
       "Bash(git show*)",
+      "Bash(git add*)",
       "Bash(hyprctl *)",
+      "Bash(cat *)",
       "Bash(agh *)"
     ],
     "deny": [
