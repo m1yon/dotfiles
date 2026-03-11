@@ -9,6 +9,7 @@
     ./claude-desktop.nix
     ./claude-devtools.nix
     ./coderabbit.nix
+    ./difftastic.nix
     ./direnv.nix
     ./datagrip.nix
     ./discord.nix
