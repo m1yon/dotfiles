@@ -2,6 +2,7 @@
   programs.ghostty = {
     enable = true;
     settings = {
+      theme = "TokyoNight Night"; # TODO: move to stylix
       confirm-close-surface = false;
     };
   };

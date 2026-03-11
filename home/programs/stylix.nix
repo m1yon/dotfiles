@@ -15,7 +15,6 @@
     };
 
     autoEnable = false;
-    targets.ghostty.enable = true;
     targets.gtk.enable = true;
   };
 }
