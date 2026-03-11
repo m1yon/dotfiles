@@ -210,7 +210,11 @@ Uses the `agh` CLI tool for all GitHub interactions.
         ```bash
         git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd
         ```
-      - **anything else** (redo): Treat the entire response as guidance. Discard the staged changes (`git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should re-read the feedback, apply the guidance, and **append a new commit on top** — do NOT revert, reset, or rebase existing commits. Other commits in the worktree may belong to different fix items and must be preserved. Then cherry-pick **only the new commit SHA** via `cherry-pick --no-commit` and repeat from step (d). The old bad commit is harmless since it is never cherry-picked into the main worktree.
+      - **anything else** (redo): Treat the entire response as guidance. Discard the staged changes (`git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd`). Do NOT resume the old worktree agent — it is based on stale HEAD and doesn't include already-applied fixes, which causes conflicts. Instead, launch a **new** Agent with `isolation: "worktree"` using the same subagent prompt template from Phase 4, but with these differences:
+        - Set `{pr_head}` to the **current** main worktree HEAD (`git -C {MAIN_WORKTREE} rev-parse HEAD`), not the original PR HEAD. This ensures the redo agent starts from a base that includes all previously cherry-picked fixes.
+        - Include the user's redo guidance in the prompt.
+        - Include only the single feedback item being redone (not the full group).
+        Then cherry-pick the new commit via `cherry-pick --no-commit` and repeat from step (d).
 
 2. After all fixes are reviewed, collect any redo items and run another review pass. Repeat until no more redos remain.
 
@@ -225,12 +229,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
      git worktree remove {worktree_path} --force
      ```
 
-2. **Reply to fixed items** on GitHub. For each approved fix, reply to the original comment with the commit reference and a brief summary of the fix. Do NOT resolve the thread — let the reviewer decide whether to resolve it.
-   ```bash
-   agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Fixed in {commit_sha_short} — {brief summary of what was changed}."
-   ```
-
-3. **Present a final summary** to the user:
+2. **Present a summary and ask to push:**
 
    ```
    ## PR Feedback Resolution Complete
@@ -243,10 +242,24 @@ Uses the `agh` CLI tool for all GitHub interactions.
    Push changes? (y/n)
    ```
 
-4. Use **AskUserQuestion** to ask whether to push. If the user says yes, push the branch:
+   Use **AskUserQuestion** to ask whether to push. If the user says yes, push the branch:
    ```bash
    git push
    ```
+
+3. **Reply to feedback items** on GitHub — only after pushing, so commit SHAs are available on the remote. If the user declined to push, skip this step entirely.
+
+   For each **approved fix**, reply with the commit reference:
+   ```bash
+   agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Fixed in {commit_sha_short} — {brief summary of what was changed}."
+   ```
+
+   For each **dropped item**, reply with a brief explanation of why it was dropped:
+   ```bash
+   agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Acknowledged — not addressing in this PR."
+   ```
+
+   Do NOT resolve threads — let the reviewer decide whether to resolve them.
 
 ---
 
@@ -272,4 +285,5 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't skip stale worktree cleanup — leftover `worktree-agent-*` branches from previous runs can cause branch lock conflicts and confusing state.
 - Don't cherry-pick without first verifying `git symbolic-ref --short HEAD` matches the PR branch — a failed cherry-pick or reset can displace HEAD onto a worktree branch.
 - Don't `cd` into worktree directories to inspect commits or logs — use `git -C <worktree_path> log` instead. The shell working directory persists across Bash tool calls, and subsequent git commands (cherry-pick, checkout, reset) will silently run in the worktree instead of the main worktree. Always use `git -C {MAIN_WORKTREE}` for Phase 5 commands.
-- Don't `git reset --hard` to base in a worktree during a redo — this destroys ALL commits including ones for other fix items. Instead, append a new commit on top and cherry-pick only the new SHA. The old bad commit stays in the worktree harmlessly since only specific SHAs are cherry-picked.
+- Don't resume old worktree agents for redos — the old worktree is based on the original HEAD and doesn't include already-applied fixes. A redo that expands scope (e.g., touching files modified by other groups) will conflict on cherry-pick. Always create a fresh worktree from the current main worktree HEAD.
+- Don't reuse old worktrees for redos even if they still exist — their base commit is stale. The fresh worktree approach avoids all cross-group conflict issues.
