@@ -37,12 +37,13 @@ Uses the `agh` CLI tool for all GitHub interactions.
 
 4. If no feedback items remain, report **"No unresolved feedback found"** and stop.
 
-5. **Record the current branch and HEAD** for use throughout the workflow:
+5. **Record the current branch, HEAD, and main worktree path** for use throughout the workflow:
    ```bash
+   MAIN_WORKTREE=$(git rev-parse --show-toplevel)
    PR_BRANCH=$(git symbolic-ref --short HEAD)
    PR_HEAD=$(git rev-parse HEAD)
    ```
-   Store these values — they are needed in Phase 4 (worktree setup) and Phase 5 (pre-cherry-pick validation).
+   Store these values — they are needed in Phase 4 (worktree setup) and Phase 5 (pre-cherry-pick validation). Use `MAIN_WORKTREE` with `git -C` for all Phase 5 commands to ensure they run in the correct directory.
 
 6. **Clean up stale worktrees** from previous runs:
    ```bash
@@ -177,16 +178,16 @@ Uses the `agh` CLI tool for all GitHub interactions.
       > {comment body}
       ```
 
-   b. **Verify HEAD before cherry-picking.** Confirm the main worktree is still on the PR branch:
+   b. **Verify HEAD before cherry-picking.** Use `git -C {MAIN_WORKTREE}` to ensure commands run in the main worktree regardless of shell working directory:
       ```bash
-      git symbolic-ref --short HEAD  # must match {pr_branch}
-      git rev-parse HEAD             # must match expected commit
+      git -C {MAIN_WORKTREE} symbolic-ref --short HEAD  # must match {pr_branch}
+      git -C {MAIN_WORKTREE} rev-parse HEAD              # must match expected commit
       ```
-      If HEAD has been displaced (e.g., onto a `worktree-agent-*` branch), recover with `git checkout {pr_branch}` before proceeding.
+      If HEAD has been displaced (e.g., onto a `worktree-agent-*` branch), recover with `git -C {MAIN_WORKTREE} checkout {pr_branch}` before proceeding.
 
    c. **Cherry-pick without committing:**
       ```bash
-      git cherry-pick --no-commit {commit_sha}
+      git -C {MAIN_WORKTREE} cherry-pick --no-commit {commit_sha}
       ```
       This stages all changes from the fix without creating a commit.
 
@@ -206,16 +207,16 @@ Uses the `agh` CLI tool for all GitHub interactions.
       approve (enter) / drop / or type feedback to redo:
       ```
 
-   g. **Act on response:**
+   g. **Act on response** (all commands use `git -C {MAIN_WORKTREE}`):
       - **approve** (or `"y"`, `"yes"`, `"ok"`, `""`): Commit the staged changes:
         ```bash
-        git commit -m "fix: {one-line summary} (PR feedback #{item_number})"
+        git -C {MAIN_WORKTREE} commit -m "fix: {one-line summary} (PR feedback #{item_number})"
         ```
       - **drop**: Discard the staged changes:
         ```bash
-        git reset && git checkout -- . && git clean -fd
+        git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd
         ```
-      - **anything else** (redo): Treat the entire response as guidance. Discard the staged changes (`git reset && git checkout -- . && git clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
+      - **anything else** (redo): Treat the entire response as guidance. Discard the staged changes (`git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
 
 2. After all fixes are reviewed, collect any redo items and run another review pass. Repeat until no more redos remain.
 
@@ -280,3 +281,4 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't trust `isolation: "worktree"` to use the current branch — it may default to the repo's default branch. Always explicitly checkout `{pr_branch}` in the worktree agent and verify HEAD matches `{pr_head}`.
 - Don't skip stale worktree cleanup — leftover `worktree-agent-*` branches from previous runs can cause branch lock conflicts and confusing state.
 - Don't cherry-pick without first verifying `git symbolic-ref --short HEAD` matches the PR branch — a failed cherry-pick or reset can displace HEAD onto a worktree branch.
+- Don't `cd` into worktree directories to inspect commits or logs — use `git -C <worktree_path> log` instead. The shell working directory persists across Bash tool calls, and subsequent git commands (cherry-pick, checkout, reset) will silently run in the worktree instead of the main worktree. Always use `git -C {MAIN_WORKTREE}` for Phase 5 commands.
