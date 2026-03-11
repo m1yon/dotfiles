@@ -5,7 +5,7 @@ description: Use when the user wants to resolve, address, or fix PR review feedb
 
 # Resolve PR Feedback
 
-Fetch all unresolved review feedback on a pull request, triage items into fix vs dismiss, then apply fixes and resolve threads.
+Fetch all unresolved review feedback on a pull request, triage items into fix vs dismiss, then apply fixes and reply to threads.
 
 Uses the `agh` CLI tool for all GitHub interactions.
 
@@ -24,7 +24,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
    - `type` — `"General Comment"`, `"Review (CHANGES_REQUESTED)"`, `"Review (COMMENTED)"`, or `"Inline Code"`
    - `commentType` — `"review"` (inline code comments), `"issue"` (general comments), or `null` (review summaries)
    - `commentId` — numeric comment ID (for replying). Null for review summaries.
-   - `threadId` — GraphQL node ID of the review thread (for resolving). Only present on `"Inline Code"` items.
+   - `threadId` — GraphQL node ID of the review thread. Only present on `"Inline Code"` items.
    - `user` — who left the feedback
    - `body` — the comment text
    - `path` — file path (inline code comments only)
@@ -115,12 +115,6 @@ Uses the `agh` CLI tool for all GitHub interactions.
         - "Not applicable to this codebase's conventions."
         - "Intentional — [brief reason]."
         - "Acknowledged, but not addressing in this PR."
-
-   b. **Resolve the thread** (for items with a `threadId`) using `agh resolve-thread`:
-      ```bash
-      agh resolve-thread --thread-id THREAD_ID
-      ```
-      If no `threadId` is available for an item (general PR comments, review summaries), skip the resolve step and just reply.
 
 2. Items with `commentType: null` (review summaries) cannot be replied to — skip them entirely.
 
@@ -222,7 +216,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
 
 ---
 
-## Phase 6: Cleanup & Resolve
+## Phase 6: Cleanup & Reply
 
 1. **Clean up worktrees.** After all fixes are reviewed and committed (or dropped), remove all worktrees:
    - Worktrees with no remaining changes are cleaned up automatically by the Agent tool with `isolation: "worktree"`.
@@ -231,13 +225,9 @@ Uses the `agh` CLI tool for all GitHub interactions.
      git worktree remove {worktree_path} --force
      ```
 
-2. **Reply to fixed items** on GitHub. For each approved fix, reply to the original comment acknowledging the fix:
+2. **Reply to fixed items** on GitHub. For each approved fix, reply to the original comment with the commit reference and a brief summary of the fix. Do NOT resolve the thread — let the reviewer decide whether to resolve it.
    ```bash
-   agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Fixed in {commit_sha_short}."
-   ```
-   Then resolve the thread if it has a `threadId`:
-   ```bash
-   agh resolve-thread --thread-id THREAD_ID
+   agh reply-to-comment --comment-id COMMENT_ID --type COMMENT_TYPE --body "Fixed in {commit_sha_short} — {brief summary of what was changed}."
    ```
 
 3. **Present a final summary** to the user:
@@ -246,7 +236,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
    ## PR Feedback Resolution Complete
 
    **Fixed:** {N} items applied to branch
-   **Dismissed:** {N} junk items replied + resolved
+   **Dismissed:** {N} junk items replied to
    **Dropped:** {N} items skipped
    **Failed:** {N} items (if any)
 
@@ -264,20 +254,20 @@ Uses the `agh` CLI tool for all GitHub interactions.
 
 - **No open PR for current branch** — `agh` will error. Ask the user to check out the PR branch or provide a PR number.
 - **No unresolved feedback** — Report "No unresolved feedback found" and exit.
-- **Review comments vs PR comments** — Review comments have threads (can be resolved via `threadId`). General PR comments do not. Only attempt to resolve review comment threads.
-- **Review summaries** — Items with `commentType: null` cannot be replied to or resolved. Use them as context only.
+- **Review comments vs PR comments** — Review comments have threads. General PR comments do not. Both get replies but neither should be resolved programmatically — let reviewers resolve their own threads.
+- **Review summaries** — Items with `commentType: null` cannot be replied to. Use them as context only.
 - **Large bot comments** — `agh` filters CodeRabbit bot comments except for inline review comments that may contain actionable suggestions. Review these during triage.
 
 ---
 
 ## Common Mistakes
 
-- Don't resolve threads for general PR comments — only items with a `threadId` can be resolved.
+- Don't resolve threads programmatically — only reply to comments. Let the reviewer decide when to resolve their threads.
 - Don't use a generic dismissal for all junk items — tailor each reply to the specific comment.
 - Don't commit in the main worktree during the fix phase — all fixes happen in isolated worktrees.
 - Don't show diffs inline during review — let the user review with `git diff --staged`.
 - Don't forget to discard staged changes for dropped items — use `git reset && git checkout -- . && git clean -fd`.
-- Don't forget to reply + resolve fixed items after committing (Phase 6 step 2).
+- Don't forget to reply to fixed items after committing (Phase 6 step 2).
 - Don't trust `isolation: "worktree"` to use the current branch — it may default to the repo's default branch. Always explicitly checkout `{pr_branch}` in the worktree agent and verify HEAD matches `{pr_head}`.
 - Don't skip stale worktree cleanup — leftover `worktree-agent-*` branches from previous runs can cause branch lock conflicts and confusing state.
 - Don't cherry-pick without first verifying `git symbolic-ref --short HEAD` matches the PR branch — a failed cherry-pick or reset can displace HEAD onto a worktree branch.
