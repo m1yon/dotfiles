@@ -216,7 +216,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
         ```bash
         git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd
         ```
-      - **anything else** (redo): Treat the entire response as guidance. Discard the staged changes (`git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should revert its commit, re-read the feedback, apply the guidance, and create a new commit. Then re-apply via `cherry-pick --no-commit` and repeat from step (d).
+      - **anything else** (redo): Treat the entire response as guidance. Discard the staged changes (`git -C {MAIN_WORKTREE} reset && git -C {MAIN_WORKTREE} checkout -- . && git -C {MAIN_WORKTREE} clean -fd`), resume the subagent for that worktree with the user's guidance. The subagent should re-read the feedback, apply the guidance, and **append a new commit on top** — do NOT revert, reset, or rebase existing commits. Other commits in the worktree may belong to different fix items and must be preserved. Then cherry-pick **only the new commit SHA** via `cherry-pick --no-commit` and repeat from step (d). The old bad commit is harmless since it is never cherry-picked into the main worktree.
 
 2. After all fixes are reviewed, collect any redo items and run another review pass. Repeat until no more redos remain.
 
@@ -282,3 +282,4 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't skip stale worktree cleanup — leftover `worktree-agent-*` branches from previous runs can cause branch lock conflicts and confusing state.
 - Don't cherry-pick without first verifying `git symbolic-ref --short HEAD` matches the PR branch — a failed cherry-pick or reset can displace HEAD onto a worktree branch.
 - Don't `cd` into worktree directories to inspect commits or logs — use `git -C <worktree_path> log` instead. The shell working directory persists across Bash tool calls, and subsequent git commands (cherry-pick, checkout, reset) will silently run in the worktree instead of the main worktree. Always use `git -C {MAIN_WORKTREE}` for Phase 5 commands.
+- Don't `git reset --hard` to base in a worktree during a redo — this destroys ALL commits including ones for other fix items. Instead, append a new commit on top and cherry-pick only the new SHA. The old bad commit stays in the worktree harmlessly since only specific SHAs are cherry-picked.
