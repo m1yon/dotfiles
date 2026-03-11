@@ -1,6 +1,11 @@
 ---
 name: resolve-pr-feedback
 description: Use when the user wants to resolve, address, or fix PR review feedback, PR comments, or code review suggestions — fetches review comments from GitHub, triages into fix vs dismiss, applies fixes in parallel worktrees with interactive staged review
+allowed-tools:
+  - Bash(agh:*)
+  - Bash(git:*)
+  - Agent
+  - AskUserQuestion
 ---
 
 # Resolve PR Feedback

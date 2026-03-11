@@ -33,9 +33,7 @@
       "Bash(git show*)",
       "Bash(git add*)",
       "Bash(git worktree*)",
-      "Bash(hyprctl *)",
-      "Bash(cat *)",
-      "Bash(agh *)"
+      "Bash(cat *)"
     ],
     "deny": [
       "Read(**/.env)",
