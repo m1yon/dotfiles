@@ -5,6 +5,12 @@
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
 
+  # Ensure dynamically-linked apps (e.g. miniaudio/malgo) can find ALSA + PipeWire plugin.
+  environment.sessionVariables = {
+    LD_LIBRARY_PATH = "${pkgs.alsa-lib}/lib";
+    ALSA_PLUGIN_DIR = "${pkgs.pipewire}/lib/alsa-lib";
+  };
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;

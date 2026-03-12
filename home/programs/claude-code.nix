@@ -18,5 +18,6 @@ in
   home.file = {
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
     ".claude/skills".source = outOfStore "${dotfiles}/claude/skills";
+    ".claude/claude-notifications-go/config.json".source = outOfStore "${dotfiles}/claude/claude-notifications-go/config.json";
   };
 }

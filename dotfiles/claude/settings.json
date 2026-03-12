@@ -37,7 +37,7 @@
     ]
   },
   "enabledPlugins": {
-    "claude-notifications-go@claude-notifications-go": false,
+    "claude-notifications-go@claude-notifications-go": true,
     "superpowers@claude-plugins-official": true,
     "coderabbit@claude-plugins-official": true
   },
