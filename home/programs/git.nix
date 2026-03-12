@@ -19,6 +19,7 @@
     ignores = [
       ".ignore/"
       ".worktrees/"
+      ".claude/worktrees/"
     ];
 
     settings = {
