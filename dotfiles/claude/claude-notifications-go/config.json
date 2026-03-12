@@ -6,7 +6,7 @@
       "volume": 0.5,
       "audioDevice": "",
       "appIcon": "${CLAUDE_PLUGIN_ROOT}/claude_icon.png",
-      "clickToFocus": true,
+      "clickToFocus": false,
       "terminalBundleId": ""
     },
     "webhook": {
