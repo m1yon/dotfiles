@@ -8,8 +8,11 @@
     settings = {
       General = {
         EnableNetworkConfiguration = true;
+        AddressRandomization = "once";
       };
       Network = {
+        EnableIPv6 = true;
+        RoutePriorityOffset = 300;
         NameResolvingService = "systemd";
       };
       Settings = {
@@ -17,9 +20,6 @@
       };
     };
   };
-
-  systemd.network.enable = true;
-  networking.useNetworkd = true;
 
   environment.systemPackages = with pkgs; [
     impala

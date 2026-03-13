@@ -4,6 +4,8 @@
     settings = {
       theme = "TokyoNight Night"; # TODO: move to stylix
       confirm-close-surface = false;
+      clipboard-read = "allow";
+      clipboard-write = "allow";
     };
   };
 
