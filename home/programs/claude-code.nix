@@ -11,9 +11,15 @@ let
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
 in
 {
-  home.packages = [
-    inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
+  imports = [
+    inputs.nix-wrapper-modules.homeModules.claude-code
   ];
+
+  wrappers.claude-code = {
+    enable = true;
+    package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
+    addFlag = [ "--dangerously-skip-permissions" ];
+  };
 
   home.file = {
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
