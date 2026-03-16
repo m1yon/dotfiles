@@ -54,11 +54,12 @@
       username = "michael";
       hostname = "nixos";
       nixConfigDir = "/home/${username}/GitHub/dotfiles";
+      unstablePkgs = import inputs.nixpkgs-unstable {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
       unstableOverlay = final: prev: {
-        yazi =
-          (import inputs.nixpkgs-unstable {
-            system = prev.stdenv.hostPlatform.system;
-          }).yazi;
+        yazi = unstablePkgs.yazi;
       };
     in
     {
