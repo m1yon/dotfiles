@@ -8,6 +8,24 @@ let
   homeDir = config.home.homeDirectory;
   carecoordinatorsConfigDir = "${homeDir}/.config/onedrive-carecoordinators";
   personalConfigDir = "${homeDir}/.config/onedrive-personal";
+
+  mkOnedriveService = { description, confdir }: {
+    Unit = {
+      Description = "OneDrive sync - ${description}";
+      After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
+      StartLimitIntervalSec = 60;
+      StartLimitBurst = 3;
+    };
+    Service = {
+      ExecStart = "${pkgs.onedrive}/bin/onedrive --monitor --confdir=${confdir}";
+      Restart = "on-failure";
+      RestartSec = 10;
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
 in
 {
   home.packages = [ pkgs.onedrive ];
@@ -42,41 +60,13 @@ in
     '';
   };
 
-  # Systemd user service for personal OneDrive
-  systemd.user.services.onedrive-personal = {
-    Unit = {
-      Description = "OneDrive sync - Personal";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-      StartLimitIntervalSec = 60;
-      StartLimitBurst = 3;
-    };
-    Service = {
-      ExecStart = "${pkgs.onedrive}/bin/onedrive --monitor --confdir=${personalConfigDir}";
-      Restart = "on-failure";
-      RestartSec = 10;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
+  systemd.user.services.onedrive-personal = mkOnedriveService {
+    description = "Personal";
+    confdir = personalConfigDir;
   };
 
-  # Systemd user service for SharePoint (carecoordinators)
-  systemd.user.services.onedrive-carecoordinators = {
-    Unit = {
-      Description = "OneDrive sync - SharePoint Care Coordinators";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-      StartLimitIntervalSec = 60;
-      StartLimitBurst = 3;
-    };
-    Service = {
-      ExecStart = "${pkgs.onedrive}/bin/onedrive --monitor --confdir=${carecoordinatorsConfigDir}";
-      Restart = "on-failure";
-      RestartSec = 10;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
+  systemd.user.services.onedrive-carecoordinators = mkOnedriveService {
+    description = "SharePoint Care Coordinators";
+    confdir = carecoordinatorsConfigDir;
   };
 }
