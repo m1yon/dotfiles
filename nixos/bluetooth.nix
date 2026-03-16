@@ -2,6 +2,7 @@
 
 {
   environment.systemPackages = [ pkgs.bluetui ];
+
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -14,9 +15,8 @@
         # the tradeoff is increased power consumption. Defaults to
         # 'false'.
         FastConnectable = true;
-        # Allow devices to discover and initiate connections to this PC.
-        Discoverable = true;
-        DiscoverableTimeout = 0;
+        # Default controller class: computer (desktop)
+        Class = "0x000100";
       };
       Policy = {
         # Enable all controllers when they are found. This includes
@@ -25,5 +25,23 @@
         AutoEnable = true;
       };
     };
+  };
+
+  # Unblock soft-blocked adapter on boot (Ideapad firmware blocks it by default)
+  boot.kernelModules = [ "btusb" ];
+  systemd.services.bluetooth-setup = {
+    description = "Unblock and power on Bluetooth adapter";
+    after = [ "bluetooth.service" ];
+    requires = [ "bluetooth.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      ${pkgs.util-linux}/bin/rfkill unblock bluetooth
+      sleep 1
+      ${pkgs.bluez}/bin/bluetoothctl power on
+    '';
   };
 }
