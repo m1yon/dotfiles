@@ -4,7 +4,14 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
+
   nix.settings = {
+    auto-optimise-store = true;
     trusted-users = [
       "root"
       "@wheel"
