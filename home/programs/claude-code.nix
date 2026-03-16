@@ -19,6 +19,10 @@ in
     enable = true;
     package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
     addFlag = [ "--dangerously-skip-permissions" ];
+    extraPackages = with pkgs; [
+      typescript-language-server
+      gopls
+    ];
   };
 
   home.file = {
