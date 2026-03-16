@@ -35,9 +35,6 @@
       url = "github:danth/stylix/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    claude-desktop = {
-      url = "github:aaddrick/claude-desktop-debian";
-    };
     tt-schemes = {
       url = "github:tinted-theming/schemes";
       flake = false;
@@ -68,7 +65,7 @@
       nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs username nixConfigDir hostname; };
         modules = [
-          { nixpkgs.overlays = [ unstableOverlay inputs.claude-desktop.overlays.default ]; }
+          { nixpkgs.overlays = [ unstableOverlay ]; }
           ./nixos/configuration.nix
 
           home-manager.nixosModules.home-manager
@@ -94,7 +91,7 @@
         pkgs = import nixpkgs {
           system = "x86_64-linux";
           config.allowUnfree = true;
-          overlays = [ unstableOverlay inputs.claude-desktop.overlays.default ];
+          overlays = [ unstableOverlay ];
         };
         extraSpecialArgs = { inherit inputs username nixConfigDir; };
         modules = [

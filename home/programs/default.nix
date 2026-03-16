@@ -6,7 +6,6 @@
     ./btm.nix
     ./bun.nix
     ./claude-code.nix
-    ./claude-desktop.nix
     ./claude-devtools.nix
     ./coderabbit.nix
     ./difftastic.nix
