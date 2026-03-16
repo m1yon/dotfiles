@@ -14,6 +14,9 @@
         # the tradeoff is increased power consumption. Defaults to
         # 'false'.
         FastConnectable = true;
+        # Allow devices to discover and initiate connections to this PC.
+        Discoverable = true;
+        DiscoverableTimeout = 0;
       };
       Policy = {
         # Enable all controllers when they are found. This includes
