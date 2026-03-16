@@ -51,11 +51,12 @@
       ...
     }@inputs:
     let
+      system = "x86_64-linux";
       username = "michael";
       hostname = "nixos";
       nixConfigDir = "/home/${username}/GitHub/dotfiles";
       unstablePkgs = import inputs.nixpkgs-unstable {
-        system = "x86_64-linux";
+        inherit system;
         config.allowUnfree = true;
       };
       unstableOverlay = final: prev: {
@@ -90,7 +91,7 @@
       # Works on non-NixOS systems (plain Linux, WSL, etc.)
       homeConfigurations.${username} = home-manager.lib.homeManagerConfiguration {
         pkgs = import nixpkgs {
-          system = "x86_64-linux";
+          inherit system;
           config.allowUnfree = true;
           overlays = [ unstableOverlay ];
         };
