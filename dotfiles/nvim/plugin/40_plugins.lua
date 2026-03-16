@@ -143,6 +143,7 @@ now_if_args(function()
 		"eslint",
 		"vtsls",
 		"taplo",
+		"nixd",
 	})
 end)
 

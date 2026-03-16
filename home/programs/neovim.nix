@@ -28,6 +28,7 @@ in
       vscode-langservers-extracted
       vtsls
       taplo
+      nixd
       golangci-lint
       gofumpt
       gotools
