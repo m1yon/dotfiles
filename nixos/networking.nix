@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ pkgs, hostname, ... }:
 
 {
-  networking.hostName = "nixos";
+  networking.hostName = hostname;
   networking.networkmanager.enable = false;
   networking.wireless.iwd = {
     enable = true;

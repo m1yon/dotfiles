@@ -55,6 +55,7 @@
     }@inputs:
     let
       username = "michael";
+      hostname = "nixos";
       nixConfigDir = "/home/${username}/GitHub/dotfiles";
       unstableOverlay = final: prev: {
         yazi =
@@ -64,8 +65,8 @@
       };
     in
     {
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs username nixConfigDir; };
+      nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs username nixConfigDir hostname; };
         modules = [
           { nixpkgs.overlays = [ unstableOverlay inputs.claude-desktop.overlays.default ]; }
           ./nixos/configuration.nix
@@ -77,7 +78,7 @@
 
             home-manager.users.${username} = import ./home/home.nix;
 
-            home-manager.extraSpecialArgs = { inherit inputs username nixConfigDir; };
+            home-manager.extraSpecialArgs = { inherit inputs username nixConfigDir hostname; };
             home-manager.sharedModules = [
               inputs.sops-nix.homeManagerModules.sops
               inputs.stylix.homeModules.stylix
