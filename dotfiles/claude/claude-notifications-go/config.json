@@ -17,8 +17,8 @@
       "format": "json",
       "headers": {}
     },
-    "suppressQuestionAfterTaskCompleteSeconds": 12,
-    "suppressQuestionAfterAnyNotificationSeconds": 7,
+    "suppressQuestionAfterTaskCompleteSeconds": 1,
+    "suppressQuestionAfterAnyNotificationSeconds": 1,
     "suppressForSubagents": true,
     "suppressFilters": []
   },
