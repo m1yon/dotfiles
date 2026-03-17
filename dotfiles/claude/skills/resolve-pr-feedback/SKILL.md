@@ -159,6 +159,7 @@ Uses the `agh` CLI tool for all GitHub interactions.
    - One commit per feedback item
    - Keep fixes minimal — only change what the feedback asks for
    - Do not refactor surrounding code
+   - Do NOT run `git push` — only commit locally. Pushing is handled by the main agent after user approval in Phase 6.
    ```
 
 3. Run **all group subagents in parallel** (multiple Agent tool calls in a single message). Wait for all to complete before proceeding to Phase 5.
@@ -292,3 +293,4 @@ Uses the `agh` CLI tool for all GitHub interactions.
 - Don't `cd` into worktree directories to inspect commits or logs — use `git -C <worktree_path> log` instead. The shell working directory persists across Bash tool calls, and subsequent git commands (cherry-pick, checkout, reset) will silently run in the worktree instead of the main worktree. Always use `git -C {MAIN_WORKTREE}` for Phase 5 commands.
 - Don't resume old worktree agents for redos — the old worktree is based on the original HEAD and doesn't include already-applied fixes. A redo that expands scope (e.g., touching files modified by other groups) will conflict on cherry-pick. Always create a fresh worktree from the current main worktree HEAD.
 - Don't reuse old worktrees for redos even if they still exist — their base commit is stale. The fresh worktree approach avoids all cross-group conflict issues.
+- Don't let subagents push — subagents must only commit locally. All pushing happens in the main agent (Phase 6) after explicit user approval. If a subagent pushes, it bypasses user review and pollutes the remote branch with unapproved changes.
