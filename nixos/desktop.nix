@@ -30,6 +30,15 @@
       inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
   };
 
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    config.common.default = [
+      "hyprland"
+      "gtk"
+    ];
+  };
+
   programs.uwsm.waylandCompositors.hyprland.binPath =
     lib.mkForce "/run/current-system/sw/bin/start-hyprland";
 
