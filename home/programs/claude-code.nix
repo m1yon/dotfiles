@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   inputs,
   nixConfigDir,
@@ -9,6 +10,15 @@
 let
   dotfiles = "${nixConfigDir}/dotfiles";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
+
+  mattpocock-skills = lib.pipe (builtins.readDir inputs.mattpocock-skills) [
+    (lib.filterAttrs (_: type: type == "directory"))
+    (lib.mapAttrs' (name: _:
+      lib.nameValuePair ".claude/skills/${name}" {
+        source = "${inputs.mattpocock-skills}/${name}";
+      }
+    ))
+  ];
 in
 {
   imports = [
@@ -28,7 +38,7 @@ in
 
   home.file = {
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
-    ".claude/skills".source = outOfStore "${dotfiles}/claude/skills";
+    ".claude/skills/resolve-pr-feedback".source = outOfStore "${dotfiles}/claude/skills/resolve-pr-feedback";
     ".claude/claude-notifications-go/config.json".source = outOfStore "${dotfiles}/claude/claude-notifications-go/config.json";
-  };
+  } // mattpocock-skills;
 }
