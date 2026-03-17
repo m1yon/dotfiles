@@ -11,6 +11,7 @@
     ./users.nix
     ./ssh.nix
     ./development.nix
+    ./docker.nix
     ./kvm.nix
     ./power.nix
   ];

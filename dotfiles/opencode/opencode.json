@@ -8,19 +8,19 @@
     },
     "junior dev": {
       "mode": "primary",
-      "model": "kimi-for-coding/k2p5"
+      "model": "opencode/kimi-k2.5"
     },
     "senior dev": {
       "mode": "primary",
-      "model": "github-copilot/claude-opus-4.6"
+      "model": "opencode/claude-opus-4.6"
     },
     "plan": {
       "mode": "primary",
-      "model": "github-copilot/claude-opus-4.6"
+      "model": "opencode/claude-opus-4.6"
     },
     "explore": {
       "mode": "subagent",
-      "model": "kimi-for-coding/k2p5"
+      "model": "opencode/kimi-k2.5"
     }
   },
   "mcp": {

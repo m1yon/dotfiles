@@ -12,6 +12,7 @@
     ./direnv.nix
     ./datagrip.nix
     ./discord.nix
+    ./docker.nix
     ./eza.nix
     ./fzf.nix
     ./git.nix
