@@ -37,6 +37,7 @@ in
   };
 
   home.file = {
+    ".claude/CLAUDE.md".source = outOfStore "${dotfiles}/claude/CLAUDE.md";
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
     ".claude/skills/resolve-pr-feedback".source = outOfStore "${dotfiles}/claude/skills/resolve-pr-feedback";
     ".claude/claude-notifications-go/config.json".source = outOfStore "${dotfiles}/claude/claude-notifications-go/config.json";
