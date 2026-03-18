@@ -13,6 +13,8 @@
     extraGroups = [
       "wheel"
       "video"
+      "input"
+      "uinput"
     ];
     packages = with pkgs; [ ];
     shell = pkgs.zsh;

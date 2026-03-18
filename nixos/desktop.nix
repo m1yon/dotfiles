@@ -65,6 +65,12 @@
 
   services.printing.enable = true;
 
+  # Vibetyper: uinput access for virtual input devices and hotkey detection
+  hardware.uinput.enable = true;
+
+  services.gnome.gnome-keyring.enable = true;
+  programs.seahorse.enable = true;
+
   environment.systemPackages = with pkgs; [
     git
     psmisc
