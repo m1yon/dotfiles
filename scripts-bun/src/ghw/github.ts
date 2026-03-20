@@ -110,6 +110,34 @@ export async function getWorkflowRuns(
   }));
 }
 
+export async function getRun(
+  owner: string,
+  repo: string,
+  runId: number,
+): Promise<WorkflowRun> {
+  const token = await getAuthToken();
+  const octokit = new Octokit({ auth: token });
+
+  const response = await octokit.rest.actions.getWorkflowRun({
+    owner,
+    repo,
+    run_id: runId,
+  });
+
+  const run = response.data;
+  return {
+    id: run.id,
+    name: run.name ?? "Unknown",
+    run_number: run.run_number,
+    status: run.status ?? "unknown",
+    conclusion: run.conclusion ?? null,
+    html_url: run.html_url,
+    created_at: run.created_at,
+    updated_at: run.updated_at,
+    head_branch: run.head_branch ?? "",
+  };
+}
+
 export async function getRunJobs(
   owner: string,
   repo: string,

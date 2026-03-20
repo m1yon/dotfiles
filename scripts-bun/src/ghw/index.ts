@@ -5,6 +5,8 @@
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { discoverRuns } from "./discovery";
+import { selectRun } from "./interactive";
+import { watchRun } from "./display";
 
 async function main() {
   await yargs(hideBin(process.argv))
@@ -12,14 +14,18 @@ async function main() {
     .usage("$0 - Watch GitHub Actions workflow runs")
     .command(
       "$0",
-      "Discover and display in-progress workflow runs",
+      "Watch a GitHub Actions workflow run",
       () => {},
       async () => {
         const { runs, branch, owner, repo } = await discoverRuns();
         console.log(
-          `\nFound ${runs.length} run(s) on ${owner}/${repo}@${branch}:\n`,
+          `Found ${runs.length} run(s) on ${owner}/${repo}@${branch}\n`,
         );
-        console.log(JSON.stringify(runs, null, 2));
+
+        const run = await selectRun(runs);
+        const result = await watchRun(owner, repo, run);
+
+        console.log(`\n${result.run.html_url}`);
       },
     )
     .help()
