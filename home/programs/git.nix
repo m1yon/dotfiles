@@ -20,6 +20,7 @@
       ".ignore/"
       ".worktrees/"
       ".claude/worktrees/"
+      ".~lock.*#"
     ];
 
     settings = {
