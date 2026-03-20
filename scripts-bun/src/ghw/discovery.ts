@@ -14,18 +14,28 @@ export interface DiscoveryResult {
   repo: string;
 }
 
-export async function discoverRuns(): Promise<DiscoveryResult> {
+export interface DiscoveryDeps {
+  getRepoInfo: typeof getRepoInfo;
+  getBranch: typeof getBranch;
+  getWorkflowRuns: typeof getWorkflowRuns;
+}
+
+const defaultDeps: DiscoveryDeps = { getRepoInfo, getBranch, getWorkflowRuns };
+
+export async function discoverRuns(
+  deps: DiscoveryDeps = defaultDeps,
+): Promise<DiscoveryResult> {
   const [{ owner, repo }, branch] = await Promise.all([
-    getRepoInfo(),
-    getBranch(),
+    deps.getRepoInfo(),
+    deps.getBranch(),
   ]);
 
-  let runs = await getWorkflowRuns(owner, repo, branch);
+  let runs = await deps.getWorkflowRuns(owner, repo, branch);
 
   while (runs.length === 0) {
     console.log(`Waiting for runs on branch ${branch}...`);
     await Bun.sleep(POLL_INTERVAL_MS);
-    runs = await getWorkflowRuns(owner, repo, branch);
+    runs = await deps.getWorkflowRuns(owner, repo, branch);
   }
 
   return { runs, branch, owner, repo };
