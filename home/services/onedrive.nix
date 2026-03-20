@@ -8,6 +8,7 @@ let
   homeDir = config.home.homeDirectory;
   carecoordinatorsConfigDir = "${homeDir}/.config/onedrive-carecoordinators";
   personalConfigDir = "${homeDir}/.config/onedrive-personal";
+  reportingConfigDir = "${homeDir}/.config/onedrive-reporting";
 
   mkOnedriveService = { description, confdir }: {
     Unit = {
@@ -33,6 +34,7 @@ in
   # Decrypt OneDrive secrets from sops
   sops.secrets = {
     onedrive_sharepoint_drive_id.sopsFile = ../../secrets/onedrive.yaml;
+    onedrive_reporting_drive_id.sopsFile = ../../secrets/onedrive.yaml;
     azure_tenant_id.sopsFile = ../../secrets/onedrive.yaml;
   };
 
@@ -60,6 +62,18 @@ in
     '';
   };
 
+  sops.templates."onedrive-reporting-config" = {
+    path = "${reportingConfigDir}/config";
+    content = ''
+      # SharePoint - Reporting
+      sync_dir = "~/OneDrive/reporting"
+      drive_id = "${config.sops.placeholder.onedrive_reporting_drive_id}"
+      skip_dotfiles = "true"
+      skip_symlinks = "true"
+      monitor_interval = "300"
+    '';
+  };
+
   systemd.user.services.onedrive-personal = mkOnedriveService {
     description = "Personal";
     confdir = personalConfigDir;
@@ -68,5 +82,10 @@ in
   systemd.user.services.onedrive-carecoordinators = mkOnedriveService {
     description = "SharePoint Care Coordinators";
     confdir = carecoordinatorsConfigDir;
+  };
+
+  systemd.user.services.onedrive-reporting = mkOnedriveService {
+    description = "SharePoint Reporting";
+    confdir = reportingConfigDir;
   };
 }
