@@ -20,7 +20,7 @@ async function main() {
       async () => {
         const { runs, branch, owner, repo } = await discoverRuns();
         console.log(
-          `Found ${runs.length} run(s) on ${owner}/${repo}@${branch}\n`,
+          `Found \x1b[1m${runs.length}\x1b[0m run(s) on \x1b[36m${owner}/${repo}\x1b[0m\x1b[2m@\x1b[0m\x1b[33m${branch}\x1b[0m\n`,
         );
 
         const selectedRun = await selectRun(runs);

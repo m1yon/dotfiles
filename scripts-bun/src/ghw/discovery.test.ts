@@ -45,7 +45,7 @@ describe("discoverRuns", () => {
     const result = await discoverRuns(mockDeps);
 
     expect(result.runs).toHaveLength(1);
-    expect(result.runs[0].id).toBe(123);
+    expect(result.runs[0]!.id).toBe(123);
     expect(result.branch).toBe("main");
     expect(result.owner).toBe("testorg");
     expect(result.repo).toBe("testrepo");
@@ -121,7 +121,7 @@ describe("discoverRuns", () => {
     const result = await discoverRuns(mockDeps);
 
     expect(result.runs).toHaveLength(2);
-    expect(result.runs[0].name).toBe("CI");
-    expect(result.runs[1].name).toBe("Deploy");
+    expect(result.runs[0]!.name).toBe("CI");
+    expect(result.runs[1]!.name).toBe("Deploy");
   });
 });

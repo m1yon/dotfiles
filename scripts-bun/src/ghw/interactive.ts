@@ -1,5 +1,6 @@
 import { select } from "@inquirer/prompts";
 import type { WorkflowRun } from "./github";
+import { c } from "./display";
 
 function formatAge(createdAt: string): string {
   const diffMs = Date.now() - new Date(createdAt).getTime();
@@ -11,13 +12,20 @@ function formatAge(createdAt: string): string {
   return `${hours}h ${minutes % 60}m ago`;
 }
 
+function statusBadge(status: string): string {
+  if (status === "in_progress") return c.cyan(status);
+  if (status === "queued") return c.yellow(status);
+  if (status === "completed") return c.green(status);
+  return c.dim_(status);
+}
+
 export async function selectRun(runs: WorkflowRun[]): Promise<WorkflowRun> {
   if (runs.length === 1) return runs[0]!;
 
   return select({
     message: "Select a workflow run to watch:",
     choices: runs.map((run) => ({
-      name: `${run.name} #${run.run_number} (${run.status}) triggered ${formatAge(run.created_at)}`,
+      name: `${c.bold_(run.name)} ${c.dim_(`#${run.run_number}`)} (${statusBadge(run.status)}) ${c.dim_(formatAge(run.created_at))}`,
       value: run,
     })),
   });

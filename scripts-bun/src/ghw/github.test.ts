@@ -2,13 +2,13 @@ import { describe, test, expect, mock, beforeEach, spyOn } from "bun:test";
 
 // Mock Octokit before importing github module
 const mockListWorkflowRunsForRepo = mock(() =>
-  Promise.resolve({ data: { workflow_runs: [] } }),
+  Promise.resolve({ data: { workflow_runs: [] as any[] } }),
 );
 const mockGetWorkflowRun = mock(() =>
   Promise.resolve({ data: {} }),
 );
 const mockListJobsForWorkflowRun = mock(() =>
-  Promise.resolve({ data: { jobs: [] } }),
+  Promise.resolve({ data: { jobs: [] as any[] } }),
 );
 
 mock.module("octokit", () => ({
@@ -127,8 +127,8 @@ describe("getWorkflowRuns", () => {
 
     const runs = await getWorkflowRuns("owner", "repo", "main");
     expect(runs).toHaveLength(2);
-    expect(runs[0].id).toBe(123);
-    expect(runs[1].id).toBe(456);
+    expect(runs[0]!.id).toBe(123);
+    expect(runs[1]!.id).toBe(456);
   });
 
   test("returns empty array when no runs", async () => {
@@ -159,9 +159,9 @@ describe("getWorkflowRuns", () => {
       .mockResolvedValueOnce({ data: { workflow_runs: [] } });
 
     const runs = await getWorkflowRuns("owner", "repo", "main");
-    expect(runs[0].name).toBe("Unknown");
-    expect(runs[0].status).toBe("unknown");
-    expect(runs[0].head_branch).toBe("main");
+    expect(runs[0]!.name).toBe("Unknown");
+    expect(runs[0]!.status).toBe("unknown");
+    expect(runs[0]!.head_branch).toBe("main");
   });
 
   test("throws on API error", async () => {
@@ -201,7 +201,7 @@ describe("getRunJobs", () => {
 
     const jobs = await getRunJobs("owner", "repo", 123);
     expect(jobs).toHaveLength(1);
-    expect(jobs[0]).toEqual(sampleJob);
+    expect(jobs[0]!).toEqual(sampleJob);
   });
 
   test("handles null fields in jobs", async () => {
@@ -219,7 +219,7 @@ describe("getRunJobs", () => {
     });
 
     const jobs = await getRunJobs("owner", "repo", 123);
-    expect(jobs[0].conclusion).toBeNull();
-    expect(jobs[0].started_at).toBeNull();
+    expect(jobs[0]!.conclusion).toBeNull();
+    expect(jobs[0]!.started_at).toBeNull();
   });
 });
