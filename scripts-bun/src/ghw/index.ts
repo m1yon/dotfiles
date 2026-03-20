@@ -6,7 +6,8 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { discoverRuns } from "./discovery";
 import { selectRun } from "./interactive";
-import { watchRun } from "./display";
+import { watchRun, printSummary, formatDuration } from "./display";
+import { notify } from "./notify";
 
 async function main() {
   await yargs(hideBin(process.argv))
@@ -22,10 +23,40 @@ async function main() {
           `Found ${runs.length} run(s) on ${owner}/${repo}@${branch}\n`,
         );
 
-        const run = await selectRun(runs);
-        const result = await watchRun(owner, repo, run);
+        const selectedRun = await selectRun(runs);
 
-        console.log(`\n${result.run.html_url}`);
+        let result;
+        try {
+          result = await watchRun(owner, repo, selectedRun);
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          await notify(
+            `ghw: ${selectedRun.name}`,
+            `Error: ${message}`,
+            "critical",
+          );
+          throw error;
+        }
+
+        const { run } = result;
+        const conclusion = run.conclusion ?? "unknown";
+        const duration = formatDuration(run.created_at, run.updated_at);
+
+        const isSuccess = conclusion === "success";
+        const label = isSuccess
+          ? `Completed in ${duration}`
+          : conclusion === "cancelled"
+            ? `Cancelled in ${duration}`
+            : `Failed in ${duration}`;
+
+        await notify(
+          `ghw: ${run.name}`,
+          label,
+          isSuccess ? "normal" : "critical",
+        );
+
+        printSummary(result);
       },
     )
     .help()

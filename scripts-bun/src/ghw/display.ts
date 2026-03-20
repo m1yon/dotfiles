@@ -11,6 +11,15 @@ const INDICATORS: Record<string, string> = {
   queued: "\u25CB",
 };
 
+export function formatDuration(startedAt: string, endedAt: string): string {
+  const ms = new Date(endedAt).getTime() - new Date(startedAt).getTime();
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes === 0) return `${seconds}s`;
+  return `${minutes}m ${seconds}s`;
+}
+
 function getIndicator(job: Job): string {
   if (job.status === "completed") {
     return INDICATORS[`completed_${job.conclusion}`] ?? "?";
@@ -65,4 +74,22 @@ export async function watchRun(
 
     await Bun.sleep(POLL_INTERVAL_MS);
   }
+}
+
+export function printSummary({ run, jobs }: WatchResult): void {
+  const conclusion = run.conclusion ?? "unknown";
+  const indicator = INDICATORS[`completed_${conclusion}`] ?? "?";
+  const duration = formatDuration(run.created_at, run.updated_at);
+  const label =
+    conclusion === "success"
+      ? "completed"
+      : conclusion === "failure"
+        ? "failed"
+        : conclusion;
+
+  console.log(`\n${indicator} ${run.name} ${label} in ${duration}`);
+  for (const job of jobs) {
+    console.log(`  ${getIndicator(job)} ${job.name}`);
+  }
+  console.log(`\n${run.html_url}`);
 }
