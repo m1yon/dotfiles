@@ -35,7 +35,6 @@
     ./tealdeer.nix
     ./teams-for-linux.nix
     ./todoist.nix
-    ./thunderbird.nix
     ./zsh.nix
     ./yazi.nix
     ./hyprland.nix
