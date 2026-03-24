@@ -54,7 +54,7 @@ function statusColor(status: string): (s: string) => string {
 function renderJobs(run: WorkflowRun, jobs: Job[]): string {
   const colorize = statusColor(run.status);
   const lines = [
-    `${c.bold_(run.name)} ${c.dim_(`#${run.run_number}`)} ${colorize(run.status)}`,
+    `${c.bold_(run.name)} ${c.dim_(`#${run.run_number}`)} ${c.yellow(run.head_branch)} ${colorize(run.status)}`,
   ];
   for (const job of jobs) {
     lines.push(`  ${getIndicator(job)} ${job.name}`);
@@ -118,7 +118,7 @@ export function printSummary({ run, jobs }: WatchResult): void {
           : c.dim_(conclusion);
 
   console.log(
-    `\n${indicator} ${c.bold_(run.name)} ${conclusionLabel} in ${c.bold_(duration)}`,
+    `\n${indicator} ${c.bold_(run.name)} ${c.yellow(run.head_branch)} ${conclusionLabel} in ${c.bold_(duration)}`,
   );
   for (const job of jobs) {
     console.log(`  ${getIndicator(job)} ${job.name}`);
