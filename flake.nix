@@ -43,6 +43,10 @@
       url = "github:mattpocock/skills";
       flake = false;
     };
+    t3code-nix = {
+      url = "github:Sawrz/t3code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

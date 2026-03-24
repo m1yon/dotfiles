@@ -33,6 +33,7 @@
     ./ssh.nix
     ./starship.nix
     ./tealdeer.nix
+    ./t3code.nix
     ./teams-for-linux.nix
     ./todoist.nix
     ./zsh.nix
