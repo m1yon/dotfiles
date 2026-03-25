@@ -250,6 +250,13 @@ later(function()
 	require("nvim-ts-autotag").setup()
 end)
 
+-- Markdown rendering ==============================================================
+later(function()
+	add({
+		source = "OXY2DEV/markview.nvim",
+	})
+end)
+
 -- Code Review =====================================================================
 later(function()
 	add({

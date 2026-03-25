@@ -15,12 +15,6 @@
 -- This is also a good place to set buffer-local 'mini.nvim' variables.
 -- See `:h mini.nvim-buffer-local-config` and `:h mini.nvim-disabling-recipes`.
 
--- Enable spelling and wrap for window
-vim.cmd("setlocal wrap")
-
--- Fold with tree-sitter
-vim.cmd("setlocal foldmethod=expr foldexpr=v:lua.vim.treesitter.foldexpr()")
-
 -- Disable built-in `gO` mapping in favor of 'mini.basics'
 vim.keymap.del("n", "gO", { buffer = 0 })
 
@@ -40,6 +34,3 @@ vim.b.minisurround_config = {
 		},
 	},
 }
-
--- set conceal level for Obsidian
-vim.opt_local.conceallevel = 1
