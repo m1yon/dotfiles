@@ -24,7 +24,6 @@
     ./obsidian.nix
     ./onlyoffice.nix
     ./lazygit.nix
-    ./linear.nix
     ./opencode.nix
     ./sftp.nix
     ./slack.nix
@@ -34,7 +33,6 @@
     ./starship.nix
     ./tealdeer.nix
     ./t3code.nix
-    ./teams-for-linux.nix
     ./todoist.nix
     ./zsh.nix
     ./yazi.nix
