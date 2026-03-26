@@ -6,6 +6,7 @@
       confirm-close-surface = false;
       clipboard-read = "allow";
       clipboard-write = "allow";
+      gtk-single-instance = true;
     };
   };
 
