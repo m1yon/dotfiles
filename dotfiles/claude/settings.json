@@ -14,5 +14,6 @@
       }
     }
   },
+  "autoDreamEnabled": true,
   "skipDangerousModePermissionPrompt": true
 }

@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# ---
+# description: Launch a TUI in a floating Ghostty window, or focus it if already open
+# usage: launch-or-focus-tui <tui-command>
+# ---
+
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: launch-or-focus-tui <tui-command>"
+  exit 1
+fi
+
+TUI_CMD="$1"
+APP_ID="tui.${TUI_CMD}"
+
+# Check if a window with this app-id already exists
+ADDR=$(hyprctl clients -j | jq -r ".[] | select(.class == \"${APP_ID}\") | .address" | head -n1)
+
+if [[ -n "$ADDR" ]]; then
+  hyprctl dispatch focuswindow "address:${ADDR}"
+else
+  setsid uwsm-app -- ghostty --class="${APP_ID}" -e "${TUI_CMD}" >/dev/null 2>&1 &
+fi

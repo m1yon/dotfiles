@@ -27,6 +27,7 @@
       "format": "{:%d %b  %I:%M %p}",
     },
     "bluetooth": {
+      "on-click": "launch-or-focus-tui bluetui",
       "format": "󰂯",
       "format-connected": "󰂱",
       "format-connected-battery": "󰂱",
@@ -38,6 +39,7 @@
       "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_battery_percentage}%"
     },
     "network": {
+      "on-click": "launch-or-focus-tui impala",
       "format-wifi": "{icon}",
       "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
       "format-ethernet": "󰈀",
@@ -46,6 +48,7 @@
       "tooltip-format-ethernet": "{ifname}: {ipaddr}/{cidr}"
     },
     "wireplumber": {
+      "on-click": "launch-or-focus-tui wiremix",
       "format": "{icon}  {volume}%",
       "format-muted": " ",
       "format-icons": {
