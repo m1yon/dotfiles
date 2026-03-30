@@ -39,10 +39,6 @@
       url = "github:tinted-theming/schemes";
       flake = false;
     };
-    mattpocock-skills = {
-      url = "github:mattpocock/skills";
-      flake = false;
-    };
     t3code-nix = {
       url = "github:Sawrz/t3code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -73,7 +69,14 @@
     in
     {
       nixosConfigurations.${hostname} = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs username nixConfigDir hostname; };
+        specialArgs = {
+          inherit
+            inputs
+            username
+            nixConfigDir
+            hostname
+            ;
+        };
         modules = [
           { nixpkgs.overlays = [ unstableOverlay ]; }
           ./nixos/configuration.nix
@@ -85,7 +88,14 @@
 
             home-manager.users.${username} = import ./home/home.nix;
 
-            home-manager.extraSpecialArgs = { inherit inputs username nixConfigDir hostname; };
+            home-manager.extraSpecialArgs = {
+              inherit
+                inputs
+                username
+                nixConfigDir
+                hostname
+                ;
+            };
             home-manager.sharedModules = [
               inputs.sops-nix.homeManagerModules.sops
               inputs.stylix.homeModules.stylix

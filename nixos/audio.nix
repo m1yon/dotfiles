@@ -1,7 +1,10 @@
 { pkgs, ... }:
 
 {
-  environment.systemPackages = [ pkgs.wiremix pkgs.pulseaudio ];
+  environment.systemPackages = [
+    pkgs.wiremix
+    pkgs.pulseaudio
+  ];
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
 

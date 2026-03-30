@@ -10,23 +10,25 @@ let
   personalConfigDir = "${homeDir}/.config/onedrive-personal";
   reportingConfigDir = "${homeDir}/.config/onedrive-reporting";
 
-  mkOnedriveService = { description, confdir }: {
-    Unit = {
-      Description = "OneDrive sync - ${description}";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-      StartLimitIntervalSec = 60;
-      StartLimitBurst = 3;
+  mkOnedriveService =
+    { description, confdir }:
+    {
+      Unit = {
+        Description = "OneDrive sync - ${description}";
+        After = [ "network-online.target" ];
+        Wants = [ "network-online.target" ];
+        StartLimitIntervalSec = 60;
+        StartLimitBurst = 3;
+      };
+      Service = {
+        ExecStart = "${pkgs.onedrive}/bin/onedrive --monitor --confdir=${confdir}";
+        Restart = "on-failure";
+        RestartSec = 10;
+      };
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
     };
-    Service = {
-      ExecStart = "${pkgs.onedrive}/bin/onedrive --monitor --confdir=${confdir}";
-      Restart = "on-failure";
-      RestartSec = 10;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
 in
 {
   home.packages = [ pkgs.onedrive ];
