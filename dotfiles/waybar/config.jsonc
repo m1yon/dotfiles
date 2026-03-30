@@ -24,6 +24,7 @@
         "interval": 30
     },
     "clock": {
+      "on-click": "hyprctl clients -j | jq -e '.[] | select(.class == \"chrome-kjbdgfilnfhdoflbpgamdcdgpehopbep-Default\")' > /dev/null && hyprctl dispatch focuswindow class:chrome-kjbdgfilnfhdoflbpgamdcdgpehopbep-Default || uwsm-app -- google-chrome-stable --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep",
       "format": "{:%d %b  %I:%M %p}",
     },
     "bluetooth": {
