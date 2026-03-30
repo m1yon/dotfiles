@@ -25,6 +25,7 @@
     ./onlyoffice.nix
     ./lazygit.nix
     ./opencode.nix
+    ./playerctl.nix
     ./sftp.nix
     ./slack.nix
     ./sops.nix
