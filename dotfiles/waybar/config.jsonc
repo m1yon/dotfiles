@@ -28,16 +28,11 @@
       "format": "{:%d %b  %I:%M %p}",
     },
     "mpris": {
+      "on-click": "hyprctl dispatch togglespecialworkspace spotify",
       "interval": 15,
-      "format": "{player_icon}  {dynamic}",
-      "format-paused": "{status_icon}  <i>{dynamic}</i>",
-      "dynamic-order": ["artist", "title"],
-      "player-icons": {
-        "default": "󰐊"
-      },
-      "status-icons": {
-        "paused": "󰏤"
-      }
+      "format": "󰎈 {dynamic}",
+      "format-paused": "󰎈 <i>{dynamic}</i>",
+      "dynamic-order": ["artist", "title"]
     },
     "bluetooth": {
       "on-click": "launch-or-focus-tui bluetui",
