@@ -6,6 +6,12 @@ import { LinearClient, type Issue } from "@linear/sdk";
 import { select } from "@inquirer/prompts";
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
+const CLAUDE_PATH = Bun.spawnSync(["which", "claude"]).stdout.toString().trim();
+if (!CLAUDE_PATH) {
+  console.error("ERROR: claude not found on PATH");
+  process.exit(1);
+}
+
 // --- Linear Module ---
 
 function getLinearClient(): LinearClient {
@@ -159,11 +165,36 @@ ONLY WORK ON A SINGLE SUB-ISSUE.`;
         cwd: process.cwd(),
         allowedTools: ["Read", "Edit", "Write", "Bash", "Glob", "Grep"],
         permissionMode: "bypassPermissions",
+        allowDangerouslySkipPermissions: true,
         maxTurns: 100,
         settingSources: ["project"],
+        pathToClaudeCodeExecutable: CLAUDE_PATH,
+        stderr: (data: string) => console.log(data),
       },
     })) {
-      if (message.type === "result") {
+      if (message.type === "assistant") {
+        const msg = message as any;
+        const isSubagent = !!msg.parent_tool_use_id;
+        const content = msg.message?.content ?? [];
+        for (const block of content) {
+          if (block.type === "text") {
+            if (isSubagent) {
+              console.log(`\x1b[90m  ┃ \x1b[35m[sub]\x1b[90m ${block.text}\x1b[0m`);
+            } else {
+              console.log(`\x1b[38;2;227;137;58m[Claude]\x1b[0m ${block.text}`);
+            }
+          } else if (block.type === "tool_use") {
+            if (isSubagent) {
+              console.log(`\x1b[90m  ┃ [${block.name}] ${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`);
+            } else if (block.name === "Agent") {
+              const agentType = block.input?.subagent_type ?? "General";
+              console.log(`\x1b[35m[${agentType} Subagent]\x1b[0m \x1b[37m${block.input?.description ?? ""}\x1b[0m`);
+            } else {
+              console.log(`\x1b[36m[${block.name}]\x1b[0m \x1b[90m${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`);
+            }
+          }
+        }
+      } else if (message.type === "result") {
         if (message.subtype === "success") {
           return { success: true };
         } else {
