@@ -119,44 +119,29 @@ async function checkoutBranch(branchName: string): Promise<void> {
 async function runClaude(
   prdTitle: string,
   prdDescription: string,
-  subIssues: { identifier: string; title: string; description: string; comments: string[] }[],
+  issue: { identifier: string; title: string; description: string; comments: string[] },
 ): Promise<{ success: boolean; error?: string }> {
-  const issueList = subIssues
-    .map(
-      (i) =>
-        `- ${i.identifier}: ${i.title}\n  Description: ${i.description || "(none)"}\n  Comments: ${i.comments.length > 0 ? i.comments.join("\n  ") : "(none)"}`,
-    )
-    .join("\n");
-
   const prompt = `# PRD: ${prdTitle}
 
 ${prdDescription}
 
-# Remaining Sub-Issues (in priority order)
+# Issue: ${issue.identifier} — ${issue.title}
 
-${issueList}
+${issue.description || "(no description)"}
+
+${issue.comments.length > 0 ? `## Comments\n\n${issue.comments.join("\n\n")}` : ""}
 
 # Instructions
 
-Pick the SINGLE highest-priority sub-issue from the list above and complete it.
-
-Priority rules:
-1. Critical bugfixes
-2. Tracer bullets (tiny end-to-end slices that validate architecture)
-3. Polish and quick wins
-4. Refactors
-
-Explore the repo, understand the codebase, then implement the solution.
+Implement this issue. Explore the repo, understand the codebase, then implement the solution.
 
 When done, make a single git commit with this format:
-RALPH: <description> (<LINEAR-ID>)
+RALPH: <description> (${issue.identifier})
 
-Include in the commit body:
+Include in the commit body (markdown is fine):
 - Key decisions made
 - Files changed
-- Blockers or notes for next iteration
-
-ONLY WORK ON A SINGLE SUB-ISSUE.`;
+- Blockers or notes for next iteration`;
 
   try {
     for await (const message of query({
@@ -214,6 +199,23 @@ ONLY WORK ON A SINGLE SUB-ISSUE.`;
       error: `Claude process crashed: ${err}`,
     };
   }
+}
+
+async function getLastCommitBody(): Promise<string> {
+  const proc = Bun.spawn(["git", "log", "-1", "--format=%b"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  await proc.exited;
+  return (await new Response(proc.stdout).text()).trim();
+}
+
+async function commentOnIssue(
+  client: LinearClient,
+  issueId: string,
+  body: string,
+): Promise<void> {
+  await client.createComment({ issueId, body });
 }
 
 // --- Main ---
@@ -279,24 +281,10 @@ async function main() {
       );
     }
 
-    // Build sub-issue details for Claude's prompt
-    const subIssueDetails = await Promise.all(
-      remaining.map(async (issue) => {
-        const details = await getIssueDetails(issue);
-        return {
-          identifier: issue.identifier,
-          title: issue.title,
-          description: details.description,
-          comments: details.comments,
-          id: issue.id,
-        };
-      }),
-    );
-
-    // The first sub-issue (highest priority) is the one we expect Claude to pick
-    const target = subIssueDetails[0];
-    if (!target) throw new Error("Expected at least one sub-issue but found none");
-    console.log(`\nExpecting Claude to work on: ${target.identifier}: ${target.title}`);
+    // Pick the highest-priority sub-issue
+    const target = remaining[0]!;
+    const details = await getIssueDetails(target);
+    console.log(`\nWorking on: ${target.identifier}: ${target.title}`);
 
     // Set target sub-issue to In Progress
     await setIssueStatus(client, target.id, inProgressId);
@@ -306,10 +294,20 @@ async function main() {
     const result = await runClaude(
       prd.title,
       prd.description ?? "",
-      subIssueDetails,
+      {
+        identifier: target.identifier,
+        title: target.title,
+        description: details.description,
+        comments: details.comments,
+      },
     );
 
     if (result.success) {
+      const commitBody = await getLastCommitBody();
+      if (commitBody) {
+        await commentOnIssue(client, target.id, commitBody);
+        console.log(`Posted commit notes to ${target.identifier}`);
+      }
       await setIssueStatus(client, target.id, completedId);
       console.log(`\n${target.identifier} completed successfully.`);
     } else {

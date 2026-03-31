@@ -37,6 +37,7 @@ Present the proposed breakdown as a numbered list. For each slice, show:
 
 - **Title**: short descriptive name
 - **Type**: HITL / AFK
+- **Priority**: Urgent / High / Medium / Low
 - **Blocked by**: which other slices (if any) must complete first
 - **User stories covered**: which user stories from the PRD this addresses
 
@@ -52,6 +53,13 @@ Iterate until the user approves the breakdown.
 ### 5. Create the Linear sub-issues
 
 For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**. Assign the issue to me. Apply the **AI** label.
+
+Set the **priority** on each sub-issue using these rules (highest to lowest):
+
+1. **Urgent** — Critical bugfixes
+2. **High** — Tracer bullets (thin end-to-end slices that validate architecture)
+3. **Medium** — Polish and quick wins
+4. **Low** — Refactors
 
 Create issues in dependency order (blockers first). After creating all issues, use Linear's native blocking relations to link dependencies between sub-issues.
 
