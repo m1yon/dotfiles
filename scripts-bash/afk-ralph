@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ---
-# description: Run Claude in a loop to complete GitHub issues automatically
+# description: Run Claude in a loop to complete Linear issues automatically
 # ---
 
 set -e
@@ -15,7 +15,7 @@ for ((i=1; i<=$1; i++)); do
   result=$(claude --permission-mode acceptEdits -p "
 # ISSUES
 
-Use the GitHub CLI (\`gh\`) to find open issues for this repo. Read their bodies and comments.
+Use the Linear MCP tools to find open issues assigned to me on the **MECA Therapies** team. Read their descriptions and comments.
 
 Also run \`git log --oneline -10 --grep='RALPH:'\` to review recent RALPH commits and understand what work has been done.
 
@@ -48,7 +48,7 @@ Complete the task.
 Make a git commit. The commit message must:
 
 1. Start with \`RALPH:\` prefix
-2. Include task completed + PRD reference
+2. Include task completed + Linear issue reference
 3. Key decisions made
 4. Files changed
 5. Blockers or notes for next iteration
@@ -57,9 +57,9 @@ Keep it concise.
 
 # THE ISSUE
 
-If the task is complete, close the original GitHub issue.
+If the task is complete, update the Linear issue status to **Done** using the \`update_issue\` MCP tool.
 
-If the task is not complete, leave a comment on the GitHub issue with what was done.
+If the task is not complete, add a comment on the Linear issue with what was done.
 
 # FINAL RULES
 

@@ -24,6 +24,7 @@
     ./obsidian.nix
     ./onlyoffice.nix
     ./lazygit.nix
+    ./linear.nix
     ./opencode.nix
     ./playerctl.nix
     ./sftp.nix
