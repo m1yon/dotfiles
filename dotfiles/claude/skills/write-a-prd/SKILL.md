@@ -5,19 +5,21 @@ description: Create a PRD through user interview, codebase exploration, and modu
 
 This skill will be invoked when the user wants to create a PRD. You may skip steps if you don't consider them necessary.
 
-1. Ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions.
+1. Ask the user if there is an existing Linear issue for this feature. If so, fetch it with the `get_issue` MCP tool and use it as context — you will update this issue with the PRD content in step 5 instead of creating a new one.
 
-2. Explore the repo to verify their assertions and understand the current state of the codebase.
+2. Ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions.
 
-3. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.
+3. Explore the repo to verify their assertions and understand the current state of the codebase.
 
-4. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
+4. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one.
+
+5. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
 
 A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes.
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-5. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. The PRD should be submitted as a Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**.
+6. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. If an existing Linear issue was provided in step 1, update it with the `update_issue` MCP tool. Otherwise, create a new Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**.
 
 <prd-template>
 
