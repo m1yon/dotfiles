@@ -5,6 +5,7 @@
 import { LinearClient, type Issue } from "@linear/sdk";
 import { select } from "@inquirer/prompts";
 import { query } from "@anthropic-ai/claude-agent-sdk";
+import { logQueryMessage } from "./log-query-message";
 import { Octokit } from "octokit";
 
 const CLAUDE_PATH = Bun.spawnSync(["which", "claude"]).stdout.toString().trim();
@@ -147,7 +148,7 @@ async function generatePrBody(
   prd: { identifier: string; title: string; url: string; description: string },
   baseBranch: string,
 ): Promise<string> {
-  const prompt = `You are writing a GitHub pull request description. Look at the commits on this branch (compared to ${baseBranch}) using git log and git diff --stat, then write a concise PR body in markdown.
+  const prompt = `You are writing a GitHub pull request description. Look at the commits on this branch (compared to ${baseBranch}) using git log and git diff, then write a concise PR body in markdown.
 
 The PR implements a Linear PRD:
 - Identifier: ${prd.identifier}
@@ -155,10 +156,29 @@ The PR implements a Linear PRD:
 - URL: ${prd.url}
 - Description: ${prd.description || "(none)"}
 
-Output ONLY the PR body markdown, nothing else. Include:
-- A brief summary of what was implemented
-- A bulleted list of key changes
-- End with: "Linear: ${prd.url}"`;
+Output ONLY the PR body markdown, nothing else. Focus on module and interface changes, NOT file-by-file diffs. Use this structure:
+
+## Summary
+One or two sentences on what this PR delivers end-to-end.
+
+## Interface Changes
+For each module or boundary that was added or modified, show a before/after using GitHub markdown diff blocks. Only show the public interface (types, function signatures, route definitions, schema shapes) — not implementation. For new modules, omit the before. Example format:
+
+\`\`\`diff
+- function fetchUser(id: string): Promise<User>
++ function fetchUser(id: string, opts?: FetchOptions): Promise<UserWithRole>
+\`\`\`
+
+Do NOT list individual file paths or line-level implementation changes.
+
+## Key Decisions
+Bulleted list of non-obvious implementation decisions (e.g. why a particular boundary was drawn, trade-offs made, patterns chosen).
+
+## Testing
+How the changes are verified — which boundaries are tested and how.
+
+---
+Linear: ${prd.url}`;
 
   let resultText = "";
   for await (const message of query({
@@ -171,8 +191,10 @@ Output ONLY the PR body markdown, nothing else. Include:
       maxTurns: 10,
       settingSources: ["project"],
       pathToClaudeCodeExecutable: CLAUDE_PATH,
+      stderr: (data: string) => console.log(data),
     },
   })) {
+    logQueryMessage(message);
     if (message.type === "result" && message.subtype === "success") {
       resultText = (message as any).result ?? "";
     }
@@ -184,7 +206,7 @@ Output ONLY the PR body markdown, nothing else. Include:
   );
 }
 
-async function createPullRequest(
+async function createOrUpdatePullRequest(
   prd: { identifier: string; title: string; url: string; description: string },
   branchName: string,
   baseBranch: string,
@@ -193,12 +215,33 @@ async function createPullRequest(
   const octokit = new Octokit({ auth: authToken });
   const { owner, repo } = await getRepoInfo();
 
+  const title = `${prd.identifier}: ${prd.title}`;
   const body = await generatePrBody(prd, baseBranch);
+
+  // Check for existing PR on this branch
+  const { data: existing } = await octokit.rest.pulls.list({
+    owner,
+    repo,
+    head: `${owner}:${branchName}`,
+    state: "open",
+  });
+
+  if (existing.length > 0) {
+    const pr = existing[0]!;
+    await octokit.rest.pulls.update({
+      owner,
+      repo,
+      pull_number: pr.number,
+      title,
+      body,
+    });
+    return pr.html_url;
+  }
 
   const response = await octokit.rest.pulls.create({
     owner,
     repo,
-    title: `${prd.identifier}: ${prd.title}`,
+    title,
     head: branchName,
     base: baseBranch,
     body,
@@ -275,37 +318,8 @@ Include in the commit body (markdown is fine):
         stderr: (data: string) => console.log(data),
       },
     })) {
-      if (message.type === "assistant") {
-        const msg = message as any;
-        const isSubagent = !!msg.parent_tool_use_id;
-        const content = msg.message?.content ?? [];
-        for (const block of content) {
-          if (block.type === "text") {
-            if (isSubagent) {
-              console.log(
-                `\x1b[90m  ┃ \x1b[34m[sub]\x1b[90m ${block.text}\x1b[0m`,
-              );
-            } else {
-              console.log(`\x1b[38;2;227;137;58m[Claude]\x1b[0m ${block.text}`);
-            }
-          } else if (block.type === "tool_use") {
-            if (isSubagent) {
-              console.log(
-                `\x1b[90m  ┃ [${block.name}] ${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`,
-              );
-            } else if (block.name === "Agent") {
-              const agentType = block.input?.subagent_type ?? "General";
-              console.log(
-                `\x1b[34m[${agentType} Subagent]\x1b[0m \x1b[37m${block.input?.description ?? ""}\x1b[0m`,
-              );
-            } else {
-              console.log(
-                `\x1b[36m[${block.name}]\x1b[0m \x1b[90m${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`,
-              );
-            }
-          }
-        }
-      } else if (message.type === "result") {
+      logQueryMessage(message);
+      if (message.type === "result") {
         if (message.subtype === "success") {
           return { success: true };
         } else {
@@ -503,8 +517,9 @@ async function main() {
   await pushBranch(prd.branchName);
   console.log(green("  Branch pushed."));
 
+  console.log(dim("  Generating PR body..."));
   try {
-    const prUrl = await createPullRequest(
+    const prUrl = await createOrUpdatePullRequest(
       {
         identifier: prd.identifier,
         title: prd.title,
@@ -514,18 +529,9 @@ async function main() {
       prd.branchName,
       baseBranch,
     );
-    console.log(green(`  PR created: ${link(prUrl, prUrl)}`));
+    console.log(green(`  PR ready: ${link(prUrl, prUrl)}`));
   } catch (err: any) {
-    // PR may already exist if re-running
-    if (
-      err?.response?.data?.errors?.[0]?.message?.includes(
-        "A pull request already exists",
-      )
-    ) {
-      console.log(yellow("  PR already exists for this branch."));
-    } else {
-      console.error(red(`  Failed to create PR: ${err.message}`));
-    }
+    console.error(red(`  Failed to create/update PR: ${err.message}`));
   }
 
   // Set PRD to Review
