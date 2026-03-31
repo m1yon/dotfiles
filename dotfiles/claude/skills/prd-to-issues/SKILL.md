@@ -1,19 +1,19 @@
 ---
 name: prd-to-issues
-description: Break a PRD into independently-grabbable GitHub issues using tracer-bullet vertical slices. Use when user wants to convert a PRD to issues, create implementation tickets, or break down a PRD into work items.
+description: Break a PRD into independently-grabbable Linear sub-issues using tracer-bullet vertical slices. Use when user wants to convert a PRD to issues, create implementation tickets, or break down a PRD into work items.
 ---
 
 # PRD to Issues
 
-Break a PRD into independently-grabbable GitHub issues using vertical slices (tracer bullets).
+Break a PRD into independently-grabbable Linear sub-issues using vertical slices (tracer bullets).
 
 ## Process
 
 ### 1. Locate the PRD
 
-Ask the user for the PRD GitHub issue number (or URL).
+Ask the user for the PRD Linear issue identifier (e.g., `MECA-123` or a Linear URL).
 
-If the PRD is not already in your context window, fetch it with `gh issue view <number>` (with comments).
+If the PRD is not already in your context window, fetch it with the `get_issue` MCP tool.
 
 ### 2. Explore the codebase (optional)
 
@@ -49,16 +49,16 @@ Ask the user:
 
 Iterate until the user approves the breakdown.
 
-### 5. Create the GitHub issues
+### 5. Create the Linear sub-issues
 
-For each approved slice, create a GitHub issue using `gh issue create`. Use the issue body template below.
+For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**.
 
-Create issues in dependency order (blockers first) so you can reference real issue numbers in the "Blocked by" field.
+Create issues in dependency order (blockers first) so you can reference real issue identifiers in the "Blocked by" field.
 
 <issue-template>
 ## Parent PRD
 
-#<prd-issue-number>
+MECA-XXX (link to parent PRD issue)
 
 ## What to build
 
@@ -72,7 +72,7 @@ A concise description of this vertical slice. Describe the end-to-end behavior, 
 
 ## Blocked by
 
-- Blocked by #<issue-number> (if any)
+- Blocked by MECA-XXX (if any)
 
 Or "None - can start immediately" if no blockers.
 
