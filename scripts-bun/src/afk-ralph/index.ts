@@ -5,6 +5,7 @@
 import { LinearClient, type Issue } from "@linear/sdk";
 import { select } from "@inquirer/prompts";
 import { query } from "@anthropic-ai/claude-agent-sdk";
+import { Octokit } from "octokit";
 
 const CLAUDE_PATH = Bun.spawnSync(["which", "claude"]).stdout.toString().trim();
 if (!CLAUDE_PATH) {
@@ -88,6 +89,118 @@ async function getIssueDetails(
     description: issue.description ?? "",
     comments: comments.nodes.map((c) => c.body),
   };
+}
+
+// --- GitHub Module ---
+
+async function getAuthToken(): Promise<string> {
+  const proc = Bun.spawn(["gh", "auth", "token"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const output = await new Response(proc.stdout).text();
+  if ((await proc.exited) !== 0) {
+    throw new Error("Failed to get auth token. Are you logged in with `gh auth login`?");
+  }
+  return output.trim();
+}
+
+async function getRepoInfo(): Promise<{ owner: string; repo: string }> {
+  const proc = Bun.spawn(["gh", "repo", "view", "--json", "owner,name"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const output = await new Response(proc.stdout).text();
+  if ((await proc.exited) !== 0) {
+    throw new Error("Failed to get repo info. Are you in a GitHub repository?");
+  }
+  const data = JSON.parse(output);
+  return { owner: data.owner.login, repo: data.name };
+}
+
+async function getCurrentBranch(): Promise<string> {
+  const proc = Bun.spawn(["git", "rev-parse", "--abbrev-ref", "HEAD"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  const output = await new Response(proc.stdout).text();
+  if ((await proc.exited) !== 0) {
+    throw new Error("Failed to get current branch.");
+  }
+  return output.trim();
+}
+
+
+async function pushBranch(branchName: string): Promise<void> {
+  const proc = Bun.spawn(["git", "push", "-u", "origin", branchName], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  if ((await proc.exited) !== 0) {
+    const stderr = await new Response(proc.stderr).text();
+    throw new Error(`Failed to push branch: ${stderr.trim()}`);
+  }
+}
+
+async function generatePrBody(
+  prd: { identifier: string; title: string; url: string; description: string },
+  baseBranch: string,
+): Promise<string> {
+  const prompt = `You are writing a GitHub pull request description. Look at the commits on this branch (compared to ${baseBranch}) using git log and git diff --stat, then write a concise PR body in markdown.
+
+The PR implements a Linear PRD:
+- Identifier: ${prd.identifier}
+- Title: ${prd.title}
+- URL: ${prd.url}
+- Description: ${prd.description || "(none)"}
+
+Output ONLY the PR body markdown, nothing else. Include:
+- A brief summary of what was implemented
+- A bulleted list of key changes
+- End with: "Linear: ${prd.url}"`;
+
+  let resultText = "";
+  for await (const message of query({
+    prompt,
+    options: {
+      cwd: process.cwd(),
+      allowedTools: ["Bash", "Read", "Glob", "Grep"],
+      permissionMode: "bypassPermissions",
+      allowDangerouslySkipPermissions: true,
+      maxTurns: 10,
+      settingSources: ["project"],
+      pathToClaudeCodeExecutable: CLAUDE_PATH,
+    },
+  })) {
+    if (message.type === "result" && message.subtype === "success") {
+      resultText = (message as any).result ?? "";
+    }
+  }
+
+  return resultText || `## ${prd.identifier}: ${prd.title}\n\n${prd.description ?? ""}\n\nLinear: ${prd.url}`;
+}
+
+async function createPullRequest(
+  prd: { identifier: string; title: string; url: string; description: string },
+  branchName: string,
+  baseBranch: string,
+): Promise<string> {
+  const authToken = await getAuthToken();
+  const octokit = new Octokit({ auth: authToken });
+  const { owner, repo } = await getRepoInfo();
+
+  const body = await generatePrBody(prd, baseBranch);
+
+  const response = await octokit.rest.pulls.create({
+    owner,
+    repo,
+    title: `${prd.identifier}: ${prd.title}`,
+    head: branchName,
+    base: baseBranch,
+    body,
+  });
+
+  return response.data.html_url;
 }
 
 // --- Git Module ---
@@ -285,7 +398,11 @@ async function main() {
   console.log(linear(`Status: ${prdPrevState} → In Progress`));
 
   // Checkout PRD branch for all sub-issues
-  console.log(dim(`  Using PRD branch → ${prd.branchName}`));
+  const currentBranch = await getCurrentBranch();
+  const baseBranch = currentBranch === prd.branchName
+    ? "dev"
+    : currentBranch;
+  console.log(dim(`  Using PRD branch → ${prd.branchName} (base: ${baseBranch})`));
   await checkoutBranch(prd.branchName);
   console.log("");
 
@@ -344,6 +461,27 @@ async function main() {
       console.error(red(`\n  ✘ ${link(target.identifier, target.url)} failed: ${result.error}`));
       console.error(yellow("  Leaving issue In Progress, continuing to next..."));
       console.error(orange(`${"═".repeat(60)}\n`));
+    }
+  }
+
+  // Push branch and create PR
+  console.log(dim("\n  Pushing branch to origin..."));
+  await pushBranch(prd.branchName);
+  console.log(green("  Branch pushed."));
+
+  try {
+    const prUrl = await createPullRequest(
+      { identifier: prd.identifier, title: prd.title, url: prd.url, description: prd.description ?? "" },
+      prd.branchName,
+      baseBranch,
+    );
+    console.log(green(`  PR created: ${link(prUrl, prUrl)}`));
+  } catch (err: any) {
+    // PR may already exist if re-running
+    if (err?.response?.data?.errors?.[0]?.message?.includes("A pull request already exists")) {
+      console.log(yellow("  PR already exists for this branch."));
+    } else {
+      console.error(red(`  Failed to create PR: ${err.message}`));
     }
   }
 
