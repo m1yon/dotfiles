@@ -53,13 +53,9 @@ Iterate until the user approves the breakdown.
 
 For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**. Assign the issue to me. Apply the **AI** label.
 
-Create issues in dependency order (blockers first) so you can reference real issue identifiers in the "Blocked by" field.
+Create issues in dependency order (blockers first). After creating all issues, use Linear's native blocking relations to link dependencies between sub-issues.
 
 <issue-template>
-## Parent PRD
-
-MECA-XXX (link to parent PRD issue)
-
 ## What to build
 
 A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation. Reference specific sections of the parent PRD rather than duplicating content.
@@ -69,12 +65,6 @@ A concise description of this vertical slice. Describe the end-to-end behavior, 
 - [ ] Criterion 1
 - [ ] Criterion 2
 - [ ] Criterion 3
-
-## Blocked by
-
-- Blocked by MECA-XXX (if any)
-
-Or "None - can start immediately" if no blockers.
 
 ## User stories addressed
 
