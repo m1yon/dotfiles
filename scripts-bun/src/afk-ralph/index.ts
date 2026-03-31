@@ -260,6 +260,9 @@ async function main() {
   await setIssueStatus(client, prd.id, inProgressId);
   console.log(`\nPRD "${prd.identifier}: ${prd.title}" set to In Progress\n`);
 
+  // Checkout PRD branch for all sub-issues
+  await checkoutBranch(prd.branchName);
+
   // Iterate through sub-issues
   while (true) {
     const remaining = await fetchRemainingChildren(client, prd.id);
@@ -286,7 +289,6 @@ async function main() {
           description: details.description,
           comments: details.comments,
           id: issue.id,
-          branchName: issue.branchName,
         };
       }),
     );
@@ -295,9 +297,6 @@ async function main() {
     const target = subIssueDetails[0];
     if (!target) throw new Error("Expected at least one sub-issue but found none");
     console.log(`\nExpecting Claude to work on: ${target.identifier}: ${target.title}`);
-
-    // Checkout the Linear-generated branch
-    await checkoutBranch(target.branchName);
 
     // Set target sub-issue to In Progress
     await setIssueStatus(client, target.id, inProgressId);
