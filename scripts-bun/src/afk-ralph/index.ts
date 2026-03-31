@@ -191,8 +191,8 @@ async function main() {
 
   const stateMap = await getStateMap(client, team.id);
   const inProgressId = stateMap.get("In Progress");
-  const completedId = stateMap.get("Done");
-  const reviewId = stateMap.get("In Review");
+  const completedId = stateMap.get("Completed");
+  const reviewId = stateMap.get("Review");
 
   if (!inProgressId || !completedId || !reviewId) {
     console.error(
@@ -261,7 +261,7 @@ async function main() {
 
   // Set PRD to Review
   await setIssueStatus(client, prd.id, reviewId);
-  console.log(`\nPRD "${prd.identifier}: ${prd.title}" set to In Review. Done!`);
+  console.log(`\nPRD "${prd.identifier}: ${prd.title}" set to Review. Done!`);
 }
 
 main();
