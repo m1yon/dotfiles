@@ -225,6 +225,7 @@ const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`;
 const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`;
 const magenta = (s: string) => `\x1b[35m${s}\x1b[0m`;
+const link = (text: string, url: string) => `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;
 const linear = (msg: string) => `  ${magenta("[Linear]")} ${msg}`;
 
 async function main() {
@@ -280,7 +281,7 @@ async function main() {
   // Set PRD to In Progress
   const prdPrevState = await (await prd.state)?.name ?? "Unknown";
   await setIssueStatus(client, prd.id, inProgressId);
-  console.log(cyan(`\n  PRD ${bold(prd.identifier)}: ${prd.title}`));
+  console.log(cyan(`\n  PRD ${link(bold(prd.identifier), prd.url)}: ${prd.title}`));
   console.log(linear(`Status: ${prdPrevState} → In Progress`));
 
   // Checkout PRD branch for all sub-issues
@@ -302,7 +303,7 @@ async function main() {
     for (const issue of remaining) {
       const state = await issue.state;
       console.log(
-        `  ${cyan(issue.identifier)}: ${issue.title} ${dim(`[${state?.name ?? "unknown"}]`)}`,
+        `  ${link(cyan(issue.identifier), issue.url)}: ${issue.title} ${dim(`[${state?.name ?? "unknown"}]`)}`,
       );
     }
 
@@ -310,7 +311,7 @@ async function main() {
     const target = remaining[0]!;
     const details = await getIssueDetails(target);
     console.log(orange(`\n${"─".repeat(60)}`));
-    console.log(`  ${orange("▶")} ${bold("Working on:")} ${cyan(target.identifier)}: ${target.title}`);
+    console.log(`  ${orange("▶")} ${bold("Working on:")} ${link(cyan(target.identifier), target.url)}: ${target.title}`);
     console.log(orange(`${"─".repeat(60)}`));
 
     // Set target sub-issue to In Progress
@@ -333,14 +334,14 @@ async function main() {
       const commitBody = await getLastCommitBody();
       if (commitBody) {
         await commentOnIssue(client, target.id, commitBody);
-        console.log(linear(`Comment posted on ${target.identifier}`));
+        console.log(linear(`Comment posted on ${link(target.identifier, target.url)}`));
       }
       await setIssueStatus(client, target.id, completedId);
-      console.log(green(`\n  ✔ ${target.identifier} completed successfully.`));
+      console.log(green(`\n  ✔ ${link(target.identifier, target.url)} completed successfully.`));
       console.log(linear("Status: In Progress → Completed"));
       console.log(orange(`${"═".repeat(60)}\n`));
     } else {
-      console.error(red(`\n  ✘ ${target.identifier} failed: ${result.error}`));
+      console.error(red(`\n  ✘ ${link(target.identifier, target.url)} failed: ${result.error}`));
       console.error(yellow("  Leaving issue In Progress, continuing to next..."));
       console.error(orange(`${"═".repeat(60)}\n`));
     }
@@ -354,7 +355,7 @@ async function main() {
   console.log(orange(`\n  ╔${"═".repeat(inner)}╗`));
   console.log(orange(`  ║${" ".repeat(donePad)}`) + green(bold(doneText)) + orange(`${" ".repeat(donePadR)}║`));
   console.log(orange(`  ╚${"═".repeat(inner)}╝`));
-  console.log(cyan(`  ${prd.identifier}: ${prd.title}`));
+  console.log(cyan(`  ${link(prd.identifier, prd.url)}: ${prd.title}`));
   console.log(linear("Status: In Progress → Review"));
 }
 
