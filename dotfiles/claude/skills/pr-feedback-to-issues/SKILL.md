@@ -77,6 +77,8 @@ For each non-duplicate group, create a Linear sub-issue using the `create_issue`
 
 - Set the **parent issue** to the PRD issue from Phase 4.
 - Set the issue type to **Bug** if the feedback describes a defect, otherwise **Feature**.
+- Assign the issue to me.
+- Apply the **AI** label.
 
 **Title:** A concise description of the concern (not the reviewer's words verbatim — synthesize).
 
@@ -142,5 +144,4 @@ Issues:
 - Don't group by file — group by logical concern/theme.
 - Don't create duplicate issues — always check existing sub-issues for similar titles.
 - Don't reply to items with `commentType: null` — review summaries have no comment endpoint.
-- Don't assign issues to anyone — leave unassigned.
 - Don't forget the PR reference ("Relates to PR #N") in the issue body.

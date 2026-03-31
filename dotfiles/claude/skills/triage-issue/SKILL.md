@@ -56,7 +56,7 @@ Rules:
 
 ### 5. Create the Linear issue
 
-Create a Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team with the template below. Set the issue type to **Bug**. Do NOT ask the user to review before creating - just create it and share the URL.
+Create a Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team with the template below. Set the issue type to **Bug**. Assign the issue to me. Apply the **AI** label. Do NOT ask the user to review before creating - just create it and share the URL.
 
 <issue-template>
 

@@ -19,7 +19,7 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-6. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. If an existing Linear issue was provided in step 1, update it with the `update_issue` MCP tool. Otherwise, create a new Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**.
+6. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. If an existing Linear issue was provided in step 1, update it with the `update_issue` MCP tool. Otherwise, create a new Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**. Set the status to **Todo**. Assign the issue to me. Apply the **AI** label.
 
 <prd-template>
 

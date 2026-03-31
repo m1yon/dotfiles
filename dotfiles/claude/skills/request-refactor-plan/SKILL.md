@@ -19,7 +19,7 @@ This skill will be invoked when the user wants to create a refactor request. You
 
 7. Break the implementation into a plan of tiny commits. Remember Martin Fowler's advice to "make each refactoring step as small as possible, so that you can always see the program working."
 
-8. Create a Linear issue with the refactor plan using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**. Use the following template for the issue description:
+8. Create a Linear issue with the refactor plan using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**. Assign the issue to me. Apply the **AI** label. Use the following template for the issue description:
 
 <refactor-plan-template>
 

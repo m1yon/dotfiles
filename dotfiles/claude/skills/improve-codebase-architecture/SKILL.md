@@ -73,4 +73,4 @@ After comparing, give your own recommendation: which design you think is stronge
 
 ### 7. Create Linear issue
 
-Create a refactor RFC as a Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**. Use the template in [REFERENCE.md](REFERENCE.md). Do NOT ask the user to review before creating — just create it and share the URL.
+Create a refactor RFC as a Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the issue type to **Feature**. Assign the issue to me. Apply the **AI** label. Use the template in [REFERENCE.md](REFERENCE.md). Do NOT ask the user to review before creating — just create it and share the URL.

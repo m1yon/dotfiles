@@ -51,7 +51,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Create the Linear sub-issues
 
-For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**.
+For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**. Assign the issue to me. Apply the **AI** label.
 
 Create issues in dependency order (blockers first) so you can reference real issue identifiers in the "Blocked by" field.
 
