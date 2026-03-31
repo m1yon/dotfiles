@@ -100,7 +100,9 @@ async function getAuthToken(): Promise<string> {
   });
   const output = await new Response(proc.stdout).text();
   if ((await proc.exited) !== 0) {
-    throw new Error("Failed to get auth token. Are you logged in with `gh auth login`?");
+    throw new Error(
+      "Failed to get auth token. Are you logged in with `gh auth login`?",
+    );
   }
   return output.trim();
 }
@@ -129,7 +131,6 @@ async function getCurrentBranch(): Promise<string> {
   }
   return output.trim();
 }
-
 
 async function pushBranch(branchName: string): Promise<void> {
   const proc = Bun.spawn(["git", "push", "-u", "origin", branchName], {
@@ -177,7 +178,10 @@ Output ONLY the PR body markdown, nothing else. Include:
     }
   }
 
-  return resultText || `## ${prd.identifier}: ${prd.title}\n\n${prd.description ?? ""}\n\nLinear: ${prd.url}`;
+  return (
+    resultText ||
+    `## ${prd.identifier}: ${prd.title}\n\n${prd.description ?? ""}\n\nLinear: ${prd.url}`
+  );
 }
 
 async function createPullRequest(
@@ -228,7 +232,12 @@ async function checkoutBranch(branchName: string): Promise<void> {
 async function runClaude(
   prdTitle: string,
   prdDescription: string,
-  issue: { identifier: string; title: string; description: string; comments: string[] },
+  issue: {
+    identifier: string;
+    title: string;
+    description: string;
+    comments: string[];
+  },
 ): Promise<{ success: boolean; error?: string }> {
   const prompt = `# PRD: ${prdTitle}
 
@@ -245,7 +254,7 @@ ${issue.comments.length > 0 ? `## Comments\n\n${issue.comments.join("\n\n")}` : 
 Implement this issue. Explore the repo, understand the codebase, then implement the solution.
 
 When done, make a single git commit with this format:
-RALPH: <description> (${issue.identifier})
+${issue.identifier}: <description>
 
 Include in the commit body (markdown is fine):
 - Key decisions made
@@ -273,18 +282,26 @@ Include in the commit body (markdown is fine):
         for (const block of content) {
           if (block.type === "text") {
             if (isSubagent) {
-              console.log(`\x1b[90m  ┃ \x1b[34m[sub]\x1b[90m ${block.text}\x1b[0m`);
+              console.log(
+                `\x1b[90m  ┃ \x1b[34m[sub]\x1b[90m ${block.text}\x1b[0m`,
+              );
             } else {
               console.log(`\x1b[38;2;227;137;58m[Claude]\x1b[0m ${block.text}`);
             }
           } else if (block.type === "tool_use") {
             if (isSubagent) {
-              console.log(`\x1b[90m  ┃ [${block.name}] ${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`);
+              console.log(
+                `\x1b[90m  ┃ [${block.name}] ${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`,
+              );
             } else if (block.name === "Agent") {
               const agentType = block.input?.subagent_type ?? "General";
-              console.log(`\x1b[34m[${agentType} Subagent]\x1b[0m \x1b[37m${block.input?.description ?? ""}\x1b[0m`);
+              console.log(
+                `\x1b[34m[${agentType} Subagent]\x1b[0m \x1b[37m${block.input?.description ?? ""}\x1b[0m`,
+              );
             } else {
-              console.log(`\x1b[36m[${block.name}]\x1b[0m \x1b[90m${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`);
+              console.log(
+                `\x1b[36m[${block.name}]\x1b[0m \x1b[90m${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`,
+              );
             }
           }
         }
@@ -338,7 +355,8 @@ const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`;
 const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`;
 const magenta = (s: string) => `\x1b[35m${s}\x1b[0m`;
-const link = (text: string, url: string) => `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;
+const link = (text: string, url: string) =>
+  `\x1b]8;;${url}\x1b\\${text}\x1b]8;;\x1b\\`;
 const linear = (msg: string) => `  ${magenta("[Linear]")} ${msg}`;
 
 async function main() {
@@ -347,7 +365,11 @@ async function main() {
   const pad = 6;
   const inner = pad + title.length + pad;
   console.log(orange(`  ╔${"═".repeat(inner)}╗`));
-  console.log(orange(`  ║${" ".repeat(pad)}`) + bold(title) + orange(`${" ".repeat(pad)}║`));
+  console.log(
+    orange(`  ║${" ".repeat(pad)}`) +
+      bold(title) +
+      orange(`${" ".repeat(pad)}║`),
+  );
   console.log(orange(`  ╚${"═".repeat(inner)}╝`));
   console.log("");
 
@@ -382,7 +404,7 @@ async function main() {
   const stateMap = await getStateMap(client, team.id);
   const inProgressId = stateMap.get("In Progress");
   const completedId = stateMap.get("Completed");
-  const reviewId = stateMap.get("Review");
+  const reviewId = stateMap.get("In Review");
 
   if (!inProgressId || !completedId || !reviewId) {
     console.error(
@@ -392,17 +414,19 @@ async function main() {
   }
 
   // Set PRD to In Progress
-  const prdPrevState = await (await prd.state)?.name ?? "Unknown";
+  const prdPrevState = (await (await prd.state)?.name) ?? "Unknown";
   await setIssueStatus(client, prd.id, inProgressId);
-  console.log(cyan(`\n  PRD ${link(bold(prd.identifier), prd.url)}: ${prd.title}`));
+  console.log(
+    cyan(`\n  PRD ${link(bold(prd.identifier), prd.url)}: ${prd.title}`),
+  );
   console.log(linear(`Status: ${prdPrevState} → In Progress`));
 
   // Checkout PRD branch for all sub-issues
   const currentBranch = await getCurrentBranch();
-  const baseBranch = currentBranch === prd.branchName
-    ? "dev"
-    : currentBranch;
-  console.log(dim(`  Using PRD branch → ${prd.branchName} (base: ${baseBranch})`));
+  const baseBranch = currentBranch === prd.branchName ? "dev" : currentBranch;
+  console.log(
+    dim(`  Using PRD branch → ${prd.branchName} (base: ${baseBranch})`),
+  );
   await checkoutBranch(prd.branchName);
   console.log("");
 
@@ -428,7 +452,9 @@ async function main() {
     const target = remaining[0]!;
     const details = await getIssueDetails(target);
     console.log(orange(`\n${"─".repeat(60)}`));
-    console.log(`  ${orange("▶")} ${bold("Working on:")} ${link(cyan(target.identifier), target.url)}: ${target.title}`);
+    console.log(
+      `  ${orange("▶")} ${bold("Working on:")} ${link(cyan(target.identifier), target.url)}: ${target.title}`,
+    );
     console.log(orange(`${"─".repeat(60)}`));
 
     // Set target sub-issue to In Progress
@@ -436,30 +462,38 @@ async function main() {
     console.log(linear("Status: Todo → In Progress\n"));
 
     // Run Claude
-    const result = await runClaude(
-      prd.title,
-      prd.description ?? "",
-      {
-        identifier: target.identifier,
-        title: target.title,
-        description: details.description,
-        comments: details.comments,
-      },
-    );
+    const result = await runClaude(prd.title, prd.description ?? "", {
+      identifier: target.identifier,
+      title: target.title,
+      description: details.description,
+      comments: details.comments,
+    });
 
     if (result.success) {
       const commitBody = await getLastCommitBody();
       if (commitBody) {
         await commentOnIssue(client, target.id, commitBody);
-        console.log(linear(`Comment posted on ${link(target.identifier, target.url)}`));
+        console.log(
+          linear(`Comment posted on ${link(target.identifier, target.url)}`),
+        );
       }
       await setIssueStatus(client, target.id, completedId);
-      console.log(green(`\n  ✔ ${link(target.identifier, target.url)} completed successfully.`));
+      console.log(
+        green(
+          `\n  ✔  ${link(target.identifier, target.url)} completed successfully.\n`,
+        ),
+      );
       console.log(linear("Status: In Progress → Completed"));
       console.log(orange(`${"═".repeat(60)}\n`));
     } else {
-      console.error(red(`\n  ✘ ${link(target.identifier, target.url)} failed: ${result.error}`));
-      console.error(yellow("  Leaving issue In Progress, continuing to next..."));
+      console.error(
+        red(
+          `\n  ✘ ${link(target.identifier, target.url)} failed: ${result.error}`,
+        ),
+      );
+      console.error(
+        yellow("  Leaving issue In Progress, continuing to next..."),
+      );
       console.error(orange(`${"═".repeat(60)}\n`));
     }
   }
@@ -471,14 +505,23 @@ async function main() {
 
   try {
     const prUrl = await createPullRequest(
-      { identifier: prd.identifier, title: prd.title, url: prd.url, description: prd.description ?? "" },
+      {
+        identifier: prd.identifier,
+        title: prd.title,
+        url: prd.url,
+        description: prd.description ?? "",
+      },
       prd.branchName,
       baseBranch,
     );
     console.log(green(`  PR created: ${link(prUrl, prUrl)}`));
   } catch (err: any) {
     // PR may already exist if re-running
-    if (err?.response?.data?.errors?.[0]?.message?.includes("A pull request already exists")) {
+    if (
+      err?.response?.data?.errors?.[0]?.message?.includes(
+        "A pull request already exists",
+      )
+    ) {
       console.log(yellow("  PR already exists for this branch."));
     } else {
       console.error(red(`  Failed to create PR: ${err.message}`));
@@ -491,10 +534,14 @@ async function main() {
   const donePad = Math.floor((inner - doneText.length) / 2);
   const donePadR = inner - doneText.length - donePad;
   console.log(orange(`\n  ╔${"═".repeat(inner)}╗`));
-  console.log(orange(`  ║${" ".repeat(donePad)}`) + green(bold(doneText)) + orange(`${" ".repeat(donePadR)}║`));
+  console.log(
+    orange(`  ║${" ".repeat(donePad)}`) +
+      green(bold(doneText)) +
+      orange(`${" ".repeat(donePadR)}║`),
+  );
   console.log(orange(`  ╚${"═".repeat(inner)}╝`));
   console.log(cyan(`  ${link(prd.identifier, prd.url)}: ${prd.title}`));
-  console.log(linear("Status: In Progress → Review"));
+  console.log(linear("Status: In Progress → In Review"));
 }
 
 main();
