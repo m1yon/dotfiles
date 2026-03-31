@@ -296,13 +296,15 @@ ${issue.comments.length > 0 ? `## Comments\n\n${issue.comments.join("\n\n")}` : 
 
 Implement this issue. Explore the repo, understand the codebase, then implement the solution.
 
-When done, make a single git commit with this format:
+Each sub-issue gets its own commit. When done, make a single git commit for THIS issue with this format:
 ${issue.identifier}: <description>
 
 Include in the commit body (markdown is fine):
 - Key decisions made
 - Files changed
-- Blockers or notes for next iteration`;
+- Blockers or notes for next iteration
+
+Do NOT squash multiple sub-issues into one commit. Do NOT push to git — the orchestrator handles that.`;
 
   try {
     for await (const message of query({
@@ -491,6 +493,12 @@ async function main() {
           linear(`Comment posted on ${link(target.identifier, target.url)}`),
         );
       }
+
+      // Push after each sub-issue
+      console.log(dim(`  Pushing ${prd.branchName}...`));
+      await pushBranch(prd.branchName);
+      console.log(green("  Pushed."));
+
       await setIssueStatus(client, target.id, completedId);
       console.log(
         green(
