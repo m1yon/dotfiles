@@ -98,10 +98,7 @@ async function checkoutBranch(branchName: string): Promise<void> {
     stdout: "pipe",
     stderr: "pipe",
   });
-  if ((await checkout.exited) === 0) {
-    console.log(`Checked out existing branch: ${branchName}`);
-    return;
-  }
+  if ((await checkout.exited) === 0) return;
 
   const create = Bun.spawn(["git", "checkout", "-b", branchName], {
     stdout: "pipe",
@@ -111,7 +108,6 @@ async function checkoutBranch(branchName: string): Promise<void> {
     const stderr = await new Response(create.stderr).text();
     throw new Error(`Failed to create branch ${branchName}: ${stderr.trim()}`);
   }
-  console.log(`Created and checked out branch: ${branchName}`);
 }
 
 // --- Claude Orchestration ---
@@ -164,7 +160,7 @@ Include in the commit body (markdown is fine):
         for (const block of content) {
           if (block.type === "text") {
             if (isSubagent) {
-              console.log(`\x1b[90m  ┃ \x1b[35m[sub]\x1b[90m ${block.text}\x1b[0m`);
+              console.log(`\x1b[90m  ┃ \x1b[34m[sub]\x1b[90m ${block.text}\x1b[0m`);
             } else {
               console.log(`\x1b[38;2;227;137;58m[Claude]\x1b[0m ${block.text}`);
             }
@@ -173,7 +169,7 @@ Include in the commit body (markdown is fine):
               console.log(`\x1b[90m  ┃ [${block.name}] ${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`);
             } else if (block.name === "Agent") {
               const agentType = block.input?.subagent_type ?? "General";
-              console.log(`\x1b[35m[${agentType} Subagent]\x1b[0m \x1b[37m${block.input?.description ?? ""}\x1b[0m`);
+              console.log(`\x1b[34m[${agentType} Subagent]\x1b[0m \x1b[37m${block.input?.description ?? ""}\x1b[0m`);
             } else {
               console.log(`\x1b[36m[${block.name}]\x1b[0m \x1b[90m${JSON.stringify(block.input).slice(0, 200)}\x1b[0m`);
             }
@@ -220,7 +216,28 @@ async function commentOnIssue(
 
 // --- Main ---
 
+// ANSI helpers
+const dim = (s: string) => `\x1b[90m${s}\x1b[0m`;
+const bold = (s: string) => `\x1b[1m${s}\x1b[0m`;
+const orange = (s: string) => `\x1b[38;2;227;137;58m${s}\x1b[0m`;
+const green = (s: string) => `\x1b[32m${s}\x1b[0m`;
+const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`;
+const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
+const red = (s: string) => `\x1b[31m${s}\x1b[0m`;
+const magenta = (s: string) => `\x1b[35m${s}\x1b[0m`;
+const linear = (msg: string) => `  ${magenta("[Linear]")} ${msg}`;
+
 async function main() {
+  console.log("");
+  const title = "AFK Ralph — Autonomous Issue Runner";
+  const pad = 6;
+  const inner = pad + title.length + pad;
+  console.log(orange(`  ╔${"═".repeat(inner)}╗`));
+  console.log(orange(`  ║${" ".repeat(pad)}`) + bold(title) + orange(`${" ".repeat(pad)}║`));
+  console.log(orange(`  ╚${"═".repeat(inner)}╝`));
+  console.log("");
+
+  console.log(dim("  Connecting to Linear..."));
   const client = getLinearClient();
 
   // Fetch PRD issues
@@ -229,6 +246,7 @@ async function main() {
     console.error("No PRD issues found assigned to you on MECA Therapies.");
     process.exit(1);
   }
+  console.log(green(`  Found ${prds.length} PRD(s)\n`));
 
   // Interactive PRD selection
   const selectedId = await select({
@@ -246,6 +264,7 @@ async function main() {
     process.exit(1);
   }
 
+  console.log(dim("\n  Loading workflow states..."));
   const stateMap = await getStateMap(client, team.id);
   const inProgressId = stateMap.get("In Progress");
   const completedId = stateMap.get("Completed");
@@ -259,36 +278,44 @@ async function main() {
   }
 
   // Set PRD to In Progress
+  const prdPrevState = await (await prd.state)?.name ?? "Unknown";
   await setIssueStatus(client, prd.id, inProgressId);
-  console.log(`\nPRD "${prd.identifier}: ${prd.title}" set to In Progress\n`);
+  console.log(cyan(`\n  PRD ${bold(prd.identifier)}: ${prd.title}`));
+  console.log(linear(`Status: ${prdPrevState} → In Progress`));
 
   // Checkout PRD branch for all sub-issues
+  console.log(dim(`  Using PRD branch → ${prd.branchName}`));
   await checkoutBranch(prd.branchName);
+  console.log("");
 
   // Iterate through sub-issues
   while (true) {
     const remaining = await fetchRemainingChildren(client, prd.id);
     if (remaining.length === 0) {
-      console.log("\nAll sub-issues complete!");
+      console.log(green("\n  All sub-issues complete!"));
       break;
     }
 
-    console.log(`\n${remaining.length} sub-issue(s) remaining:`);
+    console.log(orange(`\n${"═".repeat(60)}`));
+    console.log(yellow(`  ${remaining.length} sub-issue(s) remaining`));
+    console.log(orange(`${"═".repeat(60)}`));
     for (const issue of remaining) {
       const state = await issue.state;
       console.log(
-        `  ${issue.identifier}: ${issue.title} [${state?.name ?? "unknown"}]`,
+        `  ${cyan(issue.identifier)}: ${issue.title} ${dim(`[${state?.name ?? "unknown"}]`)}`,
       );
     }
 
     // Pick the highest-priority sub-issue
     const target = remaining[0]!;
     const details = await getIssueDetails(target);
-    console.log(`\nWorking on: ${target.identifier}: ${target.title}`);
+    console.log(orange(`\n${"─".repeat(60)}`));
+    console.log(`  ${orange("▶")} ${bold("Working on:")} ${cyan(target.identifier)}: ${target.title}`);
+    console.log(orange(`${"─".repeat(60)}`));
 
     // Set target sub-issue to In Progress
     await setIssueStatus(client, target.id, inProgressId);
-    console.log(`Set ${target.identifier} to In Progress\n`);
+    console.log(linear("Status: Todo → In Progress\n"));
 
     // Run Claude
     const result = await runClaude(
@@ -306,19 +333,29 @@ async function main() {
       const commitBody = await getLastCommitBody();
       if (commitBody) {
         await commentOnIssue(client, target.id, commitBody);
-        console.log(`Posted commit notes to ${target.identifier}`);
+        console.log(linear(`Comment posted on ${target.identifier}`));
       }
       await setIssueStatus(client, target.id, completedId);
-      console.log(`\n${target.identifier} completed successfully.`);
+      console.log(green(`\n  ✔ ${target.identifier} completed successfully.`));
+      console.log(linear("Status: In Progress → Completed"));
+      console.log(orange(`${"═".repeat(60)}\n`));
     } else {
-      console.error(`\n${target.identifier} failed: ${result.error}`);
-      console.error("Leaving issue In Progress, continuing to next...");
+      console.error(red(`\n  ✘ ${target.identifier} failed: ${result.error}`));
+      console.error(yellow("  Leaving issue In Progress, continuing to next..."));
+      console.error(orange(`${"═".repeat(60)}\n`));
     }
   }
 
   // Set PRD to Review
   await setIssueStatus(client, prd.id, reviewId);
-  console.log(`\nPRD "${prd.identifier}: ${prd.title}" set to Review. Done!`);
+  const doneText = "Done!";
+  const donePad = Math.floor((inner - doneText.length) / 2);
+  const donePadR = inner - doneText.length - donePad;
+  console.log(orange(`\n  ╔${"═".repeat(inner)}╗`));
+  console.log(orange(`  ║${" ".repeat(donePad)}`) + green(bold(doneText)) + orange(`${" ".repeat(donePadR)}║`));
+  console.log(orange(`  ╚${"═".repeat(inner)}╝`));
+  console.log(cyan(`  ${prd.identifier}: ${prd.title}`));
+  console.log(linear("Status: In Progress → Review"));
 }
 
 main();
