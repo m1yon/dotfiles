@@ -84,6 +84,30 @@ async function getIssueDetails(
   };
 }
 
+// --- Git Module ---
+
+async function checkoutBranch(branchName: string): Promise<void> {
+  // Try to check out existing branch first, otherwise create it
+  const checkout = Bun.spawn(["git", "checkout", branchName], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  if ((await checkout.exited) === 0) {
+    console.log(`Checked out existing branch: ${branchName}`);
+    return;
+  }
+
+  const create = Bun.spawn(["git", "checkout", "-b", branchName], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  if ((await create.exited) !== 0) {
+    const stderr = await new Response(create.stderr).text();
+    throw new Error(`Failed to create branch ${branchName}: ${stderr.trim()}`);
+  }
+  console.log(`Created and checked out branch: ${branchName}`);
+}
+
 // --- Claude Orchestration ---
 
 async function runClaude(
@@ -231,13 +255,18 @@ async function main() {
           description: details.description,
           comments: details.comments,
           id: issue.id,
+          branchName: issue.branchName,
         };
       }),
     );
 
     // The first sub-issue (highest priority) is the one we expect Claude to pick
     const target = subIssueDetails[0];
+    if (!target) throw new Error("Expected at least one sub-issue but found none");
     console.log(`\nExpecting Claude to work on: ${target.identifier}: ${target.title}`);
+
+    // Checkout the Linear-generated branch
+    await checkoutBranch(target.branchName);
 
     // Set target sub-issue to In Progress
     await setIssueStatus(client, target.id, inProgressId);
