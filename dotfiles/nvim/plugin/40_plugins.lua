@@ -267,3 +267,19 @@ later(function()
 		},
 	})
 end)
+
+-- dbt ===========================================================================
+later(function()
+	add("gbakes/dbt-forge")
+	vim.api.nvim_create_autocmd("FileType", {
+		pattern = "sql",
+		once = true,
+		callback = function()
+			require("dbt-forge").setup({
+				keymaps = {
+					goto_definition = false,
+				},
+			})
+		end,
+	})
+end)
