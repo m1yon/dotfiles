@@ -61,7 +61,7 @@ async function fetchPrdIssues(client: LinearClient): Promise<Issue[]> {
 async function fetchRemainingChildren(
   client: LinearClient,
   prdId: string,
-): Promise<Issue[]> {
+): Promise<{ issues: Issue[]; blockedIds: Set<string> }> {
   const prd = await client.issue(prdId);
   const children = await prd.children();
   const remaining: Issue[] = [];
@@ -73,14 +73,35 @@ async function fetchRemainingChildren(
     }
   }
 
-  // Lower priority number = higher priority, 0 = no priority (sort last)
+  // Build set of remaining issue IDs for blocker lookups
+  const remainingIds = new Set(remaining.map((i) => i.id));
+
+  // Find which issues are blocked by another remaining issue
+  const blockedIds = new Set<string>();
+  for (const child of remaining) {
+    const inverseRels = await child.inverseRelations();
+    for (const rel of inverseRels.nodes) {
+      if (rel.type === "blocks") {
+        const blockerId = rel.issueId;
+        if (blockerId && remainingIds.has(blockerId)) {
+          blockedIds.add(child.id);
+          break;
+        }
+      }
+    }
+  }
+
+  // Sort: unblocked first, then by priority (lower number = higher priority, 0 = no priority = last)
   remaining.sort((a, b) => {
+    const aBlocked = blockedIds.has(a.id) ? 1 : 0;
+    const bBlocked = blockedIds.has(b.id) ? 1 : 0;
+    if (aBlocked !== bBlocked) return aBlocked - bBlocked;
     const pa = a.priority === 0 ? 99 : (a.priority ?? 99);
     const pb = b.priority === 0 ? 99 : (b.priority ?? 99);
     return pa - pb;
   });
 
-  return remaining;
+  return { issues: remaining, blockedIds };
 }
 
 async function getIssueDetails(
@@ -404,7 +425,7 @@ async function main() {
   // Interactive PRD selection
   const choices = await Promise.all(
     prds.map(async (prd) => {
-      const remaining = await fetchRemainingChildren(client, prd.id);
+      const { issues: remaining } = await fetchRemainingChildren(client, prd.id);
       return {
         name: `${prd.identifier}: ${prd.title} (${remaining.length} incomplete sub-issues)`,
         value: prd.id,
@@ -455,7 +476,7 @@ async function main() {
 
   // Iterate through sub-issues
   while (true) {
-    const remaining = await fetchRemainingChildren(client, prd.id);
+    const { issues: remaining, blockedIds } = await fetchRemainingChildren(client, prd.id);
     if (remaining.length === 0) {
       console.log(green("\n  All sub-issues complete!"));
       break;
@@ -466,13 +487,18 @@ async function main() {
     console.log(orange(`${"═".repeat(60)}`));
     for (const issue of remaining) {
       const state = await issue.state;
+      const blocked = blockedIds.has(issue.id) ? red(" [blocked]") : "";
       console.log(
-        `  ${link(cyan(issue.identifier), issue.url)}: ${issue.title} ${dim(`[${state?.name ?? "unknown"}]`)}`,
+        `  ${link(cyan(issue.identifier), issue.url)}: ${issue.title} ${dim(`[${state?.name ?? "unknown"}]`)}${blocked}`,
       );
     }
 
-    // Pick the highest-priority sub-issue
+    // Pick the highest-priority unblocked sub-issue
     const target = remaining[0]!;
+    if (blockedIds.has(target.id)) {
+      console.error(red(`\n  ✘ All remaining issues are blocked — cannot proceed`));
+      process.exit(1);
+    }
     const details = await getIssueDetails(target);
     console.log(orange(`\n${"─".repeat(60)}`));
     console.log(
