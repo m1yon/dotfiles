@@ -52,6 +52,7 @@ async function fetchPrdIssues(client: LinearClient): Promise<Issue[]> {
     filter: {
       team: { name: { eq: "MECA Therapies" } },
       labels: { name: { eq: "PRD" } },
+      state: { type: { neq: "completed" } },
     },
   });
   return prdIssues.nodes;
