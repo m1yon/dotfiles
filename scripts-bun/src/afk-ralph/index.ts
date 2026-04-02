@@ -238,7 +238,6 @@ async function createOrUpdatePullRequest(
   const { owner, repo } = await getRepoInfo();
 
   const title = `${prd.identifier}: ${prd.title}`;
-  const body = await generatePrBody(prd, baseBranch);
 
   // Check for existing PR on this branch
   const { data: existing } = await octokit.rest.pulls.list({
@@ -250,16 +249,28 @@ async function createOrUpdatePullRequest(
 
   if (existing.length > 0) {
     const pr = existing[0]!;
-    await octokit.rest.pulls.update({
-      owner,
-      repo,
-      pull_number: pr.number,
-      title,
-      body,
+    const shouldUpdate = await select({
+      message: `PR #${pr.number} already exists. Update its description?`,
+      choices: [
+        { name: "Yes", value: true },
+        { name: "No", value: false },
+      ],
     });
+
+    if (shouldUpdate) {
+      const body = await generatePrBody(prd, baseBranch);
+      await octokit.rest.pulls.update({
+        owner,
+        repo,
+        pull_number: pr.number,
+        title,
+        body,
+      });
+    }
     return pr.html_url;
   }
 
+  const body = await generatePrBody(prd, baseBranch);
   const response = await octokit.rest.pulls.create({
     owner,
     repo,
