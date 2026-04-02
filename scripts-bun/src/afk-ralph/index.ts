@@ -393,6 +393,87 @@ async function commentOnIssue(
   await client.createComment({ issueId, body });
 }
 
+// --- Feedback Resolution ---
+
+interface FeedbackMetadata {
+  threadId: string | null;
+  commentId: number;
+  commentType: "review" | "issue";
+  prNumber: number;
+}
+
+function parseFeedbackMetadata(description: string): FeedbackMetadata[] {
+  const results: FeedbackMetadata[] = [];
+  const regex =
+    /<!-- afk-ralph-metadata\s+threadId:\s*(.+)\s+commentId:\s*(\d+)\s+commentType:\s*(\w+)\s+prNumber:\s*(\d+)\s*-->/g;
+  let match;
+  while ((match = regex.exec(description)) !== null) {
+    results.push({
+      threadId: match[1]!.trim() === "null" ? null : match[1]!.trim(),
+      commentId: parseInt(match[2]!, 10),
+      commentType: match[3]!.trim() as "review" | "issue",
+      prNumber: parseInt(match[4]!, 10),
+    });
+  }
+  return results;
+}
+
+async function hasFeedbackLabel(issue: Issue): Promise<boolean> {
+  const labels = await issue.labels();
+  return labels.nodes.some((l) => l.name === "Feedback");
+}
+
+async function getShortCommitSha(): Promise<string> {
+  const proc = Bun.spawn(["git", "log", "-1", "--format=%h"], {
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+  await proc.exited;
+  return (await new Response(proc.stdout).text()).trim();
+}
+
+async function resolveFeedbackOnGitHub(
+  metadata: FeedbackMetadata[],
+  commitSha: string,
+): Promise<void> {
+  const authToken = await getAuthToken();
+  const octokit = new Octokit({ auth: authToken });
+  const { owner, repo } = await getRepoInfo();
+  const body = `Addressed in ${commitSha}.`;
+
+  for (const item of metadata) {
+    // Reply to the comment
+    if (item.commentType === "review") {
+      await octokit.rest.pulls.createReplyForReviewComment({
+        owner,
+        repo,
+        pull_number: item.prNumber,
+        comment_id: item.commentId,
+        body,
+      });
+    } else {
+      await octokit.rest.issues.createComment({
+        owner,
+        repo,
+        issue_number: item.prNumber,
+        body,
+      });
+    }
+
+    // Resolve the thread if it's a review comment
+    if (item.commentType === "review" && item.threadId) {
+      await octokit.graphql(
+        `mutation($threadId: ID!) {
+          resolveReviewThread(input: { threadId: $threadId }) {
+            thread { isResolved }
+          }
+        }`,
+        { threadId: item.threadId },
+      );
+    }
+  }
+}
+
 // --- Main ---
 
 // ANSI helpers
@@ -542,6 +623,23 @@ async function main() {
       console.log(dim(`  Pushing ${prd.branchName}...`));
       await pushBranch(prd.branchName);
       console.log(green("  Pushed."));
+
+      // Resolve PR feedback if this is a Feedback-labeled issue
+      if (await hasFeedbackLabel(target)) {
+        const feedbackMeta = parseFeedbackMetadata(
+          target.description ?? "",
+        );
+        if (feedbackMeta.length > 0) {
+          const sha = await getShortCommitSha();
+          console.log(
+            dim(
+              `  Resolving ${feedbackMeta.length} PR feedback thread(s)...`,
+            ),
+          );
+          await resolveFeedbackOnGitHub(feedbackMeta, sha);
+          console.log(green("  PR feedback resolved."));
+        }
+      }
 
       await setIssueStatus(client, target.id, completedId);
       console.log(

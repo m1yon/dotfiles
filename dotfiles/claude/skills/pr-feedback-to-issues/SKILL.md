@@ -120,6 +120,15 @@ After the interview, immediately act on the outcome:
      [View comment]({url})
 
      {End for each}
+
+     {For each comment in the group with a non-null commentId:}
+     <!-- afk-ralph-metadata
+     threadId: {threadId or "null"}
+     commentId: {commentId}
+     commentType: {commentType}
+     prNumber: {pr_number}
+     -->
+     {End for each}
      ```
 2. Reply on the PR for each comment in the group:
    ```bash
