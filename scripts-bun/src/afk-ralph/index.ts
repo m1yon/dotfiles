@@ -402,12 +402,18 @@ async function main() {
   console.log(green(`  Found ${prds.length} PRD(s)\n`));
 
   // Interactive PRD selection
+  const choices = await Promise.all(
+    prds.map(async (prd) => {
+      const remaining = await fetchRemainingChildren(client, prd.id);
+      return {
+        name: `${prd.identifier}: ${prd.title} (${remaining.length} incomplete sub-issues)`,
+        value: prd.id,
+      };
+    }),
+  );
   const selectedId = await select({
     message: "Select a PRD to work on:",
-    choices: prds.map((prd) => ({
-      name: `${prd.identifier}: ${prd.title}`,
-      value: prd.id,
-    })),
+    choices,
   });
 
   const prd = await client.issue(selectedId);
