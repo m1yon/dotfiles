@@ -3,7 +3,8 @@
   "enabledPlugins": {
     "claude-notifications-go@claude-notifications-go": true,
     "typescript-lsp@claude-plugins-official": false,
-    "gopls-lsp@claude-plugins-official": false
+    "gopls-lsp@claude-plugins-official": false,
+    "linear@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "claude-notifications-go": {
