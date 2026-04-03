@@ -1,11 +1,13 @@
 ---
 name: triage-issue
-description: Triage a bug or issue by exploring the codebase to find root cause, then create a Linear issue with a TDD-based fix plan. Use when user reports a bug, wants to file an issue, mentions "triage", or wants to investigate and plan a fix for a problem.
+description: Triage a bug or issue by exploring the codebase to find root cause, then create a Linear issue with a TDD-based fix plan. If on a branch with a Linear issue, creates the issue as a sub-issue of that PRD. Use when user reports a bug, wants to file an issue, mentions "triage", or wants to investigate and plan a fix for a problem.
+allowed-tools:
+  - Bash(git:*)
 ---
 
 # Triage Issue
 
-Investigate a reported problem, find its root cause, and create a Linear issue with a TDD fix plan. This is a mostly hands-off workflow - minimize questions to the user.
+Investigate a reported problem, find its root cause, and create a Linear issue with a TDD fix plan. If on a feature branch tied to a Linear PRD, creates the issue as a sub-issue. This is a mostly hands-off workflow - minimize questions to the user.
 
 ## Process
 
@@ -14,6 +16,17 @@ Investigate a reported problem, find its root cause, and create a Linear issue w
 Get a brief description of the issue from the user. If they haven't provided one, ask ONE question: "What's the problem you're seeing?"
 
 Do NOT ask follow-up questions yet. Start investigating immediately.
+
+### 1b. Check for parent PRD
+
+Get the current branch name:
+```bash
+git rev-parse --abbrev-ref HEAD
+```
+
+If the branch name contains a Linear issue identifier (e.g., `MECA-123`), use `get_issue` MCP tool with `branchName` set to the branch name to fetch the parent PRD. Store this for step 5.
+
+If no issue is found or the branch is `main`/`master`, proceed without a parent — the issue will be created as a top-level issue.
 
 ### 2. Explore and diagnose
 
@@ -56,7 +69,12 @@ Rules:
 
 ### 5. Create the Linear issue
 
-Create a Linear issue using the `create_issue` MCP tool on the **MECA Therapies** team with the template below. Set the issue type to **Bug**. Assign the issue to me. Apply the **AI** label. Do NOT ask the user to review before creating - just create it and share the URL.
+Create a Linear issue using the `save_issue` MCP tool on the **MECA Therapies** team with the template below. Set the issue type to **Bug**. Assign the issue to me. Apply the **AI** label. Set status to **Todo**.
+
+- **If a parent PRD was found in step 1b:** set the parent issue to the PRD. This makes the triage issue a sub-issue of the PRD.
+- **If no parent PRD:** create as a top-level issue.
+
+Do NOT ask the user to review before creating - just create it and share the URL.
 
 <issue-template>
 
@@ -97,6 +115,21 @@ A numbered list of RED-GREEN cycles:
 - [ ] All new tests pass
 - [ ] Existing tests still pass
 
+## Context (only if sub-issue)
+
+Filed during triage on branch for {PRD identifier}: {PRD title}.
+
 </issue-template>
 
-After creating the issue, print the Linear issue URL and a one-line summary of the root cause.
+After creating the issue, print:
+
+```
+Issue created: {IDENTIFIER}: {title}
+{linear_url}
+Root cause: {one-line summary}
+```
+
+If a parent PRD was linked, also print:
+```
+Parent PRD: {PRD identifier}: {PRD title}
+```

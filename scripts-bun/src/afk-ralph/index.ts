@@ -5,8 +5,16 @@
 import { LinearClient, type Issue } from "@linear/sdk";
 import { select } from "@inquirer/prompts";
 import { query } from "@anthropic-ai/claude-agent-sdk";
+import { readFileSync } from "fs";
+import { dirname } from "path";
 import { logQueryMessage } from "./log-query-message";
+import { renderPrompt } from "./render-prompt";
 import { Octokit } from "octokit";
+
+const PROMPT_DIR = dirname(import.meta.filename);
+function loadPrompt(filename: string, vars: Record<string, string>): string {
+  return renderPrompt(readFileSync(`${PROMPT_DIR}/${filename}`, "utf-8"), vars);
+}
 
 const CLAUDE_PATH = Bun.spawnSync(["which", "claude"]).stdout.toString().trim();
 if (!CLAUDE_PATH) {
@@ -170,37 +178,13 @@ async function generatePrBody(
   prd: { identifier: string; title: string; url: string; description: string },
   baseBranch: string,
 ): Promise<string> {
-  const prompt = `You are writing a GitHub pull request description. Look at the commits on this branch (compared to ${baseBranch}) using git log and git diff, then write a concise PR body in markdown.
-
-The PR implements a Linear PRD:
-- Identifier: ${prd.identifier}
-- Title: ${prd.title}
-- URL: ${prd.url}
-- Description: ${prd.description || "(none)"}
-
-Output ONLY the PR body markdown, nothing else. Focus on module and interface changes, NOT file-by-file diffs. Use this structure:
-
-## Summary
-One or two sentences on what this PR delivers end-to-end.
-
-## Interface Changes
-For each module or boundary that was added or modified, show a before/after using GitHub markdown diff blocks. Only show the public interface (types, function signatures, route definitions, schema shapes) — not implementation. For new modules, omit the before. Example format:
-
-\`\`\`diff
-- function fetchUser(id: string): Promise<User>
-+ function fetchUser(id: string, opts?: FetchOptions): Promise<UserWithRole>
-\`\`\`
-
-Do NOT list individual file paths or line-level implementation changes.
-
-## Key Decisions
-Bulleted list of non-obvious implementation decisions (e.g. why a particular boundary was drawn, trade-offs made, patterns chosen).
-
-## Testing
-How the changes are verified — which boundaries are tested and how.
-
----
-Linear: ${prd.url}`;
+  const prompt = loadPrompt("prompt-pr-body.md", {
+    baseBranch,
+    prdIdentifier: prd.identifier,
+    prdTitle: prd.title,
+    prdUrl: prd.url,
+    prdDescription: prd.description || "(none)",
+  });
 
   let resultText = "";
   for await (const message of query({
@@ -315,29 +299,19 @@ async function runClaude(
     comments: string[];
   },
 ): Promise<{ success: boolean; error?: string }> {
-  const prompt = `# PRD: ${prdTitle}
+  const commentsSection =
+    issue.comments.length > 0
+      ? `## Comments\n\n${issue.comments.join("\n\n")}`
+      : "";
 
-${prdDescription}
-
-# Issue: ${issue.identifier} — ${issue.title}
-
-${issue.description || "(no description)"}
-
-${issue.comments.length > 0 ? `## Comments\n\n${issue.comments.join("\n\n")}` : ""}
-
-# Instructions
-
-Implement this issue. Explore the repo, understand the codebase, then implement the solution.
-
-Each sub-issue gets its own commit. When done, make a single git commit for THIS issue with this format:
-${issue.identifier}: <description>
-
-Include in the commit body (markdown is fine):
-- Key decisions made
-- Files changed
-- Blockers or notes for next iteration
-
-Do NOT squash multiple sub-issues into one commit. Do NOT push to git — the orchestrator handles that.`;
+  const prompt = loadPrompt("prompt-implement-issue.md", {
+    prdTitle,
+    prdDescription,
+    issueIdentifier: issue.identifier,
+    issueTitle: issue.title,
+    issueDescription: issue.description || "(no description)",
+    issueComments: commentsSection,
+  });
 
   try {
     for await (const message of query({
