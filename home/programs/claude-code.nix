@@ -23,7 +23,33 @@ in
     extraPackages = with pkgs; [
       typescript-language-server
       gopls
+      nodejs
     ];
+  };
+
+  sops.secrets = {
+    xero_client_id.sopsFile = ../../secrets/xero.yaml;
+    xero_client_secret.sopsFile = ../../secrets/xero.yaml;
+  };
+
+  sops.templates."mcp.json" = {
+    path = "${config.home.homeDirectory}/.mcp.json";
+    content = builtins.toJSON {
+      mcpServers = {
+        mercury = {
+          type = "http";
+          url = "https://mcp.mercury.com/mcp";
+        };
+        xero = {
+          command = "npx";
+          args = [ "-y" "@xeroapi/xero-mcp-server@latest" ];
+          env = {
+            XERO_CLIENT_ID = config.sops.placeholder.xero_client_id;
+            XERO_CLIENT_SECRET = config.sops.placeholder.xero_client_secret;
+          };
+        };
+      };
+    };
   };
 
   home.file = {
