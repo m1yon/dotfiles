@@ -13,6 +13,7 @@
     ./development.nix
     ./docker.nix
     ./kvm.nix
+    ./localsend.nix
     ./power.nix
   ];
 }
