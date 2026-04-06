@@ -10,14 +10,10 @@
 
 # Instructions
 
-Implement this issue. Explore the repo, understand the codebase, then implement the solution.
+1. Check if any available skills are relevant to this issue. If so, use the Skill tool to invoke them.
+2. Solve {{issueIdentifier}}. Meet every acceptance criterion.
+3. Run the tests, linter, and type-checker. Fix any errors.
+4. Commit with: `{{issueIdentifier}}: <description>`
+   - In the body, note key decisions, files changed, and any blockers.
 
-Each sub-issue gets its own commit. When done, make a single git commit for THIS issue with this format:
-{{issueIdentifier}}: <description>
-
-Include in the commit body (markdown is fine):
-- Key decisions made
-- Files changed
-- Blockers or notes for next iteration
-
-Do NOT squash multiple sub-issues into one commit. Do NOT push to git — the orchestrator handles that.
+Do NOT push to git — the orchestrator handles that.

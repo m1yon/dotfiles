@@ -5,15 +5,21 @@
 import { LinearClient, type Issue } from "@linear/sdk";
 import { select } from "@inquirer/prompts";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-import { readFileSync } from "fs";
-import { dirname } from "path";
 import { logQueryMessage } from "./log-query-message";
 import { renderPrompt } from "./render-prompt";
 import { Octokit } from "octokit";
+import promptImplementIssue from "./prompt-implement-issue.md" with { type: "text" };
+import promptPrBody from "./prompt-pr-body.md" with { type: "text" };
 
-const PROMPT_DIR = dirname(import.meta.filename);
+const PROMPTS: Record<string, string> = {
+  "prompt-implement-issue.md": promptImplementIssue,
+  "prompt-pr-body.md": promptPrBody,
+};
+
 function loadPrompt(filename: string, vars: Record<string, string>): string {
-  return renderPrompt(readFileSync(`${PROMPT_DIR}/${filename}`, "utf-8"), vars);
+  const template = PROMPTS[filename];
+  if (!template) throw new Error(`Unknown prompt: ${filename}`);
+  return renderPrompt(template, vars);
 }
 
 const CLAUDE_PATH = Bun.spawnSync(["which", "claude"]).stdout.toString().trim();
@@ -318,7 +324,7 @@ async function runClaude(
       prompt,
       options: {
         cwd: process.cwd(),
-        allowedTools: ["Read", "Edit", "Write", "Bash", "Glob", "Grep"],
+        allowedTools: ["Read", "Edit", "Write", "Bash", "Glob", "Grep", "Skill"],
         permissionMode: "bypassPermissions",
         allowDangerouslySkipPermissions: true,
         maxTurns: 100,
