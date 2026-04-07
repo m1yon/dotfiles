@@ -68,6 +68,14 @@ Create issues in dependency order (blockers first). After creating all issues, u
 
 A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation. Reference specific sections of the parent PRD rather than duplicating content.
 
+## Development approach
+
+If the slice touches testable logic (APIs, business rules, data transformations, integrations), include this section recommending TDD:
+
+> Use the `tdd` skill (red-green-refactor) to implement this slice.
+
+Omit this section for slices that are purely configuration, UI layout, or infrastructure with no testable behavior.
+
 ## Acceptance criteria
 
 - [ ] Criterion 1
