@@ -82,9 +82,10 @@ async function fetchRemainingChildren(
 
   for (const child of children.nodes) {
     const state = await child.state;
-    if (state?.type !== "completed" && state?.type !== "canceled") {
-      remaining.push(child);
-    }
+    if (state?.type === "completed" || state?.type === "canceled") continue;
+    const labels = await child.labels();
+    if (!labels.nodes.some((l) => l.name === "AI")) continue;
+    remaining.push(child);
   }
 
   // Build set of remaining issue IDs for blocker lookups
