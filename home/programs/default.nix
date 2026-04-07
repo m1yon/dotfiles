@@ -23,6 +23,7 @@
     ./neovim.nix
     ./obsidian.nix
     ./onlyoffice.nix
+    ./lazycommit.nix
     ./lazygit.nix
     ./linear.nix
     ./localsend.nix

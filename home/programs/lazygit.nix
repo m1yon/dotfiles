@@ -40,6 +40,43 @@
         commitChanges = "C";
         commitChangesWithEditor = "c";
       };
+      customCommands = [
+        {
+          key = "<c-a>";
+          description = "pick AI commit";
+          command = "git commit -m '{{.Form.Msg}}'";
+          context = "files";
+          prompts = [
+            {
+              type = "menuFromCommand";
+              title = "AI Commit Messages";
+              key = "Msg";
+              command = "lazycommit commit";
+              filter = "^(?P<raw>.+)$";
+              valueFormat = "{{ .raw }}";
+              labelFormat = "{{ .raw | green }}";
+            }
+          ];
+        }
+        {
+          key = "<c-b>";
+          description = "pick AI commit (edit before committing)";
+          context = "files";
+          output = "terminal";
+          command = "bash -c 'msg=\"{{.Form.Msg}}\"; echo \"$msg\" > .git/COMMIT_EDITMSG && \${EDITOR:-nvim} .git/COMMIT_EDITMSG && if [ -s .git/COMMIT_EDITMSG ]; then git commit -F .git/COMMIT_EDITMSG; else echo \"Commit message is empty, commit aborted.\"; fi'";
+          prompts = [
+            {
+              type = "menuFromCommand";
+              title = "AI Commit Messages";
+              key = "Msg";
+              command = "lazycommit commit";
+              filter = "^(?P<raw>.+)$";
+              valueFormat = "{{ .raw }}";
+              labelFormat = "{{ .raw | green }}";
+            }
+          ];
+        }
+      ];
     };
   };
 }
