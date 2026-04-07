@@ -23,7 +23,7 @@ If you have not already explored the codebase, do so to understand the current s
 
 Break the PRD into **tracer bullet** issues. Each issue is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
 
-Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an architectural decision or a design review. AFK slices can be implemented and merged without human interaction. Prefer AFK over HITL where possible.
+Slices may be assigned to 'AI' or 'Human'. Human slices require human interaction, such as an architectural decision or a design review. AI slices can be implemented and merged without human interaction. Prefer AI over Human where possible.
 
 <vertical-slice-rules>
 - Each slice delivers a narrow but COMPLETE path through every layer (schema, API, UI, tests)
@@ -36,7 +36,7 @@ Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an
 Present the proposed breakdown as a numbered list. For each slice, show:
 
 - **Title**: short descriptive name
-- **Type**: HITL / AFK
+- **Assigned to**: AI / Human
 - **Priority**: Urgent / High / Medium / Low
 - **Blocked by**: which other slices (if any) must complete first
 - **User stories covered**: which user stories from the PRD this addresses
@@ -46,13 +46,13 @@ Ask the user:
 - Does the granularity feel right? (too coarse / too fine)
 - Are the dependency relationships correct?
 - Should any slices be merged or split further?
-- Are the correct slices marked as HITL and AFK?
+- Are the correct slices assigned to AI and Human?
 
 Iterate until the user approves the breakdown.
 
 ### 5. Create the Linear sub-issues
 
-For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**. Set the status to **Todo**. Assign the issue to me. Apply the **AI** label.
+For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**. Set the status to **Todo**. Assign the issue to me. Apply the **AI** label for slices assigned to AI, or the **Human** label for slices assigned to Human.
 
 Set the **priority** on each sub-issue using these rules (highest to lowest):
 
