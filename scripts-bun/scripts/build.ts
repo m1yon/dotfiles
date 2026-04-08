@@ -5,7 +5,7 @@ import { basename, dirname, join } from "node:path";
 
 const SRC_DIR = "src";
 const BIN_DIR = "bin";
-const ENTRY_PATTERN = "*/index.ts";
+const ENTRY_PATTERN = "*/index.{ts,tsx}";
 
 interface BuildResult {
   name: string;
