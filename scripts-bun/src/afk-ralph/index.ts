@@ -60,11 +60,16 @@ async function setIssueStatus(
   await client.updateIssue(issueId, { stateId });
 }
 
-async function fetchPrdIssues(client: LinearClient): Promise<Issue[]> {
+async function fetchTeams(client: LinearClient): Promise<{ id: string; name: string }[]> {
+  const teams = await client.teams();
+  return teams.nodes.map((t) => ({ id: t.id, name: t.name }));
+}
+
+async function fetchPrdIssues(client: LinearClient, teamName: string): Promise<Issue[]> {
   const me = await client.viewer;
   const prdIssues = await me.assignedIssues({
     filter: {
-      team: { name: { eq: "MECA Therapies" } },
+      team: { name: { eq: teamName } },
       labels: { name: { eq: "PRD" } },
       state: { type: { neq: "completed" } },
     },
@@ -487,10 +492,28 @@ async function main() {
   console.log(dim("  Connecting to Linear..."));
   const client = getLinearClient();
 
+  // Team selection
+  const teams = await fetchTeams(client);
+  if (teams.length === 0) {
+    console.error("No teams found in Linear.");
+    process.exit(1);
+  }
+
+  let teamName: string;
+  if (teams.length === 1) {
+    teamName = teams[0]!.name;
+    console.log(dim(`  Team: ${teamName}`));
+  } else {
+    teamName = await select({
+      message: "Select a team:",
+      choices: teams.map((t) => ({ name: t.name, value: t.name })),
+    });
+  }
+
   // Fetch PRD issues
-  const prds = await fetchPrdIssues(client);
+  const prds = await fetchPrdIssues(client, teamName);
   if (prds.length === 0) {
-    console.error("No PRD issues found assigned to you on MECA Therapies.");
+    console.error(`No PRD issues found assigned to you on ${teamName}.`);
     process.exit(1);
   }
   console.log(green(`  Found ${prds.length} PRD(s)\n`));
