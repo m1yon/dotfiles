@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { mkdtemp, rm } from "node:fs/promises";
 import { App } from "./app.tsx";
-import { loadWebapps, saveWebapps, type WebApp } from "./webapps.ts";
+import { loadWebapps, saveWebapps, getWebappsPath, type WebApp } from "./webapps.ts";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -114,6 +114,76 @@ describe("webapps data layer", () => {
     expect(loaded[2]).not.toHaveProperty("bind");
     expect(loaded[3]).not.toHaveProperty("bind");
     expect(loaded[3]).not.toHaveProperty("workspace");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getWebappsPath
+// ---------------------------------------------------------------------------
+
+describe("getWebappsPath", () => {
+  const origEnv = process.env["NIX_CONFIG_DIR"];
+
+  afterEach(() => {
+    if (origEnv !== undefined) {
+      process.env["NIX_CONFIG_DIR"] = origEnv;
+    } else {
+      delete process.env["NIX_CONFIG_DIR"];
+    }
+  });
+
+  test("returns path based on NIX_CONFIG_DIR", () => {
+    process.env["NIX_CONFIG_DIR"] = "/home/user/dotfiles";
+    const result = getWebappsPath();
+    expect(result).toBe("/home/user/dotfiles/dotfiles/webapps.json");
+  });
+
+  test("throws descriptive error when NIX_CONFIG_DIR is unset", () => {
+    delete process.env["NIX_CONFIG_DIR"];
+    expect(() => getWebappsPath()).toThrow("NIX_CONFIG_DIR");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Integration: default path wiring
+// ---------------------------------------------------------------------------
+
+describe("default path wiring", () => {
+  const origEnv = process.env["NIX_CONFIG_DIR"];
+
+  afterEach(() => {
+    if (origEnv !== undefined) {
+      process.env["NIX_CONFIG_DIR"] = origEnv;
+    } else {
+      delete process.env["NIX_CONFIG_DIR"];
+    }
+  });
+
+  test("loadWebapps uses NIX_CONFIG_DIR when no path provided", async () => {
+    process.env["NIX_CONFIG_DIR"] = tmpDir;
+    // Write webapps.json at the expected path: tmpDir/dotfiles/webapps.json
+    const expectedDir = join(tmpDir, "dotfiles");
+    const { mkdir } = await import("node:fs/promises");
+    await mkdir(expectedDir, { recursive: true });
+    const expectedPath = join(expectedDir, "webapps.json");
+    await Bun.write(expectedPath, JSON.stringify([{ name: "Test", url: "https://test.com" }]));
+
+    const result = await loadWebapps();
+    expect(result).toEqual([{ name: "Test", url: "https://test.com" }]);
+  });
+
+  test("saveWebapps uses NIX_CONFIG_DIR when no path provided", async () => {
+    process.env["NIX_CONFIG_DIR"] = tmpDir;
+    const expectedDir = join(tmpDir, "dotfiles");
+    const { mkdir } = await import("node:fs/promises");
+    await mkdir(expectedDir, { recursive: true });
+
+    const apps: WebApp[] = [{ name: "Saved", url: "https://saved.com" }];
+    await saveWebapps(apps);
+
+    const expectedPath = join(expectedDir, "webapps.json");
+    const content = await Bun.file(expectedPath).text();
+    expect(JSON.parse(content)).toEqual(apps);
   });
 });
 

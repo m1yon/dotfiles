@@ -1,4 +1,4 @@
-import { join, dirname } from "node:path";
+import { join } from "node:path";
 
 export interface WebApp {
   name: string;
@@ -7,11 +7,14 @@ export interface WebApp {
   workspace?: string;
 }
 
-function getWebappsPath(): string {
-  // Resolve relative to dotfiles repo: dotfiles/webapps.json
-  // scripts-bun/ is at dotfiles/scripts-bun/, so go up one level
-  const scriptsBunDir = join(import.meta.dir, "..", "..");
-  return join(dirname(scriptsBunDir), "dotfiles", "webapps.json");
+export function getWebappsPath(): string {
+  const nixConfigDir = process.env["NIX_CONFIG_DIR"];
+  if (!nixConfigDir) {
+    throw new Error(
+      "NIX_CONFIG_DIR is not set. Set it to your dotfiles root.",
+    );
+  }
+  return join(nixConfigDir, "dotfiles", "webapps.json");
 }
 
 export async function loadWebapps(
