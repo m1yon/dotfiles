@@ -93,6 +93,28 @@ describe("webapps data layer", () => {
     const loaded = await loadWebapps(webappsPath);
     expect(loaded).toEqual(apps);
   });
+
+  test("round-trips entries with mixed optional fields", async () => {
+    const apps: WebApp[] = [
+      {
+        name: "Both",
+        url: "https://both.com",
+        bind: "$mainMod, B",
+        workspace: "3",
+      },
+      { name: "BindOnly", url: "https://bind.com", bind: "$mainMod, O" },
+      { name: "WorkspaceOnly", url: "https://ws.com", workspace: "5" },
+      { name: "Neither", url: "https://neither.com" },
+    ];
+    await saveWebapps(apps, webappsPath);
+    const loaded = await loadWebapps(webappsPath);
+    expect(loaded).toEqual(apps);
+    // Verify optional fields are truly absent, not just undefined
+    expect(loaded[1]).not.toHaveProperty("workspace");
+    expect(loaded[2]).not.toHaveProperty("bind");
+    expect(loaded[3]).not.toHaveProperty("bind");
+    expect(loaded[3]).not.toHaveProperty("workspace");
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -159,6 +181,33 @@ describe("list view", () => {
     await render([{ name: "Only", url: "https://only.com" }]);
     await keypress("k");
     expect(frame()).toContain("> Only");
+  });
+
+  test("shows entries with mixed optional fields correctly", async () => {
+    await render([
+      {
+        name: "WhatsApp",
+        url: "https://web.whatsapp.com",
+        bind: "$mainMod SHIFT, W",
+        workspace: "9",
+      },
+      { name: "YouTube", url: "https://youtube.com", bind: "$mainMod SHIFT, Y" },
+      { name: "Figma", url: "https://figma.com", workspace: "5" },
+      { name: "GitHub", url: "https://github.com" },
+    ]);
+    const f = frame();
+    expect(f).toContain("WhatsApp");
+    expect(f).toContain("YouTube");
+    expect(f).toContain("Figma");
+    expect(f).toContain("GitHub");
+    expect(f).toContain("(4)");
+    // WhatsApp has both bind and workspace
+    expect(f).toContain("[$mainMod SHIFT, W]");
+    expect(f).toContain("ws:9");
+    // YouTube has bind only
+    expect(f).toContain("[$mainMod SHIFT, Y]");
+    // Figma has workspace only
+    expect(f).toContain("ws:5");
   });
 
   test("shows footer with keybinding hints", async () => {
