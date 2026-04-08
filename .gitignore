@@ -1,2 +1,4 @@
 .secrets
-.claude
+.claude/auto-memory/
+.claude/cache/
+.claude/sessions/
