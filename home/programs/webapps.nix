@@ -45,14 +45,37 @@ let
     else
       null;
 
-  # Generate hyprland windowrulev2 line for workspace assignment
-  mkWindowRule =
+  # Derive Chrome --app= class regex from URL domain
+  chromeClassOf = url: "chrome-" + domainOf url + ".*";
+
+  # Generate hyprland window rule block for an app
+  mkWindowRules =
     app:
-    if app ? workspace then "windowrulev2 = workspace ${app.workspace}, title:${app.name}" else null;
+    let
+      hasRules = app ? workspace || (app ? group && app.group);
+      workspaceLine =
+        if app ? workspace then "  workspace = ${app.workspace}\n" else "";
+      groupLine =
+        if app ? group && app.group then "  group = set\n" else "";
+      block = "windowrule {\n  name = webapp-${sanitizeName app.name}\n${workspaceLine}${groupLine}  match:class = ${chromeClassOf app.url}\n}";
+    in
+    if hasRules then [ block ] else [ ];
+
+  # Generate exec-once for autostart apps (silent when workspace is set)
+  mkAutostart =
+    app:
+    if app ? autostart && app.autostart then
+      let
+        prefix = if app ? workspace then "[workspace ${app.workspace} silent] " else "";
+      in
+      "exec-once = ${prefix}launch-or-focus-webapp \"${app.name}\" \"${app.url}\""
+    else
+      null;
 
   binds = builtins.filter (x: x != null) (map mkBind webapps);
-  windowRules = builtins.filter (x: x != null) (map mkWindowRule webapps);
-  hyprConf = builtins.concatStringsSep "\n" (binds ++ windowRules);
+  windowRules = pkgs.lib.concatMap mkWindowRules webapps;
+  autostarts = builtins.filter (x: x != null) (map mkAutostart webapps);
+  hyprConf = builtins.concatStringsSep "\n" (binds ++ windowRules ++ autostarts);
 
   # Favicon fetch script
   iconDir = "${config.home.homeDirectory}/.local/share/applications/icons";

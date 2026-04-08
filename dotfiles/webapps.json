@@ -1,6 +1,25 @@
 [
   {
     "name": "Linear",
-    "url": "https://linear.app"
+    "url": "https://linear.app",
+    "workspace": "8"
+  },
+  {
+    "name": "Teams",
+    "url": "https://teams.microsoft.com",
+    "workspace": "9",
+    "group": true,
+    "autostart": true
+  },
+  {
+    "name": "Superhuman",
+    "url": "https://mail.superhuman.com",
+    "workspace": "7",
+    "autostart": true
+  },
+  {
+    "name": "Google Calendar",
+    "url": "https://calendar.google.com",
+    "workspace": "10"
   }
 ]
