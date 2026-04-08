@@ -2,7 +2,8 @@
   {
     "name": "Linear",
     "url": "https://linear.app",
-    "workspace": "8"
+    "workspace": "8",
+    "group": true
   },
   {
     "name": "Teams",
