@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# ---
+# description: Focus an existing PWA window by name, or launch it if not running
+# usage: launch-or-focus-webapp <name> <url>
+# ---
+
+set -euo pipefail
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage: launch-or-focus-webapp <name> <url>"
+  exit 1
+fi
+
+NAME="$1"
+URL="$2"
+
+# Search for an existing window matching the PWA name in title or class (case-insensitive)
+ADDR=$(hyprctl clients -j | jq -r \
+  --arg name "$NAME" \
+  '[.[] | select(
+    (.title | test($name; "i")) or
+    (.class | test($name; "i"))
+  )] | first | .address // empty' \
+)
+
+if [[ -n "$ADDR" ]]; then
+  hyprctl dispatch focuswindow "address:${ADDR}"
+else
+  launch-webapp "$URL"
+fi

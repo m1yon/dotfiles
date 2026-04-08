@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# ---
+# description: Launch a URL as a PWA in the default browser using --app= mode
+# usage: launch-webapp <url>
+# ---
+
+set -euo pipefail
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: launch-webapp <url>"
+  exit 1
+fi
+
+URL="$1"
+
+# Map .desktop file names to binaries for browsers that support --app=
+# Keys: known .desktop names → Values: binary to exec
+declare -A DESKTOP_TO_BINARY=(
+  ["google-chrome.desktop"]="google-chrome-stable"
+  ["google-chrome-stable.desktop"]="google-chrome-stable"
+  ["chromium.desktop"]="chromium"
+  ["chromium-browser.desktop"]="chromium-browser"
+  ["brave-browser.desktop"]="brave"
+  ["vivaldi-stable.desktop"]="vivaldi"
+  ["microsoft-edge.desktop"]="microsoft-edge"
+)
+
+# Fallback order when default browser doesn't support --app=
+FALLBACK_BROWSERS=("chromium" "chromium-browser" "google-chrome-stable" "brave" "vivaldi" "microsoft-edge")
+
+# Detect default browser from xdg-settings
+DEFAULT_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null || echo "")
+BROWSER=""
+
+# Look up the default browser in our mapping
+if [[ -n "$DEFAULT_DESKTOP" ]] && [[ -v "DESKTOP_TO_BINARY[$DEFAULT_DESKTOP]" ]]; then
+  candidate="${DESKTOP_TO_BINARY[$DEFAULT_DESKTOP]}"
+  if command -v "$candidate" &>/dev/null; then
+    BROWSER="$candidate"
+  fi
+fi
+
+# Fallback: find the first available --app=-capable browser
+if [[ -z "$BROWSER" ]]; then
+  for browser in "${FALLBACK_BROWSERS[@]}"; do
+    if command -v "$browser" &>/dev/null; then
+      BROWSER="$browser"
+      break
+    fi
+  done
+fi
+
+if [[ -z "$BROWSER" ]]; then
+  echo "Error: No browser with --app= support found. Install Chromium, Chrome, Brave, Vivaldi, or Edge."
+  exit 1
+fi
+
+setsid uwsm-app -- "$BROWSER" --app="$URL" >/dev/null 2>&1 &

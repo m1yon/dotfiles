@@ -6,11 +6,15 @@ vars:
 tasks:
   rebuild:
     desc: Rebuild NixOS and switch to new configuration
-    cmd: nixos-rebuild switch --flake {{.FLAKE_DIR}} --sudo
+    cmds:
+      - nixos-rebuild switch --flake {{.FLAKE_DIR}} --sudo
+      - restart-app vicinae server
 
   rebuild-home:
     desc: Rebuild Home Manager configuration independently
-    cmd: nix run home-manager -- switch --flake {{.FLAKE_DIR}}
+    cmds:
+      - nix run home-manager -- switch --flake {{.FLAKE_DIR}}
+      - restart-app vicinae server
 
   format:
     desc: Format all Nix files with nixfmt
