@@ -13,44 +13,46 @@ fi
 
 URL="$1"
 
-# Browsers that support --app= flag
-APP_BROWSERS=("google-chrome-stable" "chromium" "chromium-browser" "brave" "vivaldi" "microsoft-edge")
+# Map .desktop file names to binaries for browsers that support --app=
+# Keys: known .desktop names → Values: binary to exec
+declare -A DESKTOP_TO_BINARY=(
+  ["google-chrome.desktop"]="google-chrome-stable"
+  ["google-chrome-stable.desktop"]="google-chrome-stable"
+  ["chromium.desktop"]="chromium"
+  ["chromium-browser.desktop"]="chromium-browser"
+  ["brave-browser.desktop"]="brave"
+  ["vivaldi-stable.desktop"]="vivaldi"
+  ["microsoft-edge.desktop"]="microsoft-edge"
+)
 
-# Detect default browser from .desktop file name
+# Fallback order when default browser doesn't support --app=
+FALLBACK_BROWSERS=("chromium" "chromium-browser" "google-chrome-stable" "brave" "vivaldi" "microsoft-edge")
+
+# Detect default browser from xdg-settings
 DEFAULT_DESKTOP=$(xdg-settings get default-web-browser 2>/dev/null || echo "")
-DEFAULT_BROWSER=""
+BROWSER=""
 
-for browser in "${APP_BROWSERS[@]}"; do
-  if [[ "$DEFAULT_DESKTOP" == *"$browser"* ]] || [[ "$DEFAULT_DESKTOP" == *"$(echo "$browser" | tr '-' '_')"* ]]; then
-    DEFAULT_BROWSER="$browser"
-    break
+# Look up the default browser in our mapping
+if [[ -n "$DEFAULT_DESKTOP" ]] && [[ -v "DESKTOP_TO_BINARY[$DEFAULT_DESKTOP]" ]]; then
+  candidate="${DESKTOP_TO_BINARY[$DEFAULT_DESKTOP]}"
+  if command -v "$candidate" &>/dev/null; then
+    BROWSER="$candidate"
   fi
-done
-
-# Also check common desktop file patterns (e.g. google-chrome.desktop)
-if [[ -z "$DEFAULT_BROWSER" ]]; then
-  for browser in "${APP_BROWSERS[@]}"; do
-    desktop_name="${browser}.desktop"
-    if [[ "$DEFAULT_DESKTOP" == "$desktop_name" ]]; then
-      DEFAULT_BROWSER="$browser"
-      break
-    fi
-  done
 fi
 
-# Fallback to google-chrome-stable if default browser doesn't support --app=
-if [[ -z "$DEFAULT_BROWSER" ]]; then
-  for browser in "${APP_BROWSERS[@]}"; do
+# Fallback: find the first available --app=-capable browser
+if [[ -z "$BROWSER" ]]; then
+  for browser in "${FALLBACK_BROWSERS[@]}"; do
     if command -v "$browser" &>/dev/null; then
-      DEFAULT_BROWSER="$browser"
+      BROWSER="$browser"
       break
     fi
   done
 fi
 
-if [[ -z "$DEFAULT_BROWSER" ]]; then
-  echo "Error: No supported browser found (need Chrome, Chromium, Brave, Vivaldi, or Edge)"
+if [[ -z "$BROWSER" ]]; then
+  echo "Error: No browser with --app= support found. Install Chromium, Chrome, Brave, Vivaldi, or Edge."
   exit 1
 fi
 
-setsid uwsm-app -- "$DEFAULT_BROWSER" --app="$URL" >/dev/null 2>&1 &
+setsid uwsm-app -- "$BROWSER" --app="$URL" >/dev/null 2>&1 &
