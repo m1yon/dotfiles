@@ -1,0 +1,8 @@
+[
+  {
+    "name": "WhatsApp",
+    "url": "https://web.whatsapp.com",
+    "bind": "$mainMod SHIFT, W",
+    "workspace": "9"
+  }
+]

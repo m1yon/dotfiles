@@ -44,6 +44,7 @@
     ./ghostty.nix
     ./stylix.nix
     ./waybar.nix
+    ./webapps.nix
     ./vibetyper.nix
     ./vicinae.nix
     ./zoxide.nix
