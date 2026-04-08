@@ -1,2 +1,4 @@
 { pkgs, ... }:
-{ home.packages = with pkgs; [ playerctl ]; }
+{
+  home.packages = with pkgs; [ playerctl ];
+}

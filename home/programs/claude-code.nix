@@ -42,7 +42,10 @@ in
         };
         xero = {
           command = "npx";
-          args = [ "-y" "@xeroapi/xero-mcp-server@latest" ];
+          args = [
+            "-y"
+            "@xeroapi/xero-mcp-server@latest"
+          ];
           env = {
             XERO_CLIENT_ID = config.sops.placeholder.xero_client_id;
             XERO_CLIENT_SECRET = config.sops.placeholder.xero_client_secret;
