@@ -28,7 +28,7 @@ let
     value = {
       name = app.name;
       exec = "launch-or-focus-webapp \"${app.name}\" \"${app.url}\"";
-      icon = "${config.home.homeDirectory}/.local/share/icons/webapps/${sanitizeName app.name}.png";
+      icon = "${config.home.homeDirectory}/.local/share/applications/icons/${sanitizeName app.name}.png";
       type = "Application";
       categories = [
         "Network"
@@ -55,7 +55,7 @@ let
   hyprConf = builtins.concatStringsSep "\n" (binds ++ windowRules);
 
   # Favicon fetch script
-  iconDir = "${config.home.homeDirectory}/.local/share/icons/webapps";
+  iconDir = "${config.home.homeDirectory}/.local/share/applications/icons";
   fetchCommands = builtins.concatStringsSep "\n" (
     map (
       app:
