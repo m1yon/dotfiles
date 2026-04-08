@@ -19,14 +19,9 @@ Do NOT ask follow-up questions yet. Start investigating immediately.
 
 ### 1b. Check for parent PRD
 
-Get the current branch name:
-```bash
-git rev-parse --abbrev-ref HEAD
-```
+Run the `linear-issue-context` skill to fetch the Linear issue tied to the current branch. Store the result for step 5 — this is the parent PRD.
 
-If the branch name contains a Linear issue identifier (e.g., `MECA-123`), use `get_issue` MCP tool with `branchName` set to the branch name to fetch the parent PRD. Store this for step 5.
-
-If no issue is found or the branch is `main`/`master`, proceed without a parent — the issue will be created as a top-level issue.
+If the skill finds no issue (no identifier in branch name, or Linear returns nothing), proceed without a parent — the issue will be created as a top-level issue.
 
 ### 2. Explore and diagnose
 
