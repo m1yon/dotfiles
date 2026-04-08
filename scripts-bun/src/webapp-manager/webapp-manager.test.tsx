@@ -270,6 +270,143 @@ describe("add view", () => {
 // Delete confirmation
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Edit view
+// ---------------------------------------------------------------------------
+
+describe("edit view", () => {
+  test("Enter on selected PWA opens edit view", async () => {
+    await render([{ name: "WhatsApp", url: "https://web.whatsapp.com" }]);
+    await keypress("return");
+    expect(frame()).toContain("Edit Web App");
+  });
+
+  test("edit view fields are pre-populated with current values", async () => {
+    await render([
+      {
+        name: "WhatsApp",
+        url: "https://web.whatsapp.com",
+        bind: "$mainMod SHIFT, W",
+        workspace: "9",
+      },
+    ]);
+    await keypress("return");
+
+    // Field 0 (Name) is active — shows pre-populated input
+    let f = frame();
+    expect(f).toContain("Edit Web App");
+    expect(f).toContain("WhatsApp");
+
+    // Advance to URL — Name now shows as completed, URL input pre-populated
+    await keypress("return");
+    f = frame();
+    expect(f).toContain("WhatsApp");
+    expect(f).toContain("https://web.whatsapp.com");
+
+    // Advance to Bind
+    await keypress("return");
+    f = frame();
+    expect(f).toContain("$mainMod SHIFT, W");
+
+    // Advance to Workspace
+    await keypress("return");
+    f = frame();
+    expect(f).toContain("9");
+  });
+
+  test("saving edits updates the correct entry in webapps.json", async () => {
+    await render([
+      { name: "First", url: "https://first.com" },
+      { name: "Second", url: "https://second.com" },
+    ]);
+
+    // Select second entry
+    await keypress("j");
+    await keypress("return");
+    expect(frame()).toContain("Edit Web App");
+
+    // Clear name and type new name — advance through all 4 fields
+    // Field 0: Name (pre-populated with "Second")
+    // We need to clear and type a new value, then submit each field
+    // The input is pre-populated, so we submit to advance through fields
+    await keypress("return"); // advance past Name (keep "Second")
+    await keypress("return"); // advance past URL (keep "https://second.com")
+    await keypress("return"); // advance past Bind (keep empty)
+    await keypress("return"); // submit last field -> save
+
+    // Should be back on list view with status message
+    expect(frame()).toContain("home-manager switch");
+
+    // Verify file: both entries should exist, first untouched
+    const saved = await loadWebapps(webappsPath);
+    expect(saved).toHaveLength(2);
+    expect(saved[0]).toEqual({ name: "First", url: "https://first.com" });
+    expect(saved[1]!.name).toBe("Second");
+  });
+
+  test("other entries in webapps.json are not modified", async () => {
+    const apps: WebApp[] = [
+      {
+        name: "WhatsApp",
+        url: "https://web.whatsapp.com",
+        bind: "$mainMod SHIFT, W",
+        workspace: "9",
+      },
+      { name: "YouTube", url: "https://youtube.com", bind: "$mainMod SHIFT, Y" },
+      { name: "GitHub", url: "https://github.com" },
+    ];
+    await render(apps);
+
+    // Edit the second entry (YouTube)
+    await keypress("j");
+    await keypress("return");
+
+    // Submit all fields without changes
+    await keypress("return"); // Name
+    await keypress("return"); // URL
+    await keypress("return"); // Bind
+    await keypress("return"); // Workspace
+
+    const saved = await loadWebapps(webappsPath);
+    expect(saved).toHaveLength(3);
+    expect(saved[0]).toEqual(apps[0]);
+    expect(saved[2]).toEqual(apps[2]);
+  });
+
+  test("escape cancels edit and returns to list", async () => {
+    await render([{ name: "TestApp", url: "https://test.com" }]);
+    await keypress("return");
+    expect(frame()).toContain("Edit Web App");
+
+    await keypress("escape");
+    expect(frame()).toContain("Web Apps");
+    expect(frame()).not.toContain("Edit Web App");
+  });
+
+  test("Enter does nothing on empty list", async () => {
+    await render();
+    await keypress("return");
+    expect(frame()).toContain("No web apps configured");
+  });
+
+  test("reminder shown to run home-manager switch after editing", async () => {
+    await render([{ name: "TestApp", url: "https://test.com" }]);
+    await keypress("return");
+
+    // Submit all fields
+    await keypress("return");
+    await keypress("return");
+    await keypress("return");
+    await keypress("return");
+
+    expect(frame()).toContain("home-manager switch");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Delete confirmation
+// ---------------------------------------------------------------------------
+
 describe("delete confirmation", () => {
   test("d opens confirm dialog for selected entry", async () => {
     await render([{ name: "TestApp", url: "https://test.com" }]);

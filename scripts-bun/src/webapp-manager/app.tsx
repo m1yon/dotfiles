@@ -3,7 +3,7 @@ import { useKeyboard, useRenderer } from "@opentui/react";
 import type { WebApp } from "./webapps.ts";
 import { loadWebapps, saveWebapps } from "./webapps.ts";
 
-type View = "list" | "add" | "confirm-delete";
+type View = "list" | "add" | "edit" | "confirm-delete";
 
 interface AppProps {
   webappsPath?: string;
@@ -18,12 +18,13 @@ export function App({ webappsPath, initialWebapps }: AppProps) {
   const [showHelp, setShowHelp] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
 
-  // Add form state
-  const [addField, setAddField] = useState(0);
-  const [addName, setAddName] = useState("");
-  const [addUrl, setAddUrl] = useState("");
-  const [addBind, setAddBind] = useState("");
-  const [addWorkspace, setAddWorkspace] = useState("");
+  // Form state (shared by add and edit)
+  const [formField, setFormField] = useState(0);
+  const [formName, setFormName] = useState("");
+  const [formUrl, setFormUrl] = useState("");
+  const [formBind, setFormBind] = useState("");
+  const [formWorkspace, setFormWorkspace] = useState("");
+  const [editIndex, setEditIndex] = useState(-1);
 
   useEffect(() => {
     if (!initialWebapps) {
@@ -35,25 +36,45 @@ export function App({ webappsPath, initialWebapps }: AppProps) {
     setStatusMessage(msg);
   };
 
-  const resetAddForm = () => {
-    setAddField(0);
-    setAddName("");
-    setAddUrl("");
-    setAddBind("");
-    setAddWorkspace("");
+  const resetForm = () => {
+    setFormField(0);
+    setFormName("");
+    setFormUrl("");
+    setFormBind("");
+    setFormWorkspace("");
+    setEditIndex(-1);
+  };
+
+  const buildEntry = (): WebApp | null => {
+    if (!formName.trim() || !formUrl.trim()) return null;
+    const entry: WebApp = { name: formName.trim(), url: formUrl.trim() };
+    if (formBind.trim()) entry.bind = formBind.trim();
+    if (formWorkspace.trim()) entry.workspace = formWorkspace.trim();
+    return entry;
   };
 
   const handleAddComplete = async () => {
-    if (!addName.trim() || !addUrl.trim()) return;
-    const entry: WebApp = { name: addName.trim(), url: addUrl.trim() };
-    if (addBind.trim()) entry.bind = addBind.trim();
-    if (addWorkspace.trim()) entry.workspace = addWorkspace.trim();
+    const entry = buildEntry();
+    if (!entry) return;
     const updated = [...webapps, entry];
     await saveWebapps(updated, webappsPath);
     setWebapps(updated);
-    resetAddForm();
+    resetForm();
     setView("list");
     showStatus("Added! Run `home-manager switch` to apply.");
+  };
+
+  const handleEditComplete = async () => {
+    const entry = buildEntry();
+    if (!entry) return;
+    const updated = webapps.map((app: WebApp, i: number) =>
+      i === editIndex ? entry : app,
+    );
+    await saveWebapps(updated, webappsPath);
+    setWebapps(updated);
+    resetForm();
+    setView("list");
+    showStatus("Updated! Run `home-manager switch` to apply.");
   };
 
   const handleDelete = async () => {
@@ -89,9 +110,22 @@ export function App({ webappsPath, initialWebapps }: AppProps) {
           setSelectedIndex((i: number) => Math.max(0, i - 1));
           break;
         case "a":
-          resetAddForm();
+          resetForm();
           setView("add");
           setStatusMessage("");
+          break;
+        case "return":
+          if (webapps.length > 0) {
+            const app = webapps[selectedIndex]!;
+            setFormField(0);
+            setFormName(app.name);
+            setFormUrl(app.url);
+            setFormBind(app.bind ?? "");
+            setFormWorkspace(app.workspace ?? "");
+            setEditIndex(selectedIndex);
+            setView("edit");
+            setStatusMessage("");
+          }
           break;
         case "d":
           if (webapps.length > 0) {
@@ -104,9 +138,9 @@ export function App({ webappsPath, initialWebapps }: AppProps) {
           renderer.destroy();
           break;
       }
-    } else if (view === "add") {
+    } else if (view === "add" || view === "edit") {
       if (key.name === "escape") {
-        resetAddForm();
+        resetForm();
         setView("list");
         return;
       }
@@ -124,22 +158,23 @@ export function App({ webappsPath, initialWebapps }: AppProps) {
     return <HelpOverlay />;
   }
 
-  if (view === "add") {
+  if (view === "add" || view === "edit") {
     return (
-      <AddView
-        field={addField}
-        setField={setAddField}
-        name={addName}
-        setName={setAddName}
-        url={addUrl}
-        setUrl={setAddUrl}
-        bind={addBind}
-        setBind={setAddBind}
-        workspace={addWorkspace}
-        setWorkspace={setAddWorkspace}
-        onComplete={handleAddComplete}
+      <FormView
+        title={view === "edit" ? "Edit Web App" : "Add Web App"}
+        field={formField}
+        setField={setFormField}
+        name={formName}
+        setName={setFormName}
+        url={formUrl}
+        setUrl={setFormUrl}
+        bind={formBind}
+        setBind={setFormBind}
+        workspace={formWorkspace}
+        setWorkspace={setFormWorkspace}
+        onComplete={view === "edit" ? handleEditComplete : handleAddComplete}
         onCancel={() => {
-          resetAddForm();
+          resetForm();
           setView("list");
         }}
       />
@@ -203,7 +238,7 @@ export function App({ webappsPath, initialWebapps }: AppProps) {
       <box paddingX={1} paddingTop={1}>
         <text>
           <span fg="#6272a4">
-            j/k: navigate | a: add | d: delete | ?: help | q: quit
+            j/k: navigate | Enter: edit | a: add | d: delete | ?: help | q: quit
           </span>
         </text>
       </box>
@@ -223,6 +258,7 @@ function HelpOverlay() {
   const shortcuts = [
     { key: "j / Down", action: "Move down" },
     { key: "k / Up", action: "Move up" },
+    { key: "Enter", action: "Edit selected" },
     { key: "a", action: "Add new web app" },
     { key: "d", action: "Delete selected" },
     { key: "?", action: "Toggle this help" },
@@ -257,7 +293,8 @@ function HelpOverlay() {
   );
 }
 
-interface AddViewProps {
+interface FormViewProps {
+  title: string;
   field: number;
   setField: (f: number) => void;
   name: string;
@@ -272,9 +309,10 @@ interface AddViewProps {
   onCancel: () => void;
 }
 
-const ADD_FIELDS = ["Name", "URL", "Bind (optional)", "Workspace (optional)"];
+const FORM_FIELDS = ["Name", "URL", "Bind (optional)", "Workspace (optional)"];
 
-function AddView({
+function FormView({
+  title,
   field,
   setField,
   name,
@@ -287,12 +325,12 @@ function AddView({
   setWorkspace,
   onComplete,
   onCancel,
-}: AddViewProps) {
+}: FormViewProps) {
   const values = [name, url, bind, workspace];
   const setters = [setName, setUrl, setBind, setWorkspace];
 
   const handleSubmit = () => {
-    if (field < ADD_FIELDS.length - 1) {
+    if (field < FORM_FIELDS.length - 1) {
       setField(field + 1);
     } else {
       onComplete();
@@ -303,13 +341,13 @@ function AddView({
     <box flexDirection="column" padding={1}>
       <text>
         <span fg="#bd93f9">
-          <strong>Add Web App</strong>
+          <strong>{title}</strong>
         </span>
         <span fg="#6272a4"> (Esc to cancel)</span>
       </text>
 
       <box flexDirection="column" paddingTop={1}>
-        {ADD_FIELDS.map((label, i) => (
+        {FORM_FIELDS.map((label, i) => (
           <box key={label} flexDirection="row" gap={1}>
             <text width={22}>
               <span fg={i === field ? "#50fa7b" : "#6272a4"}>
@@ -317,11 +355,7 @@ function AddView({
                 {label}:
               </span>
             </text>
-            {i < field ? (
-              <text>
-                <span fg="#f8f8f2">{values[i] || "(empty)"}</span>
-              </text>
-            ) : i === field ? (
+            {i === field ? (
               <input
                 value={values[i]!}
                 onChange={setters[i]!}
@@ -330,7 +364,13 @@ function AddView({
                 width={40}
                 onSubmit={handleSubmit}
               />
-            ) : null}
+            ) : (
+              <text>
+                <span fg={i < field ? "#f8f8f2" : "#6272a4"}>
+                  {values[i] || (i < field ? "(empty)" : "")}
+                </span>
+              </text>
+            )}
           </box>
         ))}
       </box>
