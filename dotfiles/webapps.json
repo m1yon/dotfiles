@@ -1,22 +1,6 @@
 [
   {
-    "name": "WhatsApp",
-    "url": "https://web.whatsapp.com",
-    "bind": "$mainMod SHIFT, W",
-    "workspace": "9"
-  },
-  {
-    "name": "YouTube",
-    "url": "https://youtube.com",
-    "bind": "$mainMod SHIFT, Y"
-  },
-  {
-    "name": "Figma",
-    "url": "https://figma.com",
-    "workspace": "5"
-  },
-  {
-    "name": "GitHub",
-    "url": "https://github.com"
+    "name": "Linear",
+    "url": "https://linear.app"
   }
 ]
