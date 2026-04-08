@@ -74,7 +74,8 @@ in
 {
   xdg.desktopEntries = builtins.listToAttrs (map mkDesktopEntry webapps);
 
-  home.file.".config/hypr/webapps.conf".text = hyprConf + "\n";
+  home.file.".config/hypr/hyprland.conf".text =
+    builtins.readFile ../../dotfiles/hyprland/hyprland.conf + "\n" + hyprConf + "\n";
 
   home.activation.fetchWebappIcons = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "${iconDir}"

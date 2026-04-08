@@ -40,7 +40,6 @@
     ./todoist.nix
     ./zsh.nix
     ./yazi.nix
-    ./hyprland.nix
     ./ghostty.nix
     ./stylix.nix
     ./waybar.nix
