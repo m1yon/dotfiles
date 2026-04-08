@@ -1,14 +1,10 @@
 {
   config,
   pkgs,
-  nixConfigDir,
   ...
 }:
 
 let
-  dotfiles = "${nixConfigDir}/dotfiles";
-  outOfStore = config.lib.file.mkOutOfStoreSymlink;
-
   lazycommit = pkgs.buildGoModule rec {
     pname = "lazycommit";
     version = "1.4.0";
@@ -28,7 +24,20 @@ in
 {
   home.packages = [ lazycommit ];
 
-  home.file = {
-    ".config/.lazycommit.yaml".source = outOfStore "${dotfiles}/lazycommit/.lazycommit.yaml";
+  sops.secrets = {
+    opencode_zen_api_key.sopsFile = ../../secrets/github.yaml;
+  };
+
+  sops.templates.".lazycommit.yaml" = {
+    path = "${config.home.homeDirectory}/.config/.lazycommit.yaml";
+    content = ''
+      active_provider: openai
+      providers:
+        openai:
+          api_key: "${config.sops.placeholder.opencode_zen_api_key}"
+          model: "claude-haiku-4-5"
+          endpoint_url: "https://opencode.ai/zen/v1"
+          num_suggestions: 5
+    '';
   };
 }
