@@ -59,6 +59,7 @@ in
     ".claude/CLAUDE.md".source = outOfStore "${dotfiles}/claude/CLAUDE.md";
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
     ".claude/skills".source = outOfStore "${dotfiles}/claude/skills";
+    ".claude/rules".source = outOfStore "${dotfiles}/claude/rules";
     ".claude/claude-notifications-go/config.json".source =
       outOfStore "${dotfiles}/claude/claude-notifications-go/config.json";
   };
