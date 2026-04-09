@@ -46,7 +46,7 @@
 
   programs.zsh.loginShellInit = lib.mkAfter ''
     if uwsm check may-start; then
-      exec uwsm start hyprland-uwsm.desktop
+      exec uwsm start -eD Hyprland hyprland-uwsm.desktop
     fi
   '';
 
