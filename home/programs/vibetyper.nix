@@ -6,7 +6,7 @@ let
 
     src = pkgs.fetchurl {
       url = "https://cdn.vibetyper.com/releases/linux/VibeTyper.AppImage";
-      hash = "sha256-VpEeTNVrZPLJKk5Hl/4IHGdEEaYSfRyOcnhC0Buzdg8=";
+      hash = "sha256-AUjrSVxyaI8Ok4pnoqaW4fGAd4GtSc0mEjDhkqdifY0=";
     };
 
     extraInstallCommands =
