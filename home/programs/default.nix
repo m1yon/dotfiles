@@ -1,5 +1,6 @@
 {
   imports = [
+    ./agent-browser.nix
     ./atuin.nix
     ./awscli.nix
     ./browsers.nix
