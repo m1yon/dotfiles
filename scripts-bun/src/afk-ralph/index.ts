@@ -211,6 +211,7 @@ async function fetchRemainingChildren(
       (c) =>
         c.state.type !== "completed" &&
         c.state.type !== "canceled" &&
+        c.state.name !== "Blocked" &&
         c.labels.nodes.some((l) => l.name === "AI"),
     )
     .map((c) => ({
@@ -371,6 +372,12 @@ function formatProgressEntry(
 ): string {
   const ts = new Date().toISOString().replace(/\.\d+Z$/, "Z");
   return `## ${issue.identifier}: ${issue.title}\n\n_${ts} · ${status}_\n\n${body}`;
+}
+
+function parseAgentStatus(resultText: string): "completed" | "blocked" | "missing" {
+  const match = resultText.match(/\*\*Status:\*\*\s*(completed|blocked)/i);
+  if (!match) return "missing";
+  return match[1]!.toLowerCase() as "completed" | "blocked";
 }
 
 function buildProgressSection(docContent: string): string {
@@ -800,8 +807,9 @@ async function main() {
   const inProgressId = stateMap.get("In Progress");
   const completedId = stateMap.get("Completed");
   const reviewId = stateMap.get("In Review");
+  const blockedId = stateMap.get("Blocked");
 
-  if (!inProgressId || !completedId || !reviewId) {
+  if (!inProgressId || !completedId || !reviewId || !blockedId) {
     log.error(
       `Missing workflow states. Found: ${[...stateMap.keys()].join(", ")}`,
     );
@@ -906,18 +914,30 @@ async function main() {
         );
         process.exit(1);
       }
+
+      const parsed = parseAgentStatus(entryBody);
+      if (parsed === "missing") {
+        console.error(
+          yellow(
+            `  ! ${target.identifier} response missing **Status:** marker — treating as blocked`,
+          ),
+        );
+      }
+      const agentStatus: "completed" | "blocked" =
+        parsed === "completed" ? "completed" : "blocked";
+
       await appendProgressEntry(
         client,
         progressDocId,
         formatProgressEntry(
           { identifier: target.identifier, title: target.title },
-          "completed",
+          agentStatus,
           entryBody,
         ),
       );
       console.log(linear(`Progress entry appended for ${target.identifier}`));
 
-      if (mode === "code") {
+      if (mode === "code" && agentStatus === "completed") {
         // Push after each sub-issue
         const pushSpin = spinner();
         pushSpin.start(`Pushing ${prd.branchName}`);
@@ -939,13 +959,23 @@ async function main() {
         }
       }
 
-      await setIssueStatus(client, target.id, completedId);
-      console.log(
-        green(
-          `\n  ✔  ${link(target.identifier, target.url)} completed successfully.\n`,
-        ),
-      );
-      console.log(linear("Status: In Progress → Completed"));
+      if (agentStatus === "completed") {
+        await setIssueStatus(client, target.id, completedId);
+        console.log(
+          green(
+            `\n  ✔  ${link(target.identifier, target.url)} completed successfully.\n`,
+          ),
+        );
+        console.log(linear("Status: In Progress → Completed"));
+      } else {
+        await setIssueStatus(client, target.id, blockedId);
+        console.log(
+          yellow(
+            `\n  ⚠  ${link(target.identifier, target.url)} could not be completed — marking Blocked.\n`,
+          ),
+        );
+        console.log(linear("Status: In Progress → Blocked"));
+      }
       console.log(orange(`${"═".repeat(60)}\n`));
     } else {
       console.error(
@@ -962,9 +992,9 @@ async function main() {
           `*(Claude run failed. No progress entry produced.)*`,
         ),
       );
-      console.error(
-        yellow("  Leaving issue In Progress, continuing to next..."),
-      );
+      await setIssueStatus(client, target.id, blockedId);
+      console.error(linear("Status: In Progress → Blocked"));
+      console.error(yellow("  Continuing to next sub-issue..."));
       console.error(orange(`${"═".repeat(60)}\n`));
     }
 
