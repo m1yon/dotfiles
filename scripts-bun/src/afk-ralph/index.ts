@@ -3,6 +3,19 @@
 // description: Run Claude in a loop to complete Linear PRD sub-issues automatically
 // ---
 import { LinearClient, type Issue } from "@linear/sdk";
+
+interface RemainingChild {
+  id: string;
+  identifier: string;
+  title: string;
+  url: string;
+  description: string;
+  priority: number;
+  stateName: string;
+  stateType: string;
+  labels: string[];
+  comments: string[];
+}
 import {
   select,
   confirm,
@@ -143,33 +156,69 @@ async function fetchPrdIssues(client: LinearClient, teamName: string): Promise<I
 async function fetchRemainingChildren(
   client: LinearClient,
   prdId: string,
-): Promise<{ issues: Issue[]; blockedIds: Set<string> }> {
-  const prd = await client.issue(prdId);
-  const children = await prd.children();
-  const remaining: Issue[] = [];
+): Promise<{ issues: RemainingChild[]; blockedIds: Set<string> }> {
+  type RawChild = {
+    id: string;
+    identifier: string;
+    title: string;
+    url: string;
+    description: string | null;
+    priority: number;
+    state: { name: string; type: string };
+    labels: { nodes: Array<{ name: string }> };
+    comments: { nodes: Array<{ body: string }> };
+    inverseRelations: { nodes: Array<{ type: string; issue: { id: string } }> };
+  };
 
-  for (const child of children.nodes) {
-    const state = await child.state;
-    if (state?.type === "completed" || state?.type === "canceled") continue;
-    const labels = await child.labels();
-    if (!labels.nodes.some((l) => l.name === "AI")) continue;
-    remaining.push(child);
-  }
-
-  // Build set of remaining issue IDs for blocker lookups
-  const remainingIds = new Set(remaining.map((i) => i.id));
-
-  // Find which issues are blocked by another remaining issue
-  const blockedIds = new Set<string>();
-  for (const child of remaining) {
-    const inverseRels = await child.inverseRelations();
-    for (const rel of inverseRels.nodes) {
-      if (rel.type === "blocks") {
-        const blockerId = rel.issueId;
-        if (blockerId && remainingIds.has(blockerId)) {
-          blockedIds.add(child.id);
-          break;
+  const { data } = await client.client.rawRequest<
+    { issue: { children: { nodes: RawChild[] } } },
+    { id: string }
+  >(
+    `query ($id: String!) {
+      issue(id: $id) {
+        children(first: 250) {
+          nodes {
+            id identifier title url description priority
+            state { name type }
+            labels { nodes { name } }
+            comments { nodes { body } }
+            inverseRelations { nodes { type issue { id } } }
+          }
         }
+      }
+    }`,
+    { id: prdId },
+  );
+
+  const nodes = data?.issue?.children?.nodes ?? [];
+  const remaining: RemainingChild[] = nodes
+    .filter(
+      (c) =>
+        c.state.type !== "completed" &&
+        c.state.type !== "canceled" &&
+        c.labels.nodes.some((l) => l.name === "AI"),
+    )
+    .map((c) => ({
+      id: c.id,
+      identifier: c.identifier,
+      title: c.title,
+      url: c.url,
+      description: c.description ?? "",
+      priority: c.priority,
+      stateName: c.state.name,
+      stateType: c.state.type,
+      labels: c.labels.nodes.map((l) => l.name),
+      comments: c.comments.nodes.map((n) => n.body),
+    }));
+
+  const remainingIds = new Set(remaining.map((i) => i.id));
+  const blockedIds = new Set<string>();
+  for (const child of nodes) {
+    if (!remainingIds.has(child.id)) continue;
+    for (const rel of child.inverseRelations.nodes) {
+      if (rel.type === "blocks" && remainingIds.has(rel.issue.id)) {
+        blockedIds.add(child.id);
+        break;
       }
     }
   }
@@ -185,16 +234,6 @@ async function fetchRemainingChildren(
   });
 
   return { issues: remaining, blockedIds };
-}
-
-async function getIssueDetails(
-  issue: Issue,
-): Promise<{ description: string; comments: string[] }> {
-  const comments = await issue.comments();
-  return {
-    description: issue.description ?? "",
-    comments: comments.nodes.map((c) => c.body),
-  };
 }
 
 // --- GitHub Module ---
@@ -481,11 +520,6 @@ function parseFeedbackMetadata(description: string): FeedbackMetadata[] {
   return results;
 }
 
-async function hasFeedbackLabel(issue: Issue): Promise<boolean> {
-  const labels = await issue.labels();
-  return labels.nodes.some((l) => l.name === "Feedback");
-}
-
 async function getShortCommitSha(): Promise<string> {
   const proc = Bun.spawn(["git", "log", "-1", "--format=%h"], {
     stdout: "pipe",
@@ -675,10 +709,9 @@ async function main() {
     console.log(yellow(`  ${remaining.length} sub-issue(s) remaining`));
     console.log(orange(`${"═".repeat(60)}`));
     for (const issue of remaining) {
-      const state = await issue.state;
       const blocked = blockedIds.has(issue.id) ? red(" [blocked]") : "";
       console.log(
-        `  ${link(cyan(issue.identifier), issue.url)}: ${issue.title} ${dim(`[${state?.name ?? "unknown"}]`)}${blocked}`,
+        `  ${link(cyan(issue.identifier), issue.url)}: ${issue.title} ${dim(`[${issue.stateName}]`)}${blocked}`,
       );
     }
 
@@ -688,7 +721,6 @@ async function main() {
       console.error(red(`\n  ✘ All remaining issues are blocked — cannot proceed`));
       process.exit(1);
     }
-    const details = await getIssueDetails(target);
     console.log(orange(`\n${"─".repeat(60)}`));
     console.log(
       `  ${orange("▶")} ${bold("Working on:")} ${link(cyan(target.identifier), target.url)}: ${target.title}`,
@@ -706,8 +738,8 @@ async function main() {
       {
         identifier: target.identifier,
         title: target.title,
-        description: details.description,
-        comments: details.comments,
+        description: target.description,
+        comments: target.comments,
       },
       model,
       effort,
@@ -732,10 +764,8 @@ async function main() {
         pushSpin.stop(`Pushed ${prd.branchName}`);
 
         // Resolve PR feedback if this is a Feedback-labeled issue
-        if (await hasFeedbackLabel(target)) {
-          const feedbackMeta = parseFeedbackMetadata(
-            target.description ?? "",
-          );
+        if (target.labels.includes("Feedback")) {
+          const feedbackMeta = parseFeedbackMetadata(target.description);
           if (feedbackMeta.length > 0) {
             const sha = await getShortCommitSha();
             const feedbackSpin = spinner();
@@ -813,4 +843,20 @@ async function main() {
   console.log(linear("Status: In Progress → In Review"));
 }
 
-main();
+main().catch((err) => {
+  console.error(red("\n  ✘ Uncaught error:"));
+  if (err instanceof Error) {
+    console.error(red(`  ${err.message}`));
+    if (err.stack) console.error(dim(err.stack));
+  } else {
+    console.error(err);
+  }
+  const cause = (err as any)?.cause;
+  if (cause) console.error(red("  Cause:"), cause);
+  const errors = (err as any)?.errors;
+  if (Array.isArray(errors)) {
+    console.error(red("  GraphQL errors:"));
+    for (const e of errors) console.error(red(`    - ${JSON.stringify(e)}`));
+  }
+  process.exit(1);
+});
