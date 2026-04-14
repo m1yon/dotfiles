@@ -4,7 +4,43 @@
 // ---
 import { LinearClient, type Issue } from "@linear/sdk";
 import { select } from "@inquirer/prompts";
+import { select as clackSelect, isCancel, cancel } from "@clack/prompts";
 import { query } from "@anthropic-ai/claude-agent-sdk";
+
+type EffortLevel = "low" | "medium" | "high" | "max";
+
+async function promptModelAndEffort(): Promise<{ model: string; effort: EffortLevel }> {
+  const model = await clackSelect({
+    message: "Select a model:",
+    options: [
+      { value: "opus", label: "Opus", hint: "most capable" },
+      { value: "sonnet", label: "Sonnet", hint: "balanced" },
+      { value: "haiku", label: "Haiku", hint: "fastest" },
+    ],
+    initialValue: "sonnet",
+  });
+  if (isCancel(model)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
+  }
+
+  const effort = await clackSelect({
+    message: "Select a thinking level:",
+    options: [
+      { value: "low", label: "Low", hint: "minimal thinking, fastest" },
+      { value: "medium", label: "Medium", hint: "moderate thinking" },
+      { value: "high", label: "High", hint: "deep reasoning (default)" },
+      { value: "max", label: "Max", hint: "Opus 4.6 only" },
+    ],
+    initialValue: "high",
+  });
+  if (isCancel(effort)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
+  }
+
+  return { model: model as string, effort: effort as EffortLevel };
+}
 import { logQueryMessage } from "./log-query-message";
 import { renderPrompt } from "./render-prompt";
 import { Octokit } from "octokit";
@@ -189,6 +225,8 @@ async function pushBranch(branchName: string): Promise<void> {
 async function generatePrBody(
   prd: { identifier: string; title: string; url: string; description: string },
   baseBranch: string,
+  model: string,
+  effort: EffortLevel,
 ): Promise<string> {
   const prompt = loadPrompt("prompt-pr-body.md", {
     baseBranch,
@@ -203,6 +241,8 @@ async function generatePrBody(
     prompt,
     options: {
       cwd: process.cwd(),
+      model,
+      effort,
       allowedTools: ["Bash", "Read", "Glob", "Grep"],
       permissionMode: "bypassPermissions",
       allowDangerouslySkipPermissions: true,
@@ -228,6 +268,8 @@ async function createOrUpdatePullRequest(
   prd: { identifier: string; title: string; url: string; description: string },
   branchName: string,
   baseBranch: string,
+  model: string,
+  effort: EffortLevel,
 ): Promise<string> {
   const authToken = await getAuthToken();
   const octokit = new Octokit({ auth: authToken });
@@ -254,7 +296,7 @@ async function createOrUpdatePullRequest(
     });
 
     if (shouldUpdate) {
-      const body = await generatePrBody(prd, baseBranch);
+      const body = await generatePrBody(prd, baseBranch, model, effort);
       await octokit.rest.pulls.update({
         owner,
         repo,
@@ -266,7 +308,7 @@ async function createOrUpdatePullRequest(
     return pr.html_url;
   }
 
-  const body = await generatePrBody(prd, baseBranch);
+  const body = await generatePrBody(prd, baseBranch, model, effort);
   const response = await octokit.rest.pulls.create({
     owner,
     repo,
@@ -310,6 +352,8 @@ async function runClaude(
     description: string;
     comments: string[];
   },
+  model: string,
+  effort: EffortLevel,
 ): Promise<{ success: boolean; error?: string }> {
   const commentsSection =
     issue.comments.length > 0
@@ -330,6 +374,8 @@ async function runClaude(
       prompt,
       options: {
         cwd: process.cwd(),
+        model,
+        effort,
         allowedTools: ["Read", "Edit", "Write", "Bash", "Glob", "Grep", "Skill"],
         permissionMode: "bypassPermissions",
         allowDangerouslySkipPermissions: true,
@@ -489,6 +535,9 @@ async function main() {
   console.log(orange(`  ╚${"═".repeat(inner)}╝`));
   console.log("");
 
+  const { model, effort } = await promptModelAndEffort();
+  console.log(dim(`  Model: ${model}  Effort: ${effort}\n`));
+
   console.log(dim("  Connecting to Linear..."));
   const client = getLinearClient();
 
@@ -607,12 +656,18 @@ async function main() {
     console.log(linear("Status: Todo → In Progress\n"));
 
     // Run Claude
-    const result = await runClaude(prd.title, prd.description ?? "", {
-      identifier: target.identifier,
-      title: target.title,
-      description: details.description,
-      comments: details.comments,
-    });
+    const result = await runClaude(
+      prd.title,
+      prd.description ?? "",
+      {
+        identifier: target.identifier,
+        title: target.title,
+        description: details.description,
+        comments: details.comments,
+      },
+      model,
+      effort,
+    );
 
     if (result.success) {
       const commitBody = await getLastCommitBody();
@@ -682,6 +737,8 @@ async function main() {
       },
       prd.branchName,
       baseBranch,
+      model,
+      effort,
     );
     console.log(green(`  PR ready: ${link(prUrl, prUrl)}`));
   } catch (err: any) {
