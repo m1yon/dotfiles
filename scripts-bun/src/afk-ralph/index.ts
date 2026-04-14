@@ -3,49 +3,59 @@
 // description: Run Claude in a loop to complete Linear PRD sub-issues automatically
 // ---
 import { LinearClient, type Issue } from "@linear/sdk";
-import { select } from "@inquirer/prompts";
-import { select as clackSelect, isCancel, cancel } from "@clack/prompts";
+import {
+  select,
+  confirm,
+  spinner,
+  isCancel,
+  cancel,
+  log,
+} from "@clack/prompts";
 import { query } from "@anthropic-ai/claude-agent-sdk";
-
-type EffortLevel = "low" | "medium" | "high" | "max";
-
-async function promptModelAndEffort(): Promise<{ model: string; effort: EffortLevel }> {
-  const model = await clackSelect({
-    message: "Select a model:",
-    options: [
-      { value: "opus", label: "Opus", hint: "most capable" },
-      { value: "sonnet", label: "Sonnet", hint: "balanced" },
-      { value: "haiku", label: "Haiku", hint: "fastest" },
-    ],
-    initialValue: "sonnet",
-  });
-  if (isCancel(model)) {
-    cancel("Operation cancelled.");
-    process.exit(0);
-  }
-
-  const effort = await clackSelect({
-    message: "Select a thinking level:",
-    options: [
-      { value: "low", label: "Low", hint: "minimal thinking, fastest" },
-      { value: "medium", label: "Medium", hint: "moderate thinking" },
-      { value: "high", label: "High", hint: "deep reasoning (default)" },
-      { value: "max", label: "Max", hint: "Opus 4.6 only" },
-    ],
-    initialValue: "high",
-  });
-  if (isCancel(effort)) {
-    cancel("Operation cancelled.");
-    process.exit(0);
-  }
-
-  return { model: model as string, effort: effort as EffortLevel };
-}
 import { logQueryMessage } from "./log-query-message";
 import { renderPrompt } from "./render-prompt";
 import { Octokit } from "octokit";
 import promptImplementIssue from "./prompt-implement-issue.md" with { type: "text" };
 import promptPrBody from "./prompt-pr-body.md" with { type: "text" };
+
+type EffortLevel = "low" | "medium" | "high" | "max";
+
+function ensure<T>(value: T | symbol): T {
+  if (isCancel(value)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
+  }
+  return value as T;
+}
+
+async function promptModelAndEffort(): Promise<{ model: string; effort: EffortLevel }> {
+  const model = ensure(
+    await select({
+      message: "Select a model:",
+      options: [
+        { value: "opus", label: "Opus", hint: "most capable" },
+        { value: "sonnet", label: "Sonnet", hint: "balanced" },
+        { value: "haiku", label: "Haiku", hint: "fastest" },
+      ],
+      initialValue: "sonnet",
+    }),
+  );
+
+  const effort = ensure(
+    await select({
+      message: "Select a thinking level:",
+      options: [
+        { value: "low", label: "Low", hint: "minimal thinking, fastest" },
+        { value: "medium", label: "Medium", hint: "moderate thinking" },
+        { value: "high", label: "High", hint: "deep reasoning (default)" },
+        { value: "max", label: "Max", hint: "Opus 4.6 only" },
+      ],
+      initialValue: "high",
+    }),
+  );
+
+  return { model: model as string, effort: effort as EffortLevel };
+}
 
 const PROMPTS: Record<string, string> = {
   "prompt-implement-issue.md": promptImplementIssue,
@@ -287,13 +297,11 @@ async function createOrUpdatePullRequest(
 
   if (existing.length > 0) {
     const pr = existing[0]!;
-    const shouldUpdate = await select({
-      message: `PR #${pr.number} already exists. Update its description?`,
-      choices: [
-        { name: "Yes", value: true },
-        { name: "No", value: false },
-      ],
-    });
+    const shouldUpdate = ensure(
+      await confirm({
+        message: `PR #${pr.number} already exists. Update its description?`,
+      }),
+    );
 
     if (shouldUpdate) {
       const body = await generatePrBody(prd, baseBranch, model, effort);
@@ -536,67 +544,74 @@ async function main() {
   console.log("");
 
   const { model, effort } = await promptModelAndEffort();
-  console.log(dim(`  Model: ${model}  Effort: ${effort}\n`));
+  log.info(`Model: ${model}  Effort: ${effort}`);
 
-  console.log(dim("  Connecting to Linear..."));
+  const linearSpin = spinner();
+  linearSpin.start("Connecting to Linear");
   const client = getLinearClient();
-
-  // Team selection
   const teams = await fetchTeams(client);
+  linearSpin.stop(`Connected (${teams.length} team(s))`);
+
   if (teams.length === 0) {
-    console.error("No teams found in Linear.");
+    log.error("No teams found in Linear.");
     process.exit(1);
   }
 
   let teamName: string;
   if (teams.length === 1) {
     teamName = teams[0]!.name;
-    console.log(dim(`  Team: ${teamName}`));
+    log.info(`Team: ${teamName}`);
   } else {
-    teamName = await select({
-      message: "Select a team:",
-      choices: teams.map((t) => ({ name: t.name, value: t.name })),
-    });
+    teamName = ensure(
+      await select<string>({
+        message: "Select a team:",
+        options: teams.map((t) => ({ value: t.name, label: t.name })),
+      }),
+    );
   }
 
-  // Fetch PRD issues
+  const prdSpin = spinner();
+  prdSpin.start(`Fetching PRDs for ${teamName}`);
   const prds = await fetchPrdIssues(client, teamName);
   if (prds.length === 0) {
-    console.error(`No PRD issues found assigned to you on ${teamName}.`);
+    prdSpin.stop(`No PRD issues found on ${teamName}`);
     process.exit(1);
   }
-  console.log(green(`  Found ${prds.length} PRD(s)\n`));
-
-  // Interactive PRD selection
   const choices = await Promise.all(
     prds.map(async (prd) => {
       const { issues: remaining } = await fetchRemainingChildren(client, prd.id);
       return {
-        name: `${prd.identifier}: ${prd.title} (${remaining.length} incomplete sub-issues)`,
+        label: `${prd.identifier}: ${prd.title} (${remaining.length} incomplete sub-issues)`,
         value: prd.id,
       };
     }),
   );
-  const selectedId = await select({
-    message: "Select a PRD to work on:",
-    choices,
-  });
+  prdSpin.stop(`Found ${prds.length} PRD(s)`);
+
+  const selectedId = ensure(
+    await select<string>({
+      message: "Select a PRD to work on:",
+      options: choices,
+    }),
+  );
 
   const prd = await client.issue(selectedId);
   const team = await prd.team;
   if (!team) {
-    console.error("Could not resolve team for selected PRD.");
+    log.error("Could not resolve team for selected PRD.");
     process.exit(1);
   }
 
-  console.log(dim("\n  Loading workflow states..."));
+  const stateSpin = spinner();
+  stateSpin.start("Loading workflow states");
   const stateMap = await getStateMap(client, team.id);
+  stateSpin.stop("Workflow states loaded");
   const inProgressId = stateMap.get("In Progress");
   const completedId = stateMap.get("Completed");
   const reviewId = stateMap.get("In Review");
 
   if (!inProgressId || !completedId || !reviewId) {
-    console.error(
+    log.error(
       `Missing workflow states. Found: ${[...stateMap.keys()].join(", ")}`,
     );
     process.exit(1);
@@ -679,9 +694,10 @@ async function main() {
       }
 
       // Push after each sub-issue
-      console.log(dim(`  Pushing ${prd.branchName}...`));
+      const pushSpin = spinner();
+      pushSpin.start(`Pushing ${prd.branchName}`);
       await pushBranch(prd.branchName);
-      console.log(green("  Pushed."));
+      pushSpin.stop(`Pushed ${prd.branchName}`);
 
       // Resolve PR feedback if this is a Feedback-labeled issue
       if (await hasFeedbackLabel(target)) {
@@ -690,13 +706,12 @@ async function main() {
         );
         if (feedbackMeta.length > 0) {
           const sha = await getShortCommitSha();
-          console.log(
-            dim(
-              `  Resolving ${feedbackMeta.length} PR feedback thread(s)...`,
-            ),
+          const feedbackSpin = spinner();
+          feedbackSpin.start(
+            `Resolving ${feedbackMeta.length} PR feedback thread(s)`,
           );
           await resolveFeedbackOnGitHub(feedbackMeta, sha);
-          console.log(green("  PR feedback resolved."));
+          feedbackSpin.stop("PR feedback resolved");
         }
       }
 
@@ -722,12 +737,14 @@ async function main() {
   }
 
   // Push branch and create PR
-  console.log(dim("\n  Pushing branch to origin..."));
+  const finalPushSpin = spinner();
+  finalPushSpin.start("Pushing branch to origin");
   await pushBranch(prd.branchName);
-  console.log(green("  Branch pushed."));
+  finalPushSpin.stop("Branch pushed");
 
-  console.log(dim("  Generating PR body..."));
   try {
+    const prSpin = spinner();
+    prSpin.start("Creating/updating pull request");
     const prUrl = await createOrUpdatePullRequest(
       {
         identifier: prd.identifier,
@@ -740,9 +757,9 @@ async function main() {
       model,
       effort,
     );
-    console.log(green(`  PR ready: ${link(prUrl, prUrl)}`));
+    prSpin.stop(`PR ready: ${link(prUrl, prUrl)}`);
   } catch (err: any) {
-    console.error(red(`  Failed to create/update PR: ${err.message}`));
+    log.error(`Failed to create/update PR: ${err.message}`);
   }
 
   // Set PRD to Review
