@@ -34,6 +34,7 @@ import promptPrBody from "./prompt-pr-body.md" with { type: "text" };
 
 type EffortLevel = "low" | "medium" | "high" | "max";
 type Mode = "code" | "investigate";
+type RunMode = "single" | "afk";
 
 function ensure<T>(value: T | symbol): T {
   if (isCancel(value)) {
@@ -84,6 +85,20 @@ async function promptMode(): Promise<Mode> {
     }),
   );
   return mode as Mode;
+}
+
+async function promptRunMode(): Promise<RunMode> {
+  const runMode = ensure(
+    await select({
+      message: "Run mode:",
+      options: [
+        { value: "single", label: "Single", hint: "run one sub-issue then stop" },
+        { value: "afk", label: "AFK", hint: "run until all sub-issues complete" },
+      ],
+      initialValue: "afk",
+    }),
+  );
+  return runMode as RunMode;
 }
 
 const PROMPTS: Record<string, string> = {
@@ -273,7 +288,7 @@ async function ensureProgressDoc(
 
   const { data } = await client.client.rawRequest<
     { documentCreate: { success: boolean; document: { id: string } } },
-    { input: { title: string; content: string; icon: string; issueId: string } }
+    { input: { title: string; content: string; issueId: string } }
   >(
     `mutation ($input: DocumentCreateInput!) {
       documentCreate(input: $input) {
@@ -285,7 +300,6 @@ async function ensureProgressDoc(
       input: {
         title: progressDocTitle(prd.identifier),
         content: initial,
-        icon: "📋",
         issueId: prd.id,
       },
     },
@@ -718,7 +732,10 @@ async function main() {
 
   const { model, effort } = await promptModelAndEffort();
   const mode = await promptMode();
-  log.info(`Model: ${model}  Effort: ${effort}  Mode: ${mode}`);
+  const runMode = await promptRunMode();
+  log.info(
+    `Model: ${model}  Effort: ${effort}  Mode: ${mode}  Run: ${runMode}`,
+  );
 
   const linearSpin = spinner();
   linearSpin.start("Connecting to Linear");
@@ -824,10 +841,12 @@ async function main() {
   console.log("");
 
   // Iterate through sub-issues
+  let allComplete = false;
   while (true) {
     const { issues: remaining, blockedIds } = await fetchRemainingChildren(client, prd.id);
     if (remaining.length === 0) {
       console.log(green("\n  All sub-issues complete!"));
+      allComplete = true;
       break;
     }
 
@@ -948,6 +967,11 @@ async function main() {
       );
       console.error(orange(`${"═".repeat(60)}\n`));
     }
+
+    if (runMode === "single") {
+      console.log(yellow("  Single run — stopping after one sub-issue."));
+      break;
+    }
   }
 
   // Push branch and create PR (code mode only)
@@ -978,9 +1002,11 @@ async function main() {
     }
   }
 
-  // Set PRD to Review
-  await setIssueStatus(client, prd.id, reviewId);
-  const doneText = "Done!";
+  // Set PRD to Review only when all sub-issues are complete
+  if (allComplete) {
+    await setIssueStatus(client, prd.id, reviewId);
+  }
+  const doneText = allComplete ? "Done!" : "Iteration complete";
   const donePad = Math.floor((inner - doneText.length) / 2);
   const donePadR = inner - doneText.length - donePad;
   console.log(orange(`\n  ╔${"═".repeat(inner)}╗`));
@@ -991,7 +1017,11 @@ async function main() {
   );
   console.log(orange(`  ╚${"═".repeat(inner)}╝`));
   console.log(cyan(`  ${link(prd.identifier, prd.url)}: ${prd.title}`));
-  console.log(linear("Status: In Progress → In Review"));
+  if (allComplete) {
+    console.log(linear("Status: In Progress → In Review"));
+  } else {
+    console.log(linear("Status: In Progress (sub-issues remaining)"));
+  }
 }
 
 main().catch((err) => {
