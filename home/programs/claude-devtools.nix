@@ -2,11 +2,11 @@
 let
   claude-devtools = pkgs.appimageTools.wrapType2 {
     pname = "claude-devtools";
-    version = "0.4.8";
+    version = "0.4.10";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/matt1398/claude-devtools/releases/download/v0.4.8/claude-devtools-0.4.8.AppImage";
-      hash = "sha256-dY4r8aITO9UhhEzuVA84FdhHllDOo+YKwc1EdzdYD1E=";
+      url = "https://github.com/matt1398/claude-devtools/releases/download/v0.4.10/claude-devtools-0.4.10.AppImage";
+      hash = "sha256-WRZC+NdLQsalt17GCLGLC9KdJOkqPdIOpFG33soUJ58=";
     };
 
     extraInstallCommands =
