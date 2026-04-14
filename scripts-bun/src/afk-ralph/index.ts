@@ -16,9 +16,11 @@ import { logQueryMessage } from "./log-query-message";
 import { renderPrompt } from "./render-prompt";
 import { Octokit } from "octokit";
 import promptImplementIssue from "./prompt-implement-issue.md" with { type: "text" };
+import promptInvestigateIssue from "./prompt-investigate-issue.md" with { type: "text" };
 import promptPrBody from "./prompt-pr-body.md" with { type: "text" };
 
 type EffortLevel = "low" | "medium" | "high" | "max";
+type Mode = "code" | "investigate";
 
 function ensure<T>(value: T | symbol): T {
   if (isCancel(value)) {
@@ -57,8 +59,23 @@ async function promptModelAndEffort(): Promise<{ model: string; effort: EffortLe
   return { model: model as string, effort: effort as EffortLevel };
 }
 
+async function promptMode(): Promise<Mode> {
+  const mode = ensure(
+    await select({
+      message: "Select a mode:",
+      options: [
+        { value: "code", label: "Code", hint: "implement, commit, push, open PR" },
+        { value: "investigate", label: "Investigate", hint: "no code changes or commits" },
+      ],
+      initialValue: "code",
+    }),
+  );
+  return mode as Mode;
+}
+
 const PROMPTS: Record<string, string> = {
   "prompt-implement-issue.md": promptImplementIssue,
+  "prompt-investigate-issue.md": promptInvestigateIssue,
   "prompt-pr-body.md": promptPrBody,
 };
 
@@ -362,13 +379,18 @@ async function runClaude(
   },
   model: string,
   effort: EffortLevel,
-): Promise<{ success: boolean; error?: string }> {
+  mode: Mode,
+): Promise<{ success: boolean; error?: string; resultText?: string }> {
   const commentsSection =
     issue.comments.length > 0
       ? `## Comments\n\n${issue.comments.join("\n\n")}`
       : "";
 
-  const prompt = loadPrompt("prompt-implement-issue.md", {
+  const promptFile =
+    mode === "investigate"
+      ? "prompt-investigate-issue.md"
+      : "prompt-implement-issue.md";
+  const prompt = loadPrompt(promptFile, {
     prdTitle,
     prdDescription,
     issueIdentifier: issue.identifier,
@@ -396,7 +418,8 @@ async function runClaude(
       logQueryMessage(message);
       if (message.type === "result") {
         if (message.subtype === "success") {
-          return { success: true };
+          const resultText = ((message as any).result ?? "") as string;
+          return { success: true, resultText };
         } else {
           const errors =
             "errors" in message ? (message.errors as string[]) : [];
@@ -544,7 +567,8 @@ async function main() {
   console.log("");
 
   const { model, effort } = await promptModelAndEffort();
-  log.info(`Model: ${model}  Effort: ${effort}`);
+  const mode = await promptMode();
+  log.info(`Model: ${model}  Effort: ${effort}  Mode: ${mode}`);
 
   const linearSpin = spinner();
   linearSpin.start("Connecting to Linear");
@@ -625,13 +649,18 @@ async function main() {
   );
   console.log(linear(`Status: ${prdPrevState} → In Progress`));
 
-  // Checkout PRD branch for all sub-issues
-  const currentBranch = await getCurrentBranch();
-  const baseBranch = currentBranch === prd.branchName ? "dev" : currentBranch;
-  console.log(
-    dim(`  Using PRD branch → ${prd.branchName} (base: ${baseBranch})`),
-  );
-  await checkoutBranch(prd.branchName);
+  // Checkout PRD branch for all sub-issues (code mode only)
+  let baseBranch = "";
+  if (mode === "code") {
+    const currentBranch = await getCurrentBranch();
+    baseBranch = currentBranch === prd.branchName ? "dev" : currentBranch;
+    console.log(
+      dim(`  Using PRD branch → ${prd.branchName} (base: ${baseBranch})`),
+    );
+    await checkoutBranch(prd.branchName);
+  } else {
+    console.log(dim(`  Investigate mode — no branch checkout or git ops`));
+  }
   console.log("");
 
   // Iterate through sub-issues
@@ -682,36 +711,40 @@ async function main() {
       },
       model,
       effort,
+      mode,
     );
 
     if (result.success) {
-      const commitBody = await getLastCommitBody();
-      if (commitBody) {
-        await commentOnIssue(client, target.id, commitBody);
+      const commentBody =
+        mode === "code" ? await getLastCommitBody() : result.resultText ?? "";
+      if (commentBody) {
+        await commentOnIssue(client, target.id, commentBody);
         console.log(
           linear(`Comment posted on ${link(target.identifier, target.url)}`),
         );
       }
 
-      // Push after each sub-issue
-      const pushSpin = spinner();
-      pushSpin.start(`Pushing ${prd.branchName}`);
-      await pushBranch(prd.branchName);
-      pushSpin.stop(`Pushed ${prd.branchName}`);
+      if (mode === "code") {
+        // Push after each sub-issue
+        const pushSpin = spinner();
+        pushSpin.start(`Pushing ${prd.branchName}`);
+        await pushBranch(prd.branchName);
+        pushSpin.stop(`Pushed ${prd.branchName}`);
 
-      // Resolve PR feedback if this is a Feedback-labeled issue
-      if (await hasFeedbackLabel(target)) {
-        const feedbackMeta = parseFeedbackMetadata(
-          target.description ?? "",
-        );
-        if (feedbackMeta.length > 0) {
-          const sha = await getShortCommitSha();
-          const feedbackSpin = spinner();
-          feedbackSpin.start(
-            `Resolving ${feedbackMeta.length} PR feedback thread(s)`,
+        // Resolve PR feedback if this is a Feedback-labeled issue
+        if (await hasFeedbackLabel(target)) {
+          const feedbackMeta = parseFeedbackMetadata(
+            target.description ?? "",
           );
-          await resolveFeedbackOnGitHub(feedbackMeta, sha);
-          feedbackSpin.stop("PR feedback resolved");
+          if (feedbackMeta.length > 0) {
+            const sha = await getShortCommitSha();
+            const feedbackSpin = spinner();
+            feedbackSpin.start(
+              `Resolving ${feedbackMeta.length} PR feedback thread(s)`,
+            );
+            await resolveFeedbackOnGitHub(feedbackMeta, sha);
+            feedbackSpin.stop("PR feedback resolved");
+          }
         }
       }
 
@@ -736,30 +769,32 @@ async function main() {
     }
   }
 
-  // Push branch and create PR
-  const finalPushSpin = spinner();
-  finalPushSpin.start("Pushing branch to origin");
-  await pushBranch(prd.branchName);
-  finalPushSpin.stop("Branch pushed");
+  // Push branch and create PR (code mode only)
+  if (mode === "code") {
+    const finalPushSpin = spinner();
+    finalPushSpin.start("Pushing branch to origin");
+    await pushBranch(prd.branchName);
+    finalPushSpin.stop("Branch pushed");
 
-  try {
-    const prSpin = spinner();
-    prSpin.start("Creating/updating pull request");
-    const prUrl = await createOrUpdatePullRequest(
-      {
-        identifier: prd.identifier,
-        title: prd.title,
-        url: prd.url,
-        description: prd.description ?? "",
-      },
-      prd.branchName,
-      baseBranch,
-      model,
-      effort,
-    );
-    prSpin.stop(`PR ready: ${link(prUrl, prUrl)}`);
-  } catch (err: any) {
-    log.error(`Failed to create/update PR: ${err.message}`);
+    try {
+      const prSpin = spinner();
+      prSpin.start("Creating/updating pull request");
+      const prUrl = await createOrUpdatePullRequest(
+        {
+          identifier: prd.identifier,
+          title: prd.title,
+          url: prd.url,
+          description: prd.description ?? "",
+        },
+        prd.branchName,
+        baseBranch,
+        model,
+        effort,
+      );
+      prSpin.stop(`PR ready: ${link(prUrl, prUrl)}`);
+    } catch (err: any) {
+      log.error(`Failed to create/update PR: ${err.message}`);
+    }
   }
 
   // Set PRD to Review
