@@ -236,6 +236,137 @@ async function fetchRemainingChildren(
   return { issues: remaining, blockedIds };
 }
 
+// --- Progress Document ---
+
+function progressDocTitle(prdIdentifier: string): string {
+  return `Progress: ${prdIdentifier}`;
+}
+
+async function findProgressDocId(
+  client: LinearClient,
+  prdId: string,
+  prdIdentifier: string,
+): Promise<string | null> {
+  const { data } = await client.client.rawRequest<
+    { issue: { documents: { nodes: Array<{ id: string; title: string }> } } },
+    { id: string }
+  >(
+    `query ($id: String!) {
+      issue(id: $id) {
+        documents(first: 50) { nodes { id title } }
+      }
+    }`,
+    { id: prdId },
+  );
+  const target = progressDocTitle(prdIdentifier);
+  return data?.issue?.documents?.nodes.find((d) => d.title === target)?.id ?? null;
+}
+
+async function ensureProgressDoc(
+  client: LinearClient,
+  prd: { id: string; identifier: string; title: string },
+): Promise<string> {
+  const existing = await findProgressDocId(client, prd.id, prd.identifier);
+  if (existing) return existing;
+
+  const initial = `# Progress — ${prd.identifier}: ${prd.title}\n\nRunning log for afk-ralph iterations. Each sub-issue agent appends one entry. Concise — this is context for the next agent, not documentation.\n\n---\n`;
+
+  const { data } = await client.client.rawRequest<
+    { documentCreate: { success: boolean; document: { id: string } } },
+    { input: { title: string; content: string; icon: string; issueId: string } }
+  >(
+    `mutation ($input: DocumentCreateInput!) {
+      documentCreate(input: $input) {
+        success
+        document { id }
+      }
+    }`,
+    {
+      input: {
+        title: progressDocTitle(prd.identifier),
+        content: initial,
+        icon: "📋",
+        issueId: prd.id,
+      },
+    },
+  );
+  const id = data?.documentCreate?.document?.id;
+  if (!id) throw new Error("Failed to create progress document");
+  return id;
+}
+
+async function fetchProgressDocContent(
+  client: LinearClient,
+  docId: string,
+): Promise<string> {
+  const { data } = await client.client.rawRequest<
+    { document: { content: string } },
+    { id: string }
+  >(
+    `query ($id: String!) {
+      document(id: $id) { content }
+    }`,
+    { id: docId },
+  );
+  return data?.document?.content ?? "";
+}
+
+async function updateProgressDocContent(
+  client: LinearClient,
+  docId: string,
+  content: string,
+): Promise<void> {
+  await client.client.rawRequest<
+    { documentUpdate: { success: boolean } },
+    { id: string; input: { content: string } }
+  >(
+    `mutation ($id: String!, $input: DocumentUpdateInput!) {
+      documentUpdate(id: $id, input: $input) { success }
+    }`,
+    { id: docId, input: { content } },
+  );
+}
+
+async function appendProgressEntry(
+  client: LinearClient,
+  docId: string,
+  entry: string,
+): Promise<void> {
+  const doAppend = async () => {
+    const current = await fetchProgressDocContent(client, docId);
+    const sep = current.endsWith("\n") ? "" : "\n";
+    const next = `${current}${sep}\n${entry}\n\n---\n`;
+    await updateProgressDocContent(client, docId, next);
+  };
+  try {
+    await doAppend();
+  } catch (err) {
+    log.warn(`Progress doc append failed, retrying: ${err}`);
+    try {
+      await doAppend();
+    } catch (err2) {
+      log.warn(`Progress doc append failed again, continuing: ${err2}`);
+    }
+  }
+}
+
+function formatProgressEntry(
+  issue: { identifier: string; title: string },
+  status: string,
+  body: string,
+): string {
+  const ts = new Date().toISOString().replace(/\.\d+Z$/, "Z");
+  return `## ${issue.identifier}: ${issue.title}\n\n_${ts} · ${status}_\n\n${body}`;
+}
+
+function buildProgressSection(docContent: string): string {
+  const firstEntry = docContent.indexOf("\n## ");
+  if (firstEntry === -1) return "";
+  const entries = docContent.slice(firstEntry + 1).trim();
+  if (!entries) return "";
+  return `\n# Prior Progress\n\n${entries}\n`;
+}
+
 // --- GitHub Module ---
 
 async function getAuthToken(): Promise<string> {
@@ -410,6 +541,7 @@ async function checkoutBranch(branchName: string): Promise<void> {
 async function runClaude(
   prdTitle: string,
   prdDescription: string,
+  progressSection: string,
   issue: {
     identifier: string;
     title: string;
@@ -432,6 +564,7 @@ async function runClaude(
   const prompt = loadPrompt(promptFile, {
     prdTitle,
     prdDescription,
+    progressSection,
     issueIdentifier: issue.identifier,
     issueTitle: issue.title,
     issueDescription: issue.description || "(no description)",
@@ -476,23 +609,6 @@ async function runClaude(
       error: `Claude process crashed: ${err}`,
     };
   }
-}
-
-async function getLastCommitBody(): Promise<string> {
-  const proc = Bun.spawn(["git", "log", "-1", "--format=%b"], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-  await proc.exited;
-  return (await new Response(proc.stdout).text()).trim();
-}
-
-async function commentOnIssue(
-  client: LinearClient,
-  issueId: string,
-  body: string,
-): Promise<void> {
-  await client.createComment({ issueId, body });
 }
 
 // --- Feedback Resolution ---
@@ -695,6 +811,16 @@ async function main() {
   } else {
     console.log(dim(`  Investigate mode — no branch checkout or git ops`));
   }
+
+  // Ensure progress document exists on the PRD
+  const progressSpin = spinner();
+  progressSpin.start("Ensuring progress document");
+  const progressDocId = await ensureProgressDoc(client, {
+    id: prd.id,
+    identifier: prd.identifier,
+    title: prd.title,
+  });
+  progressSpin.stop(`Progress document ready`);
   console.log("");
 
   // Iterate through sub-issues
@@ -731,10 +857,15 @@ async function main() {
     await setIssueStatus(client, target.id, inProgressId);
     console.log(linear("Status: Todo → In Progress\n"));
 
+    // Fetch current progress doc content to inject into the prompt
+    const progressContent = await fetchProgressDocContent(client, progressDocId);
+    const progressSection = buildProgressSection(progressContent);
+
     // Run Claude
     const result = await runClaude(
       prd.title,
       prd.description ?? "",
+      progressSection,
       {
         identifier: target.identifier,
         title: target.title,
@@ -747,14 +878,25 @@ async function main() {
     );
 
     if (result.success) {
-      const commentBody =
-        mode === "code" ? await getLastCommitBody() : result.resultText ?? "";
-      if (commentBody) {
-        await commentOnIssue(client, target.id, commentBody);
-        console.log(
-          linear(`Comment posted on ${link(target.identifier, target.url)}`),
+      const entryBody = (result.resultText ?? "").trim();
+      if (!entryBody) {
+        console.error(
+          red(
+            `\n  ✘ ${link(target.identifier, target.url)} produced no progress entry — aborting run`,
+          ),
         );
+        process.exit(1);
       }
+      await appendProgressEntry(
+        client,
+        progressDocId,
+        formatProgressEntry(
+          { identifier: target.identifier, title: target.title },
+          "completed",
+          entryBody,
+        ),
+      );
+      console.log(linear(`Progress entry appended for ${target.identifier}`));
 
       if (mode === "code") {
         // Push after each sub-issue
@@ -790,6 +932,15 @@ async function main() {
       console.error(
         red(
           `\n  ✘ ${link(target.identifier, target.url)} failed: ${result.error}`,
+        ),
+      );
+      await appendProgressEntry(
+        client,
+        progressDocId,
+        formatProgressEntry(
+          { identifier: target.identifier, title: target.title },
+          `failed: ${result.error ?? "unknown"}`,
+          `*(Claude run failed. No progress entry produced.)*`,
         ),
       );
       console.error(
