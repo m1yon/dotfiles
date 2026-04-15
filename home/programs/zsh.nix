@@ -8,7 +8,7 @@
     shellAliases = {
       cd = "z";
       open = "setsid xdg-open";
-      src = "source ~/.zshrc";
+      src = "unset __HM_SESS_VARS_SOURCED && source ~/.zshenv && source ~/.zshrc";
     };
     initContent = ''
       function y() {
