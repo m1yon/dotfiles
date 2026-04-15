@@ -1,6 +1,6 @@
 {
     "layer": "top",
-    "modules-left": ["clock", "mpris"],
+    "modules-left": ["clock"],
     "modules-center": ["hyprland/workspaces", "hyprland/submap"],
     "modules-right": ["battery", "bluetooth", "network", "wireplumber"],
     "hyprland/workspaces": {
@@ -27,14 +27,7 @@
       "on-click": "hyprctl clients -j | jq -e '.[] | select(.class == \"chrome-kjbdgfilnfhdoflbpgamdcdgpehopbep-Default\")' > /dev/null && hyprctl dispatch focuswindow class:chrome-kjbdgfilnfhdoflbpgamdcdgpehopbep-Default || uwsm-app -- google-chrome-stable --app-id=kjbdgfilnfhdoflbpgamdcdgpehopbep",
       "format": "{:%d %b  %I:%M %p}",
     },
-    "mpris": {
-      "on-click": "hyprctl dispatch togglespecialworkspace spotify",
-      "interval": 15,
-      "format": "󰎈 {dynamic}",
-      "format-paused": "󰎈 <i>{dynamic}</i>",
-      "dynamic-order": ["artist", "title"]
-    },
-    "bluetooth": {
+"bluetooth": {
       "on-click": "launch-or-focus-tui bluetui",
       "format": "󰂯",
       "format-connected": "󰂱",
