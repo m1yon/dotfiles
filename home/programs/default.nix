@@ -30,6 +30,7 @@
     ./localsend.nix
     ./opencode.nix
     ./playerctl.nix
+    ./screenshot.nix
     ./sftp.nix
     ./slack.nix
     ./sops.nix
