@@ -15,6 +15,7 @@
     }
   },
   "effortLevel": "high",
-  "autoDreamEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "autoDreamEnabled": false,
+  "skipDangerousModePermissionPrompt": true,
+  "autoMemoryEnabled": false
 }
