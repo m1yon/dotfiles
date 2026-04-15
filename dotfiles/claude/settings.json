@@ -17,5 +17,9 @@
   "effortLevel": "high",
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
-  "autoMemoryEnabled": false
+  "autoMemoryEnabled": false,
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  }
 }
