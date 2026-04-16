@@ -15,6 +15,7 @@ import { logQueryMessage } from "./log-query-message";
 import { renderPrompt } from "./render-prompt";
 import { Octokit } from "octokit";
 import { listOpenEpics, listReadyChildren, type BdIssue } from "./bd";
+import * as progressDoc from "./progress-doc";
 import promptImplementIssue from "./prompt-implement-issue.md" with { type: "text" };
 import promptInvestigateIssue from "./prompt-investigate-issue.md" with { type: "text" };
 import promptPrBody from "./prompt-pr-body.md" with { type: "text" };
@@ -552,8 +553,13 @@ async function main() {
     console.log(orange(`${"─".repeat(60)}`));
     console.log(linear(`Sub-agent will claim via 'bd update ${target.id} --claim'\n`));
 
-    // Progress-doc injection is deferred to dotfiles-99s.2.
-    const progressSection = "";
+    // Read (creating if absent) the on-disk progress doc for this epic and
+    // inject prior entries into the sub-agent's prompt. The sub-agent itself
+    // appends its final status block to the same file before pushing — see
+    // prompt-implement-issue.md.
+    await progressDoc.ensure(epic.id, epic.title);
+    const progressContent = await progressDoc.read(epic.id);
+    const progressSection = progressDoc.buildProgressSection(progressContent);
 
     // Beads-comments injection is deferred to dotfiles-99s.6.
     const issueComments: string[] = [];
