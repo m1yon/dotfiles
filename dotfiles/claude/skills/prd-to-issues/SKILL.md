@@ -1,19 +1,25 @@
 ---
 name: prd-to-issues
-description: Break a PRD into independently-grabbable Linear sub-issues using tracer-bullet vertical slices. Use when user wants to convert a PRD to issues, create implementation tickets, or break down a PRD into work items.
+description: Break a PRD into independently-grabbable beads child issues under an epic using tracer-bullet vertical slices. Use when user wants to convert a PRD to issues, create implementation tickets, or break down a PRD into work items.
 ---
 
 # PRD to Issues
 
-Break a PRD into independently-grabbable Linear sub-issues using vertical slices (tracer bullets).
+Break a PRD into independently-grabbable beads child issues using vertical slices (tracer bullets). The PRD lives in an **epic** bead; each slice is a **child** of that epic (created with `--parent`).
 
 ## Process
 
-### 1. Locate the PRD
+### 1. Locate the PRD epic
 
-Ask the user for the PRD Linear issue identifier (e.g., `MECA-123` or a Linear URL).
+Ask the user for the epic bead ID (e.g., `bd-a3f8e9`) that holds the PRD.
 
-If the PRD is not already in your context window, fetch it with the `get_issue` MCP tool.
+If the PRD is not already in your context window, fetch it with `bd show <id>`.
+
+If the user has a PRD but no epic yet, offer to create one with:
+
+```bash
+bd create "<PRD title>" -t epic -p <0-4> --body-file <path-to-prd.md>
+```
 
 ### 2. Explore the codebase (optional)
 
@@ -21,7 +27,7 @@ If you have not already explored the codebase, do so to understand the current s
 
 ### 3. Draft vertical slices
 
-Break the PRD into **tracer bullet** issues. Each issue is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
+Break the PRD into **tracer bullet** child issues. Each issue is a thin vertical slice that cuts through ALL integration layers end-to-end, NOT a horizontal slice of one layer.
 
 Slices may be assigned to 'AI' or 'Human'. Human slices require human interaction, such as an architectural decision or a design review. AI slices can be implemented and merged without human interaction. Prefer AI over Human where possible.
 
@@ -36,8 +42,9 @@ Slices may be assigned to 'AI' or 'Human'. Human slices require human interactio
 Present the proposed breakdown as a numbered list. For each slice, show:
 
 - **Title**: short descriptive name
+- **Type**: `feature` | `task` | `bug` | `chore`
 - **Assigned to**: AI / Human
-- **Priority**: Urgent / High / Medium / Low
+- **Priority**: 0 (critical) / 1 (high) / 2 (medium) / 3 (low)
 - **Blocked by**: which other slices (if any) must complete first
 - **User stories covered**: which user stories from the PRD this addresses
 
@@ -50,18 +57,38 @@ Ask the user:
 
 Iterate until the user approves the breakdown.
 
-### 5. Create the Linear sub-issues
+### 5. Create the child issues under the epic
 
-For each approved slice, create a Linear sub-issue using the `create_issue` MCP tool on the **MECA Therapies** team. Set the **parent issue** to the PRD issue. Set the issue type to **Feature**. Set the status to **Todo**. Assign the issue to me. Apply the **AI** label for slices assigned to AI, or the **Human** label for slices assigned to Human.
+For each approved slice, create a child issue with `bd create --parent <epic-id>`. Children auto-number (e.g. `bd-a3f8e9.1`, `bd-a3f8e9.2`). Use `feature` as the default type for vertical slices; use `task`, `bug`, or `chore` where appropriate. Apply the `ai` label for slices assigned to AI, or the `human` label for slices assigned to Human.
 
-Set the **priority** on each sub-issue using these rules (highest to lowest):
+Set the **priority** (`-p`) on each child using these rules (highest to lowest):
 
-1. **Urgent** — Critical bugfixes
-2. **High** — Tracer bullets (thin end-to-end slices that validate architecture)
-3. **Medium** — Polish and quick wins
-4. **Low** — Refactors
+1. **0 (Critical)** — Critical bugfixes
+2. **1 (High)** — Tracer bullets (thin end-to-end slices that validate architecture)
+3. **2 (Medium)** — Polish and quick wins
+4. **3 (Low)** — Refactors
 
-Create issues in dependency order (blockers first). After creating all issues, use Linear's native blocking relations to link dependencies between sub-issues.
+Use `--body-file` or `--stdin` for the description to avoid shell-escaping issues. Example:
+
+```bash
+bd create "Slice title" \
+  --parent bd-a3f8e9 \
+  -t feature \
+  -p 1 \
+  -l ai \
+  --body-file /tmp/slice-1.md \
+  --json
+```
+
+Create children in dependency order (blockers first). After all children exist, add blocking relations:
+
+```bash
+bd dep add <blocked-child-id> <blocker-child-id>
+# or equivalently:
+bd link <blocked-child-id> <blocker-child-id>
+```
+
+The `--parent` flag already creates the structural `parent-child` link to the epic — do NOT add that manually.
 
 <issue-template>
 ## What to build
@@ -91,4 +118,4 @@ Reference by number from the parent PRD:
 
 </issue-template>
 
-Do NOT close or modify the parent PRD issue.
+Do NOT close or modify the parent epic.
