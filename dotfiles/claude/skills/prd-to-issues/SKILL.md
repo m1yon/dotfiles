@@ -68,7 +68,7 @@ Set the **priority** (`-p`) on each child using these rules (highest to lowest):
 3. **2 (Medium)** — Polish and quick wins
 4. **3 (Low)** — Refactors
 
-Use `--body-file` or `--stdin` for the description to avoid shell-escaping issues. Example:
+Call `bd create` directly for each slice — do NOT write descriptions to intermediate markdown files first. Pass the description inline via a heredoc on stdin:
 
 ```bash
 bd create "Slice title" \
@@ -76,9 +76,19 @@ bd create "Slice title" \
   -t feature \
   -p 1 \
   -l ai \
-  --body-file /tmp/slice-1.md \
-  --json
+  --stdin \
+  --json <<'EOF'
+## What to build
+
+...slice description in markdown...
+
+## Acceptance criteria
+
+- [ ] Criterion 1
+EOF
 ```
+
+Run the `bd create` calls in parallel where possible (each slice is independent until the dependency-linking step).
 
 Create children in dependency order (blockers first). After all children exist, add blocking relations:
 
