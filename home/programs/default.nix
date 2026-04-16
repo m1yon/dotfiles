@@ -3,6 +3,7 @@
     ./agent-browser.nix
     ./atuin.nix
     ./awscli.nix
+    ./beads.nix
     ./browsers.nix
     ./btm.nix
     ./bun.nix
