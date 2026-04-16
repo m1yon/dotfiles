@@ -53,12 +53,9 @@ let
     app:
     let
       hasRules = app ? workspace || (app ? group && app.group);
-      workspaceLine =
-        if app ? workspace then "  workspace = ${app.workspace}\n" else "";
-      groupLine =
-        if app ? group && app.group then "  group = set\n" else "";
-      suppressLine =
-        if app ? autostart && app.autostart then "  no_initial_focus = true\n" else "";
+      workspaceLine = if app ? workspace then "  workspace = ${app.workspace}\n" else "";
+      groupLine = if app ? group && app.group then "  group = set\n" else "";
+      suppressLine = if app ? autostart && app.autostart then "  no_initial_focus = true\n" else "";
       block = "windowrule {\n  name = webapp-${sanitizeName app.name}\n${workspaceLine}${groupLine}${suppressLine}  match:class = ${chromeClassOf app.url}\n}";
     in
     if hasRules then [ block ] else [ ];
