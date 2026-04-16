@@ -21,6 +21,7 @@ import {
   resetStatus,
   addLabel,
   doltPush,
+  showIssue,
   type BdIssue,
 } from "./bd";
 import * as progressDoc from "./progress-doc";
@@ -378,6 +379,39 @@ function parseAgentStatus(resultText: string): "completed" | "blocked" | "missin
   return match[1]!.toLowerCase() as "completed" | "blocked";
 }
 
+/**
+ * Verify the sub-agent's self-reported `**Status:**` marker against the
+ * authoritative bd status for the issue. Logs a non-fatal warning on mismatch
+ * so the main loop can continue. bd remains the source of truth for routing.
+ *
+ * Mapping: marker `completed` ↔ bd `closed`; marker `blocked` ↔ bd `blocked`.
+ */
+async function verifyAgentStatusAgainstBd(
+  issueId: string,
+  issueTitle: string,
+  agentStatus: "completed" | "blocked",
+): Promise<void> {
+  let bdIssue: BdIssue;
+  try {
+    bdIssue = await showIssue(issueId);
+  } catch (err: any) {
+    console.error(
+      yellow(
+        `  ! ${issueId} status verification failed: could not read bd status (${err?.message ?? err}).`,
+      ),
+    );
+    return;
+  }
+  const bdStatus = bdIssue.status;
+  const expectedBdStatus = agentStatus === "completed" ? "closed" : "blocked";
+  if (bdStatus === expectedBdStatus) return;
+  console.error(
+    yellow(
+      `  ! ${issueId} (${issueTitle}) status mismatch: sub-agent reported **Status:** ${agentStatus} but bd status is ${bdStatus}. Sub-agent may not have ${agentStatus === "completed" ? "closed" : "blocked"} the issue — investigate with \`bd show ${issueId}\`.`,
+    ),
+  );
+}
+
 // --- Feedback Resolution ---
 // TODO(dotfiles-99s.7): wire Feedback-label PR-thread resolution back in. The
 // helpers below are kept (they don't touch Linear) so the machinery is ready
@@ -624,7 +658,12 @@ async function main() {
       const agentStatus: "completed" | "blocked" =
         parsed === "completed" ? "completed" : "blocked";
 
-      // TODO(dotfiles-99s.5): post-run status verification via bd show.
+      // Cross-check the sub-agent's self-reported marker against the
+      // authoritative bd status. Runs in both code and investigate modes;
+      // warnings are non-fatal so the loop continues. bd remains the source
+      // of truth for downstream routing (e.g., the `in-review` label check).
+      await verifyAgentStatusAgainstBd(target.id, target.title, agentStatus);
+
       // TODO(dotfiles-99s.7): Feedback-label PR-thread resolution.
 
       if (agentStatus === "completed") {
