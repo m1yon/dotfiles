@@ -156,3 +156,48 @@ export async function resetStatus(id: string, status: string): Promise<void> {
     );
   }
 }
+
+/**
+ * Add a label to an issue (non-destructive — existing labels are preserved).
+ * Used to mark an epic as `in-review` once all its AI-labeled children close.
+ */
+export async function addLabel(id: string, label: string): Promise<void> {
+  const argv = ["bd", "update", id, "--add-label", label, "--no-pager"];
+  const proc = Bun.spawn(argv, { stdout: "pipe", stderr: "pipe" });
+  const [, stderr, exitCode] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+    proc.exited,
+  ]);
+  if (exitCode !== 0) {
+    throw new BdError(
+      `bd update ${id} --add-label ${label} failed (exit ${exitCode}): ${stderr.trim()}`,
+      argv,
+      exitCode,
+      stderr,
+    );
+  }
+}
+
+/**
+ * Push local bd changes to the shared Dolt remote. Called after writes that
+ * should be visible to other agents immediately (e.g., the `in-review` label
+ * applied when an epic's children all close).
+ */
+export async function doltPush(): Promise<void> {
+  const argv = ["bd", "dolt", "push"];
+  const proc = Bun.spawn(argv, { stdout: "pipe", stderr: "pipe" });
+  const [, stderr, exitCode] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+    proc.exited,
+  ]);
+  if (exitCode !== 0) {
+    throw new BdError(
+      `bd dolt push failed (exit ${exitCode}): ${stderr.trim()}`,
+      argv,
+      exitCode,
+      stderr,
+    );
+  }
+}

@@ -19,6 +19,8 @@ import {
   listReadyChildren,
   listChildrenByStatus,
   resetStatus,
+  addLabel,
+  doltPush,
   type BdIssue,
 } from "./bd";
 import * as progressDoc from "./progress-doc";
@@ -673,8 +675,32 @@ async function main() {
     }
   }
 
-  // TODO(dotfiles-99s.4): add `in-review` label to epic + `bd dolt push` once
-  // all AI-labeled children are closed.
+  // --- Epic "in-review" label ---
+  // Beads analog of Linear's "In Review" PRD state. If EVERY AI-labeled child
+  // of the epic is now closed, tag the epic with `in-review` and sync to the
+  // Dolt remote. A `bd list` with a comma-separated `--status` filter lets us
+  // count all non-closed states (open, in_progress, blocked, deferred) in one
+  // call; if that count is 0, the epic is fully done.
+  try {
+    const nonClosed = await listChildrenByStatus(
+      epic.id,
+      "AI",
+      "open,in_progress,blocked,deferred",
+    );
+    if (nonClosed.length === 0) {
+      await addLabel(epic.id, "in-review");
+      await doltPush();
+      console.log(linear(`Added 'in-review' label to ${epic.id} and pushed.`));
+    } else {
+      console.log(
+        linear(
+          `${nonClosed.length} AI child(ren) not closed — skipping 'in-review' label.`,
+        ),
+      );
+    }
+  } catch (err: any) {
+    log.warn(`Failed to apply 'in-review' label: ${err.message}`);
+  }
 
   const doneText = allComplete ? "Done!" : "Iteration complete";
   const donePad = Math.floor((inner - doneText.length) / 2);
