@@ -20,6 +20,7 @@
   "autoMemoryEnabled": false,
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
+    "command": "bunx -y ccstatusline@latest",
+    "padding": 0
   }
 }
