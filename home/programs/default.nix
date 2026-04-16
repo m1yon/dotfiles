@@ -7,6 +7,7 @@
     ./browsers.nix
     ./btm.nix
     ./bun.nix
+    ./bv.nix
     ./claude-code.nix
     ./claude-devtools.nix
     ./coderabbit.nix
