@@ -562,7 +562,7 @@ async function main() {
   // stuck in `in_progress`. `bd ready` excludes `in_progress`, so without this
   // step the child would be invisible to the main loop. Flip any such children
   // back to `open` and push the batch once.
-  const stale = await listChildrenByStatus(epic.id, "AI", "in_progress");
+  const stale = await listChildrenByStatus(epic.id, "ai", "in_progress");
   if (stale.length > 0) {
     for (const issue of stale) {
       await resetStatus(issue.id, "open");
@@ -598,7 +598,7 @@ async function main() {
   // --- Iterate sub-issues ---
   let allComplete = false;
   while (true) {
-    const remaining: BdIssue[] = await listReadyChildren(epic.id, "AI");
+    const remaining: BdIssue[] = await listReadyChildren(epic.id, "ai");
     if (remaining.length === 0) {
       console.log(green("\n  No ready AI-labeled sub-issues. All done!"));
       allComplete = true;
@@ -771,7 +771,7 @@ async function main() {
   try {
     const nonClosed = await listChildrenByStatus(
       epic.id,
-      "AI",
+      "ai",
       "open,in_progress,blocked,deferred",
     );
     if (nonClosed.length === 0) {
