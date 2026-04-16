@@ -18,11 +18,13 @@ import {
   listOpenEpics,
   listReadyChildren,
   listChildrenByStatus,
+  listComments,
   resetStatus,
   addLabel,
   doltPush,
   showIssue,
   type BdIssue,
+  type BdComment,
 } from "./bd";
 import * as progressDoc from "./progress-doc";
 import promptImplementIssue from "./prompt-implement-issue.md" with { type: "text" };
@@ -373,6 +375,17 @@ async function runClaude(
   }
 }
 
+/**
+ * Format a single beads comment for inclusion in the sub-agent prompt. Mirrors
+ * the Linear version's shape: author + timestamp on one line, then the body.
+ * When author/timestamp are absent the body alone is emitted so the section
+ * still renders.
+ */
+function formatBdComment(c: BdComment): string {
+  const meta = [c.author, c.created_at].filter(Boolean).join(" · ");
+  return meta ? `**${meta}**\n\n${c.text}` : c.text;
+}
+
 function parseAgentStatus(resultText: string): "completed" | "blocked" | "missing" {
   const match = resultText.match(/\*\*Status:\*\*\s*(completed|blocked)/i);
   if (!match) return "missing";
@@ -627,8 +640,16 @@ async function main() {
     const progressContent = await progressDoc.read(epic.id);
     const progressSection = progressDoc.buildProgressSection(progressContent);
 
-    // Beads-comments injection is deferred to dotfiles-99s.6.
-    const issueComments: string[] = [];
+    // Fetch beads comments for this sub-issue and inject them into the
+    // prompt via the `issueComments` template variable. `bd comments --json`
+    // already returns them in chronological order.
+    let bdComments: BdComment[] = [];
+    try {
+      bdComments = await listComments(target.id);
+    } catch (err: any) {
+      log.warn(`Failed to fetch comments for ${target.id}: ${err?.message ?? err}`);
+    }
+    const issueComments: string[] = bdComments.map(formatBdComment);
 
     const result = await runClaude(
       epic.title,

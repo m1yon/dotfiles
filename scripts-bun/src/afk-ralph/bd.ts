@@ -26,6 +26,21 @@ export interface BdIssue {
   [key: string]: unknown;
 }
 
+/**
+ * Subset of the fields bd emits on a comment in JSON mode. `text` is the
+ * comment body; `author` and `created_at` are preserved for display formatting.
+ * Unknown fields are kept via the index signature so callers can opt into
+ * them when needed.
+ */
+export interface BdComment {
+  id: string;
+  issue_id: string;
+  author?: string;
+  text: string;
+  created_at?: string;
+  [key: string]: unknown;
+}
+
 export class BdError extends Error {
   constructor(
     message: string,
@@ -39,7 +54,10 @@ export class BdError extends Error {
 }
 
 async function runBdJson<T>(args: string[]): Promise<T> {
-  const argv = ["bd", ...args, "--json", "--no-pager"];
+  // No `--no-pager`: `bd show` and `bd comments` reject it even though
+  // `bd list` accepts it. JSON mode already suppresses paging, so it's
+  // unnecessary either way.
+  const argv = ["bd", ...args, "--json"];
   const proc = Bun.spawn(argv, { stdout: "pipe", stderr: "pipe" });
   const [stdout, stderr, exitCode] = await Promise.all([
     new Response(proc.stdout).text(),
@@ -177,6 +195,14 @@ export async function addLabel(id: string, label: string): Promise<void> {
       stderr,
     );
   }
+}
+
+/**
+ * List comments on an issue in chronological order (bd returns them oldest-
+ * first). Returns an empty array if the issue has no comments.
+ */
+export async function listComments(id: string): Promise<BdComment[]> {
+  return runBdJson<BdComment[]>(["comments", id]);
 }
 
 /**
