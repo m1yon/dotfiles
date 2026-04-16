@@ -1,9 +1,8 @@
 You are writing a GitHub pull request description. Look at the commits on this branch (compared to {{baseBranch}}) using git log and git diff, then write a concise PR body in markdown.
 
-The PR implements a Linear PRD:
+The PR implements a beads epic:
 - Identifier: {{prdIdentifier}}
 - Title: {{prdTitle}}
-- URL: {{prdUrl}}
 - Description: {{prdDescription}}
 
 Output ONLY the PR body markdown, nothing else. Focus on module and interface changes, NOT file-by-file diffs. Use this structure:
@@ -26,6 +25,3 @@ Bulleted list of non-obvious implementation decisions (e.g. why a particular bou
 
 ## Testing
 How the changes are verified — which boundaries are tested and how.
-
----
-Linear: {{prdUrl}}
