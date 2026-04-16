@@ -27,6 +27,7 @@ import {
   type BdComment,
 } from "./bd";
 import * as progressDoc from "./progress-doc";
+import { slugifyTitle } from "./slug";
 import promptImplementIssue from "./prompt-implement-issue.md" with { type: "text" };
 import promptInvestigateIssue from "./prompt-investigate-issue.md" with { type: "text" };
 import promptPrBody from "./prompt-pr-body.md" with { type: "text" };
@@ -127,24 +128,8 @@ if (!BD_PATH) {
 }
 
 // --- Branch naming ---
-
-/**
- * Slugify a title for use in a git branch name.
- *
- * Rules: lowercase; any character outside [a-z0-9] becomes `-`; runs of `-`
- * collapsed; leading/trailing `-` trimmed; total length capped near 40 chars.
- */
-export function slugifyTitle(title: string): string {
-  const lowered = title.toLowerCase();
-  // Replace any non-[a-z0-9] with `-`. This covers unicode, emoji, whitespace, punctuation.
-  const replaced = lowered.replace(/[^a-z0-9]+/g, "-");
-  const collapsed = replaced.replace(/-+/g, "-");
-  const trimmed = collapsed.replace(/^-+|-+$/g, "");
-  const MAX = 40;
-  if (trimmed.length <= MAX) return trimmed;
-  // Cap near 40 chars and re-trim trailing `-` so we don't end on a dash.
-  return trimmed.slice(0, MAX).replace(/-+$/g, "");
-}
+// `slugifyTitle` lives in `./slug.ts` so tests can import it without
+// pulling in this file's top-level `main()` invocation.
 
 function branchNameForEpic(epic: { id: string; title: string }): string {
   const slug = slugifyTitle(epic.title);
