@@ -14,7 +14,13 @@ import { query } from "@anthropic-ai/claude-agent-sdk";
 import { logQueryMessage } from "./log-query-message";
 import { renderPrompt } from "./render-prompt";
 import { Octokit } from "octokit";
-import { listOpenEpics, listReadyChildren, type BdIssue } from "./bd";
+import {
+  listOpenEpics,
+  listReadyChildren,
+  listChildrenByStatus,
+  resetStatus,
+  type BdIssue,
+} from "./bd";
 import * as progressDoc from "./progress-doc";
 import promptImplementIssue from "./prompt-implement-issue.md" with { type: "text" };
 import promptInvestigateIssue from "./prompt-investigate-issue.md" with { type: "text" };
@@ -510,6 +516,30 @@ async function main() {
   const epic = epics.find((e) => e.id === selectedEpicId)!;
 
   console.log(cyan(`\n  Epic ${bold(epic.id)}: ${epic.title}`));
+
+  // --- Reset stale in_progress AI children ---
+  // A prior orchestrator run may have crashed mid-sub-issue, leaving a child
+  // stuck in `in_progress`. `bd ready` excludes `in_progress`, so without this
+  // step the child would be invisible to the main loop. Flip any such children
+  // back to `open` and push the batch once.
+  const stale = await listChildrenByStatus(epic.id, "AI", "in_progress");
+  if (stale.length > 0) {
+    for (const issue of stale) {
+      await resetStatus(issue.id, "open");
+      console.log(
+        linear(`Reset stale in_progress → open: ${issue.id}: ${issue.title}`),
+      );
+    }
+    const pushProc = Bun.spawn(["bd", "dolt", "push"], {
+      stdout: "pipe",
+      stderr: "pipe",
+    });
+    const pushExit = await pushProc.exited;
+    if (pushExit !== 0) {
+      const pushErr = await new Response(pushProc.stderr).text();
+      log.warn(`bd dolt push after reset failed: ${pushErr.trim()}`);
+    }
+  }
 
   // --- Branch setup ---
   const branchName = branchNameForEpic({ id: epic.id, title: epic.title });

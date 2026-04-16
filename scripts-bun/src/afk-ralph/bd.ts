@@ -113,3 +113,46 @@ export async function listReadyChildren(
     label,
   ]);
 }
+
+/**
+ * List children of an epic filtered by label AND status. Used at startup to
+ * find stale `in_progress` AI-labeled children left over from a crashed prior
+ * run so they can be reset to `open`.
+ */
+export async function listChildrenByStatus(
+  epicId: string,
+  label: string,
+  status: string,
+): Promise<BdIssue[]> {
+  return runBdJson<BdIssue[]>([
+    "list",
+    "--parent",
+    epicId,
+    "--label",
+    label,
+    "--status",
+    status,
+  ]);
+}
+
+/**
+ * Set an issue's status. Used to reset stale `in_progress` children back to
+ * `open` so `bd ready` can pick them up cleanly.
+ */
+export async function resetStatus(id: string, status: string): Promise<void> {
+  const argv = ["bd", "update", id, "--status", status, "--no-pager"];
+  const proc = Bun.spawn(argv, { stdout: "pipe", stderr: "pipe" });
+  const [, stderr, exitCode] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+    proc.exited,
+  ]);
+  if (exitCode !== 0) {
+    throw new BdError(
+      `bd update ${id} --status ${status} failed (exit ${exitCode}): ${stderr.trim()}`,
+      argv,
+      exitCode,
+      stderr,
+    );
+  }
+}
