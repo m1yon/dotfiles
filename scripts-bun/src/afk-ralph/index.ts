@@ -118,6 +118,14 @@ if (!CLAUDE_PATH) {
   process.exit(1);
 }
 
+const BD_PATH = Bun.spawnSync(["which", "bd"]).stdout.toString().trim();
+if (!BD_PATH) {
+  console.error(
+    "ERROR: beads (bd) is not installed or not on $PATH. Install via `brew install steveyegge/beads/beads` or see https://github.com/steveyegge/beads for other options.",
+  );
+  process.exit(1);
+}
+
 // --- Branch naming ---
 
 /**
@@ -517,8 +525,7 @@ const cyan = (s: string) => `\x1b[36m${s}\x1b[0m`;
 const yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
 const red = (s: string) => `\x1b[31m${s}\x1b[0m`;
 const magenta = (s: string) => `\x1b[35m${s}\x1b[0m`;
-// TODO(dotfiles-99s.9): rename linear()→beads() and drop ANSI hyperlinks.
-const linear = (msg: string) => `  ${magenta("[Beads]")} ${msg}`;
+const beads = (msg: string) => `  ${magenta("[Beads]")} ${msg}`;
 
 async function main() {
   console.log("");
@@ -575,7 +582,7 @@ async function main() {
     for (const issue of stale) {
       await resetStatus(issue.id, "open");
       console.log(
-        linear(`Reset stale in_progress → open: ${issue.id}: ${issue.title}`),
+        beads(`Reset stale in_progress → open: ${issue.id}: ${issue.title}`),
       );
     }
     const pushProc = Bun.spawn(["bd", "dolt", "push"], {
@@ -629,7 +636,7 @@ async function main() {
       `  ${orange("▶")} ${bold("Working on:")} ${cyan(target.id)}: ${target.title}`,
     );
     console.log(orange(`${"─".repeat(60)}`));
-    console.log(linear(`Sub-agent will claim via 'bd update ${target.id} --claim'\n`));
+    console.log(beads(`Sub-agent will claim via 'bd update ${target.id} --claim'\n`));
 
     // Read (creating if absent) the on-disk progress doc for this epic and
     // inject prior entries into the sub-agent's prompt. The sub-agent itself
@@ -707,7 +714,7 @@ async function main() {
               const sha = await getShortCommitSha();
               await resolveFeedbackOnGitHub(metadata, sha);
               console.log(
-                linear(
+                beads(
                   `Resolved ${metadata.length} PR feedback thread(s) for ${target.id} at ${sha}.`,
                 ),
               );
@@ -785,10 +792,10 @@ async function main() {
     if (nonClosed.length === 0) {
       await addLabel(epic.id, "in-review");
       await doltPush();
-      console.log(linear(`Added 'in-review' label to ${epic.id} and pushed.`));
+      console.log(beads(`Added 'in-review' label to ${epic.id} and pushed.`));
     } else {
       console.log(
-        linear(
+        beads(
           `${nonClosed.length} AI child(ren) not closed — skipping 'in-review' label.`,
         ),
       );
