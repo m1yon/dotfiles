@@ -36,6 +36,7 @@ in
       prettierd
       stylua
       ruff
+      imagemagick
     ];
   };
 

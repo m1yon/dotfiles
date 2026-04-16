@@ -257,6 +257,34 @@ later(function()
 	})
 end)
 
+-- Inline image rendering (uses Kitty graphics protocol, supported by Ghostty) ====
+later(function()
+	add({
+		source = "3rd/image.nvim",
+	})
+	require("image").setup({
+		backend = "kitty",
+		processor = "magick_cli",
+		integrations = {
+			markdown = {
+				enabled = true,
+				clear_in_insert_mode = false,
+				download_remote_images = true,
+				only_render_image_at_cursor = false,
+				filetypes = { "markdown", "vimwiki" },
+			},
+			neorg = { enabled = false },
+			typst = { enabled = false },
+			html = { enabled = false },
+			css = { enabled = false },
+		},
+		max_width_window_percentage = 80,
+		max_height_window_percentage = 50,
+		window_overlap_clear_enabled = true,
+		editor_only_render_when_focused = false,
+	})
+end)
+
 -- Code Review =====================================================================
 later(function()
 	add({
