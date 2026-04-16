@@ -426,9 +426,11 @@ async function verifyAgentStatusAgainstBd(
 }
 
 // --- Feedback Resolution ---
-// TODO(dotfiles-99s.7): wire Feedback-label PR-thread resolution back in. The
-// helpers below are kept (they don't touch Linear) so the machinery is ready
-// to reuse; they're currently unreferenced by the main loop.
+// After a successful code-mode sub-agent run, if the bd sub-issue carries the
+// `Feedback` label, we reply to the originating PR review comment and resolve
+// the GitHub review thread. The label name, the `<!-- afk-ralph-metadata -->`
+// HTML-comment protocol, and the GitHub API calls are all preserved from the
+// Linear era — only the label/description source changed (bd, not Linear).
 
 interface FeedbackMetadata {
   threadId: string | null;
@@ -437,7 +439,6 @@ interface FeedbackMetadata {
   prNumber: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function parseFeedbackMetadata(description: string): FeedbackMetadata[] {
   const results: FeedbackMetadata[] = [];
   const regex =
@@ -454,7 +455,6 @@ function parseFeedbackMetadata(description: string): FeedbackMetadata[] {
   return results;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getShortCommitSha(): Promise<string> {
   const proc = Bun.spawn(["git", "log", "-1", "--format=%h"], {
     stdout: "pipe",
@@ -464,7 +464,6 @@ async function getShortCommitSha(): Promise<string> {
   return (await new Response(proc.stdout).text()).trim();
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function resolveFeedbackOnGitHub(
   metadata: FeedbackMetadata[],
   commitSha: string,
@@ -685,7 +684,43 @@ async function main() {
       // of truth for downstream routing (e.g., the `in-review` label check).
       await verifyAgentStatusAgainstBd(target.id, target.title, agentStatus);
 
-      // TODO(dotfiles-99s.7): Feedback-label PR-thread resolution.
+      // Feedback-label PR thread resolution: if the closed sub-issue carries
+      // the `Feedback` label (case-sensitive, capital F), parse any
+      // `<!-- afk-ralph-metadata -->` blocks from its bd description and
+      // reply-and-resolve on GitHub. Code mode only — investigate mode has
+      // no commit SHA to point at and makes no git/PR changes.
+      if (mode === "code" && agentStatus === "completed") {
+        try {
+          const refreshed = await showIssue(target.id);
+          const labels = refreshed.labels ?? [];
+          if (labels.includes("Feedback")) {
+            const metadata = parseFeedbackMetadata(
+              (refreshed.description as string) ?? "",
+            );
+            if (metadata.length === 0) {
+              console.error(
+                yellow(
+                  `  ! ${target.id} (${target.title}) has 'Feedback' label but no <!-- afk-ralph-metadata --> blocks in its description — skipping PR thread resolution.`,
+                ),
+              );
+            } else {
+              const sha = await getShortCommitSha();
+              await resolveFeedbackOnGitHub(metadata, sha);
+              console.log(
+                linear(
+                  `Resolved ${metadata.length} PR feedback thread(s) for ${target.id} at ${sha}.`,
+                ),
+              );
+            }
+          }
+        } catch (err: any) {
+          console.error(
+            yellow(
+              `  ! ${target.id} feedback resolution failed: ${err?.message ?? err}`,
+            ),
+          );
+        }
+      }
 
       if (agentStatus === "completed") {
         console.log(
