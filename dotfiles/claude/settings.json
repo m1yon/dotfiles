@@ -19,6 +19,7 @@
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "autoMemoryEnabled": false,
+  "remoteControlAtStartup": true,
   "statusLine": {
     "type": "command",
     "command": "node \"/home/michael/.claude/hooks/gsd-statusline.js\""
