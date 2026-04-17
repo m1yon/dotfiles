@@ -25,6 +25,7 @@ in
   };
 
   home.packages = [
+    pkgs.file
   ];
 
   imports = [
