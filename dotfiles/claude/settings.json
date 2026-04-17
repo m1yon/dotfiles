@@ -14,7 +14,8 @@
       }
     }
   },
-  "effortLevel": "dynamic",
+  "effortLevel": "xhigh",
+  "showThinkingSummaries": true,
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "autoMemoryEnabled": false,
