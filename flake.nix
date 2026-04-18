@@ -17,7 +17,7 @@
       url = "github:numtide/llm-agents.nix";
     };
     hyprland = {
-      url = "github:hyprwm/Hyprland";
+      url = "github:hyprwm/Hyprland/v0.54.2";
     };
     nix-wrapper-modules = {
       url = "github:BirdeeHub/nix-wrapper-modules";
