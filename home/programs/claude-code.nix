@@ -9,6 +9,26 @@
 let
   dotfiles = "${nixConfigDir}/dotfiles";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
+
+  ccstatusline = pkgs.stdenv.mkDerivation rec {
+    pname = "ccstatusline";
+    version = "2.2.8";
+    src = pkgs.fetchurl {
+      url = "https://registry.npmjs.org/ccstatusline/-/ccstatusline-${version}.tgz";
+      hash = "sha256-4+fZ8yDlKwi+mJIMHEkPgyt8vA0kN3FcaEmUbXU7ctw=";
+    };
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    dontConfigure = true;
+    dontBuild = true;
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/lib/ccstatusline $out/bin
+      cp dist/ccstatusline.js $out/lib/ccstatusline/
+      makeWrapper ${pkgs.nodejs}/bin/node $out/bin/ccstatusline \
+        --add-flags $out/lib/ccstatusline/ccstatusline.js
+      runHook postInstall
+    '';
+  };
 in
 {
   imports = [
@@ -22,11 +42,11 @@ in
     env._ZO_DOCTOR = "0";
     env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "";
     env.DISABLE_TELEMETRY = "";
-    extraPackages = with pkgs; [
+    extraPackages = (with pkgs; [
       typescript-language-server
       gopls
       nodejs
-    ];
+    ]) ++ [ ccstatusline ];
   };
 
   sops.secrets = {
@@ -62,7 +82,10 @@ in
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
     ".claude/skills".source = outOfStore "${dotfiles}/claude/skills";
     ".claude/rules".source = outOfStore "${dotfiles}/claude/rules";
+    ".claude/statusline-command.sh".source = outOfStore "${dotfiles}/claude/statusline-command.sh";
+    ".claude/statusline-wrapper.sh".source = outOfStore "${dotfiles}/claude/statusline-wrapper.sh";
     ".claude/claude-notifications-go/config.json".source =
       outOfStore "${dotfiles}/claude/claude-notifications-go/config.json";
+    ".config/ccstatusline/settings.json".source = outOfStore "${dotfiles}/ccstatusline/settings.json";
   };
 }

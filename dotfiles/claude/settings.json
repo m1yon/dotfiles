@@ -19,5 +19,9 @@
   "autoDreamEnabled": false,
   "skipDangerousModePermissionPrompt": true,
   "autoMemoryEnabled": false,
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-wrapper.sh"
+  }
 }
