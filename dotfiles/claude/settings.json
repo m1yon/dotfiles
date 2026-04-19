@@ -1,10 +1,14 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-wrapper.sh"
+  },
   "enabledPlugins": {
     "claude-notifications-go@claude-notifications-go": true,
     "typescript-lsp@claude-plugins-official": false,
     "gopls-lsp@claude-plugins-official": false,
-    "linear@claude-plugins-official": true
+    "linear@claude-plugins-official": false
   },
   "extraKnownMarketplaces": {
     "claude-notifications-go": {
@@ -15,13 +19,9 @@
     }
   },
   "effortLevel": "xhigh",
-  "showThinkingSummaries": true,
-  "autoDreamEnabled": false,
-  "skipDangerousModePermissionPrompt": true,
   "autoMemoryEnabled": false,
-  "remoteControlAtStartup": true,
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline-wrapper.sh"
-  }
+  "autoDreamEnabled": false,
+  "showThinkingSummaries": true,
+  "skipDangerousModePermissionPrompt": true,
+  "remoteControlAtStartup": true
 }
