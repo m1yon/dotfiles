@@ -80,7 +80,6 @@ in
   home.file = {
     ".claude/CLAUDE.md".source = outOfStore "${dotfiles}/claude/CLAUDE.md";
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
-    ".claude/skills".source = outOfStore "${dotfiles}/claude/skills";
     ".claude/rules".source = outOfStore "${dotfiles}/claude/rules";
     ".claude/statusline-command.sh".source = outOfStore "${dotfiles}/claude/statusline-command.sh";
     ".claude/statusline-wrapper.sh".source = outOfStore "${dotfiles}/claude/statusline-wrapper.sh";

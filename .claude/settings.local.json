@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm ~/.claude/skills/grill-me)",
+      "Bash(rm -rf ~/.agents/skills/grill-me)",
+      "Read(//tmp/grill-me-backup/**)",
+      "Bash(mv /tmp/grill-me-backup ~/.agents/skills/grill-me)",
+      "Read(//home/michael/.agents/skills/**)",
+      "Bash(grep -iE \"^\\\\.\\(cursor|opencode|windsurf|codex|gemini|zed|continue|cline|roo|aider|amp|agents$|agent-browser\\)\")",
+      "Bash(rm -rf /tmp/skills-test-canonical /tmp/skills-before-agents.txt /tmp/skills-install-log.txt)"
+    ]
+  }
+}
