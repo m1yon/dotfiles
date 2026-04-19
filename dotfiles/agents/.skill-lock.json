@@ -1,1 +1,58 @@
-{}
+{
+  "version": 3,
+  "skills": {
+    "agent-browser": {
+      "source": "vercel-labs/agent-browser",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/agent-browser.git",
+      "skillPath": "skills/agent-browser/SKILL.md",
+      "skillFolderHash": "67d654a553c1bd21b4cff0d9d61d75cd9a67e635",
+      "installedAt": "2026-04-14T17:19:34.454Z",
+      "updatedAt": "2026-04-14T17:20:24.609Z"
+    },
+    "web-research": {
+      "source": "langchain-ai/deepagents",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/langchain-ai/deepagents.git",
+      "skillPath": "libs/cli/examples/skills/web-research/SKILL.md",
+      "skillFolderHash": "becbe13a7470115fcdfa931a40b3ed831881c76c",
+      "installedAt": "2026-04-14T21:07:09.455Z",
+      "updatedAt": "2026-04-14T21:07:09.455Z"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "grill-me/SKILL.md",
+      "skillFolderHash": "2a1ad17028306ebe45f0e49703fa28b9b2e7f499",
+      "installedAt": "2026-04-18T20:38:24.553Z",
+      "updatedAt": "2026-04-19T20:11:13.087Z"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/vercel-labs/skills.git",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
+      "installedAt": "2026-04-19T20:16:07.807Z",
+      "updatedAt": "2026-04-19T20:16:07.807Z"
+    }
+  },
+  "dismissed": {
+    "findSkillsPrompt": true
+  },
+  "lastSelectedAgents": [
+    "amp",
+    "antigravity",
+    "cline",
+    "codex",
+    "cursor",
+    "deepagents",
+    "firebender",
+    "gemini-cli",
+    "github-copilot",
+    "kimi-cli",
+    "opencode",
+    "warp"
+  ]
+}
