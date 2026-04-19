@@ -72,6 +72,42 @@
       "skillFolderHash": "8c52deebe26f5a73a98b94ef844b20e4907c1671",
       "installedAt": "2026-04-19T20:35:30.392Z",
       "updatedAt": "2026-04-19T20:35:30.392Z"
+    },
+    "design-an-interface": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "design-an-interface/SKILL.md",
+      "skillFolderHash": "59d5eca0fd23930d3d3821aa9da507f1bdb8a348",
+      "installedAt": "2026-04-19T20:36:43.771Z",
+      "updatedAt": "2026-04-19T20:36:43.771Z"
+    },
+    "triage-issue": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "triage-issue/SKILL.md",
+      "skillFolderHash": "0dd446c98de9b2221534895e490319c0d487a586",
+      "installedAt": "2026-04-19T20:37:04.687Z",
+      "updatedAt": "2026-04-19T20:37:04.687Z"
+    },
+    "zoom-out": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "zoom-out/SKILL.md",
+      "skillFolderHash": "81d13ab7ec6f161cbe6d229052f5316bbe1870a9",
+      "installedAt": "2026-04-19T20:38:50.008Z",
+      "updatedAt": "2026-04-19T20:38:50.008Z"
+    },
+    "qa": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "qa/SKILL.md",
+      "skillFolderHash": "3eed5beeb18e77776349782ed087ee4560fd69c5",
+      "installedAt": "2026-04-19T20:41:03.709Z",
+      "updatedAt": "2026-04-19T20:41:03.709Z"
     }
   },
   "dismissed": {
