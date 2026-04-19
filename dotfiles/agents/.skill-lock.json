@@ -18,6 +18,51 @@
       "skillFolderHash": "121eecacd86c0aab06aef5cd4663e80c5397cd41",
       "installedAt": "2026-04-19T20:31:17.159Z",
       "updatedAt": "2026-04-19T20:31:17.159Z"
+    },
+    "tdd": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "tdd/SKILL.md",
+      "skillFolderHash": "28d7822c112f22cf499099881856fdec07bc83a8",
+      "installedAt": "2026-04-19T20:32:23.323Z",
+      "updatedAt": "2026-04-19T20:32:23.323Z"
+    },
+    "to-prd": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "to-prd/SKILL.md",
+      "skillFolderHash": "e031bc9bba9b213f044ee59f3fd4ff2feeacbaf6",
+      "installedAt": "2026-04-19T20:33:20.181Z",
+      "updatedAt": "2026-04-19T20:33:20.181Z"
+    },
+    "to-issues": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "to-issues/SKILL.md",
+      "skillFolderHash": "5f1079ac639dbf09081653c265a132eb5ec4dc4d",
+      "installedAt": "2026-04-19T20:33:28.329Z",
+      "updatedAt": "2026-04-19T20:33:28.329Z"
+    },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "improve-codebase-architecture/SKILL.md",
+      "skillFolderHash": "78b2029cbf4a74fa798c97ea27bc02bdeb2e3237",
+      "installedAt": "2026-04-19T20:34:28.439Z",
+      "updatedAt": "2026-04-19T20:34:28.439Z"
+    },
+    "write-a-skill": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "write-a-skill/SKILL.md",
+      "skillFolderHash": "2f252b35aa238879afc5a230ac30343708dee0b3",
+      "installedAt": "2026-04-19T20:34:57.484Z",
+      "updatedAt": "2026-04-19T20:34:57.484Z"
     }
   },
   "dismissed": {
