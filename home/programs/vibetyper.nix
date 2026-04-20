@@ -2,11 +2,11 @@
 let
   vibetyper = pkgs.appimageTools.wrapType2 {
     pname = "vibetyper";
-    version = "1.2.1";
+    version = "1.2.3";
 
     src = pkgs.fetchurl {
       url = "https://cdn.vibetyper.com/releases/linux/VibeTyper.AppImage";
-      hash = "sha256-AUjrSVxyaI8Ok4pnoqaW4fGAd4GtSc0mEjDhkqdifY0=";
+      hash = "sha256-6uGXw2nxb0sGkcMDTWBlL3PuwBfVodhgqfgZT1Ncs40=";
     };
 
     extraInstallCommands =
