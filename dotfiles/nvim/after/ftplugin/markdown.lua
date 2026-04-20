@@ -18,6 +18,9 @@
 -- Disable built-in `gO` mapping in favor of 'mini.basics'
 vim.keymap.del("n", "gO", { buffer = 0 })
 
+-- Enable word wrap for markdown files
+vim.cmd("setlocal wrap linebreak")
+
 -- Set markdown-specific surrounding in 'mini.surround'
 vim.b.minisurround_config = {
 	custom_surroundings = {
