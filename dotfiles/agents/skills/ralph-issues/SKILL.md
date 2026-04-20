@@ -59,9 +59,11 @@ Progress file: progress-<PRD>.txt at repo root. Prior subagents record Summary +
 
 Work on the current branch only — do not create, switch, or push branches.
 
-1. FIRST, read the parent PRD for overall context: `gh issue view <PRD> --repo <owner>/<repo> --comments`. Understand the bigger goal before touching the sub-issue.
+1. FIRST, read the parent PRD for overall context: `GH_PAGER=cat gh issue view <PRD> --repo <owner>/<repo> --comments`. Understand the bigger goal before touching the sub-issue.
 2. Read progress-<PRD>.txt if it exists. Carry forward any relevant advice from prior subagents.
-3. Read the sub-issue: `gh issue view <N> --repo <owner>/<repo> --comments`. If it is already closed, stop and return Status: already-done.
+3. Read the sub-issue: `GH_PAGER=cat gh issue view <N> --repo <owner>/<repo> --comments`. If it is already closed, stop and return Status: already-done.
+
+Tip: always prefix `gh` commands with `GH_PAGER=cat`. Without it, long output (especially `--comments` on a big PRD) can be paginated and return empty in this sandbox.
 4. Implement the required changes. Stay within the scope of the sub-issue, but use the PRD to resolve ambiguity.
 5. Run tests. Use `task test` if a Taskfile exists, else the repo's standard.
 6. Run lint. Use `task lint` if a Taskfile exists, else the repo's standard.
@@ -75,7 +77,7 @@ Work on the current branch only — do not create, switch, or push branches.
 
    Advice: notes for future subagents — gotchas, conventions, flaky tests, modules to avoid. "none" if none.
 
-10. On success, close the GitHub issue: `gh issue close <N> --repo <owner>/<repo> --comment "Completed in <commit-sha>."`
+10. On success, close the GitHub issue: `GH_PAGER=cat gh issue close <N> --repo <owner>/<repo> --comment "Completed in <commit-sha>."`
 11. Return a short status to the orchestrator:
     - Status: done | failed | already-done
     - Commit SHA (if done)
