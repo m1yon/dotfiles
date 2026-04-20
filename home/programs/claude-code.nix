@@ -42,6 +42,8 @@ in
     env._ZO_DOCTOR = "0";
     env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "";
     env.DISABLE_TELEMETRY = "";
+    env.GH_PROMPT_DISABLED = "true";
+    env.GH_PAGER = "less";
     extraPackages = (with pkgs; [
       typescript-language-server
       gopls

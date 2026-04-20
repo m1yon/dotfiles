@@ -12,7 +12,8 @@
         "--ignore-gpu-blocklist"
         "--enable-gpu-rasterization"
         "--enable-zero-copy"
-        "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,CanvasOopRasterization"
+        "--use-angle=vulkan"
+        "--enable-features=VaapiVideoDecoder,VaapiIgnoreDriverChecks,Vulkan,DefaultANGLEVulkan,VulkanFromANGLE,UseMultiPlaneFormatForHardwareVideo,VaapiVideoEncoder,CanvasOopRasterization"
       ];
     };
   };
