@@ -5,34 +5,44 @@ description: Completes GitHub PRD sub-issues in dependency order by spawning a f
 
 # Ralph Issues
 
-Complete the sub-issues of a parent PRD GitHub issue, one fresh `TaskCreate` per issue. The orchestrator dispatches; each subagent pulls its assigned issue, does the work, closes the issue, and appends notes for future subagents.
+Complete the sub-issues of a parent PRD GitHub issue, one fresh `TaskCreate` per issue. The orchestrator auto-discovers the PRD and its sub-issues, confirms with the user, then dispatches; each subagent pulls its assigned issue, does the work, closes the issue, and appends notes for future subagents.
 
 ## Quick start
 
-1. **Identify the PRD** — check conversation first; else ask user. Confirm.
-2. **Identify sub-issues** — check conversation first; fall back to `scripts/get-sub-issues.sh <owner> <repo> <prd-number>`.
+1. **Discover the PRD** — resolve repo from `gh repo view --json nameWithOwner`, then `scripts/find-prds.sh <owner> <repo>`. Confirm with user.
+2. **Discover sub-issues** — `scripts/get-sub-issues.sh <owner> <repo> <prd-number>`. Show list and confirm.
 3. **Order by dependencies** (parse `Blocked by #N` from issue bodies; else API order).
 4. **For each open sub-issue**: spawn a fresh `TaskCreate` with the issue number + PRD link. Wait for result. On blocker, ask the user.
 
 ## Orchestrator workflow
 
-### 1. Identify PRD
+### 1. Discover PRD
 
-- Scan conversation for a PRD issue URL/number. If found, use it.
-- Else: ask the user for the PRD URL or issue number.
-- Show the PRD title + first few lines and confirm before proceeding.
+Never ask the user up front. Discover, then confirm.
 
-### 2. Identify sub-issues
+1. Resolve the current repo: `gh repo view --json nameWithOwner -q .nameWithOwner` → `<owner>/<repo>`.
+2. List PRD candidates (open issues with sub-issues, most-recently-updated first):
 
-First, check the conversation context — sub-issue numbers/URLs are often already present (e.g. from a prior `to-issues` run or a PRD body the user pasted). If a usable list is in context, use it and skip the script.
+   ```
+   scripts/find-prds.sh <owner> <repo>
+   ```
 
-Otherwise fall back to:
+   Outputs TSV: `<number>\t<sub-issue-count>\t<title>`.
+3. Pick + confirm:
+   - **One candidate**: show `#<N> — <title> (<count> sub-issues)` and ask the user to confirm.
+   - **Multiple candidates**: show the full list and ask the user which one.
+   - **Zero candidates**: tell the user none were found and ask for a PRD URL or issue number.
+4. Do not proceed to dispatch until the user has explicitly confirmed the PRD.
+
+### 2. Discover sub-issues
+
+Always fetch from the API, even if sub-issue numbers appear in conversation — the API is the source of truth:
 
 ```
 scripts/get-sub-issues.sh <owner> <repo> <prd-number>
 ```
 
-Outputs TSV: `<number>\t<state>\t<title>`. Keep only `OPEN`.
+Outputs TSV: `<number>\t<state>\t<title>`. Keep only `OPEN`. Show the filtered list to the user and confirm before dispatching.
 
 ### 3. Dependency order
 
