@@ -38,7 +38,10 @@ in
   wrappers.claude-code = {
     enable = true;
     package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
-    addFlag = [ "--dangerously-skip-permissions" ];
+    addFlag = [
+      "--dangerously-skip-permissions"
+      "--worktree"
+    ];
     env._ZO_DOCTOR = "0";
     env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "";
     env.DISABLE_TELEMETRY = "";

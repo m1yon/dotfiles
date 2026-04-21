@@ -1,5 +1,5 @@
 - When running project-specific commands (lint, test) use the `task` version if a Taskfile exists for the project.
-- When using the `gh` CLI, always use the `--json` flag.
+- When using the `gh` CLI, always use the `--json` flag when the sub-command supports it.
 
 ## Plan Mode
 
