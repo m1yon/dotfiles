@@ -5,54 +5,69 @@ description: Completes GitHub PRD sub-issues in dependency order by spawning a f
 
 # Ralph Issues
 
-Complete the sub-issues of a parent PRD GitHub issue, one fresh `TaskCreate` per issue. The orchestrator auto-discovers the PRD and its sub-issues, confirms with the user, then dispatches; each subagent pulls its assigned issue, does the work, closes the issue, and appends notes for future subagents.
+Complete the sub-issues of a parent PRD GitHub issue, one fresh subagent per issue. The orchestrator surveys open issues, groups them by PRD with children already dependency-sorted, confirms with the user, then dispatches; each subagent pulls its assigned issue, does the work, closes the issue, and appends notes for future subagents.
 
 ## Quick start
 
-1. **Discover the PRD** — resolve repo from `gh repo view --json nameWithOwner`, then `scripts/find-prds.sh <owner> <repo>`. Confirm with user.
-2. **Discover sub-issues** — `scripts/get-sub-issues.sh <owner> <repo> <prd-number>`. Show list and confirm.
-3. **Order by dependencies** (parse `Blocked by #N` from issue bodies; else API order).
-4. **For each open sub-issue**: spawn a fresh `TaskCreate` with the issue number + PRD link. Wait for result. On blocker, ask the user.
+1. **Survey issues** — spawn a subagent to pull every open issue and return them grouped by PRD, with each PRD's children already topologically sorted by `Blocked by #N`.
+2. **Pick the PRD** — present the report, let the user choose which PRD to work through.
+3. **Dispatch loop** — for each open sub-issue in order, spawn a fresh subagent. Wait for result. On blocker, ask the user.
 
 ## Orchestrator workflow
 
-### 1. Discover PRD
+### 1. Survey open issues and pick a PRD
 
-Never ask the user up front. Discover, then confirm.
+Resolve the current repo first: `gh repo view --json nameWithOwner -q .nameWithOwner` → `<owner>/<repo>`.
 
-1. Resolve the current repo: `gh repo view --json nameWithOwner -q .nameWithOwner` → `<owner>/<repo>`.
-2. List PRD candidates (open issues with sub-issues, most-recently-updated first):
+Then spawn a fresh `general-purpose` subagent with the prompt below. It returns a grouped list of open issues organized by PRD, with children already topologically sorted by `Blocked by #N` dependencies.
 
-   ```
-   scripts/find-prds.sh <owner> <repo>
-   ```
+<subagent-prompt>
+Survey all open GitHub issues in <owner>/<repo> and return them grouped by PRD with dependency-ordered children.
 
-   Outputs TSV: `<number>\t<sub-issue-count>\t<title>`.
-3. Pick + confirm:
-   - **One candidate**: show `#<N> — <title> (<count> sub-issues)` and ask the user to confirm.
-   - **Multiple candidates**: show the full list and ask the user which one.
-   - **Zero candidates**: tell the user none were found and ask for a PRD URL or issue number.
-4. Do not proceed to dispatch until the user has explicitly confirmed the PRD.
+Convention used by this repo:
+- A child issue's body contains a `## Parent` section followed by `#<N>`, where `#<N>` is the parent PRD's issue number.
+- An issue's body may list `Blocked by #<N>` references (typically in a "Blocked by" section, sometimes inline) indicating dependencies on sibling issues.
 
-### 2. Discover sub-issues
+Steps:
+1. Fetch all open issues with bodies in one call:
+   `gh issue list --repo <owner>/<repo> --state open --limit 200 --json number,title,body`
+2. For each issue, parse:
+   - Parent ref: the first `#<digits>` that appears after a `## Parent` section header.
+   - Blockers: every `Blocked by #<digits>` mention in the body.
+3. Group issues by parent. An issue referenced as a parent by at least one child is a "PRD".
+4. Within each PRD, topologically sort its children (children with no unresolved blockers first, then children whose blockers are all earlier in the order). On cycles or blockers pointing outside the PRD, fall back to ascending issue-number order and note the anomaly next to the affected child.
+5. Sort PRDs by their own issue number ascending.
 
-Always fetch from the API, even if sub-issue numbers appear in conversation — the API is the source of truth:
+Output format (markdown, nothing else):
 
-```
-scripts/get-sub-issues.sh <owner> <repo> <prd-number>
-```
+## PRDs
 
-Outputs TSV: `<number>\t<state>\t<title>`. Keep only `OPEN`. Show the filtered list to the user and confirm before dispatching.
+### PRD #<N> — <title>
+1. #<child-number> — <child-title> (blockers: none | #X, #Y)
+2. ...
 
-### 3. Dependency order
+### PRD #<N> — <title>
+1. ...
 
-For each open sub-issue body (`gh issue view <N>`), grep for `Blocked by #<N>`. Topological sort. On cycles or missing refs, fall back to API order and warn the user.
+## Orphans (open issues with no parent and not referenced as a parent)
+- #<N> — <title>
+- ...
 
-### 4. Dispatch loop
+## Anomalies
+- Brief notes on cycles, external blockers, or parsing oddities. Omit this section entirely if none.
 
-All work happens on the **current branch** — no per-issue branching.
+Keep the report under 300 lines. Do not include issue bodies or extra prose.
+</subagent-prompt>
 
-For each issue in order, spawn a fresh `TaskCreate` (general-purpose subagent). Pass the prompt template below. Wait for it to return, then:
+Present the returned report verbatim to the user and ask which PRD they want to work on. Do not proceed until they pick one.
+
+If the subagent reports no PRDs, tell the user and ask for a PRD URL or issue number. Then re-dispatch the same subagent with a narrowed prompt that fetches that specific issue's referencing children.
+
+### 2. Dispatch loop
+
+All work happens on the **current branch** — no per-issue branching. The ordered sub-issue list for the chosen PRD (from step 1) is the queue.
+
+For each issue in order, spawn a fresh general-purpose subagent. Pass the prompt template below. Wait for it to return, then:
 
 - **done**: continue to the next issue.
 - **failed**: pause. Show the blocker to the user. Resume only after direction (skip / retry / stop).
@@ -92,15 +107,15 @@ Work on the current branch only — do not create, switch, or push branches.
     - Blocker: brief description (if failed)
 ```
 
-### 5. Completion
+### 3. Completion
 
 - Summarize: completed N, failed K, skipped M.
 - Suggest pushing the branch and opening a PR referencing the PRD.
 
 ## Notes
 
-- Each `TaskCreate` is a fresh context. The progress file is the only channel between subagents.
-- The subagent owns `progress-*.txt`. The orchestrator never reads or writes it.
+- Each subagent runs in a fresh context. The progress file is the only channel between subagents.
+- The issue-running subagent owns `progress-*.txt`. The orchestrator never reads or writes it.
 - Add `progress-*.txt` to `.gitignore` if not present.
 - Subagents close their own issues via `gh issue close`. The orchestrator does not.
 - Do NOT close the parent PRD issue — let it close when all children are closed (or let the user close it).
