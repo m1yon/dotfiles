@@ -108,6 +108,15 @@
       "skillFolderHash": "3eed5beeb18e77776349782ed087ee4560fd69c5",
       "installedAt": "2026-04-19T20:41:03.709Z",
       "updatedAt": "2026-04-19T20:41:03.709Z"
+    },
+    "ce-resolve-pr-feedback": {
+      "source": "everyinc/compound-engineering-plugin",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/everyinc/compound-engineering-plugin.git",
+      "skillPath": "plugins/compound-engineering/skills/ce-resolve-pr-feedback/SKILL.md",
+      "skillFolderHash": "498eb078e9f39fb18ee25f40f5acf24ed7e00ad9",
+      "installedAt": "2026-04-23T16:11:08.315Z",
+      "updatedAt": "2026-04-23T16:11:08.315Z"
     }
   },
   "dismissed": {
