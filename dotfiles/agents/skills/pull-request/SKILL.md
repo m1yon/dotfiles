@@ -22,15 +22,20 @@ If a PR already exists, ask: update the existing body, or abort?
 
 If the working tree is dirty, show the uncommitted files and ask the user: stage and commit them (and if so, with what message), or abort so they can handle it themselves. Never stage/commit silently.
 
-### 2. Get the diff against the base branch
+### 2. Ask draft or ready-for-review
+
+Use the `AskUserQuestion` tool early to ask: **draft or ready-for-review?** Do this before drafting the body so the answer is ready when it's time to push.
+
+### 3. Get the diff against the base branch
+
+Default base branch is `dev` unless the user specified otherwise. No need to verify.
 
 ```bash
-gh repo view --json defaultBranchRef --jq .defaultBranchRef.name
-git log <base>..HEAD --oneline
-git diff <base>...HEAD
+git log dev..HEAD --oneline
+git diff dev...HEAD
 ```
 
-### 3. Classify each change as public or private
+### 4. Classify each change as public or private
 
 A change is **public** if a caller outside the module/package would notice it:
 
@@ -43,7 +48,7 @@ A change is **public** if a caller outside the module/package would notice it:
 
 Everything else (local helpers, private methods, internal types, tests, refactors that preserve the surface) is private. When in doubt, ask: "would a caller notice this?" If no, it's private.
 
-### 4. Reason about module depth
+### 5. Reason about module depth
 
 Before drafting, note for yourself:
 
@@ -53,7 +58,7 @@ Before drafting, note for yourself:
 
 Mention this in "The Fix" if relevant — it's the highest-signal framing for an architecturally-minded reader.
 
-### 5. Draft the title
+### 6. Draft the title
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) style: `<type>(<scope>): <subject>`.
 
@@ -65,7 +70,7 @@ Add `!` after the type/scope for breaking public-interface changes: `feat(parser
 
 Pick the type from the dominant change in the diff — if the PR is mostly a fix with incidental refactor, it's `fix`.
 
-### 6. Draft the body
+### 7. Draft the body
 
 Use this template exactly:
 
@@ -89,21 +94,13 @@ Use this template exactly:
 
 Keep "The Problem" and "The Fix" tight. Resist narrating every commit.
 
-### 7. Show the draft and iterate
-
-Present the rendered title and body. Ask:
-
-- Title accurate?
-- Anything in "Other" that belongs in "Public" or vice versa?
-- Anything missing?
-
 ### 8. Push and create (or update)
 
-Before creating, ask the user: **draft or ready-for-review?**
+Do not confirm the title or body with the user — just create the PR. Use the draft/ready answer from step 2. The base branch is `dev` unless the user said otherwise.
 
 ```bash
 git push -u origin HEAD                                    # if branch is unpushed
-gh pr create --title "<title>" [--draft] --body "$(cat <<'EOF'
+gh pr create --base dev --title "<title>" [--draft] --body "$(cat <<'EOF'
 <body>
 EOF
 )"
