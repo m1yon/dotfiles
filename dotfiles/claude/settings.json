@@ -23,5 +23,7 @@
   "autoDreamEnabled": false,
   "showThinkingSummaries": true,
   "skipDangerousModePermissionPrompt": true,
-  "remoteControlAtStartup": true
+  "remoteControlAtStartup": true,
+  "preferredNotifChannel": "notifications_disabled",
+  "agentPushNotifEnabled": true
 }
