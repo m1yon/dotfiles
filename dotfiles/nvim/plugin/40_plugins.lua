@@ -253,8 +253,9 @@ end)
 -- Markdown rendering ==============================================================
 later(function()
 	add({
-		source = "OXY2DEV/markview.nvim",
+		source = "MeanderingProgrammer/render-markdown.nvim",
 	})
+	require("render-markdown").setup({})
 end)
 
 -- Inline image rendering (uses Kitty graphics protocol, supported by Ghostty) ====
