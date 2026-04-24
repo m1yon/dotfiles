@@ -29,6 +29,36 @@ let
       runHook postInstall
     '';
   };
+
+  # voice-mode pulls in simpleaudio/pyaudio which build C extensions against
+  # ALSA/portaudio at install time. NixOS doesn't expose system headers via
+  # /usr/include, so we have to inject a working build environment for uv.
+  voicemodeBuildInputs = with pkgs; [
+    alsa-lib
+    portaudio
+  ];
+  voicemode = pkgs.writeShellScriptBin "voicemode" ''
+    export PATH=${
+      pkgs.lib.makeBinPath [
+        pkgs.uv
+        pkgs.stdenv.cc
+        pkgs.pkg-config
+      ]
+    }''${PATH:+:$PATH}
+    export PKG_CONFIG_PATH=${
+      pkgs.lib.makeSearchPath "lib/pkgconfig" (map (p: p.dev or p) voicemodeBuildInputs)
+    }''${PKG_CONFIG_PATH:+:$PKG_CONFIG_PATH}
+    export CPATH=${
+      pkgs.lib.makeSearchPath "include" (map (p: p.dev or p) voicemodeBuildInputs)
+    }''${CPATH:+:$CPATH}
+    export LIBRARY_PATH=${
+      pkgs.lib.makeLibraryPath voicemodeBuildInputs
+    }''${LIBRARY_PATH:+:$LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${
+      pkgs.lib.makeLibraryPath voicemodeBuildInputs
+    }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    exec uvx --from voice-mode voicemode "$@"
+  '';
 in
 {
   imports = [
@@ -51,8 +81,13 @@ in
         typescript-language-server
         gopls
         nodejs
+        uv
+        ffmpeg
       ])
-      ++ [ ccstatusline ];
+      ++ [
+        ccstatusline
+        voicemode
+      ];
   };
 
   sops.secrets = {
@@ -78,6 +113,10 @@ in
             XERO_CLIENT_ID = config.sops.placeholder.xero_client_id;
             XERO_CLIENT_SECRET = config.sops.placeholder.xero_client_secret;
           };
+        };
+        voicemode = {
+          command = "${voicemode}/bin/voicemode";
+          args = [ ];
         };
       };
     };

@@ -25,6 +25,7 @@
     ./neovim.nix
     ./obsidian.nix
     ./onlyoffice.nix
+    ./openai.nix
     ./lazycommit.nix
     ./lazygit.nix
     ./linear.nix
