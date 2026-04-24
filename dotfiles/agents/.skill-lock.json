@@ -117,6 +117,15 @@
       "skillFolderHash": "498eb078e9f39fb18ee25f40f5acf24ed7e00ad9",
       "installedAt": "2026-04-23T16:11:08.315Z",
       "updatedAt": "2026-04-23T16:11:08.315Z"
+    },
+    "gh-address-comments": {
+      "source": "openai/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/openai/skills.git",
+      "skillPath": "skills/.curated/gh-address-comments/SKILL.md",
+      "skillFolderHash": "042316bece4a9f832145dcff7d5506e99fe3ecf1",
+      "installedAt": "2026-04-24T20:24:31.506Z",
+      "updatedAt": "2026-04-24T20:24:31.506Z"
     }
   },
   "dismissed": {
