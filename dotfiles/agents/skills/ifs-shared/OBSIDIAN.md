@@ -212,7 +212,8 @@ In-memory mid-session, applied atomically by `ifs-session-writer` at session end
 - `set_part_type { part_ref, type }` — `manager | firefighter | exile | unknown`
 - `set_status { part_ref, status }` — `active | unburdened | dormant`
 - `update_last_seen { part_ref, date }`
-- `clear_left_without_resolution { part_ref }`
+- `set_left_without_resolution { part_ref }` — added by bailed sessions to every part touched
+- `clear_left_without_resolution { part_ref }` — cleared on next visit
 - `record_polarization { pair: [a, b] }` — mirrored on both pages
 - `record_protects { part_ref, exile_ref }`
 - `strike_trailhead { line, session_link }`

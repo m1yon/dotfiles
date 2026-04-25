@@ -1,8 +1,8 @@
 # PROTOCOL.md — eager-loaded EM+IFS playbook
 
-Stub for slice 1. Full procedural content (glimpse mechanics, embodied engagement, drift handling, Self-like-parts spotting as pattern-match procedure, cycle detection, polarization work, closing ritual) lands in later slices.
+Slice 2 of the build: full check-in (§0), Phase 8 closing ritual (§5f), and stub middle (§5stub) are live. Phases 1–7 procedural content (glimpse mechanics, embodied engagement, drift handling, cycle detection, polarization work) lands in later slices.
 
-For the foundational pre-flight + check-in step 1 (mood-step refusal), see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`.
+For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`.
 
 ## Phase spine (tracked internally, never narrated)
 
@@ -61,7 +61,41 @@ Suspect texture → Claude offers ONE observation as a question (e.g. *"That sou
 
 On detected Self-like part: engage it as a part (locate → thank → ask space) and re-glimpse. If it won't make space, it becomes the focus part. **Phase 7 is blocked for this session regardless of tier.**
 
-## Slice 2+ content (placeholder)
+## §0 — Check-in (live)
+
+Three-step micro-sequence:
+
+1. **Mood (free text).** *"How are you arriving, in one line?"* — runs the mood-gate refusal in `SAFETY.md`. Crisis-pattern match emits the crisis-fallback link in one line and ends the session with `status: crisis_exit`. Otherwise `metadata.checkin_state` captures the answer.
+2. **Tier (the only AskUserQuestion in the session).** Short / Medium / Long. Captured into `metadata.tier`.
+3. **Trailhead (free text).** Combined offer of the most recent session note's unchecked `## Open threads` items + unstruck items from `Trailheads.md` (treat missing as empty). Presented in prose, not as a menu. User picks in their own words. If the pick maps to a `Trailheads.md` line, queue a `strike_trailhead` entry into `pending_changes`.
+
+One-line echo (no hedging): *"OK — <tier>, picking up <short paraphrase>. Starting there."* Then route into Phase 1 (or the stub middle in slice 2).
+
+## §5stub — Stub middle (slice 2 only)
+
+Phases 1–7 are not implemented yet. Emit one line:
+
+> [Session middle skipped — tracer skeleton. Phases 1–7 land in later slices. Routing to closing ritual.]
+
+Then route directly into the closing ritual.
+
+## §5f — Phase 8 — Closing ritual (live; mandatory unless `crisis_exit`)
+
+Always runs on graceful close, graceful bail, AND ratified wrap. Never runs on imminent-harm exit. Wrap shortens the work, never the close.
+
+Five steps, in order:
+
+1. **Thank.** Each part contacted. (In stub-middle / no-parts-touched cases, plain language: *"Take a breath. Anything you want to thank — yourself, anyone you reached, anything that surfaced — go ahead."*)
+2. **Ask more.** *"Anything else wants to be heard before we close?"*
+3. **Permission to come back.** *"OK to come back to this another time?"* (Directed at parts contacted in real sessions; plain framing in stub-middle.)
+4. **Rest in Self.** Type and wait:
+   > Rest here for a moment. This is what's always available. Nothing to do.
+   30–60 seconds. Don't fill the silence.
+5. **Step out.** *"Re-orient: feet, chair, room. Notice what's here in your space."*
+
+Order matters: rest-in-Self before step-out so re-orientation happens *from* Self, not as an exit. Sessions don't get logged as `complete` until the ritual runs.
+
+## Slice 3+ content (placeholder)
 
 Full procedural content for the following lands in later slices:
 
@@ -71,7 +105,6 @@ Full procedural content for the following lands in later slices:
 - Phase 4 — continuation check + hybrid drift handling (thank-and-ask-space → re-glimpse → re-target). Hard rule against recursing into full embodied engagement.
 - Phase 5–6 — befriend / fears (Schwartz light-touch, retained).
 - Phase 7 — optional deeper work (two-factor gate; see `SAFETY.md` tier matrix).
-- Phase 8 — closing ritual (thank → ask-more → permission → rest-in-Self → step-out). Always runs except on imminent-harm exit.
 - §5e — cycle detection (signals: same part blends at Phase 4 twice; three distinct re-targets in one session). Response: pause, name pattern, offer three paths in prose (polarization work / pick-one / close-and-log; default close-and-log).
 - §5e — polarization work (Schwartz 7-step protocol, Kelly-retained; replaces remainder of session; requires clean re-glimpse first).
 - Naming (descriptive phrases; deferred-naming fallback `Unnamed YYYY-MM-DD #N`).
