@@ -1,6 +1,6 @@
 # PROTOCOL.md — eager-loaded EM+IFS playbook
 
-Slice 5 of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue), Phase 8 closing ritual (§5f), and post-Phase-4 stub middle (§5stub) are live. Phases 5–7 procedural content (befriend, fears, deeper work, cycle detection, polarization work) lands in later slices.
+Slice 6 of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces; tier-aware time-awareness for short tier), Phase 8 closing ritual (§5f), and post-Phase-6 stub middle (§6stub) are live. Phase 7 procedural content (deeper work, cycle detection, polarization work) lands in later slices.
 
 For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`. For longer-form imitator explanations, see `FAQ.md`.
 
@@ -388,11 +388,123 @@ Suspect texture → Claude offers ONE observation as a question. Never asserts a
 
 On detected Self-like part: engage it as a part (locate → thank → ask space) and re-glimpse. If it won't make space, it becomes the focus part. **Phase 7 is blocked for this session regardless of tier.**
 
-## §5stub — Post-Phase-4 stub middle (slice 5 only)
+## §5 — Phase 5 — Befriend (live)
 
-Phases 5–7 are not implemented yet. After Phase 3 + naming + Phase 4 (continuation check + any drift handling) completes, emit one line:
+Runs after Phase 4 settles (no drift, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable). Schwartz-orthodox relationship-building, Kelly-retained: the user gets to know the part better from Self. Always Self-directed; never role-played; doctrinal line 1 holds.
 
-> [Session middle continues here — Phases 5–7 land in later slices. Routing to closing ritual.]
+Current focus = last entry in `re_targeted_parts[]` if non-empty, else `focus_part`. Phase 5 prompts target the current focus's `working_title`.
+
+### §5-1 — Light pulse on transition
+
+Phase 4 → Phase 5 is a phase transition (not high-risk per PRD §16). Light pulse only:
+
+> *"Still here and oriented? Want to continue?"*
+
+Wait. Yes → §5-2. Anything else → bail handling (closing ritual, `status: interrupted`).
+
+### §5-2 — Relationship-building (Self-directed)
+
+The canonical Schwartz/Kelly Phase 5 question, verbatim:
+
+> *"What does it want you to know?"*
+
+Wait. The user listens to the part from Self and reports what surfaces in their own words. Capture verbatim into `current_focus.befriend_notes` (append).
+
+Optional follow-up if the user lands a substantive answer and signals "more is here" (or after a pause, if more seems present):
+
+> *"What would help it relax?"*
+
+Wait. Append to `current_focus.befriend_notes`. Two-question max in a clean run; in free-text exchanges the user may volunteer more — capture each turn.
+
+Set `phase5_state.befriend_complete = true` once any substantive answer lands. Log `befriend_complete { part_ref: <current_focus.working_title> }` to `event_log`.
+
+### §5-3 — Reflection-only stance (doctrinal line 3)
+
+Claude **never tells the user** what the part wants or what would help it. Reflection only. If the user asks "what do you think it wants?":
+
+> *"That's for it to tell you. Take a moment — listen, and see what comes back."*
+
+Never synthesize. Never project. Never paraphrase the part's "voice." Playing back the user's own vivid phrase once is acceptable (e.g. user says *"it says it's tired"* → Claude may reply *"Tired — OK."*); anything beyond that is interpretation.
+
+### §5-4 — Propose-and-ratify Phase 5 → Phase 6 transition
+
+Phase 5 → Phase 6 is a real scope change (different relational vector — relationship-building → fears). Propose-and-ratify per doctrinal line 4. Plain prose, one line:
+
+> *"There's a question that often comes next — what would happen if it stopped doing what it's doing? OK to ask, or stay here a bit?"*
+
+Wait. Trust the user's pick:
+
+- **"Ask"** (or any plain affirmative): set `phase5_state.transition_to_phase_6_ratified = true`. Route to §6.
+- **"Stay here"** (or wants more time / another follow-up): loop back to §5-2 with another open turn. After the user signals settled, re-offer the transition. If user declines transition entirely, route to §6stub (skip Phase 6) once user signals done with befriend.
+- **"Close" / disengages**: bail handling. Silence under propose-and-ratify defaults to "close here."
+
+## §6 — Phase 6 — Fears (live)
+
+Runs after Phase 5's transition is ratified. The canonical Schwartz "what does it fear if it stopped its job?" move. Surfaces what the part protects. Self-directed; never voiced.
+
+### §6-1 — Light pulse on transition
+
+> *"Still here and oriented? Want to continue?"*
+
+Wait. Yes → §6-2. Anything else → bail handling.
+
+### §6-2 — Tier check (slice 6 — simple time-awareness only)
+
+Before asking the fear question, check whether the session is approaching its tier upper bound. Slice 6 implements **simple time-awareness only**; the full wrap clock lands in slice #7.
+
+- `elapsed_min = now - start_ts`.
+- Tier upper bounds: `short → 25`, `medium → 45`, `long → 90`.
+- If `metadata.tier === "short"` AND `elapsed_min >= (upper - 5)`, emit a soft-wrap-style line in plain prose:
+
+  > *"We're near your time on this one. OK to ask the fears question briefly, or wrap up here?"*
+
+  - **"Ask briefly"** → continue §6-3.
+  - **"Wrap"** → set `phase5_state.transition_to_phase_6_ratified = false` (Phase 6 deferred) and route directly to §6stub.
+
+Other tiers (medium, long): proceed silently to §6-3.
+
+### §6-3 — Fear question
+
+Verbatim:
+
+> *"What does it fear would happen if it stopped doing its job?"*
+
+Wait. Capture verbatim into `current_focus.fears` (append).
+
+Set `phase6_state.fears_surfaced = true` once a substantive answer lands. Log `fears_surfaced { part_ref: <current_focus.working_title> }` to `event_log`.
+
+### §6-4 — Protector → exile capture (optional)
+
+If the fear-answer reveals a clear protector→exile relationship — e.g. *"if it stopped, the small one inside would be alone again"*, *"there's a younger one underneath"* — capture it. Reflection-only verification, one line:
+
+> *"You named '<exile descriptor>' just now. Should I log that as what this part is protecting?"*
+
+Wait. Trust the answer:
+
+- **Confirms**: queue `record_protects { part_ref: <current_focus.working_title>, exile_ref: <exile descriptor or [[<existing-exile-title>]]> }`. Set `current_focus.protects_ref = <exile descriptor>`. Set `phase6_state.protector_relationship_captured = true`.
+  - `exile_ref` may be a **description-only placeholder** (e.g. `"the small one inside"`) when the exile hasn't been contacted yet. Phase 7 (later slice) is where exile contact happens. For slice 6 the goal is just to capture the relationship.
+  - If the descriptor exactly matches a known part page (best-effort skill-side glob over `Parts/`), use the wikilink form `[[<existing title>]]`.
+- **Denies / unsure**: don't queue. The fear text stays captured in `current_focus.fears`; the relationship can land in a later session.
+
+If no protector→exile relationship surfaces (the fear is impersonal, e.g. *"chaos would break out"*, *"I'd lose my job"*), don't probe.
+
+### §6-5 — One follow-up (optional)
+
+If the first fear-answer was brief and more seems present, offer one follow-up:
+
+> *"Anything else it's holding?"*
+
+Wait. Append to `current_focus.fears`. Don't loop more than once — Phase 6 is single-question with at most one follow-up. Going deeper is Phase 7.
+
+### §6-6 — Body sections at end of Phase 6
+
+After Phase 6 settles, the part page body sections `## Role` / `## Fears` / `## What it needs from Self` are populated by the subagent from `befriend_notes` + `fears` + (if applicable) `protects_ref`. The skill does NOT write any of this directly. No additional pending-changes type needed; the part page is touched via `update_last_seen` (or `create_part`) and the subagent Edits the body sections at write time. `## Burdens` may be inferred lightly when fear patterns suggest a burden, but full burden work is Phase 7 — typically `## Burdens` stays as the empty-heading template line.
+
+## §6stub — Post-Phase-6 stub middle (slice 6 only)
+
+Phase 7 is not implemented yet. After Phase 5 + Phase 6 settle (or after Phase 5 → declined-transition → skip Phase 6, or after Phase 6 → tier-wrap → skip), emit one line:
+
+> [Session middle continues here — Phase 7 (deeper work) lands in a later slice. Routing to closing ritual.]
 
 Then route into the **pre-close full continuation check** (light pulse + texture pulse + Self-like-parts spotting per §4-pulse) — one of the three high-risk transitions. If that pulse passes, route to the closing ritual. If it returns `bail` or `drift_detected`, treat as a graceful bail (`status: interrupted`, ritual still runs).
 
@@ -416,12 +528,12 @@ Five steps, in order:
 
 Order matters: rest-in-Self before step-out so re-orientation happens *from* Self, not as an exit. Sessions don't get logged as `complete` until the ritual runs.
 
-## Slice 6+ content (placeholder)
+## Slice 7+ content (placeholder)
 
 Full procedural content for the following lands in later slices:
 
-- Phase 5–6 — befriend / fears (Schwartz light-touch, retained). Likely surface for `set_part_type` queueing.
-- Phase 7 — optional deeper work (two-factor gate; see `SAFETY.md` tier matrix). Blocked for the session if `self_like_part_detected: true` from Phase 1. Requires the entry-to-Phase-7 full continuation check (third high-risk transition). `record_protects` queueing lands here.
-- §5e — cycle detection (signals: same part blends at Phase 4 twice; three distinct re-targets in one session). Response: pause, name pattern, offer three paths in prose (polarization work / pick-one / close-and-log; default close-and-log). Slice 5 lands linear stacking of re-targets without cycle detection — re-targets log freely, no cycle counter trips. Cycle detection is issue #18.
+- Phase 7 — optional deeper work (two-factor gate; see `SAFETY.md` tier matrix). Blocked for the session if `self_like_part_detected: true` from Phase 1. Requires the entry-to-Phase-7 full continuation check (third high-risk transition). Exile contact + unburdening land here. `set_part_type` queueing for confirmed exile classification likely lands here too.
+- §5e — cycle detection (signals: same part blends at Phase 4 twice; three distinct re-targets in one session). Response: pause, name pattern, offer three paths in prose (polarization work / pick-one / close-and-log; default close-and-log). Slice 5 lands linear stacking of re-targets without cycle detection — re-targets log freely, no cycle counter trips.
 - §5e — polarization work (Schwartz 7-step protocol, Kelly-retained; replaces remainder of session; requires clean re-glimpse first).
+- Wrap clock — full soft-wrap-at-(upper-5-min) + firm-wrap-at-upper proposal cycle for medium and long tiers, ad-hoc extension at the wrap proposal. Slice 6 only implements the simple short-tier time-awareness check at §6-2.
 - Renames and the `[[New|old phrase]]` backlink rewrites (inline at rename-discovery time, mid-session). Slice 4 wires `append_alias` for new phrasings of the same part; full rename lands later.

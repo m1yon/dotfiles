@@ -7,7 +7,7 @@ description: Walk the user through a Loch Kelly-style EM+IFS (Effortless Mindful
 
 Conversational orchestrator for one EM+IFS session. Loads `../ifs-shared/PROTOCOL.md` eagerly. Runs the conversation; the `ifs-session-writer` subagent handles all Obsidian writes at session end.
 
-This is **slice 5 — Phase 4 live**: full check-in, full Phase 1 (glimpse + texture + Self-like-parts gate), full Phase 2 (notice what's present + focus part selection with propose-and-ratify on divergence), full Phase 3 (locate-with-dissociation-cue → describe → thank → request space → feel Self-energy in opened space → "how do you feel toward that part?"), naming step at end of Phase 3, full Phase 4 (continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence at every phase transition; full continuation check at three high-risk transitions), stubbed Phases 5–7 (one-line placeholder), full closing ritual, single subagent dispatch at end. Phases 5–7 land in later slices.
+This is **slice 6 — Phases 5 + 6 live**: full check-in, full Phase 1 (glimpse + texture + Self-like-parts gate), full Phase 2 (notice what's present + focus part selection with propose-and-ratify on divergence), full Phase 3 (locate-with-dissociation-cue → describe → thank → request space → feel Self-energy in opened space → "how do you feel toward that part?"), naming step at end of Phase 3, full Phase 4 (continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence at every phase transition; full continuation check at three high-risk transitions), full Phase 5 (befriend — relationship-building, Self-directed questions), full Phase 6 (fears — what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), stubbed Phase 7 (one-line placeholder), full closing ritual, single subagent dispatch at end. Phase 7 lands in later slices.
 
 ## Doctrinal lines (non-negotiable, restate every session)
 
@@ -42,9 +42,11 @@ After pre-flight passes, initialize an in-memory state object:
 - `event_log` — list of typed events (see `../ifs-shared/OBSIDIAN.md` "Event log types").
 - `pending_changes` — list of typed entries (see `../ifs-shared/OBSIDIAN.md` "Pending-changes log schema"). The skill never writes to disk mid-session; entries here are applied atomically by the subagent at end.
 - `phase1_state` — `{ self_texture, self_like_part_detected, re_glimpses, focus_part_is_self_like }`. Defaults: `self_texture: "unknown"` (set to `"clean"` or `"murky"` after §1c), `self_like_part_detected: false`, `re_glimpses: 0`, `focus_part_is_self_like: false`. Surfaced into session-note frontmatter at dispatch.
-- `focus_part` — `{ working_title, surfaced_phrase, body_location, description, is_new, is_self_like, permission_granted, state_at_end }`. Defaults all `null` / `false`. `working_title` is the descriptive-phrase title (or `Unnamed YYYY-MM-DD #N` if naming was deferred). `is_new` flips to `true` if the subagent will need to `create_part`; `false` if a `Parts/<title>.md` already exists for the matched description. Used by the subagent to populate `parts_touched`, `new_parts`, `permission_granted` in frontmatter and the `## Parts encountered` body section. After a Phase-4 re-target, `focus_part` retains the **original** Phase-3 data and gets `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` (or similar plain phrasing); the new focus accumulates in `re_targeted_parts[]` (see below).
-- `re_targeted_parts` — `[]` array. Each entry has the same shape as `focus_part`, plus `re_targeted_from: <previous focus working_title>` and `re_target_note: <one-line plain-prose summary, default "re-targeted from [[<previous>]] at Phase 4 — wouldn't step back, re-glimpse didn't restore.">`. Re-targets stack linearly (A → B → C). The current focus is always the *last* entry in `re_targeted_parts[]`, or `focus_part` itself if the array is empty. Pulse-checks and drift detection target the current focus.
+- `focus_part` — `{ working_title, surfaced_phrase, body_location, description, is_new, is_self_like, permission_granted, state_at_end, befriend_notes, fears, protects_ref }`. Defaults all `null` / `false` / `[]`. `working_title` is the descriptive-phrase title (or `Unnamed YYYY-MM-DD #N` if naming was deferred). `is_new` flips to `true` if the subagent will need to `create_part`; `false` if a `Parts/<title>.md` already exists for the matched description. `befriend_notes` (slice 6) — list of verbatim user-language strings from Phase 5 ("what the part wants you to know" / "what would help it relax"); empty list when Phase 5 didn't run. `fears` (slice 6) — list of verbatim user-language strings from Phase 6 (what the part fears would happen if it stopped); empty list when Phase 6 didn't run. `protects_ref` (slice 6) — string descriptor (e.g. `"the small one inside"`) or `[[<existing-exile-title>]]` wikilink, or `null` if no protector→exile relationship surfaced. Used by the subagent to populate `parts_touched`, `new_parts`, `permission_granted` in frontmatter, the `## Parts encountered` body section, AND the part page body sections `## Role` / `## Fears` / `## What it needs from Self` from `befriend_notes` + `fears`. After a Phase-4 re-target, `focus_part` retains the **original** Phase-3 data and gets `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` (or similar plain phrasing); the new focus accumulates in `re_targeted_parts[]` (see below).
+- `re_targeted_parts` — `[]` array. Each entry has the same shape as `focus_part` (including the slice-6 `befriend_notes` / `fears` / `protects_ref` fields), plus `re_targeted_from: <previous focus working_title>` and `re_target_note: <one-line plain-prose summary, default "re-targeted from [[<previous>]] at Phase 4 — wouldn't step back, re-glimpse didn't restore.">`. Re-targets stack linearly (A → B → C). The current focus is always the *last* entry in `re_targeted_parts[]`, or `focus_part` itself if the array is empty. Pulse-checks, drift detection, and Phase 5/6 prompts target the current focus.
 - `phase4_state` — `{ unblending_events, re_targets, drift_detected_count, last_pulse_result }`. Defaults: all `0` / `null`. `unblending_events` increments on every §4-handle-1 (thank-and-ask-space) attempt regardless of success. `re_targets` increments on every ratified re-target. Surfaced into session-note frontmatter at dispatch (`unblending_events`, `re_targets`).
+- `phase5_state` — `{ befriend_complete, transition_to_phase_6_ratified }`. Defaults: `false` / `false`. `befriend_complete` flips `true` after at least one Phase-5 question got a substantive user answer. `transition_to_phase_6_ratified` flips `true` after the propose-and-ratify offer to move into fears land. Surfaced only as event-log entries (`befriend_complete`); not directly written to session-note frontmatter.
+- `phase6_state` — `{ fears_surfaced, protector_relationship_captured }`. Defaults: `false` / `false`. `fears_surfaced` flips `true` after at least one fear-answer landed. `protector_relationship_captured` flips `true` when a clear protector→exile relationship surfaced and `record_protects` was queued. Surfaced as event-log entries (`fears_surfaced`); the `record_protects` queueing is what reaches the part page via the subagent.
 - `trailhead_returned_to_open_threads` — `bool`. `true` when the trailhead diverged from the focus and was re-queued (see Phase 2). Drives whether the subagent re-adds the trailhead to `## Open threads` of the new note.
 
 Resolve `previous_session_link`: glob `Sessions/*.md`, sort descending by filename, take the most recent. Set to its wikilink (e.g. `[[2026-04-19 — first contact]]`) or `null` if none.
@@ -303,7 +305,7 @@ Once `focus_part.working_title` is set, queue pending changes:
 - **If `is_new`**: queue `create_part { title: working_title, initial_frontmatter: { type: part, part_type: unknown, status: active, aliases: [], first_met: <date>, last_seen: <date>, age_felt: null, protects: [], polarized_with: [], allies: [], tags: [ifs, part] } }`.
 - **If existing**: queue `update_last_seen { part_ref: working_title, date: <date> }`. If `surfaced_phrase` differs from `working_title`, queue `append_alias { part_ref: working_title, new_phrase: surfaced_phrase }`.
 
-The skill does NOT queue `set_part_type` automatically — `part_type` stays `unknown` until the user's own framing supplies it (or until Phase 5–6 elicits it in later slices). Same with `record_protects` (lands when Phase 7 confirms a protector relationship; the type exists in slice 4 for future use, not actively populated here).
+The skill does NOT queue `set_part_type` automatically — `part_type` stays `unknown` until the user's own framing supplies it (or until Phase 5–6 elicits it in later slices). `record_protects` is actively queued in Phase 6 step 4 if a clear protector→exile relationship surfaces (slice 6+); it's not queued at naming time.
 
 ## Phase 4 — Continuation check + hybrid drift handling (live; full procedure in `../ifs-shared/PROTOCOL.md` §4)
 
@@ -392,15 +394,138 @@ If the user disengages without picking, default to "close here" — silence unde
 
 ### §4-postphase — Routing after Phase 4 settles
 
-After Phase 4 settles (no drift, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable), route into §5stub post-Phase-4 stub middle.
+After Phase 4 settles (no drift, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable), route into Phase 5 (Befriend).
 
-The **current focus** is what closing ritual targets (§5f step 1, step 3): `re_targeted_parts[-1]` if any, else `focus_part`.
+The **current focus** is what Phase 5 / Phase 6 prompts target, and what closing ritual targets (§5f step 1, step 3): `re_targeted_parts[-1]` if any, else `focus_part`.
 
-## Post-Phase-4 stub middle (slice 5 only — replaced in later slices)
+## Phase 5 — Befriend (live; full procedure in `../ifs-shared/PROTOCOL.md` §5)
 
-Where Phases 5–7 will live (befriend, fears, deeper / Phase 7 with two-factor gate). For now, after Phase 4 settles, emit one line:
+Runs after Phase 4 settles (no drift, OR drift handled with current focus restored, OR drift handled with re-target and the new focus's Phase 4 settled). Schwartz-orthodox relationship-building: the user gets to know the part better from Self. Phase 5 + 6 questions are **always Self-directed** — asked of the user *about* the part. Claude never voices the part (doctrinal line 1).
 
-> [Session middle continues here — Phases 5–7 land in later slices. Routing to closing ritual.]
+The current focus = `re_targeted_parts[-1]` if non-empty, else `focus_part`. Phase 5 prompts target the current focus's `working_title`.
+
+### Step 1 — Light pulse on transition
+
+Before Phase 5 begins, run a light pulse per `../ifs-shared/PROTOCOL.md` §4-pulse:
+
+> *"Still here and oriented? Want to continue?"*
+
+Wait. Log `pulse_check { result }`.
+
+- **Yes**: proceed to Step 2.
+- **No** / "I'm done" / silence-as-exit: bail handling. `metadata.status = "interrupted"`, closing ritual runs.
+
+(Phase 4 → Phase 5 is a phase transition, not a high-risk transition — light pulse only, not a full continuation check. PRD §16 lists the full-check transitions; Phase 5 is not one of them.)
+
+### Step 2 — Relationship-building question (free-text, repeatable)
+
+Ask, verbatim:
+
+> *"What does it want you to know?"*
+
+Wait. The user listens to the part from Self and reports what surfaces. Capture the user's verbatim reply into `current_focus.befriend_notes` (append). This is **listening**, not voicing — the user's words are the user reporting what they heard from the part, in their own voice. Claude reflects nothing.
+
+Optional follow-up if the user lands a substantive answer and signals "more is here" (or after a pause, if more seems present):
+
+> *"What would help it relax?"*
+
+Wait. Append the verbatim reply to `current_focus.befriend_notes`. Two-question max in a clean run; if the user goes longer in their own time (free-text), let them — capture each turn into `befriend_notes`.
+
+Set `phase5_state.befriend_complete = true` once any substantive answer lands. Log `befriend_complete { part_ref: <current_focus.working_title> }` to `event_log`.
+
+### Step 3 — Reflection-only stance (doctrinal line 2)
+
+Claude **never tells the user** what the part wants or what would help it. Reflection only — if the user asks "what do you think it wants?", deflect lightly:
+
+> *"That's for it to tell you. Take a moment — listen, and see what comes back."*
+
+Never synthesize. Never project. Never paraphrase the part's "voice." If the user reports something vivid ("it says it's tired"), you may play back the user's own words once: *"Tired — OK."* That is the entire interpretive move available. No more.
+
+### Step 4 — Propose-and-ratify Phase 5 → Phase 6 transition (real scope change, doctrinal line 6)
+
+Phase 5 → Phase 6 is a real scope change (the question shifts from "what does it want you to know" to "what does it fear" — different relational vector). Propose-and-ratify, plain prose, one line:
+
+> *"There's a question that often comes next — what would happen if it stopped doing what it's doing? OK to ask, or stay here a bit?"*
+
+Wait. Trust the user's answer at face value:
+
+- **User picks "ask"** (or any plain affirmative): set `phase5_state.transition_to_phase_6_ratified = true`. Route to Phase 6.
+- **User picks "stay here"** (or wants more time with befriend, or another follow-up): loop back to Step 2 with another open turn (e.g. *"What else does it want you to know?"*). After the user signals settled, re-offer the transition. The user can decline the transition entirely — if so, route to §6stub (skipping Phase 6) once they signal done with befriend.
+- **User picks "close" / disengages**: bail handling.
+
+Silence under propose-and-ratify defaults to "close here" (per PRD doctrinal line on silence-as-pick).
+
+## Phase 6 — Fears (live; full procedure in `../ifs-shared/PROTOCOL.md` §6)
+
+Runs after Phase 5's transition is ratified. Surfaces what the part protects. Self-directed, never voiced.
+
+### Step 1 — Light pulse on transition
+
+Same as Phase 5 step 1 — light pulse only, log `pulse_check { result }`.
+
+> *"Still here and oriented? Want to continue?"*
+
+Wait. Yes → Step 2. No / silence → bail handling.
+
+### Step 2 — Tier check (slice 6 — simple time-awareness only)
+
+Before asking the fear question, check whether the session is approaching its tier upper bound. Slice 6 implements **simple time-awareness only** (no wrap clock — that's slice #7).
+
+- Compute `elapsed_min = now - start_ts`.
+- Get tier upper bound: `short → 25`, `medium → 45`, `long → 90`.
+- If `metadata.tier === "short"` AND `elapsed_min >= (upper - 5)` (i.e., within 5 min of upper): emit a soft-wrap-style line in plain prose, then continue Phase 6 if the user wants more, OR route to §6stub if the user wants to close:
+
+  > *"We're near your time on this one. OK to ask the fears question briefly, or wrap up here?"*
+
+  - User picks "ask briefly" → continue Step 3.
+  - User picks "wrap" → set `phase5_state.transition_to_phase_6_ratified = false` (we deferred Phase 6) and route directly to §6stub (closing ritual).
+
+Other tiers (medium, long): proceed silently to Step 3. The full wrap clock lands in slice #7.
+
+### Step 3 — Fear question (the canonical Schwartz move)
+
+Ask, verbatim:
+
+> *"What does it fear would happen if it stopped doing its job?"*
+
+Wait. Capture the user's verbatim reply into `current_focus.fears` (append). The reply is the user reporting what they hear from the part, from Self. Claude reflects nothing beyond the user's own words.
+
+Set `phase6_state.fears_surfaced = true` once any substantive answer lands. Log `fears_surfaced { part_ref: <current_focus.working_title> }` to `event_log`.
+
+### Step 4 — Protector → exile capture (optional; queues `record_protects` if it surfaces)
+
+If the user's fear-answer reveals a clear protector→exile relationship — e.g. *"if it stopped, the small one inside would be alone again"*, *"it's protecting the part that got hurt at six"*, *"there's a younger one underneath"* — capture it. Reflection-only, one line to verify:
+
+> *"You named '<exile descriptor>' just now. Should I log that as what this part is protecting?"*
+
+Wait. Trust the user's answer:
+
+- **User confirms**: queue `record_protects { part_ref: <current_focus.working_title>, exile_ref: <exile descriptor or [[<existing-exile-title>]] if it matches an existing part page> }`. Set `current_focus.protects_ref = <exile descriptor>`. Set `phase6_state.protector_relationship_captured = true`.
+  - The `exile_ref` may be a **description-only placeholder** (e.g. `"the small one inside"`) when the exile hasn't been contacted yet — it's not a part page, just a string descriptor. Phase 7 (later slice) is where exile contact happens; for slice 6 the goal is just to capture the relationship.
+  - If the descriptor exactly matches a known part page (best-effort skill-side check via the existing `Parts/` glob the eager state load already touched), use the wikilink form `[[<existing title>]]` instead.
+- **User denies / unsure**: don't queue. The fear text is still captured in `current_focus.fears`; the relationship can land in a later session.
+
+If no protector→exile relationship surfaces (the fear is impersonal, e.g. *"chaos would break out"*, *"I'd lose my job"*), don't probe. Phase 6 is about surfacing fears, not forcing protector→exile mapping.
+
+### Step 5 — One follow-up (optional)
+
+If the user's first fear-answer was brief and more seems present (judgment call from the answer's shape — short flat reply rather than landing a real concern), offer one follow-up:
+
+> *"Anything else it's holding?"*
+
+Wait. Append to `current_focus.fears`. Don't loop more than once — Phase 6 is a single-question phase with at most one follow-up. Going deeper is Phase 7 territory.
+
+### Step 6 — Body sections at end of Phase 6
+
+After Phase 6 settles, the part-page body sections `## Role`, `## Fears`, and `## What it needs from Self` get content from the captured `befriend_notes` + `fears` + (if applicable) `protects_ref`. The skill does NOT write any of this directly — the subagent synthesizes it from the input. No additional pending-changes type needed; the part page is touched via `update_last_seen` (or `create_part` for new parts) and the subagent Edits the body sections at write time.
+
+`## Burdens` may be inferred lightly by the subagent (e.g. an over-strong fear pattern hints at a burden), but full burden work is Phase 7. In slice 6, expect `## Burdens` to stay as the empty-heading template line in most sessions.
+
+## Post-Phase-6 stub middle (slice 6 only — replaced when Phase 7 lands)
+
+Where Phase 7 (optional deeper work — exile contact / unburdening, two-factor-gated) will live. For now, after Phase 6 settles, emit one line:
+
+> [Session middle continues here — Phase 7 (deeper work) lands in a later slice. Routing to closing ritual.]
 
 Then run the **pre-close full continuation check** (§4-pulse: light pulse + texture pulse + Self-like-parts spotting per `../ifs-shared/PROTOCOL.md` §5a) — one of the three high-risk transitions per PRD §16.
 
@@ -411,7 +536,7 @@ Procedure:
 
 - **Continue** (light pulse "yes" + texture clean): route to closing ritual (§5f).
 - **Bail** ("no" / "I'm done" / silence-as-exit): treat as graceful bail. `metadata.status = "interrupted"`, closing ritual still runs.
-- **Drift detected** (texture murky / Self-like-part pattern): in slice 5, the pre-close pulse does NOT loop back into Phase 4 hybrid handling — the work is winding down, not re-opening. Note the drift in `event_log` (`pulse_check { result: "drift_detected" }`), then route to closing ritual. The closing ritual itself is the recovery move at this point.
+- **Drift detected** (texture murky / Self-like-part pattern): in slice 6, the pre-close pulse does NOT loop back into Phase 4 hybrid handling — the work is winding down, not re-opening. Note the drift in `event_log` (`pulse_check { result: "drift_detected" }`), then route to closing ritual. The closing ritual itself is the recovery move at this point.
 
 ## Closing ritual (Phase 8 — always runs unless `status: crisis_exit`)
 
@@ -440,7 +565,7 @@ After step 5, route to subagent dispatch.
 
 ## Bail handling (graceful)
 
-If the user disengages mid-flow (says "stopping", "done", "can't do this", or just goes silent in a way that signals exit) at any point in the check-in, Phase 1, Phase 2, Phase 3, naming, Phase 4, or stub middle:
+If the user disengages mid-flow (says "stopping", "done", "can't do this", or just goes silent in a way that signals exit) at any point in the check-in, Phase 1, Phase 2, Phase 3, naming, Phase 4, Phase 5, Phase 6, or stub middle:
 
 - Set `metadata.status = "interrupted"`.
 - Run the closing ritual in full (all five steps). Closing-step variants apply per current state — if a focus part was engaged through any of Phase 3, thank/permission target the **current focus** (`re_targeted_parts[-1]` || `focus_part`); if Phase 3 didn't reach engagement, use the no-parts-touched variant.
@@ -499,11 +624,14 @@ ONE Agent dispatch per session, at: graceful close, graceful bail, OR imminent-h
     is_new: <bool>,                          # if true, queue create_part; if false, queue update_last_seen (+ optional append_alias)
     is_self_like: <bool>,                   # mirrors phase1_state.focus_part_is_self_like
     permission_granted: <bool>,             # set in closing step 3
-    state_at_end: <string | null>           # one-line user-language state, e.g. "softer, less loud", or "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"
+    state_at_end: <string | null>,          # one-line user-language state, e.g. "softer, less loud", or "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"
+    befriend_notes: [<string>, ...],        # slice 6 — verbatim user-language strings from Phase 5 ("what does it want you to know" / "what would help it relax"). Empty list if Phase 5 didn't run on this part.
+    fears: [<string>, ...],                 # slice 6 — verbatim user-language strings from Phase 6 ("what does it fear would happen if it stopped"). Empty list if Phase 6 didn't run.
+    protects_ref: <string | null>           # slice 6 — descriptor (e.g. "the small one inside") or "[[<existing-exile-title>]]" wikilink, when a protector→exile relationship was confirmed in Phase 6 step 4. null otherwise.
   } | null,                                  # null when no focus part was ever selected (e.g. crisis exit before Phase 2, or trailhead-bail)
   re_targeted_parts: [                       # ordered list of parts that became focus via Phase-4 ratified re-target. Empty list when no re-targets happened.
     {
-      # Same shape as focus_part, plus:
+      # Same shape as focus_part (including slice-6 befriend_notes / fears / protects_ref), plus:
       working_title: <string | null>,
       surfaced_phrase: <string | null>,
       body_location: <string | null>,
@@ -512,6 +640,9 @@ ONE Agent dispatch per session, at: graceful close, graceful bail, OR imminent-h
       is_self_like: <bool>,                 # always false (re-targets are not Self-like-detected paths)
       permission_granted: <bool>,
       state_at_end: <string | null>,
+      befriend_notes: [<string>, ...],
+      fears: [<string>, ...],
+      protects_ref: <string | null>,
       re_targeted_from: <string>,           # working_title of the part the session was previously focused on
       re_target_note: <string>              # one-line plain-prose note for the body sub-section, e.g. "re-targeted from [[wants me to double-check everything]] at Phase 4 — wouldn't step back, re-glimpse didn't restore."
     },
@@ -523,6 +654,14 @@ ONE Agent dispatch per session, at: graceful close, graceful bail, OR imminent-h
     drift_detected_count: <int>,             # number of distinct drift detections (Phase 3/Phase 4 entry pulses + Phase 4 step-2 inspections combined)
     last_pulse_result: <"continue" | "bail" | "drift_detected" | null>
   },
+  phase5_state: {                            # slice 6 — befriend phase outcome
+    befriend_complete: <bool>,               # true once at least one Phase 5 question got a substantive user answer
+    transition_to_phase_6_ratified: <bool>   # true after the propose-and-ratify offer to move into fears was accepted
+  },
+  phase6_state: {                            # slice 6 — fears phase outcome
+    fears_surfaced: <bool>,                  # true once at least one fear-answer landed
+    protector_relationship_captured: <bool>  # true when a record_protects entry was queued in Phase 6 step 4
+  },
   trailhead_returned_to_open_threads: <bool>,
   transcript: [...],
   event_log: [...],
@@ -530,11 +669,13 @@ ONE Agent dispatch per session, at: graceful close, graceful bail, OR imminent-h
 }
 ```
 
-Empty `event_log` is valid (Phase-1-only case, or crisis exit pre-Phase-1). `pending_changes` containing only `strike_trailhead` entries is valid. `phase1_state` defaults are valid when Phase 1 didn't run. `phase4_state` defaults (all `0` / `null`) are valid when Phase 4 didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). `focus_part: null` is valid when no Phase 2 focus was selected.
+Empty `event_log` is valid (Phase-1-only case, or crisis exit pre-Phase-1). `pending_changes` containing only `strike_trailhead` entries is valid. `phase1_state` defaults are valid when Phase 1 didn't run. `phase4_state` defaults (all `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run (e.g. bail at or before Phase 4). `re_targeted_parts: []` is valid (the common case — no re-target happened). `focus_part: null` is valid when no Phase 2 focus was selected.
 
-The subagent uses `focus_part` plus every `re_targeted_parts[]` entry to populate session-note frontmatter (`parts_touched`, `new_parts`, `permission_granted`) and the `## Parts encountered` body section. Each entry gets its own `### [[<working_title>]]` sub-section under `## Parts encountered`, with re-targeted entries including the `re_target_note` body line. It cross-references `pending_changes` for `create_part` / `update_last_seen` / `append_alias` / `set_left_without_resolution` entries on each part.
+The subagent uses `focus_part` plus every `re_targeted_parts[]` entry to populate session-note frontmatter (`parts_touched`, `new_parts`, `permission_granted`) and the `## Parts encountered` body section. Each entry gets its own `### [[<working_title>]]` sub-section under `## Parts encountered`, with re-targeted entries including the `re_target_note` body line. It cross-references `pending_changes` for `create_part` / `update_last_seen` / `append_alias` / `set_left_without_resolution` / `record_protects` entries on each part.
 
-`phase4_state.unblending_events` and `phase4_state.re_targets` populate the matching session-note frontmatter fields directly. `phase1_state.re_glimpses` is incremented mid-session by Phase 4 §4-handle-2 — its final value is what lands in frontmatter.
+The subagent ALSO uses each part's `befriend_notes` + `fears` + `protects_ref` fields (slice 6) to populate the **part page body sections** (`## Role`, `## Fears`, `## What it needs from Self`) at write time. Synthesized into the user's own language; never paraphrased into Claude-voice. `## Burdens` may be inferred lightly when fear patterns suggest a burden, but full burden work is Phase 7 (later slice) — typically `## Burdens` stays as the empty-heading template line in slice 6 sessions. See the subagent's part-page handling section for the population logic.
+
+`phase4_state.unblending_events` and `phase4_state.re_targets` populate the matching session-note frontmatter fields directly. `phase1_state.re_glimpses` is incremented mid-session by Phase 4 §4-handle-2 — its final value is what lands in frontmatter. `phase5_state.befriend_complete` and `phase6_state.fears_surfaced` drive the body sub-section content under `## Parts encountered` (whether to render the "What it shared" / "Fears surfaced" lines for that part) but don't have a direct frontmatter analog — the data lives on the part page.
 
 The subagent returns `{ written, failed, summary }`. Emit the `summary` line as the closing message — that's the user's last visible turn from the skill.
 

@@ -45,13 +45,22 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     is_new: bool,                          // true → caller queued create_part; false → caller queued update_last_seen
     is_self_like: bool,                   // mirrors phase1_state.focus_part_is_self_like
     permission_granted: bool,             // set in closing step 3 when user grants permission to return
-    state_at_end: string | null           // one-line user-language state at end of Phase 3, OR
+    state_at_end: string | null,          // one-line user-language state at end of Phase 3, OR
                                           //   "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"
                                           //   when a Phase-4 re-target moved the focus away from this part
+    befriend_notes: [string, ...],        // SLICE 6 — verbatim user-language strings from Phase 5
+                                          //   ("what does it want you to know" / "what would help it relax").
+                                          //   Empty list when Phase 5 didn't run on this part.
+    fears: [string, ...],                 // SLICE 6 — verbatim user-language strings from Phase 6
+                                          //   ("what does it fear would happen if it stopped").
+                                          //   Empty list when Phase 6 didn't run.
+    protects_ref: string | null           // SLICE 6 — descriptor (e.g. "the small one inside") or
+                                          //   "[[<existing-exile-title>]]" wikilink, when a protector→exile
+                                          //   relationship was confirmed in Phase 6 step 4. null otherwise.
   } | null,
   re_targeted_parts: [
     {
-      // Same shape as focus_part, plus:
+      // Same shape as focus_part (including slice-6 befriend_notes / fears / protects_ref), plus:
       working_title: string | null,
       surfaced_phrase: string | null,
       body_location: string | null,
@@ -60,6 +69,9 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
       is_self_like: bool,                  // always false for re-target entries
       permission_granted: bool,
       state_at_end: string | null,
+      befriend_notes: [string, ...],       // slice 6
+      fears: [string, ...],                // slice 6
+      protects_ref: string | null,         // slice 6
       re_targeted_from: string,            // working_title of the part the session was previously focused on
       re_target_note: string               // one-line plain-prose note for the body sub-section, e.g.
                                            //   "re-targeted from [[wants me to double-check everything]] at Phase 4 — wouldn't step back, re-glimpse didn't restore."
@@ -72,6 +84,14 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     drift_detected_count: int,
     last_pulse_result: "continue" | "bail" | "drift_detected" | null
   },
+  phase5_state: {                          // SLICE 6
+    befriend_complete: bool,               // true once Phase 5 produced at least one substantive answer for any part
+    transition_to_phase_6_ratified: bool   // true after the propose-and-ratify Phase 5 → Phase 6 transition was accepted
+  },
+  phase6_state: {                          // SLICE 6
+    fears_surfaced: bool,                  // true once Phase 6 produced at least one fear-answer
+    protector_relationship_captured: bool  // true when a record_protects entry was queued in Phase 6 step 4
+  },
   trailhead_returned_to_open_threads: bool,
   transcript: [{ role: "user" | "assistant", text, ts }, ...],
   event_log: [
@@ -83,6 +103,8 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     { type: "polarization_work", pair },
     { type: "pulse_check", result },
     { type: "dissociation_cue_caught" },
+    { type: "befriend_complete", part_ref },              // SLICE 6
+    { type: "fears_surfaced", part_ref },                 // SLICE 6
     { type: "exile_contact", part_ref },
     { type: "unburdening", part_ref },
     ...
@@ -93,7 +115,7 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
 }
 ```
 
-Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened).
+Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). On any part (focus_part or re_targeted_parts entry), `befriend_notes: []`, `fears: []`, and `protects_ref: null` are valid — those are the defaults when Phase 5/6 didn't engage that part (or didn't run at all).
 
 **Populating session-note frontmatter from input**:
 
@@ -103,7 +125,13 @@ Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead`
 - `permission_granted` ← list of `[[<working_title>]]` for every part with `permission_granted === true` (across `focus_part` + `re_targeted_parts[]`). The current focus is the most common entry; earlier focuses default to `false` unless the closing ritual explicitly granted them.
 - `unblending_events` ← `phase4_state.unblending_events` (direct copy).
 - `re_targets` ← `phase4_state.re_targets` (direct copy; matches `re_targeted_parts.length`).
-- `cycle_detected`, `polarization_work`, `polarization_pair`, `exile_contact`, `unburdening` default to their zero/false values in slice 5 — Phase 7 + cycle detection lands in later slices.
+- `cycle_detected`, `polarization_work`, `polarization_pair`, `exile_contact`, `unburdening` default to their zero/false values in slice 6 — Phase 7 + cycle detection lands in later slices.
+
+**Slice 6 — Phase 5 / Phase 6 data (NOT in session-note frontmatter, lands on part pages)**:
+
+- `befriend_notes`, `fears`, and `protects_ref` on each part (focus_part + re_targeted_parts entries) feed the **part page body sections** (`## Role`, `## Fears`, `## What it needs from Self`), not session-note frontmatter. See "Part page body population (slice 6)" below for the population logic.
+- `phase5_state.befriend_complete` and `phase6_state.fears_surfaced` are advisory flags for whether to render the relevant body sub-section lines under `## Parts encountered` in the session note (described in the body template). They don't have a direct frontmatter analog.
+- `phase6_state.protector_relationship_captured: true` means a `record_protects { part_ref, exile_ref }` entry should be in `pending_changes`. Apply it normally — it adds the exile_ref to the part's `protects:` frontmatter list.
 
 ## Output contract
 
@@ -187,10 +215,26 @@ re_targeted_parts[] in encounter order. Body per sub-section:
 - How it appeared this session: <body_location and description in user's
   own words; e.g. "in the chest, tight, like a knot">
 - What it shared: <one-line synthesis from transcript — the part's role/job
-  as the user described it, never as Claude's classification>
-- State at end: <state_at_end if non-null; else "engaged, not unburdened
-  (slice 5 — Phases 5–7 not yet implemented)" or similar plain phrasing if
-  state wasn't captured>
+  as the user described it, never as Claude's classification. SLICE 6 —
+  if befriend_notes is non-empty, fold the user's verbatim phrasings in
+  here as the dominant voice (e.g. "told the user it's been keeping things
+  from falling apart since high school" — directly reflecting the
+  befriend_notes content, never paraphrased into Claude-voice). If
+  befriend_notes is empty, fall back to one-line synthesis of body_location
+  / description.>
+- Fears surfaced: <SLICE 6 — render this line ONLY if the part's `fears`
+  list is non-empty. Verbatim user-language summary of what surfaced; e.g.
+  "if it stopped, the small one inside would be alone again." Multiple
+  fears get joined with "; ". Skip the line entirely when fears is empty.>
+- Protects: <SLICE 6 — render this line ONLY if protects_ref is non-null.
+  Format: "[[<exile-title>]]" if protects_ref is a wikilink, else the
+  descriptor as plain text. e.g. "the small one inside" or
+  "[[wants to disappear]]".>
+- State at end: <state_at_end if non-null; else, in slice 6: "engaged
+  through Phase 6 (befriend + fears); deeper work deferred to a later
+  session" if befriend_notes OR fears non-empty, else "engaged through
+  Phase 3" if body_location/description non-null, else "—" if nothing
+  captured>
 - Re-target note: <ONLY for re_targeted_parts[] entries — emit the
   re_target_note value verbatim, e.g. "re-targeted from [[wants me to
   double-check everything]] at Phase 4 — wouldn't step back, re-glimpse
@@ -307,15 +351,37 @@ Sub-rules:
 
 Recent encounters surface via Obsidian's backlinks pane (every session note that links the part shows up there). Don't maintain a "Recent encounters" body section.
 
-### Part-page handling for focus part + re-targeted parts (slice 5)
+### Part-page handling for focus part + re-targeted parts (slice 6)
 
 The skill passes `focus_part` plus an ordered `re_targeted_parts[]` in input. Iterate through the union (focus_part first, then each re_targeted_parts entry in order) and apply per part:
 
-1. **`is_new === true`**: corresponding `create_part { title, initial_frontmatter }` entry is in `pending_changes`. Apply it: write `Parts/<title>.md` with the supplied frontmatter and the empty-heading body template above.
-2. **`is_new === false`**: corresponding `update_last_seen { part_ref, date }` entry is in `pending_changes`. Apply it: Edit `Parts/<part_ref>.md` to set `last_seen: <date>` in frontmatter (in-place; preserve other fields). May also have a paired `append_alias` entry — apply per its semantics.
+1. **`is_new === true`**: corresponding `create_part { title, initial_frontmatter }` entry is in `pending_changes`. Apply it: write `Parts/<title>.md` with the supplied frontmatter and the empty-heading body template above. Then, if the part has Phase 5/6 content (`befriend_notes` or `fears` non-empty), apply the **part page body population (slice 6)** rules below to populate the body sections in the same write (composed before writing — ONE Write call, not Write-then-Edit).
+2. **`is_new === false`**: corresponding `update_last_seen { part_ref, date }` entry is in `pending_changes`. Apply it: Edit `Parts/<part_ref>.md` to set `last_seen: <date>` in frontmatter (in-place; preserve other fields). May also have a paired `append_alias` entry — apply per its semantics. Then, if the part has Phase 5/6 content, apply the **part page body population (slice 6)** rules below as additional Edits to the existing body sections.
 3. **Existing-part collision check (defensive)**: if `is_new === true` but `Parts/<title>.md` already exists (Glob check), do NOT overwrite. Treat as `failed` for that entry with error `"create_part: file already exists; treat as existing part"`. The session note is still written; the user can reconcile by hand from `<date>-recovery.md`.
 4. **Existing-part match by description (best-effort)**: if `is_new === true` AND a Glob over `Parts/*.md` reveals a part with title or alias matching `surfaced_phrase` exactly, prefer the existing part: skip the `create_part`, queue an `update_last_seen` for the matched part, add a `failed` entry noting the alternative match so the user can reconcile if it was wrong. Best-effort only — exact-title/alias match, no fuzzy matching.
 5. **Bail handling — `set_left_without_resolution`**: if `metadata.status === "interrupted"`, the skill will have queued one `set_left_without_resolution { part_ref }` entry per part that reached Phase 3 engagement (across `focus_part` + `re_targeted_parts[]`). Apply each: Edit the part page to add `left_without_resolution: true` to frontmatter (in-place; preserve other fields). On next session involving that part, a `clear_left_without_resolution` entry will land instead.
+6. **`record_protects` (slice 6)**: if `pending_changes` contains a `record_protects { part_ref, exile_ref }` entry for this part (from Phase 6 step 4), apply it as an Edit on the protector's frontmatter — append `exile_ref` to the `protects:` list (deduplicating). The exile_ref may be a string descriptor (no part page yet) or a `[[<existing-title>]]` wikilink (existing part page). Either way, write the value as-is into the YAML list. Per OBSIDIAN.md sub-rule, the protect relationship is mirrored only via the protector's `protects:` field (no `protected_by:` field on the exile side in the current schema).
+
+### Part page body population (slice 6)
+
+When a part has Phase 5/6 content (`befriend_notes` non-empty OR `fears` non-empty), populate the body sections of `Parts/<title>.md` from that data. The skill never writes to part pages mid-session — you do this at write time.
+
+**Rules — reflection-only, never paraphrase into Claude-voice (doctrinal):**
+
+- **`## Role`** ← synthesize one or two short sentences from `befriend_notes` reflecting the user's verbatim phrasings. Example: if `befriend_notes` includes "it told me it's been keeping things from falling apart since high school," populate `## Role` with: *"Keeps things from falling apart. (User reported on 2026-04-25.)"* Reflect the user's own language; do not classify (no "manager that performs perfectionism"). For `is_new` parts, this REPLACES the empty-heading template line ("What this part does for the system."). For existing parts that already have content under `## Role`, APPEND a new dated bullet: *"- 2026-04-25: keeps things from falling apart (user)"* — never replace prior content.
+- **`## Fears`** ← synthesize from `fears` similarly. Example: if `fears` includes "if it stopped, the small one inside would be alone again," populate `## Fears` with: *"If it stops, the small one inside would be alone again. (2026-04-25.)"* For existing pages, append dated bullets, don't replace.
+- **`## What it needs from Self`** ← synthesize from `befriend_notes` entries that match the "what would help it relax" question. If only the "what does it want you to know" question landed (no relax-question answer), leave this section as the template line for new parts, or skip the Edit for existing parts. Example: if a `befriend_notes` entry says "it would help if I just sat with it more often instead of reaching for the next task," populate with: *"Sitting with it instead of reaching for the next task. (2026-04-25.)"*
+- **`## Burdens`** ← lightly inferable when fear patterns suggest a burden (e.g. fears centered on "I'm not enough" / "I'm too much" / "no one will be there"), but in slice 6 keep this LIGHT — full burden work is Phase 7. Default behavior: leave `## Burdens` as the empty-heading template line for new parts; skip the Edit for existing parts.
+- **`## How it appears`** is populated from `body_location` + `description` (already captured at Phase 3, not Phase 5/6). For new parts, write a one-liner: *"Body location: <body_location>. Felt as: <description>. (2026-04-25.)"* For existing parts, append a dated bullet.
+- **`## Origin story`** is left untouched in slice 6 — it lands in Phase 7 territory or via user-authored history.
+
+**Date-stamping convention**: when populating from a session, suffix the synthesized line with `(YYYY-MM-DD.)` so the user can read the part page over time as a layered record.
+
+**For new parts (`is_new === true`)**: COMPOSE the full body (template + populated sections) BEFORE the single `Write` call — do not Write the empty template, then Edit. One Write per new part.
+
+**For existing parts**: each populated section is its own targeted Edit. If multiple sections need updates, batch them into separate Edit calls on the same file, in order: `## Role` → `## How it appears` → `## Fears` → `## What it needs from Self`. If an Edit fails (e.g. heading not found because the part page was hand-edited and the schema drifted), add a `failed` entry for that section and continue with the others; the session note is still canonical.
+
+**If `befriend_notes` and `fears` are BOTH empty** for a part, do nothing for body sections — the part went only through Phase 3 (or through Phase 5 with no substantive answer). The standard Phase-3-level sub-section under `## Parts encountered` in the session note still gets written; just no part-page body changes.
 
 ## Pending-changes log schema
 
