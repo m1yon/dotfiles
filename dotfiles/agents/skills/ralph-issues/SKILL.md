@@ -84,9 +84,9 @@ Progress file: progress-<PRD>.txt at repo root. Prior subagents record Summary +
 
 Work on the current branch only — do not create, switch, or push branches.
 
-1. FIRST, read the parent PRD for overall context: `gh issue view <PRD> --repo <owner>/<repo> --comments`. Understand the bigger goal before touching the sub-issue.
+1. FIRST, read the parent PRD for overall context: `gh issue view <PRD> --repo <owner>/<repo> --json number,title,state,labels,body,comments,url`. Understand the bigger goal before touching the sub-issue.
 2. Read progress-<PRD>.txt if it exists. Carry forward any relevant advice from prior subagents.
-3. Read the sub-issue: `gh issue view <N> --repo <owner>/<repo> --comments`. If it is already closed, stop and return Status: already-done.
+3. Read the sub-issue: `gh issue view <N> --repo <owner>/<repo> --json number,title,state,labels,body,comments,url`. If `state` is `CLOSED`, stop and return Status: already-done.
 4. Implement the required changes. Stay within the scope of the sub-issue, but use the PRD to resolve ambiguity.
 5. Run tests. Use `task test` if a Taskfile exists, else the repo's standard.
 6. Run lint. Use `task lint` if a Taskfile exists, else the repo's standard.
