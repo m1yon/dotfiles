@@ -110,6 +110,20 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     wrap_silenced_until_at: string | null, // ISO ts or null
     firm_wrap_proposed: bool
   },
+  cycle_state: {                           // SLICE 8 — cycle detection
+    blend_counts: { [working_title: string]: int },  // signal 1 trips when any value >= 2
+    re_targets_distinct: int,                        // signal 2 trips at >= 3
+    cycle_detected: bool,                            // surfaces to session-note frontmatter `cycle_detected:`
+    cycle_pair: [string | null, string | null] | null,  // bookends of the cycle; renders as `polarization_pair: [[A]], [[B]]`
+    cycle_resolution: "polarization_work" | "pick_one_and_commit" | "close_and_log" | null
+  },
+  polarization_state: {                    // SLICE 8 — polarization-work outcome (only meaningful when cycle_resolution === "polarization_work")
+    entered: bool,                         // true when §4-polarization-work step 1 ran
+    pair: [string, string] | null,         // mirrors cycle_state.cycle_pair (or user's reframe at step 2)
+    what_each_protects: [string, string] | [],  // verbatim user phrasings from step 5; surfaces in `## What Self noticed`
+    cooperation_agreed: bool,              // true when step 6 user reported both sides agreeing
+    completed: bool                        // true after step 7 (logging); drives `polarization_work: true` in session-note frontmatter
+  },
   trailhead_returned_to_open_threads: bool,
   transcript: [{ role: "user" | "assistant", text, ts }, ...],
   event_log: [
@@ -133,7 +147,7 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
 }
 ```
 
-Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run. `phase7_state` defaults (`false` / `false` / `false` / `null` / `false` / `false` / `null`) are valid when Phase 7 didn't run (gate evaluated and blocked, OR Phases 5/6 didn't reach the entrance). `wrap_state` defaults (with `tier_upper_min` set after check-in step 2 and all other fields `false`/`null`) are valid when no wrap proposal fired. `re_targeted_parts: []` is valid (the common case — no re-target happened). On any part (focus_part or re_targeted_parts entry), `befriend_notes: []`, `fears: []`, and `protects_ref: null` are valid — those are the defaults when Phase 5/6 didn't engage that part (or didn't run at all).
+Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run. `phase7_state` defaults (`false` / `false` / `false` / `null` / `false` / `false` / `null`) are valid when Phase 7 didn't run (gate evaluated and blocked, OR Phases 5/6 didn't reach the entrance). `wrap_state` defaults (with `tier_upper_min` set after check-in step 2 and all other fields `false`/`null`) are valid when no wrap proposal fired. `cycle_state` defaults (`{}` / `0` / `false` / `null` / `null`) are valid when no cycle was detected (the common case). `polarization_state` defaults (`false` / `null` / `[]` / `false` / `false`) are valid when polarization work didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). On any part (focus_part or re_targeted_parts entry), `befriend_notes: []`, `fears: []`, and `protects_ref: null` are valid — those are the defaults when Phase 5/6 didn't engage that part (or didn't run at all).
 
 **Populating session-note frontmatter from input**:
 
@@ -145,7 +159,12 @@ Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead`
 - `re_targets` ← `phase4_state.re_targets` (direct copy; matches `re_targeted_parts.length`).
 - `exile_contact` ← `phase7_state.exile_contact` (direct copy; slice 7).
 - `unburdening` ← `phase7_state.unburdening` (direct copy; slice 7).
-- `cycle_detected`, `polarization_work`, `polarization_pair` default to their zero/false values in slice 7 — cycle detection + polarization work land in later slices.
+- `cycle_detected` ← `cycle_state.cycle_detected` (direct copy; slice 8).
+- `polarization_work` ← `polarization_state.completed` (direct copy; slice 8). Note: `cycle_state.cycle_resolution === "polarization_work"` is necessary but not sufficient — the resolution may be set early but `completed` only flips at §4-polarization-work step 7. If polarization-work was abandoned mid-protocol (e.g. fell back to close-and-log because step 1 re-glimpse came up murky), `polarization_work: false` even though `cycle_resolution` started out `polarization_work`.
+- `polarization_pair` ← derive from `cycle_state.cycle_pair`. Render as a YAML list of `[[<title>]]` wikilinks. Each pair member: if non-null, wrap in `[[...]]`; if null, render as the empty entry. Examples:
+  - `cycle_pair: ["wants me to double-check everything", "the perfectionist"]` → `polarization_pair: [[wants me to double-check everything]], [[the perfectionist]]`
+  - `cycle_pair: ["wants me to double-check everything", null]` → `polarization_pair: [[wants me to double-check everything]]` (one-element list)
+  - `cycle_pair: null` (no cycle detected) → `polarization_pair: []`
 
 **Slice 6 — Phase 5 / Phase 6 data (NOT in session-note frontmatter, lands on part pages)**:
 
@@ -160,6 +179,20 @@ Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead`
 - `phase7_state.exile_ref`: when set AND `exile_ref` is a `[[<existing-title>]]` wikilink, the corresponding part page is touched with `update_last_seen` AND (if `phase7_state.unburdening: true`) the `set_status { part_ref: <exile_ref>, status: unburdened }` entry should be in `pending_changes`. Apply it: Edit the exile's part page frontmatter to set `status: unburdened`. When `exile_ref` is a description-only placeholder (no part page), no part-page touch happens — the unburdening is recorded only in `event_log` and session-note frontmatter. Future sessions can promote the descriptor to a part page if and when the exile becomes its own focus.
 - `wrap_state` is consumed for `## Arc` synthesis only — if a wrap proposal fired (`soft_wrap_proposed: true` or `firm_wrap_proposed: true`), mention it briefly in `## Arc`, plain prose ("Soft wrap at minute 40, kept going; firm wrap at 45 closed cleanly"). No separate frontmatter field; `metadata.duration_min` already captures the wall-clock outcome.
 - **Part page body population (slice 7 — Phase 7 outcomes)**: when `phase7_state.exile_contact: true` AND `phase7_state.exile_ref` is a `[[<existing-title>]]` wikilink, the exile's part page body sections are touched the same way as slice 6 (the exile's `## Role` / `## Fears` / `## What it needs from Self` populated from the user's verbatim Phase 7 step 2 description and step 5 "what it needs" answer — read these out of the transcript context surrounding the `exile_contact` and `unburdening` event-log entries). When `phase7_state.unburdening: true`, additionally populate `## Burdens` on the exile's page with the user's verbatim Phase-7-unburdening step 1 answer ("what it's been carrying"), date-stamped per slice-6 convention `(YYYY-MM-DD.)`. The skill never queues `set_status` for descriptor-only exile_refs (no part page); the body-population rules don't fire either in that case.
+
+**Slice 8 — cycle detection / polarization-work data**:
+
+- `cycle_state.cycle_detected: true` populates session-note frontmatter `cycle_detected: true`. The `cycle_pair` renders into `polarization_pair: [[A]], [[B]]` per the rules above.
+- `polarization_state.completed: true` populates session-note frontmatter `polarization_work: true`. Both `cycle_detected` and `polarization_work` are independent — a session may have `cycle_detected: true, polarization_work: false` (cycle detected, user picked pick-one or close-and-log).
+- **`record_polarization` application**: a `record_polarization { pair: [a, b] }` entry is the canonical pending-changes way to record a cycle observation on the part pages, regardless of which cycle-resolution branch the session took. The skill queues this entry in all three resolution paths (polarization_work step 7, pick-one-and-commit, close-and-log) — apply it on the matching part pages by adding each pair member to the *other's* `polarized_with:` frontmatter list (mirrored). Deduplicate; if `[[A]]` is already in B's `polarized_with:` list, no change. If either pair member is `null` (signal-1 fallback when the other end couldn't be identified), skip the mirror — the cycle is recorded only in the session-note's `polarization_pair:` and `## What Self noticed` synthesis.
+- **Polarization-work `## What Self noticed` synthesis**: when `polarization_state.completed: true`, the body section folds in:
+  - The pair: *"`<a>` and `<b>` cycled — likely polarized."*
+  - What each protects (from `polarization_state.what_each_protects`, if non-empty): *"`<a>` protects <verbatim a>; `<b>` protects <verbatim b>."* (Skip the half if its element is empty-string.)
+  - Cooperation outcome: if `cooperation_agreed: true` → *"Both agreed to let Self lead."* If `false` → *"Cooperation not enforced today."*
+  - One paragraph total. Reflect the user's own language. Never paraphrase into Claude-voice.
+- **Pick-one-and-commit `## What Self noticed`**: when `cycle_resolution === "pick_one_and_commit"` (and `polarization_work: false`), include a brief note: *"`<a>` and `<b>` cycled — likely polarized. Picked `<committed focus>` to work today; the other goes to open threads."*
+- **Close-and-log `## What Self noticed`**: when `cycle_resolution === "close_and_log"`, include: *"`<a>` and `<b>` cycled — likely polarized. Closed and logged."*
+- **`## Parts encountered` body sub-sections after polarization work**: both polarized parts get their `### [[<working_title>]]` sub-sections rendered, but with the slice-8 caveat that polarization work intentionally does NOT run Phase 5/6 on either side. So `befriend_notes` and `fears` for the polarized parts will typically be empty (unless they were captured before the cycle tripped). Body lines render whatever Phase-3-level data was captured; Fears surfaced / What it shared lines render only if data exists. The state_at_end for both polarized parts may be set to *"engaged in polarization work — pair recorded"* by the skill (or close paraphrase); render verbatim.
 
 ## Output contract
 
@@ -390,6 +423,10 @@ The skill passes `focus_part` plus an ordered `re_targeted_parts[]` in input. It
 5. **Bail handling — `set_left_without_resolution`**: if `metadata.status === "interrupted"`, the skill will have queued one `set_left_without_resolution { part_ref }` entry per part that reached Phase 3 engagement (across `focus_part` + `re_targeted_parts[]`). Apply each: Edit the part page to add `left_without_resolution: true` to frontmatter (in-place; preserve other fields). On next session involving that part, a `clear_left_without_resolution` entry will land instead.
 6. **`record_protects` (slice 6)**: if `pending_changes` contains a `record_protects { part_ref, exile_ref }` entry for this part (from Phase 6 step 4), apply it as an Edit on the protector's frontmatter — append `exile_ref` to the `protects:` list (deduplicating). The exile_ref may be a string descriptor (no part page yet) or a `[[<existing-title>]]` wikilink (existing part page). Either way, write the value as-is into the YAML list. Per OBSIDIAN.md sub-rule, the protect relationship is mirrored only via the protector's `protects:` field (no `protected_by:` field on the exile side in the current schema).
 7. **`set_status` (slice 7 — unburdening)**: if `pending_changes` contains a `set_status { part_ref, status: "unburdened" }` entry (queued at end of Phase 7 unburdening step 5), apply it as an Edit on the target part page's frontmatter — set `status: unburdened` (replacing whatever the prior value was, typically `active`). The `part_ref` is the `[[<existing-title>]]` wikilink for the exile. If the target page doesn't exist (rare — should only happen if the skill queued `set_status` against a non-existent file, which would be a slice-7 bug), add a `failed` entry and continue. Apply this AFTER any other Edits to the same page (e.g. exile body-section population from slice-7 Phase 7 outcomes), so the final state is consistent.
+8. **`record_polarization` (slice 8 — cycle detection / polarization work)**: if `pending_changes` contains a `record_polarization { pair: [a, b] }` entry (queued in any of the three cycle-resolution branches: §4-cycle-pick-one / §4-cycle-close-and-log / §4-polarization-work step 7), apply it on **both** part pages — mirrored. For each member of the pair:
+   - If member is `null` (signal-1 fallback when the other end couldn't be identified), skip the mirror for that member; the cycle is recorded only via session-note `polarization_pair:` and `## What Self noticed` synthesis. Continue with the non-null member alone — but with `null` as the other end, there's nothing to mirror; effectively no part-page Edit happens. Add a `failed` entry noting *"record_polarization: cycle pair has null member — recorded session-note only"* (informational, not a hard failure).
+   - If both members are non-null: locate `Parts/<a>.md` and `Parts/<b>.md`. For each, Edit the frontmatter to add the *other* part to the `polarized_with:` list, deduplicating. Format: YAML wikilink (`[[<other title>]]`). If the `polarized_with:` field doesn't exist in the frontmatter yet, add it. If either page doesn't exist (rare — would mean the cycle pair includes a part that was never created via `create_part`; slice-8 bug or descriptor-only placeholder), add a `failed` entry for that side and continue with the other.
+   - This is consistent with the existing `record_polarization` semantics in the pending-changes schema (already in the schema since slice 1; slice 8 is the first slice to actively queue it).
 
 ### Part page body population (slice 6)
 
@@ -447,6 +484,7 @@ Never read the full active roster eagerly. Schema knowledge (this prompt) plus t
 - Brief — `## Arc` is one short paragraph, two at most. The transcript is the record of words; `## Arc` records the *movement*.
 - For tracer-skeleton runs (empty event_log, only `strike_trailhead` in pending_changes): one-line stub is enough. Don't fabricate a session that didn't happen.
 - For interrupted/crisis_exit: name where the bail/exit happened; do not psychologize.
+- For `cycle_state.cycle_detected: true` sessions: name the cycle in `## What Self noticed` per the slice-8 synthesis rules. The `## Arc` may also note where the cycle tripped and which resolution the user picked, but the cycle's "what does this mean" content lives in `## What Self noticed`. For `polarization_state.completed: true` sessions, `## What Self noticed` includes what each protected and whether cooperation landed.
 
 ## Doctrinal lines (must hold in your output)
 

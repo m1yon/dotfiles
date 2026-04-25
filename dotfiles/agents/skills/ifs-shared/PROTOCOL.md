@@ -1,6 +1,6 @@
 # PROTOCOL.md — eager-loaded EM+IFS playbook
 
-Slice 7 of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), Phase 7 (§7 — optional deeper work: exile contact + unburdening, two-factor-gated), tier wrap clock (§wrap — silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase), and Phase 8 closing ritual (§5f) are live. Cycle detection, polarization work, and renames land in later slices.
+Slice 8 of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue; **cycle detection signals (repeat blend at Phase 4 OR three distinct re-targets) at §4-cycle, three-option prose offer, default close-and-log; polarization-work 7-step protocol at §4-polarization-work, Schwartz-orthodox / Kelly-retained, replaces remainder of session, requires clean re-glimpse first**), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), Phase 7 (§7 — optional deeper work: exile contact + unburdening, two-factor-gated), tier wrap clock (§wrap — silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase), and Phase 8 closing ritual (§5f) are live. Renames land in a later slice.
 
 For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`. For longer-form imitator explanations, see `FAQ.md`.
 
@@ -289,7 +289,14 @@ After Phase 3 (or any time mid-engagement past Phase 3), watch for:
 - **User reports blending** — *"I think it's taking over"*, *"I am the part right now"*, *"I can't find me"*, or similar self-report of identification with the part.
 - **Pulse-check returns `drift_detected`** at a phase boundary — texture or Self-like-parts spotting flags murkiness.
 
-If any signal trips, route into §4-handle. Otherwise continue (no narration; just keep going).
+If any signal trips:
+
+1. Log `blend_at_f4 { blended_part_ref: <current focus working_title> }` to `event_log`.
+2. Increment `cycle_state.blend_counts[<current focus working_title>]` (slice 8 cycle-detection counter).
+3. **Check cycle signal 1** (repeat blend at Phase 4): if `cycle_state.blend_counts[<current focus>] >= 2`, route to §4-cycle (cycle handler) — do NOT run §4-handle. Identify the cycle pair best-effort: `[<blended part>, <previous focus this part re-targeted from, OR last surfaced "other part" from transcript context, OR null>]`. Set `cycle_state.cycle_detected = true`, `cycle_state.cycle_pair = <pair>`.
+4. Otherwise route into §4-handle.
+
+If no signals trip, continue (no narration; just keep going).
 
 ### §4-handle — Hybrid drift handling (three escalating moves, never recursive)
 
@@ -343,10 +350,13 @@ Wait. Trust the user's pick at face value:
 - **User picks "pivot to it"**:
   - Log `re_target { from: <original focus working_title>, to: <new phrase / placeholder if unnamed> }` to `event_log`.
   - Increment `re_targets` in session-state.
-  - Move the original focus to `## Open threads` of the new note (subagent appends — the skill flags it via the `re_targets` event log entries; the original `focus_part` stays in the input as the *first* part touched, but with `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` or similar plain phrasing).
-  - The new target becomes the focus part. Run Phase 3 on it (locate → describe → thank → ask-space → Self-energy → "how do you feel toward that part?" → naming). The new focus accumulates as a *separate* `focus_part` entry — slice 5 tracks this as a `re_targeted_parts[]` list passed to the subagent (each entry has the same shape as `focus_part`, plus `re_targeted_from: <previous focus working_title>`).
-  - **Re-targets stack linearly.** A → B → C → D is fine in slice 5 (cycle detection lands in slice 8 / issue #18). Each new re-target appends to `re_targeted_parts[]` with `re_targeted_from` pointing at the immediately-previous focus.
-  - After Phase 3 completes on the new focus, run Phase 4 again (continuation check). If drift detected again, hybrid handling runs again on the *new* focus. Re-targets keep stacking.
+  - Increment `cycle_state.re_targets_distinct` IF the new target hasn't been a focus before in this session (track by working_title / surfaced_phrase across `focus_part` + `re_targeted_parts[]`).
+  - **Check cycle signal 2** (re-target pile-up): if `cycle_state.re_targets_distinct >= 3`, set `cycle_state.cycle_detected = true`, `cycle_state.cycle_pair = [<original focus.working_title>, <new target's working_title or surfaced_phrase>]` (bookends — original focus + most-recent re-target). Route to §4-cycle. Do NOT run Phase 3 on the new focus — the cycle handler replaces that.
+  - **Otherwise** (no cycle trip):
+    - Move the original focus to `## Open threads` of the new note (subagent appends — the skill flags it via the `re_targets` event log entries; the original `focus_part` stays in the input as the *first* part touched, but with `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` or similar plain phrasing).
+    - The new target becomes the focus part. Run Phase 3 on it (locate → describe → thank → ask-space → Self-energy → "how do you feel toward that part?" → naming). The new focus accumulates as a *separate* `focus_part` entry — slice 5 tracks this as a `re_targeted_parts[]` list passed to the subagent (each entry has the same shape as `focus_part`, plus `re_targeted_from: <previous focus working_title>`).
+    - **Re-targets stack linearly** until cycle signal 2 trips. A → B → C is fine if no part has been the focus twice; the third *distinct* re-target trips the cycle handler.
+    - After Phase 3 completes on the new focus, run Phase 4 again (continuation check). If drift detected again, hybrid handling runs again on the *new* focus. Re-targets keep stacking until signal 1 (repeat blend) or signal 2 (pile-up) trips.
 
 - **User picks "come back to `<original>` next time"**:
   - Set `metadata.status = "interrupted"` (the user is choosing to close mid-work; this is a graceful bail, not a failure).
@@ -370,7 +380,138 @@ Subagent renders each part (original `focus_part` + every `re_targeted_parts[]` 
 
 ### §4-postphase — Post-Phase-4 routing
 
-After Phase 4 completes (no drift detected, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable), route into Phase 5 (Befriend). The current focus = `re_targeted_parts[-1]` if non-empty, else `focus_part`.
+After Phase 4 completes (no drift detected, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable, OR cycle handled via `pick_one_and_commit`), route into Phase 5 (Befriend). The current focus = `re_targeted_parts[-1]` if non-empty, else `focus_part`.
+
+### §4-cycle — Cycle detection (slice 8)
+
+Triggered when `cycle_state.cycle_detected` flips `true` from §4-detect step 3 (signal 1: same part blended at Phase 4 twice) OR §4-handle-3 cycle-trip (signal 2: three distinct re-targets). The cycle handler **replaces** the rest of Phase 4 — no remaining §4-handle moves, no Phase 3 on a new focus.
+
+Log `cycle_detected { signal: "repeat_blend" | "re_target_pile_up", parts: <cycle_pair as list> }` to `event_log`.
+
+#### Step 1 — Pause and name the pattern (one line, prose)
+
+Pattern-match the call-out by signal:
+
+- **Signal 1** (repeat blend, `cycle_pair = [X, Y]`):
+  > *"`<X>` and `<Y>` keep cycling — likely polarized. Pausing here."*
+  (If `Y` is `null` — couldn't identify the other end: *"`<X>` keeps coming back — the system seems to be cycling around it. Pausing here."*)
+- **Signal 2** (re-target pile-up):
+  > *"The system seems too activated to land anywhere today — three different parts have come forward."*
+
+One line. No therapist-voice. No softening.
+
+#### Step 2 — Three-option offer (PROSE — never AskUserQuestion)
+
+> *"Three ways from here: (i) work the polarization between `<a>` and `<b>` directly — different protocol, replaces the rest of the session. (ii) pick one of them to commit to today and let the others go to open threads. (iii) close and log the cycle, come back fresh next time. Which?"*
+
+Wait. Trust the user's pick. Set `cycle_state.cycle_resolution`:
+
+- **"polarization" / "(i)"**: → §4-polarization-work.
+- **"pick one" / "(ii)"**: → §4-cycle-pick-one (resume Phase 5 on the committed focus).
+- **"close" / "(iii)"**: → §4-cycle-close-and-log.
+- **Disengages / silent / can't decide**: default to (iii) close-and-log (per PRD §21).
+
+#### §4-cycle-pick-one — Pick-one-and-commit
+
+Plain prose, one line:
+
+> *"If you had to work with just one of them today, which?"*
+
+Wait. The picked part becomes the **current focus** for the rest of the session. Mutate `re_targeted_parts[]` so the picked part is the current focus (or, if it's the original `focus_part`, clear later re-targets so resolution lands there). The other parts in `cycle_pair` (and any other previously-current re-targets) go to `## Open threads` of the new note.
+
+Queue `record_polarization { pair: <cycle_pair> }` in `pending_changes` (mirrored `polarized_with:` per PRD acceptance criterion — even on pick-one path, the cycle observation is recorded across both pages).
+
+Route to Phase 5 (per §4-postphase) on the committed focus.
+
+#### §4-cycle-close-and-log — Close-and-log
+
+Plain prose, one line:
+
+> *"OK — logging the cycle. Closing here."*
+
+Queue `record_polarization { pair: <cycle_pair> }` in `pending_changes`. Set `metadata.status = "complete"` (graceful close — the cycle was named, no further phase work). Skip remaining unworked phases. Route directly to §7-pre-close + closing ritual.
+
+Subagent populates `## What Self noticed` with prose like *"`<a>` and `<b>` cycled — likely polarized. Closed and logged."*
+
+### §4-polarization-work — Polarization work (slice 8 — Schwartz 7-step, Kelly-retained)
+
+Activated when `cycle_state.cycle_resolution === "polarization_work"`. **Replaces remainder of session** — no Phase 5, no Phase 6, no Phase 7 on either polarized part. After step 7, route directly to §7-pre-close + closing.
+
+Set `polarization_state.entered = true`, `polarization_state.pair = cycle_state.cycle_pair`.
+
+**Hard rules**:
+
+- Polarization work must be entered from clean Self. Step 1's re-glimpse is the gate; murky texture falls back to §4-cycle-close-and-log.
+- Polarization work is NOT: (a) full embodied engagement on each part — no locate → describe → thank → ask-space → Self-energy on either side; (b) a resolution attempt — the move is externalize / surface protections / ask cooperation / log; (c) role relinquishment — neither part is asked to step aside; both stay present.
+- Doctrinal line 1 holds throughout. Never voice either part. All questions are Self-directed (asked of the user).
+
+#### Step 1 — Re-glimpse to verify Self
+
+> *"Before we work between them — let's notice again. What's here when there's no problem to solve?"*
+>
+> Take a moment with that.
+
+Wait. Re-check texture briefly:
+
+> *"What's it like for you now — located somewhere, or more open?"*
+
+Wait. Increment `phase1_state.re_glimpses`. Log `pulse_check { result }`.
+
+- **Texture clean**: proceed to step 2.
+- **Texture murky / Self-like-part pattern**: polarization work cannot proceed from this Self-state. Plain one-line: *"Texture didn't land — letting it be, logging the cycle, closing here."* Fall through to §4-cycle-close-and-log queueing + closing.
+
+#### Step 2 — Name the polarization
+
+> *"From where you are now — `<a>` and `<b>` seem tied up with each other. Does that feel right?"*
+
+Wait. Trust the user's confirmation / refinement / denial:
+
+- **Confirms**: proceed to step 3.
+- **Refines pair** (e.g. *"actually it's `<b>` and `<c>`"*): update `polarization_state.pair` and `cycle_state.cycle_pair` to match user's reframe, proceed.
+- **Denies cycle entirely** (*"I just couldn't find Self"*): polarization work is not the right move. Fall back to §4-cycle-close-and-log.
+
+#### Step 3 — Externalize
+
+Both parts visible simultaneously, externalized in front of the user. Both stay present (neither is asked to step back) — that's the structural difference from drift handling.
+
+> *"Let `<a>` and `<b>` both be present in front of you — like you're seeing them across the room, not inside you. Can you sense them both?"*
+
+Wait. If user can't externalize them (gets pulled back into one), gently restate once: *"Take your time — just enough distance to see them both at once."* If still can't, fall back to §4-cycle-close-and-log (externalization is load-bearing; without it, the rest doesn't work).
+
+#### Step 4 — Self curious toward both, equally
+
+> *"From Self, what does each of them need?"*
+
+Wait. Capture user's verbatim reply (transcript context — no new pending-changes entry).
+
+The phrasing is critical: *"what does each of them need"* (asked of the user, plural, equal weight). Never *"what does `<a>` say to `<b>`"* (that would invite voicing them at each other — doctrinal line 1 violation).
+
+#### Step 5 — Surface what each protects
+
+> *"And what does each of them protect — what would happen if it stopped?"*
+
+Wait. Capture into `polarization_state.what_each_protects` as `[<verbatim for a>, <verbatim for b>]`. (Empty-string fallback if user only lands one side — don't push.)
+
+If a clear protector→exile relationship surfaces for either side that wasn't already captured in slice 6 §6-4, optionally queue `record_protects` per the same rules.
+
+#### Step 6 — Ask for cooperation, not merger
+
+> *"Would both of them be willing to let Self lead for a bit — not to merge, not to switch, just to make space for each other?"*
+
+Wait. Trust user's report:
+
+- **Both agree**: `polarization_state.cooperation_agreed = true`.
+- **One declines / both decline / partial / unclear**: `polarization_state.cooperation_agreed = false`. The polarization is named and surfaced; cooperation is not enforceable. The work has happened.
+
+Either way, proceed to step 7. Do NOT loop back asking again.
+
+#### Step 7 — Log
+
+`polarization_state.completed = true`. Log `polarization_work { pair: <polarization_state.pair> }` to `event_log`.
+
+Queue `record_polarization { pair: <polarization_state.pair> }` in `pending_changes`. Subagent mirrors `polarized_with:` on both part pages.
+
+Route to §7-pre-close + closing. Polarization work **replaces** remainder of session — no Phase 5, no Phase 6, no Phase 7. Per PRD acceptance criterion: *"After step 7, route directly to closing ritual. No befriend/fears on either polarized part after naming."*
 
 Closing ritual targets the **current focus** (last entry in `re_targeted_parts[]` if any, else `focus_part`). The original focus and any intermediate re-targets are addressed in `## Parts encountered` body sections only — closing's permission-to-return question targets the most-engaged-most-recently part. If user wants to grant permission for multiple, they say so in plain prose; the skill defaults to current-focus-only for `permission_granted` frontmatter.
 
@@ -652,10 +793,8 @@ Five steps, in order:
 
 Order matters: rest-in-Self before step-out so re-orientation happens *from* Self, not as an exit. Sessions don't get logged as `complete` until the ritual runs.
 
-## Slice 8+ content (placeholder)
+## Slice 9+ content (placeholder)
 
 Full procedural content for the following lands in later slices:
 
-- §5e — cycle detection (signals: same part blends at Phase 4 twice; three distinct re-targets in one session). Response: pause, name pattern, offer three paths in prose (polarization work / pick-one / close-and-log; default close-and-log). Slice 5 lands linear stacking of re-targets without cycle detection — re-targets log freely, no cycle counter trips.
-- §5e — polarization work (Schwartz 7-step protocol, Kelly-retained; replaces remainder of session; requires clean re-glimpse first).
 - Renames and the `[[New|old phrase]]` backlink rewrites (inline at rename-discovery time, mid-session). Slice 4 wires `append_alias` for new phrasings of the same part; full rename lands later.
