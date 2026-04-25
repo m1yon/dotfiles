@@ -45,8 +45,33 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     is_new: bool,                          // true → caller queued create_part; false → caller queued update_last_seen
     is_self_like: bool,                   // mirrors phase1_state.focus_part_is_self_like
     permission_granted: bool,             // set in closing step 3 when user grants permission to return
-    state_at_end: string | null           // one-line user-language state at end of Phase 3
+    state_at_end: string | null           // one-line user-language state at end of Phase 3, OR
+                                          //   "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"
+                                          //   when a Phase-4 re-target moved the focus away from this part
   } | null,
+  re_targeted_parts: [
+    {
+      // Same shape as focus_part, plus:
+      working_title: string | null,
+      surfaced_phrase: string | null,
+      body_location: string | null,
+      description: string | null,
+      is_new: bool,
+      is_self_like: bool,                  // always false for re-target entries
+      permission_granted: bool,
+      state_at_end: string | null,
+      re_targeted_from: string,            // working_title of the part the session was previously focused on
+      re_target_note: string               // one-line plain-prose note for the body sub-section, e.g.
+                                           //   "re-targeted from [[wants me to double-check everything]] at Phase 4 — wouldn't step back, re-glimpse didn't restore."
+    },
+    ...
+  ],
+  phase4_state: {
+    unblending_events: int,                // number of §4-handle-1 thank-and-ask-space attempts (success OR failure)
+    re_targets: int,                       // number of ratified re-targets (matches re_targeted_parts.length)
+    drift_detected_count: int,
+    last_pulse_result: "continue" | "bail" | "drift_detected" | null
+  },
   trailhead_returned_to_open_threads: bool,
   transcript: [{ role: "user" | "assistant", text, ts }, ...],
   event_log: [
@@ -68,15 +93,17 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
 }
 ```
 
-Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run.
+Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened).
 
 **Populating session-note frontmatter from input**:
 
-- `self_texture`, `self_like_part_detected`, `re_glimpses` ← copy directly from `phase1_state`.
-- `parts_touched` ← `[ [[focus_part.working_title]] ]` if `focus_part` non-null and Phase 3 reached engagement (any of `body_location`, `description` is non-null); else `[]`.
-- `new_parts` ← `[ [[focus_part.working_title]] ]` if `focus_part` non-null AND `focus_part.is_new === true`; else `[]`.
-- `permission_granted` ← `[ [[focus_part.working_title]] ]` if `focus_part.permission_granted === true`; else `[]`.
-- All other frontmatter fields (`unblending_events`, `re_targets`, `cycle_detected`, `polarization_work`, `polarization_pair`, `exile_contact`, `unburdening`) default to their zero/false values in slice 4 — Phases 4–7 not implemented yet.
+- `self_texture`, `self_like_part_detected`, `re_glimpses` ← copy directly from `phase1_state`. Note `re_glimpses` may be > 0 from Phase-1 §1c re-glimpse OR from Phase-4 §4-handle-2 fallback re-glimpse — both increment the same counter; final value lands in frontmatter.
+- `parts_touched` ← list of `[[<working_title>]]` for every part that reached Phase 3 engagement (any of `body_location`, `description` non-null). Includes `focus_part` if applicable AND every entry in `re_targeted_parts[]`. Order: original `focus_part` first, then `re_targeted_parts[]` in encounter order.
+- `new_parts` ← list of `[[<working_title>]]` for every part with `is_new === true` (across `focus_part` + `re_targeted_parts[]`).
+- `permission_granted` ← list of `[[<working_title>]]` for every part with `permission_granted === true` (across `focus_part` + `re_targeted_parts[]`). The current focus is the most common entry; earlier focuses default to `false` unless the closing ritual explicitly granted them.
+- `unblending_events` ← `phase4_state.unblending_events` (direct copy).
+- `re_targets` ← `phase4_state.re_targets` (direct copy; matches `re_targeted_parts.length`).
+- `cycle_detected`, `polarization_work`, `polarization_pair`, `exile_contact`, `unburdening` default to their zero/false values in slice 5 — Phase 7 + cycle detection lands in later slices.
 
 ## Output contract
 
@@ -154,17 +181,26 @@ glimpse → texture → focus part surfaced → engaged embodied → state at en
 One paragraph, two at most. Reflect the user's own language; do not classify.>
 
 ## Parts encountered
-<### [[<focus_part.working_title>]] sub-section if focus_part is non-null AND
-Phase 3 reached engagement. Body of the sub-section:
-- How it appeared this session: <focus_part.body_location and description in
-  user's own words; e.g. "in the chest, tight, like a knot">
+<One ### [[<working_title>]] sub-section per part that reached Phase 3
+engagement. Order: original focus_part first, then each entry in
+re_targeted_parts[] in encounter order. Body per sub-section:
+- How it appeared this session: <body_location and description in user's
+  own words; e.g. "in the chest, tight, like a knot">
 - What it shared: <one-line synthesis from transcript — the part's role/job
   as the user described it, never as Claude's classification>
-- State at end: <focus_part.state_at_end if non-null; else "engaged, not
-  unburdened (slice 4 — Phases 4–7 not yet implemented)" or similar plain
-  phrasing if state wasn't captured>
-Empty section ("No parts engaged this session.") if focus_part is null or
-Phase 3 didn't reach engagement.>
+- State at end: <state_at_end if non-null; else "engaged, not unburdened
+  (slice 5 — Phases 5–7 not yet implemented)" or similar plain phrasing if
+  state wasn't captured>
+- Re-target note: <ONLY for re_targeted_parts[] entries — emit the
+  re_target_note value verbatim, e.g. "re-targeted from [[wants me to
+  double-check everything]] at Phase 4 — wouldn't step back, re-glimpse
+  didn't restore.">
+For an original focus_part that was re-targeted away from, its state_at_end
+will already reflect that ("re-targeted away from at Phase 4 — wouldn't
+step back, re-glimpse didn't restore"); render it in the State at end line
+without an extra re-target note.
+Empty section ("No parts engaged this session.") if focus_part is null AND
+re_targeted_parts is empty.>
 
 ## What Self noticed
 <system-level observations from Self's vantage point — what the user noticed
@@ -197,7 +233,7 @@ Sub-rules from §9:
 
 - Self-texture and re-glimpse counts go in frontmatter, not narrated. `## What Self noticed` may prose-comment on Self-stability if notable.
 - Drift events (`unblending_events`) counted in frontmatter only — not separately enumerated in body. The body's per-part section records *how it appeared*, including drift, as part of that.
-- Re-targets logged as their own `### [[part name]]` section under `## Parts encountered`, with a note like *"re-targeted from [[original]] at Phase 4."*
+- Re-targets logged as their own `### [[part name]]` section under `## Parts encountered`, with the verbatim `re_target_note` from the input (e.g. *"re-targeted from [[wants me to double-check everything]] at Phase 4 — wouldn't step back, re-glimpse didn't restore."*). Original focus's `state_at_end` reflects "re-targeted away from at Phase 4 — …" when applicable.
 - Cycle detection events go in `## What Self noticed` plus `cycle_detected: true` and `polarization_pair:` in frontmatter, plus mirrored `polarized_with:` on each part page.
 - Session notes are **never retroactively edited.** New understanding goes on the part page or in the next session's `## What Self noticed`.
 
@@ -271,14 +307,15 @@ Sub-rules:
 
 Recent encounters surface via Obsidian's backlinks pane (every session note that links the part shows up there). Don't maintain a "Recent encounters" body section.
 
-### Part-page handling for slice-4 focus part
+### Part-page handling for focus part + re-targeted parts (slice 5)
 
-The skill passes `focus_part` in input. Workflow:
+The skill passes `focus_part` plus an ordered `re_targeted_parts[]` in input. Iterate through the union (focus_part first, then each re_targeted_parts entry in order) and apply per part:
 
-1. **`focus_part.is_new === true`**: corresponding `create_part { title, initial_frontmatter }` entry is in `pending_changes`. Apply it: write `Parts/<title>.md` with the supplied frontmatter and the empty-heading body template above.
-2. **`focus_part.is_new === false`**: corresponding `update_last_seen { part_ref, date }` entry is in `pending_changes`. Apply it: Edit `Parts/<part_ref>.md` to set `last_seen: <date>` in frontmatter (in-place; preserve other fields). May also have a paired `append_alias` entry — apply per its semantics.
-3. **Existing-part collision check (defensive)**: if `focus_part.is_new === true` but `Parts/<title>.md` already exists (Glob check), do NOT overwrite. Treat as `failed` for that entry with error `"create_part: file already exists; treat as existing part"`. The session note is still written; the user can reconcile by hand from `<date>-recovery.md`.
-4. **Existing-part match by description (best-effort)**: if `focus_part.is_new === true` AND a Glob over `Parts/*.md` reveals a part with title or alias matching `focus_part.surfaced_phrase` exactly, prefer the existing part: skip the `create_part`, queue an `update_last_seen` for the matched part, add a `failed` entry noting the alternative match so the user can reconcile if it was wrong. Best-effort only — exact-title/alias match, no fuzzy matching.
+1. **`is_new === true`**: corresponding `create_part { title, initial_frontmatter }` entry is in `pending_changes`. Apply it: write `Parts/<title>.md` with the supplied frontmatter and the empty-heading body template above.
+2. **`is_new === false`**: corresponding `update_last_seen { part_ref, date }` entry is in `pending_changes`. Apply it: Edit `Parts/<part_ref>.md` to set `last_seen: <date>` in frontmatter (in-place; preserve other fields). May also have a paired `append_alias` entry — apply per its semantics.
+3. **Existing-part collision check (defensive)**: if `is_new === true` but `Parts/<title>.md` already exists (Glob check), do NOT overwrite. Treat as `failed` for that entry with error `"create_part: file already exists; treat as existing part"`. The session note is still written; the user can reconcile by hand from `<date>-recovery.md`.
+4. **Existing-part match by description (best-effort)**: if `is_new === true` AND a Glob over `Parts/*.md` reveals a part with title or alias matching `surfaced_phrase` exactly, prefer the existing part: skip the `create_part`, queue an `update_last_seen` for the matched part, add a `failed` entry noting the alternative match so the user can reconcile if it was wrong. Best-effort only — exact-title/alias match, no fuzzy matching.
+5. **Bail handling — `set_left_without_resolution`**: if `metadata.status === "interrupted"`, the skill will have queued one `set_left_without_resolution { part_ref }` entry per part that reached Phase 3 engagement (across `focus_part` + `re_targeted_parts[]`). Apply each: Edit the part page to add `left_without_resolution: true` to frontmatter (in-place; preserve other fields). On next session involving that part, a `clear_left_without_resolution` entry will land instead.
 
 ## Pending-changes log schema
 
