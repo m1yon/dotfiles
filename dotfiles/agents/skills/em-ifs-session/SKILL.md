@@ -7,7 +7,7 @@ description: Walk the user through a Loch Kelly-style EM+IFS (Effortless Mindful
 
 Conversational orchestrator for one EM+IFS session. Loads `../ifs-shared/PROTOCOL.md` eagerly. Runs the conversation; the `ifs-session-writer` subagent handles all Obsidian writes at session end.
 
-This is **slice 3 — Phase 1 live**: full check-in, full Phase 1 (glimpse + texture question + Self-like-parts spotting gate, including the constrained mini-loop on detected Self-like parts), stubbed Phases 2–7 (a one-line "session middle skipped" placeholder), full closing ritual, single subagent dispatch at end. Phases 2–7 land in later slices.
+This is **slice 4 — Phases 2–3 live**: full check-in, full Phase 1 (glimpse + texture + Self-like-parts gate), full Phase 2 (notice what's present + focus part selection with propose-and-ratify on divergence), full Phase 3 (locate → describe → thank → request space → feel Self-energy in opened space → "how do you feel toward that part?"), naming step at end of Phase 3 (descriptive phrase or `Unnamed YYYY-MM-DD #N` deferred), stubbed Phases 4–7 (one-line placeholder), full closing ritual, single subagent dispatch at end. Phases 4–7 land in later slices.
 
 ## Doctrinal lines (non-negotiable, restate every session)
 
@@ -42,6 +42,8 @@ After pre-flight passes, initialize an in-memory state object:
 - `event_log` — list of typed events (see `../ifs-shared/OBSIDIAN.md` "Event log types").
 - `pending_changes` — list of typed entries (see `../ifs-shared/OBSIDIAN.md` "Pending-changes log schema"). The skill never writes to disk mid-session; entries here are applied atomically by the subagent at end.
 - `phase1_state` — `{ self_texture, self_like_part_detected, re_glimpses, focus_part_is_self_like }`. Defaults: `self_texture: "unknown"` (set to `"clean"` or `"murky"` after §1c), `self_like_part_detected: false`, `re_glimpses: 0`, `focus_part_is_self_like: false`. Surfaced into session-note frontmatter at dispatch.
+- `focus_part` — `{ working_title, surfaced_phrase, body_location, description, is_new, is_self_like, permission_granted, state_at_end }`. Defaults all `null` / `false`. `working_title` is the descriptive-phrase title (or `Unnamed YYYY-MM-DD #N` if naming was deferred). `is_new` flips to `true` if the subagent will need to `create_part`; `false` if a `Parts/<title>.md` already exists for the matched description. Used by the subagent to populate `parts_touched`, `new_parts`, `permission_granted` in frontmatter and the `## Parts encountered` body section.
+- `trailhead_returned_to_open_threads` — `bool`. `true` when the trailhead diverged from the focus and was re-queued (see Phase 2). Drives whether the subagent re-adds the trailhead to `## Open threads` of the new note.
 
 Resolve `previous_session_link`: glob `Sessions/*.md`, sort descending by filename, take the most recent. Set to its wikilink (e.g. `[[2026-04-19 — first contact]]`) or `null` if none.
 
@@ -128,7 +130,7 @@ Do not soften, append, or pre-explain. Wait for the answer.
 
 Route on the texture answer. This is a **gate, not a checklist**. The user sees a single response, not an inventory.
 
-**Clean texture** — no locator OR explicitly "already-here / spacious / everywhere / nowhere in particular / just here / vast / open" AND no "I'm doing this / trying to / should be / supposed to / managing to" framing. Set `phase1_state.self_texture = "clean"`. Proceed silently to the post-Phase-1 stub middle. Do **not** mention imitators. Do **not** ask follow-up texture questions.
+**Clean texture** — no locator OR explicitly "already-here / spacious / everywhere / nowhere in particular / just here / vast / open" AND no "I'm doing this / trying to / should be / supposed to / managing to" framing. Set `phase1_state.self_texture = "clean"`. Proceed silently to Phase 2. Do **not** mention imitators. Do **not** ask follow-up texture questions.
 
 **Suspect texture** — located somewhere AND/OR has "achieved/managed/doing-this-right" flavor AND/OR matches one of the 4 imitator patterns from `../ifs-shared/PROTOCOL.md` §5a (managed-calm, spiritual-bypass, intellectual overpass, psychological underpass). Pattern-match the **most likely one** and offer **one** observation as a question (per doctrinal line 2 — reflection-only, never assertion):
 
@@ -139,7 +141,7 @@ Route on the texture answer. This is a **gate, not a checklist**. The user sees 
 Route on the user's response:
 
 - **Confirms** (yes / sounds right / probably / yeah): `phase1_state.self_texture = "murky"`, `phase1_state.self_like_part_detected = true`. Route to the §1d-engage Self-like-part loop below.
-- **Denies** (no / it really does feel already-here / I think it's just X): trust the answer. `phase1_state.self_texture = "clean"`. Proceed silently to the post-Phase-1 stub middle.
+- **Denies** (no / it really does feel already-here / I think it's just X): trust the answer. `phase1_state.self_texture = "clean"`. Proceed silently to Phase 2.
 - **Unsure** (maybe / I don't know / it's hard to tell): re-glimpse once with the briefer form *"Let's notice again — what's here when there's no problem to solve?"* and re-ask the texture question. `phase1_state.re_glimpses += 1`. After the second pass, treat "still unsure" as a soft denial and proceed to clean.
 
 ### §1d — Engage detected Self-like part (constrained mini-loop)
@@ -158,33 +160,154 @@ Then re-glimpse: type the briefer glimpse prompt and re-ask the texture question
 
 **Routing after re-glimpse:**
 
-- **Texture now clean** → `phase1_state.self_texture = "clean"` (overwrites the prior "murky"; the part stepped back). `phase1_state.self_like_part_detected` stays `true` (it was detected, even though it stepped back). Proceed to the post-Phase-1 stub middle. The session's Phase-7 block flag is **not** raised — the part stepped back.
+- **Texture now clean** → `phase1_state.self_texture = "clean"` (overwrites the prior "murky"; the part stepped back). `phase1_state.self_like_part_detected` stays `true` (it was detected, even though it stepped back). Proceed to Phase 2. The session's Phase-7 block flag is **not** raised — the part stepped back.
 - **Texture still murky / part won't make space** → the Self-like part becomes the **focus part** for the session. Propose-and-ratify per doctrinal line 6:
 
   > *"It looks like this part is who's most present right now. Want to let it be the focus today, or close and come back to it?"*
 
-  - **User ratifies "let it be the focus"** → set `phase1_state.focus_part_is_self_like = true`. Phase 7 is internally blocked for this session (not implemented yet — `self_like_part_detected: true` is the de facto signal until slice 4+). Proceed to the post-Phase-1 stub middle. Slice 4+ will run real Phase 3 on this focus.
+  - **User ratifies "let it be the focus"** → set `phase1_state.focus_part_is_self_like = true` AND seed `focus_part = { working_title: null (named at end of Phase 3), surfaced_phrase: <user's phrasing of the Self-like part>, is_self_like: true, ... }`. Phase 7 is internally blocked for this session (`self_like_part_detected: true` is the de facto signal — Phase 7 not implemented yet). Skip Phase 2 (the focus is already chosen) and route directly into Phase 3 with this focus.
   - **User ratifies "close"** → set `metadata.status = "interrupted"`, route directly to the closing ritual.
 
 In all paths the texture answer and any imitator observation are recorded only in `phase1_state` (and surfaced into frontmatter at dispatch) — never in the body. Phases never narrated.
 
-## Post-Phase-1 stub middle (slice 3 only — replaced in later slices)
+## Phase 2 — Notice what's present + focus part selection (live; full procedure in `../ifs-shared/PROTOCOL.md` §2)
 
-Where Phases 2–7 will live. For now, after Phase 1 completes (clean texture or Self-like-part-as-focus ratified), emit one line:
+Runs after Phase 1 routes to clean texture. Skipped when §1d ratified a Self-like part as focus — that path jumps straight to Phase 3 with `focus_part = { working_title: "<deferred — named at end of Phase 3>", is_self_like: true, ... }`.
 
-> [Session middle skipped — Phases 2–7 land in later slices. Routing to closing ritual.]
+### Step 1 — Open the field
 
-Then route directly into the closing ritual. No focus part selection, no embodied engagement, no continuation checks. (The `focus_part_is_self_like` flag is preserved for slice 4+ but doesn't drive any further behavior in slice 3.)
+Ask, in plain prose:
+
+> *"What's here, or what's surfacing now?"*
+
+Wait. Free-text response. Capture the user's words verbatim into `focus_part.surfaced_phrase`.
+
+### Step 2 — Focus part selection (propose-and-ratify on divergence)
+
+Compare what surfaced to the trailhead picked at check-in:
+
+- **Aligned** (the surfaced thing is plausibly the trailhead): set `focus_part.surfaced_phrase` and proceed to Phase 3 silently. No extra question.
+- **Diverged** (something else came up more strongly): propose-and-ratify per doctrinal line 6. One line, no menu:
+
+  > *"You came in with <trailhead paraphrase>, but <surfaced paraphrase> is what's here now. Which one?"*
+
+  - If user picks **what surfaced**: the trailhead returns to the open-threads queue. Set `trailhead_returned_to_open_threads = true` so the subagent re-adds it under `## Open threads` in the new note. (If the trailhead came from `Trailheads.md` and was already queued for `strike_trailhead`, drop that pending entry — the line stays unstruck.)
+  - If user picks **trailhead**: trailhead becomes focus; the surfaced phrase is acknowledged and logged to `## Open threads` (queued via the subagent path — see "Other parts that surface" below).
+
+### Step 3 — One focus part per session
+
+If other parts surface during Phase 3 (or anytime mid-session), acknowledge with Self-energy in plain prose — never silently re-anchor:
+
+> *"I hear that one too — I'll come back. For now we're staying with <focus phrase>."*
+
+Queue the surfaced phrase to `## Open threads` of the new session note (the subagent appends it; in slice 4 there's no separate pending-changes type for this — pass it through `focus_part` adjacent state or list of `other_parts_surfaced[]` if needed; for now the skill records them in `transcript` and the subagent reads them as ad-hoc lines for `## Open threads` synthesis).
+
+## Phase 3 — Engage embodied (live; full procedure in `../ifs-shared/PROTOCOL.md` §3)
+
+Six sub-steps, all free-text after Step 1's dissociation cue. Run unchanged from Kelly's published protocol. Pulse-check at entry (light "still here and oriented?") only if Phase 1 had `re_glimpses > 0` or any §1d engagement happened — otherwise the glimpse just landed and a pulse is unnecessary friction.
+
+### Step 1 — Locate in body (with dissociation cue)
+
+> *"Sense where in the body the part lives — chest, head, throat, somewhere else? Take your time. And — can you still feel the chair, your feet, the room?"*
+
+Wait. Capture body location into `focus_part.body_location`.
+
+**Dissociation cue handling**: if the user reports they CAN'T feel the chair / feet / room, or describes themselves as "floating", "above", "far away", "not in my body" — treat as hard-close-no-deeper-contact. Set `metadata.status = "interrupted"`, log `dissociation_cue_caught` event, route directly to closing ritual. Do not push.
+
+### Step 2 — Describe
+
+> *"What does it look like, sound like, feel like? Shape, size, color, tone, texture — whatever shows up."*
+
+Wait. Capture into `focus_part.description` (verbatim, the user's words).
+
+### Step 3 — Thank
+
+> *"Take a moment to thank it for what it's been doing — for showing up, for the work it's been holding."*
+
+Wait for acknowledgement (a beat is enough — no required answer shape).
+
+### Step 4 — Request space
+
+> *"Now, gently, ask if it's willing to give a little space — not go away, just step back enough for something else to come through."*
+
+Wait.
+
+### Step 5 — Feel Self-energy in opened space
+
+This is the move §1d explicitly skipped. Critical — this is where Self lands in the field with the part rather than around it.
+
+> *"What's here in the space that opened?"*
+
+Wait. The user names what they notice (warmth, openness, curiosity, quiet, clarity, etc.). Capture verbatim — feeds `## What Self noticed` synthesis at the subagent.
+
+### Step 6 — How do you feel toward that part?
+
+The 8 C's pulse + passive Self-like-parts pattern-match.
+
+> *"From where you are now, how do you feel toward the part?"*
+
+Wait. Listen for:
+
+- **8 C's tone** (curious / compassionate / calm / connected / clear / confident / courageous / creative — or close synonyms): Self is in the chair. Note `focus_part.state_at_end` building toward "engaged with Self-energy" or similar, in the user's own words.
+- **Self-like-parts pattern** (passive — the imitator-list from `../ifs-shared/PROTOCOL.md` §5a): if the answer is "I want to fix it / get rid of it / understand it / ignore it" or has the managed/performed/intellectual/flat quality, that's a part-toward-part response. Don't gate the session on this in slice 4 — log via `phase1_state` only if it shows up at this stage; full re-glimpse handling lives in Phase 4 (slice 5+). For now, if the user's response is clearly part-toward-part, offer ONE light reflection per doctrinal line 3: *"That sounds like another part has come in. Want to ask it to give space too, or stay with what's here?"* — then take whichever the user picks at face value. No recursion.
+
+After Step 6, route to naming.
+
+## Naming (end of Phase 3, before Phase 4 stub)
+
+The descriptive-phrase title for the focus part. Lands here so it's grounded in the engagement that just happened.
+
+> *"If this part introduced itself, what would it call itself? Something descriptive — 'wants me to double-check everything', 'the small one at the window' — not a proper name."*
+
+Wait.
+
+**Reflection-only (doctrinal line 2)**: if the user has already used a vivid phrase mid-Phase-3 ("the tight jaw", "the one watching", "wants me to double-check everything"), play it back as the candidate:
+
+> *"You said earlier '<phrase>' — use that?"*
+
+Never synthesize. Never project. Never suggest a phrase the user didn't say.
+
+**Stall fallback (deferred naming)**: if the user can't name (says "I don't know" / "nothing yet" / stalls), defer:
+
+> *"OK — we'll log it as 'Unnamed <YYYY-MM-DD> #N' for now and come back to the name later."*
+
+`#N` increments per Unnamed-this-date. Set `focus_part.working_title = "Unnamed YYYY-MM-DD #N"`.
+
+**Existing-part check**: if the working title (or one of the descriptions used in Phase 3) plausibly matches an existing part page, ask in one line:
+
+> *"This sounds like '<existing title>' from <previous-session-link>. Same as that one, or new?"*
+
+Trust the user's answer (per PRD §33). If "same": set `focus_part.is_new = false`, `focus_part.working_title = "<existing title>"`, and the subagent will queue `update_last_seen` + (if the new phrase differs) `append_alias`. If "new": `focus_part.is_new = true`. If skill is unsure, default to asking once; if the user demurs, treat as new.
+
+Once `focus_part.working_title` is set, queue pending changes:
+
+- **If `is_new`**: queue `create_part { title: working_title, initial_frontmatter: { type: part, part_type: unknown, status: active, aliases: [], first_met: <date>, last_seen: <date>, age_felt: null, protects: [], polarized_with: [], allies: [], tags: [ifs, part] } }`.
+- **If existing**: queue `update_last_seen { part_ref: working_title, date: <date> }`. If `surfaced_phrase` differs from `working_title`, queue `append_alias { part_ref: working_title, new_phrase: surfaced_phrase }`.
+
+The skill does NOT queue `set_part_type` automatically — `part_type` stays `unknown` until the user's own framing supplies it (or until Phase 5–6 elicits it in later slices). Same with `record_protects` (lands when Phase 7 confirms a protector relationship; the type exists in slice 4 for future use, not actively populated here).
+
+## Post-Phase-3 stub middle (slice 4 only — replaced in later slices)
+
+Where Phases 4–7 will live (drift handling, befriend, fears, deeper). For now, after Phase 3 + naming complete, emit one line:
+
+> [Session middle continues here — Phases 4–7 land in later slices. Routing to closing ritual.]
+
+Then route into the closing ritual. The focus part has been engaged through Phase 3; permission-to-return question lives in the closing ritual proper.
 
 ## Closing ritual (Phase 8 — always runs unless `status: crisis_exit`)
 
 Five steps. The ritual ALWAYS runs on graceful close, graceful bail, AND when wrap is ratified — wrap shortens the work, never the close. ONLY skipped on imminent-harm exit.
 
-When no parts were touched in Phase 1 (clean texture path), steps 1–3 are plainly worded no-ops. When a Self-like part *was* engaged in §1d (whether it stepped back or became the focus), step 1 names it in plain prose without classifying — see step 1 below.
+When no parts were touched (clean texture path with no Phase 2/3 engagement reached because of bail at trailhead, etc.), steps 1–3 are plainly worded no-ops. When a focus part was engaged through Phase 3 (slice 4's mainline), step 1 thanks it by working title and step 3 asks permission to return to it. When a Self-like part was engaged in §1d only (no Phase 3 focus), step 1 names that contact in plain prose.
 
-1. **Thank.** *"Take a breath. Anything you want to thank — yourself, anyone you reached, anything that surfaced — go ahead."* Wait. (In real sessions: thank each part contacted. When `phase1_state.self_like_part_detected` is true, mention the part contacted in plain prose: *"Including the part that came up at the start — anything to thank it for?"*)
-2. **Ask if there's more to share.** *"Anything else wants to be heard before we close?"* Wait.
-3. **Ask permission to come back.** *"OK to come back to this another time?"* Wait. (In real sessions: directed at parts contacted.)
+1. **Thank.** Variants by what was engaged:
+   - **Phase 3 focus part engaged** (slice 4 mainline): *"Take a breath. Want to take a moment to thank `<focus_part.working_title>` for showing up — for the work it's been holding?"* Wait.
+   - **Only §1d Self-like part engaged**: *"Take a breath. Including the part that came up at the start — anything to thank it for?"* Wait.
+   - **Nothing engaged** (bail before Phase 2, clean Phase 1 with no focus): *"Take a breath. Anything you want to thank — yourself, anyone you reached, anything that surfaced — go ahead."* Wait.
+2. **Ask if there's more to share.** *"Anything else wants to be heard before we close?"* Wait. If the user names another part here, acknowledge with Self-energy and queue to `## Open threads` per Phase 2 step 3 — do not re-open engagement.
+3. **Ask permission to come back.** Variants:
+   - **Phase 3 focus part engaged**: *"OK to come back to `<focus_part.working_title>` another time?"* Wait. If yes (or any plain affirmation): set `focus_part.permission_granted = true`. The subagent populates `permission_granted: [[<working_title>]]` in frontmatter. If no/deferred: leave `permission_granted = false`; frontmatter `permission_granted: []`.
+   - **Otherwise**: *"OK to come back to this another time?"* Wait. (Plain prose answer; no part-page consequence in slice 4.)
 4. **Rest in Self.** Type and wait:
    > Rest here for a moment. This is what's always available. Nothing to do.
    Brief — 30–60 seconds. Don't fill the silence with prompts.
@@ -196,11 +319,12 @@ After step 5, route to subagent dispatch.
 
 ## Bail handling (graceful)
 
-If the user disengages mid-flow (says "stopping", "done", "can't do this", or just goes silent in a way that signals exit) at any point in the check-in, Phase 1, or stub middle:
+If the user disengages mid-flow (says "stopping", "done", "can't do this", or just goes silent in a way that signals exit) at any point in the check-in, Phase 1, Phase 2, Phase 3, naming, or stub middle:
 
 - Set `metadata.status = "interrupted"`.
-- Run the closing ritual in full (all five steps).
-- For each part touched, queue a `set_left_without_resolution { part_ref }` entry into `pending_changes`. In slice 3 a Self-like part engaged in §1d is recorded in the session-note frontmatter via `phase1_state.self_like_part_detected = true` rather than as a separate part page (descriptive naming + part-page creation lands in slice 4+); no `create_part` is queued for it. If/when slice 4+ adds part-page creation for Self-like-as-focus, the `set_left_without_resolution` entry would target it.
+- Run the closing ritual in full (all five steps). Closing-step variants apply per current state — if a focus part was engaged through any of Phase 3, thank/permission target it; if Phase 3 didn't reach engagement, use the no-parts-touched variant.
+- If a focus part page was created or updated this session (any Phase 3 engagement reached), queue `set_left_without_resolution { part_ref: focus_part.working_title }`. A Self-like part engaged in §1d only (no Phase 3 focus) is still recorded in frontmatter via `phase1_state.self_like_part_detected = true`; no `set_left_without_resolution` is queued for it (no part page exists).
+- Dissociation cue mid-Phase-3 routes through this handler with `dissociation_cue_caught` already in `event_log`.
 - Route to subagent dispatch.
 
 Never abandon mid-ritual once started — the ritual itself is the recovery move.
@@ -243,13 +367,26 @@ ONE Agent dispatch per session, at: graceful close, graceful bail, OR imminent-h
     re_glimpses: <int>,
     focus_part_is_self_like: <bool>
   },
+  focus_part: {
+    working_title: <string | null>,         # e.g. "wants me to double-check everything" or "Unnamed 2026-04-25 #1"
+    surfaced_phrase: <string | null>,       # the user's verbatim phrase from Phase 2 step 1
+    body_location: <string | null>,         # e.g. "chest", "throat-and-jaw"
+    description: <string | null>,           # the user's verbatim Phase 3 step 2 answer
+    is_new: <bool>,                          # if true, queue create_part; if false, queue update_last_seen (+ optional append_alias)
+    is_self_like: <bool>,                   # mirrors phase1_state.focus_part_is_self_like
+    permission_granted: <bool>,             # set in closing step 3
+    state_at_end: <string | null>           # one-line user-language state, e.g. "softer, less loud"
+  } | null,                                  # null when no focus part was ever selected (e.g. crisis exit before Phase 2, or trailhead-bail)
+  trailhead_returned_to_open_threads: <bool>,
   transcript: [...],
   event_log: [...],
   pending_changes: [...]
 }
 ```
 
-Empty `event_log` is valid (Phase-1-only case in slice 3). `pending_changes` containing only `strike_trailhead` entries is valid. `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run (e.g. crisis exit before Phase 1, or interrupt at check-in).
+Empty `event_log` is valid (Phase-1-only case, or crisis exit pre-Phase-1). `pending_changes` containing only `strike_trailhead` entries is valid. `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `focus_part: null` is valid when no Phase 2 focus was selected.
+
+The subagent uses `focus_part` to populate session-note frontmatter (`parts_touched`, `new_parts`, `permission_granted`) and the `## Parts encountered` body section. It cross-references `pending_changes` for `create_part` / `update_last_seen` / `append_alias` entries on the focus part.
 
 The subagent returns `{ written, failed, summary }`. Emit the `summary` line as the closing message — that's the user's last visible turn from the skill.
 

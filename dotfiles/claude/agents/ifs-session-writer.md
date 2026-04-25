@@ -31,6 +31,23 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     status: "complete" | "interrupted" | "crisis_exit",
     previous_session_link: "[[YYYY-MM-DD — short-desc]]" | null
   },
+  phase1_state: {
+    self_texture: "clean" | "murky" | "unknown",
+    self_like_part_detected: bool,
+    re_glimpses: int,
+    focus_part_is_self_like: bool
+  },
+  focus_part: {
+    working_title: string | null,         // descriptive phrase, or "Unnamed YYYY-MM-DD #N", or null if no focus selected
+    surfaced_phrase: string | null,       // user's verbatim Phase 2 step 1 answer
+    body_location: string | null,         // e.g. "chest", "throat-and-jaw"
+    description: string | null,           // user's verbatim Phase 3 step 2 answer
+    is_new: bool,                          // true → caller queued create_part; false → caller queued update_last_seen
+    is_self_like: bool,                   // mirrors phase1_state.focus_part_is_self_like
+    permission_granted: bool,             // set in closing step 3 when user grants permission to return
+    state_at_end: string | null           // one-line user-language state at end of Phase 3
+  } | null,
+  trailhead_returned_to_open_threads: bool,
   transcript: [{ role: "user" | "assistant", text, ts }, ...],
   event_log: [
     { type: "anchor_selected", part_ref },
@@ -51,7 +68,15 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
 }
 ```
 
-Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (this is the tracer-skeleton case where the session middle was stubbed out).
+Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run.
+
+**Populating session-note frontmatter from input**:
+
+- `self_texture`, `self_like_part_detected`, `re_glimpses` ← copy directly from `phase1_state`.
+- `parts_touched` ← `[ [[focus_part.working_title]] ]` if `focus_part` non-null and Phase 3 reached engagement (any of `body_location`, `description` is non-null); else `[]`.
+- `new_parts` ← `[ [[focus_part.working_title]] ]` if `focus_part` non-null AND `focus_part.is_new === true`; else `[]`.
+- `permission_granted` ← `[ [[focus_part.working_title]] ]` if `focus_part.permission_granted === true`; else `[]`.
+- All other frontmatter fields (`unblending_events`, `re_targets`, `cycle_detected`, `polarization_work`, `polarization_pair`, `exile_contact`, `unburdening`) default to their zero/false values in slice 4 — Phases 4–7 not implemented yet.
 
 ## Output contract
 
@@ -123,23 +148,49 @@ strike_trailhead entries and event_log is empty>
 ## Arc
 <brief prose narrative — the inner movement, not a transcript. For tracer-
 skeleton runs: "Check-in complete. Session middle skipped (tracer skeleton).
-Closed via the standard ritual." or similar minimal text. For real sessions
-this is the synthesis core.>
+Closed via the standard ritual." or similar minimal text. For slice-4 runs
+that reached Phase 3, synthesize the inner movement from the transcript:
+glimpse → texture → focus part surfaced → engaged embodied → state at end.
+One paragraph, two at most. Reflect the user's own language; do not classify.>
 
 ## Parts encountered
-<### [[part name]] sub-section per touched part. Empty section if none.>
+<### [[<focus_part.working_title>]] sub-section if focus_part is non-null AND
+Phase 3 reached engagement. Body of the sub-section:
+- How it appeared this session: <focus_part.body_location and description in
+  user's own words; e.g. "in the chest, tight, like a knot">
+- What it shared: <one-line synthesis from transcript — the part's role/job
+  as the user described it, never as Claude's classification>
+- State at end: <focus_part.state_at_end if non-null; else "engaged, not
+  unburdened (slice 4 — Phases 4–7 not yet implemented)" or similar plain
+  phrasing if state wasn't captured>
+Empty section ("No parts engaged this session.") if focus_part is null or
+Phase 3 didn't reach engagement.>
 
 ## What Self noticed
-<system-level observations. Empty section if none.>
+<system-level observations from Self's vantage point — what the user noticed
+*about* the encounter, drawn from Phase 3 step 5 ("what's here in the space
+that opened?") if non-null. Plain prose, brief. Empty section ("—") if
+nothing to note (tracer-skeleton case, or pre-Phase-3 bail).>
 
 ## Closing
-- Parts thanked: <yes | n/a (no parts) | no (interrupted/crisis_exit)>
-- Permission to return: <yes | deferred | n/a>
+- Parts thanked: <yes if focus_part engaged AND closing step 1 ran; n/a if
+  no parts engaged; no if interrupted before ritual or crisis_exit>
+- Permission to return: <yes if focus_part.permission_granted; deferred if
+  focus_part engaged but permission_granted false; n/a if no parts>
 - Rest-in-Self: <yes | no>
 - Re-orientation: <yes | no>
 
 ## Open threads
-<- [ ] task-checkbox lines. Empty section if none.>
+<- [ ] task-checkbox lines. Populated from:
+- Trailhead returned to open threads (if input.trailhead_returned_to_open_threads
+  is true): "- [ ] <trailhead text> — surfaced but not picked as focus this
+  session"
+- Other parts that surfaced mid-session (read from transcript context — the
+  skill acknowledges them with "I'll come back" but doesn't queue a typed
+  pending-changes entry; you parse them out of the synthesis): "- [ ] <other
+  part phrase> — acknowledged this session, not engaged"
+- Any explicit user mention of returning to something next time.
+Empty section if none.>
 ```
 
 Sub-rules from §9:
@@ -160,6 +211,74 @@ Sub-rules from §9:
 - Full synthesis including the trigger turn in the body (per §4d-iii of design doc). The trigger turn is preserved in the prose `## Arc`.
 - Frontmatter: `status: crisis_exit`.
 - Body `## Closing`: all four lines `no` (no ritual ran).
+
+## Part page schema (§8 of design doc)
+
+Filename: `Parts/<title>.md` where `<title>` is the descriptive phrase (or `Unnamed YYYY-MM-DD #N` for deferred-naming).
+
+Frontmatter:
+
+```markdown
+---
+type: part
+part_type: manager | firefighter | exile | unknown
+status: active | unburdened | dormant
+aliases:
+  - <alternate phrasing>
+  - <another phrasing>
+first_met: YYYY-MM-DD
+last_seen: YYYY-MM-DD
+age_felt: <int or "~int" or null>
+protects: [[<exile-name>]]
+polarized_with: [[<other-part-name>]]
+allies: [[<other-part-name>]]
+tags: [ifs, part]
+---
+```
+
+Body — empty headings on `create_part`; populated over time via Edits:
+
+```markdown
+# <title>
+
+## Role
+What this part does for the system.
+
+## How it appears
+Body location, visual image, voice quality, posture.
+
+## Fears
+What it fears would happen if it stopped doing its job.
+
+## Burdens
+Extreme beliefs / feelings carried that aren't intrinsic to the part.
+
+## Origin story
+When/why this part took on its role.
+
+## What it needs from Self
+What this part has asked for, or what would help it relax.
+```
+
+Sub-rules:
+
+- **No `8Cs_present` field** — Self-energy is session-level, not part-level.
+- **No `self_texture` field** on parts — texture is session-level.
+- **`polarized_with:` mirrored on both pages** — when applying `record_polarization`, Edit both files.
+- **`status: unburdened`** is a real recorded state — set by an explicit `set_status` entry, never inferred.
+- **`age_felt`** = how old the part feels, not the user's age when it formed.
+- **`left_without_resolution: true`** added to frontmatter by bailed sessions (via `set_left_without_resolution`); cleared on next visit (via `clear_left_without_resolution`).
+
+Recent encounters surface via Obsidian's backlinks pane (every session note that links the part shows up there). Don't maintain a "Recent encounters" body section.
+
+### Part-page handling for slice-4 focus part
+
+The skill passes `focus_part` in input. Workflow:
+
+1. **`focus_part.is_new === true`**: corresponding `create_part { title, initial_frontmatter }` entry is in `pending_changes`. Apply it: write `Parts/<title>.md` with the supplied frontmatter and the empty-heading body template above.
+2. **`focus_part.is_new === false`**: corresponding `update_last_seen { part_ref, date }` entry is in `pending_changes`. Apply it: Edit `Parts/<part_ref>.md` to set `last_seen: <date>` in frontmatter (in-place; preserve other fields). May also have a paired `append_alias` entry — apply per its semantics.
+3. **Existing-part collision check (defensive)**: if `focus_part.is_new === true` but `Parts/<title>.md` already exists (Glob check), do NOT overwrite. Treat as `failed` for that entry with error `"create_part: file already exists; treat as existing part"`. The session note is still written; the user can reconcile by hand from `<date>-recovery.md`.
+4. **Existing-part match by description (best-effort)**: if `focus_part.is_new === true` AND a Glob over `Parts/*.md` reveals a part with title or alias matching `focus_part.surfaced_phrase` exactly, prefer the existing part: skip the `create_part`, queue an `update_last_seen` for the matched part, add a `failed` entry noting the alternative match so the user can reconcile if it was wrong. Best-effort only — exact-title/alias match, no fuzzy matching.
 
 ## Pending-changes log schema
 
