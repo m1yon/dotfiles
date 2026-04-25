@@ -12,7 +12,7 @@ in
   home.file = {
     ".agents/skills".source = outOfStore "${dotfiles}/agents/skills";
     ".claude/skills".source = outOfStore "${dotfiles}/agents/skills";
-    ".local/state/skills/.skill-lock.json".source =
-      outOfStore "${dotfiles}/agents/.skill-lock.json";
+    ".claude/agents".source = outOfStore "${dotfiles}/claude/agents";
+    ".local/state/skills/.skill-lock.json".source = outOfStore "${dotfiles}/agents/.skill-lock.json";
   };
 }
