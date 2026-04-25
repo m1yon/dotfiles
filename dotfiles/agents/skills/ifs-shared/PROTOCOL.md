@@ -1,6 +1,6 @@
 # PROTOCOL.md — eager-loaded EM+IFS playbook
 
-Slice 8 of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue; **cycle detection signals (repeat blend at Phase 4 OR three distinct re-targets) at §4-cycle, three-option prose offer, default close-and-log; polarization-work 7-step protocol at §4-polarization-work, Schwartz-orthodox / Kelly-retained, replaces remainder of session, requires clean re-glimpse first**), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), Phase 7 (§7 — optional deeper work: exile contact + unburdening, two-factor-gated), tier wrap clock (§wrap — silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase), and Phase 8 closing ritual (§5f) are live. Renames land in a later slice.
+Slice 9 (final planned slice) of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming — descriptive-phrase reflection-only with `Unnamed YYYY-MM-DD #N` deferred-naming fallback, existing-part collision check, **alias accumulation when the same part surfaces with a new phrase, AND inline collaborative rename offer at alias-discovery time — `[[New|old phrase]]` session-note backlink rewrites + plain `[[New]]` other-part-page backlink rewrites via subagent**), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue; cycle detection signals (repeat blend at Phase 4 OR three distinct re-targets) at §4-cycle, three-option prose offer, default close-and-log; polarization-work 7-step protocol at §4-polarization-work, Schwartz-orthodox / Kelly-retained, replaces remainder of session, requires clean re-glimpse first), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), Phase 7 (§7 — optional deeper work: exile contact + unburdening, two-factor-gated), tier wrap clock (§wrap — silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase), and Phase 8 closing ritual (§5f) are live.
 
 For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`. For longer-form imitator explanations, see `FAQ.md`.
 
@@ -261,6 +261,52 @@ Pending-changes queued at end of naming step:
 - `is_new = false` → `update_last_seen { part_ref: working_title, date: <date> }` (+ `append_alias { part_ref: working_title, new_phrase: surfaced_phrase }` if different)
 
 `part_type` defaults to `unknown` — never set automatically by the skill in slice 4. User-supplied or Phase 5–6-elicited (later slices) sets it via `set_part_type`. Same with `record_protects` — type exists for future use; not actively populated in slice 4.
+
+### §3-naming-rename — Inline collaborative rename offer (slice 9)
+
+Fires only on the existing-part "same as X" path, AFTER `append_alias` has been queued (i.e. `surfaced_phrase` differs from the existing `working_title` and an alias was appended). One inline question, no follow-ups:
+
+> *"Does '<existing working_title>' still fit, or want to rework it?"*
+
+Wait. Trust the user's answer.
+
+- **"Still fits"** (or any plain affirmative / silence-as-keep): no action. The alias was appended; the canonical title stays. Proceed to Phase 4.
+- **"Want to rework"** (or any signal of openness): enter the collaborative rename loop below.
+
+**Reflection-only collaborative rename loop (doctrinal line 3)**: never synthesize a name. Surface as candidates ONLY phrasings the user themselves has used in this session (across `surfaced_phrase`, `description`, mid-engagement asides, `befriend_notes`, `fears`) plus the existing aliases on the part page:
+
+> *"You've used '<phrase A>' and '<phrase B>' this time, and the page already has '<alias>'. Anything in there closer, or something fresh?"*
+
+Wait. Routes:
+
+- **Picks one of the user's own phrasings** OR **offers a fresh phrasing**: `new_title = <picked / fresh phrase>`. Confirm step.
+- **Demurs / "actually never mind"** OR **stalls**: no rename. Proceed to Phase 4.
+
+**Confirm step**: *"Switching '<old_title>' to '<new_title>' — and the old phrasing stays as an alias. OK?"* Wait for affirmative.
+
+On confirm, queue:
+
+- `rename_part { old_title: <existing>, new_title: <picked phrase>, reason: <one-line user-language summary if offered, else null> }`
+
+AND atomically update `pending_renames[<old_title>] = <new_title>` (the local pending-state view per OBSIDIAN.md "Pending-changes log schema"). Also update the live session-state in place:
+
+- `focus_part.working_title = <new_title>`.
+- For any `re_targeted_parts[]` entry with `working_title === <old_title>` or `re_targeted_from === <old_title>`, rewrite to `<new_title>`.
+
+Earlier `pending_changes` entries that referenced `<old_title>` as `part_ref` (`append_alias`, `update_last_seen`, `record_protects`, `set_left_without_resolution`) are NOT retroactively rewritten by the skill — the subagent's `part_ref` resolution walks `pending_renames` at write time and collapses them to `<new_title>`. This is the discipline that makes minute-25 references agree with a minute-10 rename without retroactive in-skill mutation.
+
+**Doctrinal line 3 is the most-loaded discipline here**: never propose a name the user hasn't used. Even paraphrasing a user phrase is synthesis — refuse. Reflect verbatim phrasings only.
+
+**Aliases as therapeutic artifact**: append-only on the part page. When a rename happens, the old canonical title becomes the most recent alias entry — chronological record. The subagent never reorders, deduplicates beyond exact-match, or compresses aliases.
+
+### §3-naming-rename-mechanics — what the subagent does (reference)
+
+End-of-session mechanics for `rename_part { old_title, new_title, reason? }` (full procedure in `dotfiles/claude/agents/ifs-session-writer.md`):
+
+1. Rename the file: `Parts/<old_title>.md` → `Parts/<new_title>.md`.
+2. Append `<old_title>` to `aliases:` on the renamed page (after the `surfaced_phrase` alias from `append_alias` if also queued, preserving order).
+3. Rewrite session-note backlinks (`Sessions/*.md`): every occurrence of `[[<old_title>]]` becomes `[[<new_title>|<old phrase as it appeared then>]]`. The "old phrase as it appeared then" is sourced from the session note's surrounding context (e.g. the `### [[<old_title>]]` heading is rewritten as `### [[<new_title>|<old_title>]]`; references in `parts_touched:` frontmatter become `[[<new_title>|<old_title>]]`). This preserves the historical phrasing in the place it was used while keeping the link live.
+4. Rewrite other-part-page backlinks (`Parts/*.md`, frontmatter list values like `protects:`, `polarized_with:`, `allies:`): every occurrence of `[[<old_title>]]` becomes plain `[[<new_title>]]`. These references the part in the abstract, not tied to a moment, so no aliased form is needed.
 
 ## §4 — Phase 4 — Continuation check + hybrid drift handling (live)
 
@@ -793,8 +839,6 @@ Five steps, in order:
 
 Order matters: rest-in-Self before step-out so re-orientation happens *from* Self, not as an exit. Sessions don't get logged as `complete` until the ritual runs.
 
-## Slice 9+ content (placeholder)
+## Build complete
 
-Full procedural content for the following lands in later slices:
-
-- Renames and the `[[New|old phrase]]` backlink rewrites (inline at rename-discovery time, mid-session). Slice 4 wires `append_alias` for new phrasings of the same part; full rename lands later.
+Slice 9 was the last planned slice. All phases (0–8), pulse cadence, dissociation cue, cycle detection / polarization work, tier wrap clock, naming with aliases and inline collaborative rename + backlink rewriting, and closing ritual are live. No further procedural content is planned in this PROTOCOL.md; future changes are bug-fix / dogfooding-driven rather than slice-driven.

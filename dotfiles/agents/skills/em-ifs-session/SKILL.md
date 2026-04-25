@@ -7,7 +7,7 @@ description: Walk the user through a Loch Kelly-style EM+IFS (Effortless Mindful
 
 Conversational orchestrator for one EM+IFS session. Loads `../ifs-shared/PROTOCOL.md` eagerly. Runs the conversation; the `ifs-session-writer` subagent handles all Obsidian writes at session end.
 
-This is **slice 8 — cycle detection + polarization work live**: full check-in, full Phase 1 (glimpse + texture + Self-like-parts gate), full Phase 2 (notice what's present + focus part selection with propose-and-ratify on divergence), full Phase 3 (locate-with-dissociation-cue → describe → thank → request space → feel Self-energy in opened space → "how do you feel toward that part?"), naming step at end of Phase 3, full Phase 4 (continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence at every phase transition; full continuation check at three high-risk transitions; **cycle detection signals — repeat blend at Phase 4 OR three distinct re-targets — trip a pause + three-option prose offer: polarization work / pick-one-and-commit / close-and-log**), full Phase 5 (befriend — relationship-building, Self-directed questions), full Phase 6 (fears — what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), full Phase 7 (optional deeper work — exile contact / unburdening, two-factor-gated: tier permits + protector permission + clean Phase-1 Self texture + no Self-like-part in current continuation check), full tier wrap clock (silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase; closing ritual always runs), **polarization work 7-step protocol (Schwartz-orthodox, Kelly-retained) replacing the remainder of session when entered cleanly from Self**, full closing ritual, single subagent dispatch at end. Renames land in a later slice.
+This is **slice 9 — aliases + renames + backlink rewriting live (final planned slice)**: full check-in, full Phase 1 (glimpse + texture + Self-like-parts gate), full Phase 2 (notice what's present + focus part selection with propose-and-ratify on divergence), full Phase 3 (locate-with-dissociation-cue → describe → thank → request space → feel Self-energy in opened space → "how do you feel toward that part?"), naming step at end of Phase 3 (descriptive-phrase reflection-only with `Unnamed YYYY-MM-DD #N` deferred-naming fallback, existing-part collision check via "same as X, or new?", **alias accumulation when the same part surfaces with a new phrase, AND inline collaborative rename offer at alias-discovery time — `[[New|old phrase]]` session-note backlinks + plain `[[New]]` other-part-page backlinks via subagent**), full Phase 4 (continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence at every phase transition; full continuation check at three high-risk transitions; cycle detection signals — repeat blend at Phase 4 OR three distinct re-targets — trip a pause + three-option prose offer: polarization work / pick-one-and-commit / close-and-log), full Phase 5 (befriend — relationship-building, Self-directed questions), full Phase 6 (fears — what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), full Phase 7 (optional deeper work — exile contact / unburdening, two-factor-gated: tier permits + protector permission + clean Phase-1 Self texture + no Self-like-part in current continuation check), full tier wrap clock (silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase; closing ritual always runs), polarization work 7-step protocol (Schwartz-orthodox, Kelly-retained) replacing the remainder of session when entered cleanly from Self, full closing ritual, single subagent dispatch at end.
 
 ## Doctrinal lines (non-negotiable, restate every session)
 
@@ -61,6 +61,7 @@ After pre-flight passes, initialize an in-memory state object:
   - `what_each_protects` is `[ <verbatim user phrasing for part A>, <verbatim user phrasing for part B> ]` from step 5. Surfaced in `## What Self noticed` body section; not in frontmatter.
   - `cooperation_agreed` flips `true` when step 6 lands a substantive "yes" from both sides (per the user's report — never voiced).
   - `completed` flips `true` after step 7 (logging) lands. Drives `polarization_work: true` in session-note frontmatter.
+- `pending_renames` — `{}` map of `<old_title> → <new_title>` for the local pending-state view (slice 9). Each entry mirrors a queued `rename_part { old_title, new_title, reason? }` in `pending_changes`. Used to resolve `part_ref`s mid-session: a `part_ref` of `<old_title>` queued *after* the rename collapses to `<new_title>` before reaching the subagent. Updated atomically with the matching `pending_changes.append(rename_part)`. Order-preserving: a chain `A → B → C` lands as two entries (`A → B`, `B → C`) in queue order; resolution walks the chain.
 - `trailhead_returned_to_open_threads` — `bool`. `true` when the trailhead diverged from the focus and was re-queued (see Phase 2). Drives whether the subagent re-adds the trailhead to `## Open threads` of the new note.
 
 Resolve `previous_session_link`: glob `Sessions/*.md`, sort descending by filename, take the most recent. Set to its wikilink (e.g. `[[2026-04-19 — first contact]]`) or `null` if none.
@@ -320,6 +321,36 @@ Once `focus_part.working_title` is set, queue pending changes:
 - **If existing**: queue `update_last_seen { part_ref: working_title, date: <date> }`. If `surfaced_phrase` differs from `working_title`, queue `append_alias { part_ref: working_title, new_phrase: surfaced_phrase }`.
 
 The skill does NOT queue `set_part_type` automatically — `part_type` stays `unknown` until the user's own framing supplies it (or until Phase 5–6 elicits it in later slices). `record_protects` is actively queued in Phase 6 step 4 if a clear protector→exile relationship surfaces (slice 6+); it's not queued at naming time.
+
+**Inline rename offer (slice 9 — fires only on the existing-part "same as X" path, AFTER `append_alias` queued)**: descriptive titles are expected to evolve as the part shows up with new phrasings — the canonical name is not fixed at first contact. Once an alias has been appended (i.e. `surfaced_phrase` differs from the existing `working_title`), ask exactly one inline question, no follow-ups:
+
+> *"Does '<existing working_title>' still fit, or want to rework it?"*
+
+Wait. Trust the user's answer.
+
+- **"Still fits"** (or any plain affirmative / silence-as-keep): no action. The alias was appended; the canonical title stays. Proceed to Phase 4.
+- **"Want to rework"** (or any signal of openness — "yeah, doesn't quite", "let me think", a concrete proposal): enter the **collaborative rename loop** below. **Reflection-only (doctrinal line 2)**: never synthesize a name. Surface back as candidates ONLY phrasings the user themselves has used in this session (across `surfaced_phrase`, `description`, `befriend_notes`, `fears`, mid-engagement asides) plus the existing aliases on the part page. Plain-prose offer:
+
+  > *"You've used '<phrase A>' and '<phrase B>' this time, and the page already has '<alias>'. Anything in there closer, or something fresh?"*
+
+  Wait. The user's response routes:
+  - **Picks one of the user's own phrasings**: `new_title = <picked phrase>`. Proceed to confirm step.
+  - **Offers a fresh phrasing**: `new_title = <user's fresh phrase>`. Proceed to confirm step.
+  - **Demurs / "actually never mind"**: no rename. Proceed to Phase 4.
+  - **Stalls**: defer rename to a future session. No rename. Proceed to Phase 4.
+
+  **Confirm step** (one line, plain prose): *"Switching '<old_title>' to '<new_title>' — and the old phrasing stays as an alias. OK?"* — wait for affirmative. On confirm, queue `rename_part { old_title: <existing>, new_title: <picked phrase>, reason: <one-line user-language summary if offered, else null> }` to `pending_changes`, AND atomically update `pending_renames[<old_title>] = <new_title>` for local pending-state view.
+
+  **Update local state immediately**:
+  - `focus_part.working_title = <new_title>` (so closing-ritual prose, any subsequent `## Open threads` queueing, and later mid-session references resolve to the new title).
+  - For any `re_targeted_parts[]` entry with `working_title === <old_title>` or `re_targeted_from === <old_title>`, rewrite to `<new_title>` (matches the pending-state view discipline — minute-25 references reflect the rename queued at minute 10).
+  - For any pending-changes entry queued *earlier* in this session referencing `<old_title>` as `part_ref` (e.g. `append_alias`, `update_last_seen`, `record_protects`, `set_left_without_resolution`), the subagent's `part_ref` resolution walks `pending_renames` so those entries collapse to `<new_title>` at write time. The skill does not retroactively rewrite earlier `pending_changes` entries — it relies on the subagent's resolution discipline. (See `../ifs-shared/OBSIDIAN.md` "Pending-changes log schema" — `part_ref` resolves through the local pending-state view.)
+
+  Doctrinal line 2 is the most-loaded discipline here. **Never** propose a name the user hasn't used. Even paraphrasing a user phrase ("you said it 'wants me to double-check' — try 'the double-checker'?") is synthesis — refuse. Reflect verbatim phrasings only. The whole point of inline rename is the user owns the canonical name; the skill's job is surfacing the candidates the user has already given.
+
+The rename mechanics (file rename, alias append of old title, session-note backlink rewrite as `[[New|old phrase]]`, other-part-page backlink rewrite as plain `[[New]]`) are entirely the subagent's job at session-end — see `Subagent dispatch` below and the subagent's part-page handling section.
+
+**Aliases as therapeutic artifact**: the alias accumulation order is preserved (append-only on the part page). When a rename happens, the old canonical title becomes the most recent alias entry — the chronological record reads "here's how this part has been seen over time." The subagent never reorders, deduplicates beyond exact-match, or compresses aliases.
 
 ## Phase 4 — Continuation check + hybrid drift handling (live; full procedure in `../ifs-shared/PROTOCOL.md` §4)
 
@@ -986,13 +1017,14 @@ ONE Agent dispatch per session, at: graceful close, graceful bail, OR imminent-h
     completed: <bool>                        # true after step 7 (logging); drives `polarization_work: true` in session-note frontmatter
   },
   trailhead_returned_to_open_threads: <bool>,
+  pending_renames: <map<string, string>>,    # slice 9 — the local pending-state view; map of old_title → new_title for every rename_part queued. Subagent walks this when resolving any part_ref to absorb mid-session renames. Empty map is the common case.
   transcript: [...],
   event_log: [...],
   pending_changes: [...]
 }
 ```
 
-Empty `event_log` is valid (Phase-1-only case, or crisis exit pre-Phase-1). `pending_changes` containing only `strike_trailhead` entries is valid. `phase1_state` defaults are valid when Phase 1 didn't run. `phase4_state` defaults (all `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run (e.g. bail at or before Phase 4). `phase7_state` defaults (`false` / `false` / `false` / `null` / `false` / `false` / `null`) are valid when Phase 7 didn't run (gate evaluated and blocked, OR Phases 5/6 didn't reach the entrance). `wrap_state` defaults (with `tier_upper_min` set after check-in step 2 and all other fields `false`/`null`) are valid when no wrap proposal fired. `cycle_state` defaults (`{}` / `0` / `false` / `null` / `null`) are valid when no cycle was detected (the common case). `polarization_state` defaults (`false` / `null` / `[]` / `false` / `false`) are valid when polarization work didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). `focus_part: null` is valid when no Phase 2 focus was selected.
+Empty `event_log` is valid (Phase-1-only case, or crisis exit pre-Phase-1). `pending_changes` containing only `strike_trailhead` entries is valid. `pending_renames: {}` is the common case — only populated when the user picked the inline rename offer at end-of-naming. `phase1_state` defaults are valid when Phase 1 didn't run. `phase4_state` defaults (all `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run (e.g. bail at or before Phase 4). `phase7_state` defaults (`false` / `false` / `false` / `null` / `false` / `false` / `null`) are valid when Phase 7 didn't run (gate evaluated and blocked, OR Phases 5/6 didn't reach the entrance). `wrap_state` defaults (with `tier_upper_min` set after check-in step 2 and all other fields `false`/`null`) are valid when no wrap proposal fired. `cycle_state` defaults (`{}` / `0` / `false` / `null` / `null`) are valid when no cycle was detected (the common case). `polarization_state` defaults (`false` / `null` / `[]` / `false` / `false`) are valid when polarization work didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). `focus_part: null` is valid when no Phase 2 focus was selected.
 
 The subagent uses `focus_part` plus every `re_targeted_parts[]` entry to populate session-note frontmatter (`parts_touched`, `new_parts`, `permission_granted`) and the `## Parts encountered` body section. Each entry gets its own `### [[<working_title>]]` sub-section under `## Parts encountered`, with re-targeted entries including the `re_target_note` body line. It cross-references `pending_changes` for `create_part` / `update_last_seen` / `append_alias` / `set_left_without_resolution` / `record_protects` entries on each part.
 
