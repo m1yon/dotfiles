@@ -1,0 +1,27 @@
+# PRD #12 — EM+IFS session skill + ifs-session-writer subagent
+
+## #13 — done — 2026-04-25T18:35:34Z — 429ffa8
+
+Summary: Slice 1 foundation. Created `dotfiles/agents/skills/em-ifs-session/SKILL.md` (61 lines, conversational-orchestrator only, eager-loads `../ifs-shared/PROTOCOL.md`); created `dotfiles/agents/skills/ifs-shared/` reference dir with PROTOCOL.md (stub + phase spine + Self-like-parts terse pattern-match list), OBSIDIAN.md (vault root pinned, folder structure, IFS.md homepage Dataview template, part/session schemas, pending-changes log schema, event log types, write order), SAFETY.md (pre-flight refusal paths 1+2, mood-step refusal criteria, imminent-harm pattern match, dissociation cue, tier matrix with two-factor Phase 7 gate, wrap behavior), TAXONOMY.md (manager/firefighter/exile + reclassification note), FAQ.md (stub with planned topics). Added `dotfiles/claude/agents/.gitkeep`. Wired `.claude/agents` symlink in `home/programs/agents.nix` (added `".claude/agents".source = outOfStore "${dotfiles}/claude/agents";`). Removed pre-existing empty `~/.claude/agents` directory before rebuild so home-manager could create the symlink. `task rebuild-home` succeeded; `~/.claude/agents/` resolves through nix store back to `dotfiles/claude/agents/`. `task format` reflowed `home/programs/claude-code.nix` (incidental, not committed). No automated tests planned per PRD ("Testing Decisions" section); validation is dogfooding.
+
+Files touched:
+- dotfiles/agents/skills/em-ifs-session/SKILL.md (new)
+- dotfiles/agents/skills/ifs-shared/PROTOCOL.md (new, stub)
+- dotfiles/agents/skills/ifs-shared/OBSIDIAN.md (new)
+- dotfiles/agents/skills/ifs-shared/SAFETY.md (new)
+- dotfiles/agents/skills/ifs-shared/TAXONOMY.md (new)
+- dotfiles/agents/skills/ifs-shared/FAQ.md (new, stub)
+- dotfiles/claude/agents/.gitkeep (new)
+- home/programs/agents.nix (added one symlink line)
+
+Advice:
+- `~/.claude/agents` is created by Claude Code itself as an empty directory at startup. Home-manager's `mkOutOfStoreSymlink` refuses to overwrite a non-managed directory at the link path, so a fresh rebuild on a new machine OR after Claude Code recreates that dir will fail with "existing file is in the way". Mitigation: `rmdir ~/.claude/agents` before `task rebuild-home`, OR have agents.nix emit a hook that removes it. Document in next slice's setup.
+- `task` defines no `test` or `lint` target. The repo's lint equivalent is `task format` (nixfmt over all `*.nix`). Running it reflowed `home/programs/claude-code.nix` (multi-line `export` joined onto one line) — that's a pre-existing format drift, unrelated to this slice. Left it uncommitted.
+- `.claude/settings.local.json` accumulates permission grants from interactive Claude runs (e.g. `Bash(rmdir ...)`). Don't stage those in feature commits — they are per-machine noise.
+- The PRD says skill description is pattern-matched for invocation. Used the keyword set: `/em-ifs-session`, "IFS session", "parts work", "glimpse", "Self-led session". Adjust if invocation isn't reliable.
+- Vault root `/home/michael/My Vault/` is hardcoded in `OBSIDIAN.md`. Per PRD §52 it must NOT be in `SKILL.md`. Per PRD it must also be in the `ifs-session-writer` subagent system prompt (slice 2+).
+- Authoritative spec is `research/ifs-skill-design.md` — defer to it on any conflict with the PRD.
+- Phase 7 two-factor gate is actually four conjunctive factors per PRD §4f (tier permits + protector permission + clean Phase 1 texture + no current Self-like-part). The PRD calls it "two-factor" but lists four. Captured all four in SAFETY.md tier matrix; flag if you read this and find a contradiction with the design doc.
+- The skill's pre-flight refuses on missing `crisis_fallback:` frontmatter on `IFS.md` even if the file exists. Acceptance criterion 1 is more specific than just "missing IFS.md."
+- `Trailheads.md` may not exist on first session; treat missing as empty list (documented in OBSIDIAN.md). Don't bootstrap-create it — only `Sessions/` and `Parts/` per PRD §46.
+- The `ifs-session-writer` subagent (under `dotfiles/claude/agents/`) is NOT built in this slice. The slice 1 acceptance criteria only require the directory exists and is wired into Nix. Sub-issues for slice 2+ will populate it.
