@@ -92,6 +92,24 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     fears_surfaced: bool,                  // true once Phase 6 produced at least one fear-answer
     protector_relationship_captured: bool  // true when a record_protects entry was queued in Phase 6 step 4
   },
+  phase7_state: {                          // SLICE 7
+    explicit_request: bool,                // medium-tier-only: user explicitly asked to go deeper mid-session
+    gates_evaluated: bool,                 // true when the four-factor gate was run at the Phase 7 entrance
+    gates_passed: bool,                    // true when all four factors passed; false when any gate failed
+    gates_block_reason: string | null,     // tier_short | tier_medium_no_explicit_request | self_like_part_detected | texture_murky | self_like_part_in_continuation | no_protector_permission | null (if gates_passed: true)
+    exile_contact: bool,                   // true when Phase 7 step 1 (locate the exile) ran
+    unburdening: bool,                     // true when the unburdening sub-protocol completed (step 5 substantive answer)
+    exile_ref: string | null               // exile descriptor or "[[<existing-title>]]" wikilink; null if Phase 7 didn't reach contact
+  },
+  wrap_state: {                            // SLICE 7 — tier wrap clock
+    tier_upper_min: int | null,            // short → 25, medium → 45, long → 90
+    soft_wrap_proposed: bool,
+    soft_wrap_proposed_at: string | null,  // ISO ts
+    last_wrap_propose_at: string | null,
+    wrap_ratified: bool,                   // true when user ratified the wrap (soft or firm)
+    wrap_silenced_until_at: string | null, // ISO ts or null
+    firm_wrap_proposed: bool
+  },
   trailhead_returned_to_open_threads: bool,
   transcript: [{ role: "user" | "assistant", text, ts }, ...],
   event_log: [
@@ -115,7 +133,7 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
 }
 ```
 
-Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). On any part (focus_part or re_targeted_parts entry), `befriend_notes: []`, `fears: []`, and `protects_ref: null` are valid — those are the defaults when Phase 5/6 didn't engage that part (or didn't run at all).
+Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run. `phase7_state` defaults (`false` / `false` / `false` / `null` / `false` / `false` / `null`) are valid when Phase 7 didn't run (gate evaluated and blocked, OR Phases 5/6 didn't reach the entrance). `wrap_state` defaults (with `tier_upper_min` set after check-in step 2 and all other fields `false`/`null`) are valid when no wrap proposal fired. `re_targeted_parts: []` is valid (the common case — no re-target happened). On any part (focus_part or re_targeted_parts entry), `befriend_notes: []`, `fears: []`, and `protects_ref: null` are valid — those are the defaults when Phase 5/6 didn't engage that part (or didn't run at all).
 
 **Populating session-note frontmatter from input**:
 
@@ -125,13 +143,23 @@ Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead`
 - `permission_granted` ← list of `[[<working_title>]]` for every part with `permission_granted === true` (across `focus_part` + `re_targeted_parts[]`). The current focus is the most common entry; earlier focuses default to `false` unless the closing ritual explicitly granted them.
 - `unblending_events` ← `phase4_state.unblending_events` (direct copy).
 - `re_targets` ← `phase4_state.re_targets` (direct copy; matches `re_targeted_parts.length`).
-- `cycle_detected`, `polarization_work`, `polarization_pair`, `exile_contact`, `unburdening` default to their zero/false values in slice 6 — Phase 7 + cycle detection lands in later slices.
+- `exile_contact` ← `phase7_state.exile_contact` (direct copy; slice 7).
+- `unburdening` ← `phase7_state.unburdening` (direct copy; slice 7).
+- `cycle_detected`, `polarization_work`, `polarization_pair` default to their zero/false values in slice 7 — cycle detection + polarization work land in later slices.
 
 **Slice 6 — Phase 5 / Phase 6 data (NOT in session-note frontmatter, lands on part pages)**:
 
 - `befriend_notes`, `fears`, and `protects_ref` on each part (focus_part + re_targeted_parts entries) feed the **part page body sections** (`## Role`, `## Fears`, `## What it needs from Self`), not session-note frontmatter. See "Part page body population (slice 6)" below for the population logic.
 - `phase5_state.befriend_complete` and `phase6_state.fears_surfaced` are advisory flags for whether to render the relevant body sub-section lines under `## Parts encountered` in the session note (described in the body template). They don't have a direct frontmatter analog.
 - `phase6_state.protector_relationship_captured: true` means a `record_protects { part_ref, exile_ref }` entry should be in `pending_changes`. Apply it normally — it adds the exile_ref to the part's `protects:` frontmatter list.
+
+**Slice 7 — Phase 7 / wrap-clock data**:
+
+- `phase7_state.exile_contact` and `phase7_state.unburdening` populate session-note frontmatter directly (`exile_contact: bool`, `unburdening: bool`). Both default `false` when Phase 7 didn't reach contact / didn't run unburdening.
+- `phase7_state.gates_block_reason` (if non-null) is rendered as a brief plain-prose note in `## Arc` ("Held deeper work for next time — texture went murky at pre-7 check"). Never with apology / therapist-voice. If `gates_passed: true`, no block-reason rendering.
+- `phase7_state.exile_ref`: when set AND `exile_ref` is a `[[<existing-title>]]` wikilink, the corresponding part page is touched with `update_last_seen` AND (if `phase7_state.unburdening: true`) the `set_status { part_ref: <exile_ref>, status: unburdened }` entry should be in `pending_changes`. Apply it: Edit the exile's part page frontmatter to set `status: unburdened`. When `exile_ref` is a description-only placeholder (no part page), no part-page touch happens — the unburdening is recorded only in `event_log` and session-note frontmatter. Future sessions can promote the descriptor to a part page if and when the exile becomes its own focus.
+- `wrap_state` is consumed for `## Arc` synthesis only — if a wrap proposal fired (`soft_wrap_proposed: true` or `firm_wrap_proposed: true`), mention it briefly in `## Arc`, plain prose ("Soft wrap at minute 40, kept going; firm wrap at 45 closed cleanly"). No separate frontmatter field; `metadata.duration_min` already captures the wall-clock outcome.
+- **Part page body population (slice 7 — Phase 7 outcomes)**: when `phase7_state.exile_contact: true` AND `phase7_state.exile_ref` is a `[[<existing-title>]]` wikilink, the exile's part page body sections are touched the same way as slice 6 (the exile's `## Role` / `## Fears` / `## What it needs from Self` populated from the user's verbatim Phase 7 step 2 description and step 5 "what it needs" answer — read these out of the transcript context surrounding the `exile_contact` and `unburdening` event-log entries). When `phase7_state.unburdening: true`, additionally populate `## Burdens` on the exile's page with the user's verbatim Phase-7-unburdening step 1 answer ("what it's been carrying"), date-stamped per slice-6 convention `(YYYY-MM-DD.)`. The skill never queues `set_status` for descriptor-only exile_refs (no part page); the body-population rules don't fire either in that case.
 
 ## Output contract
 
@@ -361,6 +389,7 @@ The skill passes `focus_part` plus an ordered `re_targeted_parts[]` in input. It
 4. **Existing-part match by description (best-effort)**: if `is_new === true` AND a Glob over `Parts/*.md` reveals a part with title or alias matching `surfaced_phrase` exactly, prefer the existing part: skip the `create_part`, queue an `update_last_seen` for the matched part, add a `failed` entry noting the alternative match so the user can reconcile if it was wrong. Best-effort only — exact-title/alias match, no fuzzy matching.
 5. **Bail handling — `set_left_without_resolution`**: if `metadata.status === "interrupted"`, the skill will have queued one `set_left_without_resolution { part_ref }` entry per part that reached Phase 3 engagement (across `focus_part` + `re_targeted_parts[]`). Apply each: Edit the part page to add `left_without_resolution: true` to frontmatter (in-place; preserve other fields). On next session involving that part, a `clear_left_without_resolution` entry will land instead.
 6. **`record_protects` (slice 6)**: if `pending_changes` contains a `record_protects { part_ref, exile_ref }` entry for this part (from Phase 6 step 4), apply it as an Edit on the protector's frontmatter — append `exile_ref` to the `protects:` list (deduplicating). The exile_ref may be a string descriptor (no part page yet) or a `[[<existing-title>]]` wikilink (existing part page). Either way, write the value as-is into the YAML list. Per OBSIDIAN.md sub-rule, the protect relationship is mirrored only via the protector's `protects:` field (no `protected_by:` field on the exile side in the current schema).
+7. **`set_status` (slice 7 — unburdening)**: if `pending_changes` contains a `set_status { part_ref, status: "unburdened" }` entry (queued at end of Phase 7 unburdening step 5), apply it as an Edit on the target part page's frontmatter — set `status: unburdened` (replacing whatever the prior value was, typically `active`). The `part_ref` is the `[[<existing-title>]]` wikilink for the exile. If the target page doesn't exist (rare — should only happen if the skill queued `set_status` against a non-existent file, which would be a slice-7 bug), add a `failed` entry and continue. Apply this AFTER any other Edits to the same page (e.g. exile body-section population from slice-7 Phase 7 outcomes), so the final state is consistent.
 
 ### Part page body population (slice 6)
 

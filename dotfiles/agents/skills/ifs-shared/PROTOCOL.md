@@ -1,6 +1,6 @@
 # PROTOCOL.md — eager-loaded EM+IFS playbook
 
-Slice 6 of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces; tier-aware time-awareness for short tier), Phase 8 closing ritual (§5f), and post-Phase-6 stub middle (§6stub) are live. Phase 7 procedural content (deeper work, cycle detection, polarization work) lands in later slices.
+Slice 7 of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), Phase 7 (§7 — optional deeper work: exile contact + unburdening, two-factor-gated), tier wrap clock (§wrap — silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase), and Phase 8 closing ritual (§5f) are live. Cycle detection, polarization work, and renames land in later slices.
 
 For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`. For longer-form imitator explanations, see `FAQ.md`.
 
@@ -30,6 +30,7 @@ Phases are tracked internally only. No "moving to Phase 4 now" out loud. Flow is
 4. Propose-and-ratify on every scope change. Single exception: imminent-harm pattern match.
 5. **Never recurse drift handling into full embodied engagement.** Thank-ask-space is one ~30s move; if it fails, re-glimpse; if that fails, ratified re-target. Recursion (running locate → describe → thank → ask-space → Self-energy → 8 C's on the *blending* part) is the single most common failure mode that produces directionless sessions. Hard rule.
 6. Phases never narrated to the user.
+7. **Stable Self bears the unbearable.** Phase 7 (exile contact / unburdening) is only safe from Self — never from a Self-like part. The four-factor gate exists for one reason: Self-like-part doing exile work is the exact failure mode Self-like-parts spotting prevents. Both gates (Phase-1 clean texture + current-continuation no-Self-like-part) hold this line.
 
 ## §6 — State load (lazy three-tier)
 
@@ -369,7 +370,7 @@ Subagent renders each part (original `focus_part` + every `re_targeted_parts[]` 
 
 ### §4-postphase — Post-Phase-4 routing
 
-After Phase 4 completes (no drift detected, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable), Phases 5–7 are not implemented yet — route into §5stub (post-Phase-4 stub middle), then closing ritual.
+After Phase 4 completes (no drift detected, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable), route into Phase 5 (Befriend). The current focus = `re_targeted_parts[-1]` if non-empty, else `focus_part`.
 
 Closing ritual targets the **current focus** (last entry in `re_targeted_parts[]` if any, else `focus_part`). The original focus and any intermediate re-targets are addressed in `## Parts encountered` body sections only — closing's permission-to-return question targets the most-engaged-most-recently part. If user wants to grant permission for multiple, they say so in plain prose; the skill defaults to current-focus-only for `permission_granted` frontmatter.
 
@@ -435,7 +436,7 @@ Phase 5 → Phase 6 is a real scope change (different relational vector — rela
 Wait. Trust the user's pick:
 
 - **"Ask"** (or any plain affirmative): set `phase5_state.transition_to_phase_6_ratified = true`. Route to §6.
-- **"Stay here"** (or wants more time / another follow-up): loop back to §5-2 with another open turn. After the user signals settled, re-offer the transition. If user declines transition entirely, route to §6stub (skip Phase 6) once user signals done with befriend.
+- **"Stay here"** (or wants more time / another follow-up): loop back to §5-2 with another open turn. After the user signals settled, re-offer the transition. If user declines transition entirely, route directly to §7-0 (skip Phase 6) once user signals done with befriend; Phase 7's gate evaluation handles whether deeper work runs or routes to §7-block + §7-pre-close.
 - **"Close" / disengages**: bail handling. Silence under propose-and-ratify defaults to "close here."
 
 ## §6 — Phase 6 — Fears (live)
@@ -448,20 +449,12 @@ Runs after Phase 5's transition is ratified. The canonical Schwartz "what does i
 
 Wait. Yes → §6-2. Anything else → bail handling.
 
-### §6-2 — Tier check (slice 6 — simple time-awareness only)
+### §6-2 — Wrap-clock check (slice 7 — full clock active for all tiers)
 
-Before asking the fear question, check whether the session is approaching its tier upper bound. Slice 6 implements **simple time-awareness only**; the full wrap clock lands in slice #7.
+Run `wrap_check()` (§wrap) at the entrance of Phase 6. All tiers covered uniformly.
 
-- `elapsed_min = now - start_ts`.
-- Tier upper bounds: `short → 25`, `medium → 45`, `long → 90`.
-- If `metadata.tier === "short"` AND `elapsed_min >= (upper - 5)`, emit a soft-wrap-style line in plain prose:
-
-  > *"We're near your time on this one. OK to ask the fears question briefly, or wrap up here?"*
-
-  - **"Ask briefly"** → continue §6-3.
-  - **"Wrap"** → set `phase5_state.transition_to_phase_6_ratified = false` (Phase 6 deferred) and route directly to §6stub.
-
-Other tiers (medium, long): proceed silently to §6-3.
+- If a soft or firm wrap fires AND the user ratifies "wrap": route directly to §7-pre-close + closing (Phase 6 deferred).
+- If user picks "keep going" at the soft wrap (silenced for ~10 min) OR no trigger fires: proceed to §6-3.
 
 ### §6-3 — Fear question
 
@@ -500,17 +493,148 @@ Wait. Append to `current_focus.fears`. Don't loop more than once — Phase 6 is 
 
 After Phase 6 settles, the part page body sections `## Role` / `## Fears` / `## What it needs from Self` are populated by the subagent from `befriend_notes` + `fears` + (if applicable) `protects_ref`. The skill does NOT write any of this directly. No additional pending-changes type needed; the part page is touched via `update_last_seen` (or `create_part`) and the subagent Edits the body sections at write time. `## Burdens` may be inferred lightly when fear patterns suggest a burden, but full burden work is Phase 7 — typically `## Burdens` stays as the empty-heading template line.
 
-## §6stub — Post-Phase-6 stub middle (slice 6 only)
+## §7 — Phase 7 — Optional deeper work (live)
 
-Phase 7 is not implemented yet. After Phase 5 + Phase 6 settle (or after Phase 5 → declined-transition → skip Phase 6, or after Phase 6 → tier-wrap → skip), emit one line:
+Optional deeper work — exile contact and (optionally) unburdening. **Two-factor gated** (PRD: "two-factor" but evaluated as four conjunctive factors). Doctrinal line 7 governs: stable Self bears the unbearable; a Self-like part doing exile work is the exact failure mode Self-like-parts spotting prevents.
 
-> [Session middle continues here — Phase 7 (deeper work) lands in a later slice. Routing to closing ritual.]
+Runs after Phase 6 settles, IF the gate passes. If any gate fails, Phase 7 is blocked and the session routes to §7-pre-close, then closing.
 
-Then route into the **pre-close full continuation check** (light pulse + texture pulse + Self-like-parts spotting per §4-pulse) — one of the three high-risk transitions. If that pulse passes, route to the closing ritual. If it returns `bail` or `drift_detected`, treat as a graceful bail (`status: interrupted`, ritual still runs).
+### §7-0 — Wrap-clock check
 
-The closing ritual targets the **current focus** — the last entry in `re_targeted_parts[]` if any, else `focus_part`. Permission-to-return question targets the current focus by working title.
+Run `wrap_check()` (see §wrap below) at the entrance of Phase 7. If a wrap fires AND the user ratifies "wrap", route directly to §7-pre-close + closing — Phase 7 is skipped. If user picks "keep going", proceed to §7-1.
 
-If the Self-like-part-as-focus path ratified through §1d, the part is the focus; engaging it embodied is real work. Frontmatter: `self_like_part_detected: true`, `parts_touched: [[<working title>]]`. Phase 7 block is the de facto signal of `self_like_part_detected: true` (no separate `phase_7_blocked` field — that's the design until Phase 7 lands).
+### §7-1 — Tier permits check (factor 1)
+
+Set `phase7_state.gates_evaluated = true`.
+
+- **Short tier**: factor 1 fails. `gates_block_reason = "tier_short"`. Route to §7-block.
+- **Medium tier**: factor 1 requires explicit user request earlier in session. If `phase7_state.explicit_request === true`: pass. Else: `gates_block_reason = "tier_medium_no_explicit_request"`. Route to §7-block. Do NOT prompt the user for a deeper-work request — the protocol leaves it to the user to surface.
+- **Long tier**: factor 1 passes by default.
+
+### §7-2 — Phase-1 Self texture check (factor 3)
+
+- `phase1_state.self_texture === "clean"` AND `phase1_state.focus_part_is_self_like === false`: pass.
+- Otherwise: `gates_block_reason = "self_like_part_detected"` (or `"texture_murky"`). Route to §7-block. Doctrinal line 7 holds.
+
+A confirmed-then-stepped-back Self-like part (`self_like_part_detected: true` with §1d-clean-after-mini-loop) does NOT block — what matters is `focus_part_is_self_like` AND current texture. The slice-3 §1d doctrine: Phase 7 is permissible if other gates pass.
+
+### §7-3 — Pre-Phase-7 full continuation check (factor 4)
+
+The third high-risk transition per PRD §16. Texture must hold *now*, not just at Phase 1.
+
+1. *"Still here and oriented? Want to continue?"* — wait.
+2. *"And the texture right now — located somewhere, or more open?"* — wait. Listen on Self-like-parts spotting axis (§5a).
+
+Log `pulse_check { result }`.
+
+- **Continue** (yes + clean + no Self-like-part pattern): pass.
+- **Bail**: graceful bail. `status: interrupted`.
+- **Drift detected**: factor 4 fails. `gates_block_reason = "self_like_part_in_continuation"`. Route to §7-block. Doctrinal line 7 holds — this is exactly the case the gate was built for.
+
+### §7-4 — Protector permission check (factor 2)
+
+The current focus = `re_targeted_parts[-1]` if non-empty, else `focus_part`. The current focus is the protector. Plain prose, one line:
+
+> *"Before reaching the part it's protecting — does `<current_focus.working_title>` give permission to go to that one?"*
+
+Wait. Trust the answer:
+
+- **Confirms**: pass. Set `current_focus.permission_granted = true`. Set `phase7_state.gates_passed = true`.
+- **Denies / unsure**: `gates_block_reason = "no_protector_permission"`. Route to §7-block.
+
+### §7-5 — Exile contact
+
+All four gates pass. Set `phase7_state.exile_contact = true`. Log `exile_contact { part_ref: <exile_ref> }`.
+
+`exile_ref` defaults to `current_focus.protects_ref` if Phase 6 step 4 captured one, else collected fresh from the user. Set `phase7_state.exile_ref`.
+
+Sequence (free-text, wait at each, never voice):
+
+1. **Locate.** *"Now — gently — let `<current_focus.working_title>` step aside, and ask if the part it's protecting is willing to be felt. Where is it in the body?"* Wait.
+2. **Describe.** *"What does it look like, sound like, feel like? Take your time — this part has been waiting."* Wait.
+3. **Thank.** *"From Self, take a moment with this part — let it know you see it, and that you're here."* Wait.
+4. **Self-presence.** *"What's here in the space, between you and it?"* Wait. Feeds `## What Self noticed`.
+5. **What it needs.** *"What does this part need from you right now? Not what it needs to do, but what it needs to receive."* Wait.
+
+Reflection-only stance (doctrinal line 3). Never voice the exile (doctrinal line 1). Play back the user's own words once if helpful; no more.
+
+### §7-6 — Unburdening (optional)
+
+Propose-and-ratify per doctrinal line 4, plain prose, one line:
+
+> *"There's a move that often comes next, if it's ready — letting it release the extreme thing it's been carrying. Want to offer that, or stay with what's here?"*
+
+Wait. Trust the answer:
+
+- **Confirms**: proceed.
+- **Stay here / not yet**: skip unburdening. Phase 7 ends. Route to §7-pre-close.
+- **Close / disengages**: bail handling.
+
+Unburdening protocol (Schwartz-orthodox, Kelly-retained, Self-directed):
+
+1. *"Ask this part what it's been carrying — not what its job is, but what it's been holding that isn't really its."* Wait.
+2. *"Where does it want to release it — to light, to water, to earth, to wind, to someone, somewhere else? It chooses."* Wait.
+3. *"Take your time — let it release, in its own way. Let me know when it has."* Wait.
+4. *"What's here now, in the space where the burden was?"* Wait.
+5. *"What does it want to invite in instead — what quality, what feeling, what sense?"* Wait.
+
+Once step 5 lands a substantive answer: set `phase7_state.unburdening = true`. Log `unburdening { part_ref: <exile_ref> }`. Queue `set_status { part_ref: <exile_ref>, status: unburdened }` IF `exile_ref` is a `[[<existing-title>]]` wikilink (descriptor-only placeholders are NOT queued for `set_status` — there's no part page to update).
+
+After unburdening (or after declining), route to §7-pre-close.
+
+### §7-block — Phase 7 blocked routing
+
+Emit ONE line, plain prose, no apology, no therapist-voice:
+
+> Holding deeper work for next time.
+
+Route to §7-pre-close.
+
+### §7-pre-close — Pre-close full continuation check
+
+The third high-risk transition (PRD §16). Always runs after Phase 7 settles (whether full, blocked, or wrap-skipped).
+
+1. *"Still here and oriented? Want to close cleanly, or anything else surfacing?"* — wait.
+2. *"And the texture right now — open, or located somewhere?"* — wait. Log `pulse_check`.
+
+- **Continue**: route to closing (§5f).
+- **Bail**: graceful bail. Closing still runs.
+- **Drift detected**: in slice 7 the pre-close pulse does NOT loop back into Phase 4 — work is winding down. Note in `event_log`, route to closing. (Caveat: if `phase7_state.unburdening === true` and texture went murky after, it's most likely a young-self emergence rather than a Self-like part — closing's rest-in-Self gives it a held container without re-opening the work.)
+
+The closing ritual targets the **current focus**. Permission-to-return targets the current focus by working title.
+
+If the Self-like-part-as-focus path ratified through §1d, the part is the focus. Phase 7 is blocked via factor 3 (`gates_block_reason = "self_like_part_detected"`); §1d Self-like-as-focus sessions never reach §7-5.
+
+## §wrap — Tier wrap clock (live)
+
+Silently track `elapsed_min = now - start_ts` against `wrap_state.tier_upper_min` (set at check-in step 2: `short → 25`, `medium → 45`, `long → 90`). Wrap-clock checks fire at every phase transition AND mid-phase between user turns when the elapsed time changes — **never mid-prompt-wait**. Wrap proposals NEVER cut a phase mid-step; if elapsed crosses a threshold mid-engagement, finish the current phase's contact, then propose at the next natural seam.
+
+`wrap_check()` decision tree (called at every phase transition + every Phase 7 sub-step entrance):
+
+1. Compute `elapsed_min = now - start_ts`. Read `wrap_state.tier_upper_min`.
+2. **Crisis pattern override**: imminent-harm pattern matches close immediately regardless of `wrap_state` — see `SAFETY.md` imminent-harm. The wrap clock is silent in that path.
+3. **Firm wrap** (`elapsed_min >= tier_upper_min` AND NOT `firm_wrap_proposed`):
+   - Set `firm_wrap_proposed = true`, `last_wrap_propose_at = now`.
+   - One line, plain prose:
+     > *"We're at your time. Heading to close now."*
+   - **Affirms / silent ~30s**: route to closing. `wrap_ratified = true`.
+   - **Pushes back** ("a few more minutes"): allow brief landing, then re-propose closing immediately after the user's next substantive answer. Firm wrap doesn't honor extension as re-set.
+4. **Soft wrap** (`elapsed_min >= tier_upper_min - 5` AND NOT `soft_wrap_proposed` AND (`wrap_silenced_until_at` null OR `now >= wrap_silenced_until_at`)):
+   - Set `soft_wrap_proposed = true`, `soft_wrap_proposed_at = now`, `last_wrap_propose_at = now`.
+   - One line, plain prose:
+     > *"We're near your time — want to close, or keep going?"*
+   - **Close / wrap / let's stop**: `wrap_ratified = true`. Skip remaining unworked phases. Route to §7-pre-close + closing.
+   - **Keep going / continue / a few more minutes**: `wrap_silenced_until_at = soft_wrap_proposed_at + 10min`. Continue. Extension is **ad-hoc** — never pre-declared at check-in; no "how much more?" question.
+   - **Silence / disengages**: silence under propose-and-ratify defaults to "close here." `wrap_ratified = true`, route to §7-pre-close + closing.
+5. **No trigger**: silent no-op.
+
+`wrap_check()` is invoked at: end of check-in → Phase 1, Phase 1 → Phase 2 (or §1d → Phase 3), Phase 2 → Phase 3, Phase 3 → naming → Phase 4, Phase 4 → Phase 5, Phase 5 → Phase 6, Phase 6 → §7-0, and within Phase 7 between sub-steps (between exile contact step 5 → unburdening propose, between unburdening step 5 → §7-pre-close). Closing ritual once started runs to completion — no `wrap_check()` inside the ritual.
+
+**Wrap-shortens-the-work-not-the-close**: §5f closing ALWAYS runs after a ratified wrap. Even firm wrap routes through closing — only imminent-harm exit skips it.
+
+**Mid-Phase-7 wrap behavior**: wrap-clock checks at sub-step transitions, not mid-prompt-wait. If wrap crosses a threshold while the user is mid-answer at e.g. unburdening step 3 ("let it release"), let them land that step and step 4 ("what's here now"), then propose at the next natural seam (before step 5). The PRD's "wrap NEVER cuts mid-phase" rule means complete the phase's *contact*. Step 5 is the natural seam if past step 4.
+
+**Wrap proposals are propose-and-ratify (doctrinal line 4)**, with one exception: imminent-harm pattern match. Crisis-pattern override ignores wrap state and closes immediately — the crisis link goes out FIRST regardless of where in the wrap clock the session is.
 
 ## §5f — Phase 8 — Closing ritual (live; mandatory unless `crisis_exit`)
 
@@ -528,12 +652,10 @@ Five steps, in order:
 
 Order matters: rest-in-Self before step-out so re-orientation happens *from* Self, not as an exit. Sessions don't get logged as `complete` until the ritual runs.
 
-## Slice 7+ content (placeholder)
+## Slice 8+ content (placeholder)
 
 Full procedural content for the following lands in later slices:
 
-- Phase 7 — optional deeper work (two-factor gate; see `SAFETY.md` tier matrix). Blocked for the session if `self_like_part_detected: true` from Phase 1. Requires the entry-to-Phase-7 full continuation check (third high-risk transition). Exile contact + unburdening land here. `set_part_type` queueing for confirmed exile classification likely lands here too.
 - §5e — cycle detection (signals: same part blends at Phase 4 twice; three distinct re-targets in one session). Response: pause, name pattern, offer three paths in prose (polarization work / pick-one / close-and-log; default close-and-log). Slice 5 lands linear stacking of re-targets without cycle detection — re-targets log freely, no cycle counter trips.
 - §5e — polarization work (Schwartz 7-step protocol, Kelly-retained; replaces remainder of session; requires clean re-glimpse first).
-- Wrap clock — full soft-wrap-at-(upper-5-min) + firm-wrap-at-upper proposal cycle for medium and long tiers, ad-hoc extension at the wrap proposal. Slice 6 only implements the simple short-tier time-awareness check at §6-2.
 - Renames and the `[[New|old phrase]]` backlink rewrites (inline at rename-discovery time, mid-session). Slice 4 wires `append_alias` for new phrasings of the same part; full rename lands later.
