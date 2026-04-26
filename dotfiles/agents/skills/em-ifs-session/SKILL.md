@@ -54,23 +54,7 @@ Per `PROTOCOL.md` §6 (lazy three-tier): `IFS.md` frontmatter, most recent sessi
 
 ## Phase routing
 
-Run each phase per its PROTOCOL.md section. Capture user-language strings (verbatim) into the matching `focus_part` / `re_targeted_parts[-1]` fields as procedures call for.
-
-| Phase | PROTOCOL.md ref | Skill responsibility |
-| ----- | --------------- | -------------------- |
-| Check-in | §0 | AskUserQuestion **first** for tier (the only structured prompt in the entire skill) — sets `wrap_state.tier_upper_min`. Then run the mood gate from `SAFETY.md` (free text). Then combine open-threads + Trailheads.md unstruck items into a single prose offer; queue `strike_trailhead` if pick maps. One-line echo, then Phase 1. |
-| Phase 1 | §1 | Read `default_glimpse:` from `IFS.md`. Update `phase1_state` from the texture answer. Route per §1d: clean → Phase 2; Self-like-part-stays-loud → focus part is the Self-like part, Phase 7 implicitly blocked, skip Phase 2. |
-| Phase 2 | §2 | Capture `focus_part.surfaced_phrase`. Propose-and-ratify on divergence from trailhead. If user picks surfaced, set `trailhead_returned_to_open_threads = true` and drop any pending `strike_trailhead`. Other parts surfacing later go to `## Open threads` via transcript record. |
-| Phase 3 | §3 | Run all six steps. Dissociation cue at §3-1 → `metadata.status = "interrupted"`, log `dissociation_cue_caught`, route to closing. Capture `body_location` / `description` / Self-energy answers verbatim. |
-| Naming | §3-naming, §3-naming-rename | Reflection-only descriptive title; `Unnamed YYYY-MM-DD #N` fallback. Existing-part check via "same as X, or new?" — trust the answer. Queue `create_part` (new) or `update_last_seen` + optional `append_alias` (existing). On alias-discovery, run the inline rename offer; on confirm, queue `rename_part` AND atomically update `pending_renames` AND rewrite local `focus_part.working_title` / matching `re_targeted_parts[]` entries. **Never synthesize a name** — surface only phrasings the user has used this session or aliases on the page. |
-| Phase 4 | §4 | Run continuation check + drift detection per §4-detect. On drift: log `blend_at_f4`, increment `cycle_state.blend_counts[<focus>]`, check cycle signals before §4-handle. Run hybrid §4-handle (one ~30s thank-and-ask-space → re-glimpse → ratified re-target). **Never recurse into full Phase 3 on the blending part** (doctrinal line 7). On ratified re-target: append to `re_targeted_parts[]`, increment `cycle_state.re_targets_distinct` if the new focus is novel, then re-run Phase 3 from the top on the new focus, then Phase 4 again. |
-| §4-cycle | §4-cycle | Trips on `blend_counts[X] >= 2` (signal 1) or `re_targets_distinct >= 3` (signal 2). Pause + name pattern (one line) + three-option **prose** offer (no AskUserQuestion). Default to `close_and_log` on disengagement. Always queue `record_polarization { pair: cycle_pair }` regardless of resolution. |
-| §4-polarization-work | §4-polarization-work | 7 steps, replaces remainder of session. Step 1's re-glimpse must land clean Self — if murky, fall back to close-and-log. Capture `polarization_state.what_each_protects` verbatim. After step 7, route directly to §7-pre-close + closing. **No Phase 5/6/7 on either polarized part.** |
-| Phase 5 | §5 | Capture user's verbatim replies to "what does it want you to know" / "what would help it relax" into `focus_part.befriend_notes` (current focus). Reflection only. Propose-and-ratify Phase 5 → Phase 6. |
-| Phase 6 | §6 | Capture fears verbatim into `focus_part.fears`. On clear protector→exile mention, ask once and queue `record_protects` if confirmed. Set `current_focus.protects_ref`. |
-| Phase 7 | §7 | Evaluate four-factor gate (tier matrix in `SAFETY.md`; texture from `phase1_state`; pre-Phase-7 full continuation check; protector permission). Route to §7-block on any failure. On exile contact / unburdening: log events, queue `set_status { exile_ref, status: unburdened }` only if `exile_ref` resolves to an existing part page. |
-| §7-pre-close | §7-pre-close | Third high-risk transition. Drift here does **not** loop into Phase 4 — closing is the recovery. |
-| Phase 8 (close) | §8 / closing-ritual | Always runs unless `status: crisis_exit`. Five steps: thank → ask-more → permission → rest-in-Self → step-out. Targets the **current focus** (`re_targeted_parts[-1]` ?? `focus_part`). Variants for "no parts touched" and "Self-like part only." On step 3 affirmation, set `current_focus.permission_granted = true`. |
+Run each phase per its PROTOCOL.md section (§0 check-in through §8 closing, plus §4-cycle and §4-polarization-work branches). PROTOCOL.md is the single source of truth for what each phase says, when to log events, and which `pending_changes` entries to queue. The skill's job is to track the in-memory state listed above, fire pulse cadence per `SAFETY.md`, and dispatch the subagent at the end — not to restate procedures here.
 
 ## Pulse cadence
 
