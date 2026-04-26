@@ -41,7 +41,7 @@ Tier 3 (on demand, mid-session):
 
 Three-step micro-sequence:
 
-1. **Tier (the only AskUserQuestion in the session).** Short / Medium / Long. Captured into `metadata.tier`. Asked first so the wrap clock has its bound and the structured prompt is out of the way before any free-text exchange.
+1. **Tier.** Ask open-endedly — *"Short, medium, or long today?"* — and let the user answer in their own words. Map the reply to short / medium / long and capture into `metadata.tier`. Asked first so the wrap clock has its bound before any free-text exchange.
 2. **Mood (free text).** *"How are you arriving, in one line?"* — runs the mood-gate refusal in `SAFETY.md`. Crisis-pattern match emits the crisis-fallback link in one line and ends the session with `status: crisis_exit`. Otherwise `metadata.checkin_state` captures the answer.
 3. **Trailhead (free text).** Combined offer of the most recent session note's unchecked `## Open threads` items + unstruck items from `Trailheads.md` (treat missing as empty). Presented in prose, not as a menu. User picks in their own words. If the pick maps to a `Trailheads.md` line, queue a `strike_trailhead` entry into `pending_changes`.
 
