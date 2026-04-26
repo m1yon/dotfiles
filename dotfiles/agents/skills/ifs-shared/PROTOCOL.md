@@ -281,20 +281,11 @@ AND atomically update `pending_renames[<old_title>] = <new_title>` (the local pe
 - `focus_part.working_title = <new_title>`.
 - For any `re_targeted_parts[]` entry with `working_title === <old_title>` or `re_targeted_from === <old_title>`, rewrite to `<new_title>`.
 
-Earlier `pending_changes` entries that referenced `<old_title>` as `part_ref` (`append_alias`, `update_last_seen`, `record_protects`, `set_left_without_resolution`) are NOT retroactively rewritten by the skill — the subagent's `part_ref` resolution walks `pending_renames` at write time and collapses them to `<new_title>`. This is the discipline that makes minute-25 references agree with a minute-10 rename without retroactive in-skill mutation.
+Earlier `pending_changes` entries referencing `<old_title>` as `part_ref` are NOT retroactively rewritten by the skill — the subagent's `part_ref` resolver walks `pending_renames` at write time.
 
-**Doctrinal line 3 is the most-loaded discipline here**: never propose a name the user hasn't used. Even paraphrasing a user phrase is synthesis — refuse. Reflect verbatim phrasings only.
+Reflect verbatim phrasings only — even paraphrasing a user phrase is synthesis. Aliases are append-only; the old canonical title becomes the most recent alias entry on rename.
 
-**Aliases as therapeutic artifact**: append-only on the part page. When a rename happens, the old canonical title becomes the most recent alias entry — chronological record. The subagent never reorders, deduplicates beyond exact-match, or compresses aliases.
-
-### §3-naming-rename-mechanics — what the subagent does (reference)
-
-End-of-session mechanics for `rename_part { old_title, new_title, reason? }` (full procedure in `dotfiles/claude/agents/ifs-session-writer.md`):
-
-1. Rename the file: `Parts/<old_title>.md` → `Parts/<new_title>.md`.
-2. Append `<old_title>` to `aliases:` on the renamed page (after the `surfaced_phrase` alias from `append_alias` if also queued, preserving order).
-3. Rewrite session-note backlinks (`Sessions/*.md`): every occurrence of `[[<old_title>]]` becomes `[[<new_title>|<old phrase as it appeared then>]]`. The "old phrase as it appeared then" is sourced from the session note's surrounding context (e.g. the `### [[<old_title>]]` heading is rewritten as `### [[<new_title>|<old_title>]]`; references in `parts_touched:` frontmatter become `[[<new_title>|<old_title>]]`). This preserves the historical phrasing in the place it was used while keeping the link live.
-4. Rewrite other-part-page backlinks (`Parts/*.md`, frontmatter list values like `protects:`, `polarized_with:`, `allies:`): every occurrence of `[[<old_title>]]` becomes plain `[[<new_title>]]`. These references the part in the abstract, not tied to a moment, so no aliased form is needed.
+End-of-session mechanics (file rename + alias append + session-note backlinks become `[[New|old phrase]]` + other-part-page backlinks become plain `[[New]]`) live in `dotfiles/claude/agents/ifs-session-writer.md`.
 
 ## §4 — Phase 4 — Continuation check + hybrid drift handling
 
@@ -347,9 +338,9 @@ Then attend to Self-energy in the opened space:
 
 3. *"What's here in the space that opened?"*
 
-Wait. Log `light_touch_step_back { success: true | false }` to `event_log` based on the answer. Increment `unblending_events` regardless of success (a drift was detected and a step-back was attempted — that's the count).
+Wait. Log `light_touch_step_back { success: true | false }` to `event_log`. Increment `unblending_events` regardless of success (the drift + attempted step-back is the count).
 
-- **Success** (texture clean, space opened, user reports softening / room / stepping back): continue with the original focus part. Do not re-narrate where you are. Increment `unblending_events`.
+- **Success** (texture clean, space opened, user reports softening / room / stepping back): continue with the original focus part. Do not re-narrate where you are.
 - **Failure** (texture still murky, user can't sense space opening, the blending part stays loud): escalate to §4-handle-2.
 
 This is **NOT** a full Phase 3. No "describe the part", no naming, no "how do you feel toward it" — those would be recursion. One thank, one ask-space, one Self-energy check. Done.
@@ -380,35 +371,18 @@ Both lighter moves failed. The blending part is the real focus right now. Propos
 Wait. Trust the user's pick at face value:
 
 - **User picks "pivot to it"**:
-  - Log `re_target { from: <original focus working_title>, to: <new phrase / placeholder if unnamed> }` to `event_log`.
-  - Increment `re_targets` in session-state.
-  - Increment `cycle_state.re_targets_distinct` IF the new target hasn't been a focus before in this session (track by working_title / surfaced_phrase across `focus_part` + `re_targeted_parts[]`).
-  - **Check cycle signal 2** (re-target pile-up): if `cycle_state.re_targets_distinct >= 3`, set `cycle_state.cycle_detected = true`, `cycle_state.cycle_pair = [<original focus.working_title>, <new target's working_title or surfaced_phrase>]` (bookends — original focus + most-recent re-target). Route to §4-cycle. Do NOT run Phase 3 on the new focus — the cycle handler replaces that.
-  - **Otherwise** (no cycle trip):
-    - Move the original focus to `## Open threads` of the new note (subagent appends — the skill flags it via the `re_targets` event log entries; the original `focus_part` stays in the input as the *first* part touched, but with `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` or similar plain phrasing).
-    - The new target becomes the focus part. Run Phase 3 on it (locate → describe → thank → ask-space → Self-energy → "how do you feel toward that part?" → naming). The new focus accumulates as a *separate* entry in `re_targeted_parts[]` (each entry has the same shape as `focus_part`, plus `re_targeted_from: <previous focus working_title>`).
-    - **Re-targets stack linearly** until cycle signal 2 trips. A → B → C is fine if no part has been the focus twice; the third *distinct* re-target trips the cycle handler.
-    - After Phase 3 completes on the new focus, run Phase 4 again (continuation check). If drift detected again, hybrid handling runs again on the *new* focus. Re-targets keep stacking until signal 1 (repeat blend) or signal 2 (pile-up) trips.
+  - Log `re_target { from: <original focus working_title>, to: <new phrase / placeholder if unnamed> }` to `event_log`. Increment `re_targets`.
+  - Increment `cycle_state.re_targets_distinct` IF the new target hasn't been a focus before this session (track by working_title / surfaced_phrase across `focus_part` + `re_targeted_parts[]`).
+  - **Check cycle signal 2** (re-target pile-up): if `cycle_state.re_targets_distinct >= 3`, set `cycle_state.cycle_detected = true`, `cycle_state.cycle_pair = [<original focus.working_title>, <new target's working_title or surfaced_phrase>]` (bookends). Route to §4-cycle. Do NOT run Phase 3 on the new focus.
+  - **Otherwise**: append a new entry to `re_targeted_parts[]` (`re_targeted_from: <previous focus working_title>`); the new target becomes the current focus. Run Phase 3 → Phase 4 again on it. Re-targets stack linearly until signal 1 or signal 2 trips.
 
-- **User picks "come back to `<original>` next time"**:
-  - Set `metadata.status = "interrupted"` (the user is choosing to close mid-work; this is a graceful bail, not a failure).
-  - Route to closing ritual. The original focus already has `set_left_without_resolution` queued via bail handling.
-
-- **User picks "close here"**:
-  - Same as "come back next time" — `status: interrupted`, route to closing ritual.
-
-If the user disengages without picking, default to "close here" — propose-and-ratify means the user gets to choose, but silence under the wrap clock is a pick.
+- **User picks "come back next time" or "close here"** (or silently disengages): `metadata.status = "interrupted"`, route to closing ritual. Bail handling queues `set_left_without_resolution` for every touched part.
 
 ### §4-stack — Re-target stacking semantics
 
-When a re-target happens, both parts are recorded:
-
-- The original `focus_part` stays in input with its original Phase-3 data and `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` (or similar one-line phrasing in user/Claude prose).
-- The new focus is appended to `re_targeted_parts[]` with full Phase-3 data of its own and `re_targeted_from: <original working_title>`.
-- If a *second* re-target happens (B → C), the original B becomes the previous focus for C: C gets `re_targeted_from: <B working_title>`. B's `state_at_end` updates to mention the second re-target. Original A stays as-is.
-- The *current* focus is always the last entry in `re_targeted_parts[]` (or `focus_part` itself if no re-target happened). Pulse-checks and drift detection target the current focus.
-
-Subagent renders each part (original `focus_part` + every `re_targeted_parts[]` entry) as its own `### [[<working_title>]]` sub-section under `## Parts encountered`. Re-targeted parts get a body-line note: *"re-targeted from [[<previous working title>]] at Phase 4 — wouldn't step back, re-glimpse didn't restore."* Verbatim or close-paraphrase per the skill's `re_targeted_parts[<N>].re_target_note` field.
+- Original `focus_part` keeps its Phase-3 data with `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` (or close-paraphrase). On further re-targets, intermediate parts' `state_at_end` updates to mention the next re-target.
+- Each new focus appends to `re_targeted_parts[]` with full Phase-3 data and `re_targeted_from: <previous focus working_title>`. Current focus is always the last entry; pulse-checks and drift detection target it.
+- Subagent renders each part as its own `### [[<working_title>]]` sub-section under `## Parts encountered`. Re-targeted parts carry a body-line note from `re_targeted_parts[<N>].re_target_note`.
 
 ### §4-postphase — Post-Phase-4 routing
 
@@ -801,19 +775,15 @@ Silently track `elapsed_min = now - start_ts` against `wrap_state.tier_upper_min
    - **Silence / disengages**: silence under propose-and-ratify defaults to "close here." `wrap_ratified = true`, route to §7-pre-close + closing.
 5. **No trigger**: silent no-op.
 
-`wrap_check()` is invoked at: end of check-in → Phase 1, Phase 1 → Phase 2 (or §1d → Phase 3), Phase 2 → Phase 3, Phase 3 → naming → Phase 4, Phase 4 → Phase 5, Phase 5 → Phase 6, Phase 6 → §7-0, and within Phase 7 between sub-steps (between exile contact step 5 → unburdening propose, between unburdening step 5 → §7-pre-close). Closing ritual once started runs to completion — no `wrap_check()` inside the ritual.
+Closing ritual once started runs to completion — no `wrap_check()` inside the ritual. Even firm wrap routes through §5f closing; only imminent-harm exit skips it.
 
-**Wrap-shortens-the-work-not-the-close**: §5f closing ALWAYS runs after a ratified wrap. Even firm wrap routes through closing — only imminent-harm exit skips it.
+**Mid-Phase-7 wrap behavior**: if wrap crosses a threshold while the user is mid-answer at e.g. unburdening step 3 ("let it release"), let them land step 4 ("what's here now"), then propose at the next natural seam (before step 5). "Wrap never cuts mid-phase" means complete the phase's *contact*.
 
-**Mid-Phase-7 wrap behavior**: wrap-clock checks at sub-step transitions, not mid-prompt-wait. If wrap crosses a threshold while the user is mid-answer at e.g. unburdening step 3 ("let it release"), let them land that step and step 4 ("what's here now"), then propose at the next natural seam (before step 5). "Wrap never cuts mid-phase" means complete the phase's *contact*; step 5 is the natural seam if past step 4.
-
-**Wrap proposals are propose-and-ratify (doctrinal line 4)**, with one exception: imminent-harm pattern match. Crisis-pattern override ignores wrap state and closes immediately — the crisis link goes out FIRST regardless of where in the wrap clock the session is.
+Wrap proposals are propose-and-ratify; only imminent-harm pattern match overrides.
 
 ## §5f — Phase 8 — Closing ritual (mandatory unless `crisis_exit`)
 
-Always runs on graceful close, graceful bail, AND ratified wrap. Never runs on imminent-harm exit. Wrap shortens the work, never the close.
-
-Five steps, in order:
+Runs on graceful close, graceful bail, and ratified wrap. Five steps, in order:
 
 1. **Thank.** Each part contacted. (In stub-middle / no-parts-touched cases, plain language: *"Take a breath. Anything you want to thank — yourself, anyone you reached, anything that surfaced — go ahead."*) When a Self-like part was engaged in §1d, that counts as a part contacted — name it in plain prose: *"Including the part that came up at the start — it gave space (or didn't) — anything to thank it for?"*
 2. **Ask more.** *"Anything else wants to be heard before we close?"*
