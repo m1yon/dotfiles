@@ -76,6 +76,19 @@
             }
           ];
         }
+        {
+          key = "D";
+          description = "force remove worktree and branch";
+          context = "worktrees";
+          command = "git worktree remove --force {{.SelectedWorktree.Path | quote}} && git branch -D {{.SelectedWorktree.Branch | quote}}";
+          prompts = [
+            {
+              type = "confirm";
+              title = "Force remove worktree and branch";
+              body = "Force remove worktree '{{.SelectedWorktree.Path}}' and delete branch '{{.SelectedWorktree.Branch}}'?";
+            }
+          ];
+        }
       ];
     };
   };
