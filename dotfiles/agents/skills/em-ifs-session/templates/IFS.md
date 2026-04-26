@@ -1,7 +1,6 @@
 ---
 type: ifs_home
 crisis_fallback: [[Crisis Plan]]
-default_glimpse: "What is here when there is no problem to solve?"
 ---
 
 # IFS

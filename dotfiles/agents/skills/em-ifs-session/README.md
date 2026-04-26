@@ -10,7 +10,7 @@ Three files inside your Obsidian vault, under `<vault>/6 - Full Notes/IFS/`:
 
 | File             | Purpose                                                                                | Author     |
 | ---------------- | -------------------------------------------------------------------------------------- | ---------- |
-| `IFS.md`         | Homepage. Carries the `crisis_fallback:` pointer + `default_glimpse:` in frontmatter.  | You        |
+| `IFS.md`         | Homepage. Carries the `crisis_fallback:` pointer in frontmatter.                       | You        |
 | `Crisis Plan.md` | Concrete self-regulation protocol the skill links to on a crisis-pattern match.        | You        |
 | `Trailheads.md`  | Optional. Flat dated list of unworked entry points. Skill treats missing as empty.     | You        |
 
@@ -26,13 +26,10 @@ Copy `templates/IFS.md` from this directory into `<vault>/6 - Full Notes/IFS/IFS
 ---
 type: ifs_home
 crisis_fallback: [[Crisis Plan]]
-default_glimpse: "What is here when there is no problem to solve?"
 ---
 ```
 
 The Dataview blocks in the template are optional — they give you a live view of active parts, relationships, and unburdened parts on the homepage, but the skill doesn't read them. If you don't have the Dataview plugin installed, drop them.
-
-You can change `default_glimpse:` to any glimpse prompt you prefer; the skill reads this verbatim and types it at the top of every Phase 1.
 
 ## Setting up `Crisis Plan.md`
 

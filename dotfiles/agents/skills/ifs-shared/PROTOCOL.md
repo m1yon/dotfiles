@@ -25,7 +25,7 @@ Doctrinal lines live in SKILL.md. Phases tracked internally; never narrated.
 ## §6 — State load (lazy three-tier)
 
 Eager (always at session start):
-- `IFS.md` frontmatter (`crisis_fallback`, `default_glimpse`).
+- `IFS.md` frontmatter (`crisis_fallback`).
 - Most recent session note's frontmatter and `## Open threads` only (not full body).
 - `Trailheads.md` full contents (treat missing as empty list).
 - `PROTOCOL.md` (this file).
@@ -53,12 +53,12 @@ Self-first opener. The session's architectural foundation. Runs immediately afte
 
 ### §1a — Glimpse delivery (point-at-the-door)
 
-Read `default_glimpse:` from `IFS.md` frontmatter. Default if missing or empty: `"What is here when there is no problem to solve?"`.
-
-Type the prompt in italics and wait. Mark a brief pause (one line, e.g. *"Take a moment with that."*) — do **not** walk it through stepwise, do not break it into sub-steps, do not narrate what should be happening. Claude is not a meditation teacher. The user signals arrival in their own words.
+Open with a brief settling preamble, then the glimpse prompt in italics, then a brief pause line — do **not** walk the glimpse itself through stepwise, do not break it into sub-steps, do not narrate what should be happening *during* the glimpse. The preamble warms the room; the glimpse itself stays untouched. The user signals arrival in their own words.
 
 Shape:
 
+> Let yourself arrive for a moment. Nothing to do here, nothing to manage — just a moment of noticing.
+>
 > *"What is here when there is no problem to solve?"*
 >
 > Take a moment with that. Let me know what you notice.

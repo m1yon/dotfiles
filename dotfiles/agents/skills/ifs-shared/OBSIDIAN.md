@@ -34,13 +34,12 @@ On every session start:
 
 ## IFS.md homepage template
 
-User authors this. Skill reads `crisis_fallback:` and `default_glimpse:` from frontmatter.
+User authors this. Skill reads `crisis_fallback:` from frontmatter.
 
 ````markdown
 ---
 type: ifs_home
 crisis_fallback: [[Crisis Plan]]
-default_glimpse: "What is here when there is no problem to solve?"
 ---
 
 # IFS
