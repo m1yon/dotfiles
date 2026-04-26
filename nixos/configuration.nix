@@ -15,5 +15,6 @@
     ./kvm.nix
     ./localsend.nix
     ./power.nix
+    ./memory.nix
   ];
 }
