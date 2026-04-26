@@ -7,7 +7,7 @@ For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `O
 ## Phase spine (tracked internally, never narrated)
 
 ```
-0. Check-in              (mood / tier / trailhead — see SAFETY.md mood gate)
+0. Check-in              (tier / mood / trailhead — see SAFETY.md mood gate)
 1. Shift into Self       (glimpse + texture check + Self-like-parts spot)
 2. Notice what's present (parts arise from Self; pick the focus part)
 3. Engage embodied       (locate → describe → thank → request space →
@@ -41,8 +41,8 @@ Tier 3 (on demand, mid-session):
 
 Three-step micro-sequence:
 
-1. **Mood (free text).** *"How are you arriving, in one line?"* — runs the mood-gate refusal in `SAFETY.md`. Crisis-pattern match emits the crisis-fallback link in one line and ends the session with `status: crisis_exit`. Otherwise `metadata.checkin_state` captures the answer.
-2. **Tier (the only AskUserQuestion in the session).** Short / Medium / Long. Captured into `metadata.tier`.
+1. **Tier (the only AskUserQuestion in the session).** Short / Medium / Long. Captured into `metadata.tier`. Asked first so the wrap clock has its bound and the structured prompt is out of the way before any free-text exchange.
+2. **Mood (free text).** *"How are you arriving, in one line?"* — runs the mood-gate refusal in `SAFETY.md`. Crisis-pattern match emits the crisis-fallback link in one line and ends the session with `status: crisis_exit`. Otherwise `metadata.checkin_state` captures the answer.
 3. **Trailhead (free text).** Combined offer of the most recent session note's unchecked `## Open threads` items + unstruck items from `Trailheads.md` (treat missing as empty). Presented in prose, not as a menu. User picks in their own words. If the pick maps to a `Trailheads.md` line, queue a `strike_trailhead` entry into `pending_changes`.
 
 One-line echo (no hedging): *"OK — <tier>, picking up <short paraphrase>. Starting there."* Then route into Phase 1.
@@ -754,7 +754,7 @@ If the Self-like-part-as-focus path ratified through §1d, the part is the focus
 
 ## §wrap — Tier wrap clock
 
-Silently track `elapsed_min = now - start_ts` against `wrap_state.tier_upper_min` (set at check-in step 2: `short → 25`, `medium → 45`, `long → 90`). Wrap-clock checks fire at every phase transition AND mid-phase between user turns when the elapsed time changes — **never mid-prompt-wait**. Wrap proposals NEVER cut a phase mid-step; if elapsed crosses a threshold mid-engagement, finish the current phase's contact, then propose at the next natural seam.
+Silently track `elapsed_min = now - start_ts` against `wrap_state.tier_upper_min` (set at check-in step 1: `short → 25`, `medium → 45`, `long → 90`). Wrap-clock checks fire at every phase transition AND mid-phase between user turns when the elapsed time changes — **never mid-prompt-wait**. Wrap proposals NEVER cut a phase mid-step; if elapsed crosses a threshold mid-engagement, finish the current phase's contact, then propose at the next natural seam.
 
 `wrap_check()` decision tree (called at every phase transition + every Phase 7 sub-step entrance):
 

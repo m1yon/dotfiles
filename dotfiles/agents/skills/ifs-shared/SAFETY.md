@@ -18,7 +18,7 @@ Resolve the wikilink target of `crisis_fallback:` (e.g. `[[Crisis Plan]]` → `<
 
 No therapist-voice boilerplate. One line, name what's missing.
 
-## Mood-step refusal criteria (run on check-in step 1 only)
+## Mood-step refusal criteria (run on check-in step 2 only)
 
 Refuse if the mood input matches any of:
 
@@ -26,7 +26,7 @@ Refuse if the mood input matches any of:
 - **Acute crisis within last 24h** — assault, recent loss, medical emergency, ongoing violence.
 - **Intoxication** — explicit mention of being high / drunk / on substances right now.
 
-On match: emit the crisis fallback link in one line and close. Never ask tier.
+On match: emit the crisis fallback link in one line and close. Skip the trailhead step.
 
 > Going to the crisis plan. [[Crisis Plan]].
 

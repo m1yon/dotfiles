@@ -39,7 +39,7 @@ Initialize at session start, after pre-flight. The shape mirrors the subagent's 
 - `phase4_state` — unblending_events, re_targets, drift_detected_count, last_pulse_result.
 - `phase5_state`, `phase6_state` — befriend_complete / fears_surfaced / protector_relationship_captured.
 - `phase7_state` — explicit_request, gates_evaluated, gates_passed, gates_block_reason, exile_contact, unburdening, exile_ref.
-- `wrap_state` — tier_upper_min (set at check-in step 2: short→25, medium→45, long→90), soft/firm flags, silence-window timestamp.
+- `wrap_state` — tier_upper_min (set at check-in step 1: short→25, medium→45, long→90), soft/firm flags, silence-window timestamp.
 - `cycle_state` — blend_counts (per part, signal 1 trips at ≥2), re_targets_distinct (signal 2 trips at ≥3), cycle_detected, cycle_pair, cycle_resolution.
 - `polarization_state` — entered, pair, what_each_protects, cooperation_agreed, completed.
 - `pending_renames` — local pending-state view: `{old_title → new_title}`. Walked when resolving any `part_ref`.
@@ -58,7 +58,7 @@ Run each phase per its PROTOCOL.md section. Capture user-language strings (verba
 
 | Phase | PROTOCOL.md ref | Skill responsibility |
 | ----- | --------------- | -------------------- |
-| Check-in | §0 | Run mood gate from `SAFETY.md`. AskUserQuestion **once** for tier (the only structured prompt in the entire skill). Combine open-threads + Trailheads.md unstruck items into a single prose offer. Queue `strike_trailhead` if pick maps. One-line echo, then Phase 1. |
+| Check-in | §0 | AskUserQuestion **first** for tier (the only structured prompt in the entire skill) — sets `wrap_state.tier_upper_min`. Then run the mood gate from `SAFETY.md` (free text). Then combine open-threads + Trailheads.md unstruck items into a single prose offer; queue `strike_trailhead` if pick maps. One-line echo, then Phase 1. |
 | Phase 1 | §1 | Read `default_glimpse:` from `IFS.md`. Update `phase1_state` from the texture answer. Route per §1d: clean → Phase 2; Self-like-part-stays-loud → focus part is the Self-like part, Phase 7 implicitly blocked, skip Phase 2. |
 | Phase 2 | §2 | Capture `focus_part.surfaced_phrase`. Propose-and-ratify on divergence from trailhead. If user picks surfaced, set `trailhead_returned_to_open_threads = true` and drop any pending `strike_trailhead`. Other parts surfacing later go to `## Open threads` via transcript record. |
 | Phase 3 | §3 | Run all six steps. Dissociation cue at §3-1 → `metadata.status = "interrupted"`, log `dissociation_cue_caught`, route to closing. Capture `body_location` / `description` / Self-energy answers verbatim. |
