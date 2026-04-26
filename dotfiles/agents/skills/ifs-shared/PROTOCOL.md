@@ -1,6 +1,6 @@
 # PROTOCOL.md — eager-loaded EM+IFS playbook
 
-Slice 9 (final planned slice) of the build: full check-in (§0), Phase 1 (§1 — glimpse + texture + Self-like-parts gate), Phase 2 (§2 — notice what's present + focus part selection), Phase 3 (§3 — full embodied engagement: locate → describe → thank → ask space → feel Self-energy → "how do you feel toward that part?"), naming (§3-naming — descriptive-phrase reflection-only with `Unnamed YYYY-MM-DD #N` deferred-naming fallback, existing-part collision check, **alias accumulation when the same part surfaces with a new phrase, AND inline collaborative rename offer at alias-discovery time — `[[New|old phrase]]` session-note backlink rewrites + plain `[[New]]` other-part-page backlink rewrites via subagent**), Phase 4 (§4 — continuation check + hybrid drift handling: thank-and-ask-space → re-glimpse → ratified re-target; pulse cadence; dissociation cue; cycle detection signals (repeat blend at Phase 4 OR three distinct re-targets) at §4-cycle, three-option prose offer, default close-and-log; polarization-work 7-step protocol at §4-polarization-work, Schwartz-orthodox / Kelly-retained, replaces remainder of session, requires clean re-glimpse first), Phase 5 (§5 — befriend: relationship-building, Self-directed questions; propose-and-ratify Phase 5 → Phase 6 transition), Phase 6 (§6 — fears: what the part protects; optional `record_protects` capture if a protector→exile relationship surfaces), Phase 7 (§7 — optional deeper work: exile contact + unburdening, two-factor-gated), tier wrap clock (§wrap — silent elapsed tracking; soft wrap at T-5min; firm wrap at T; never cuts mid-phase), and Phase 8 closing ritual (§5f) are live.
+Phase procedures (§0–§8), drift handling, cycle detection, polarization work, naming, rename mechanics, tier wrap clock, closing ritual.
 
 For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`. For longer-form imitator explanations, see `FAQ.md`.
 
@@ -20,17 +20,7 @@ For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `O
 9. Log to Obsidian       (subagent dispatch — see OBSIDIAN.md)
 ```
 
-Phases are tracked internally only. No "moving to Phase 4 now" out loud. Flow is implicit.
-
-## Doctrinal lines (restated from SKILL.md)
-
-1. Never voice a part.
-2. Self-first, not unblend-first.
-3. Reflection-only on naming and Self-like-parts spotting.
-4. Propose-and-ratify on every scope change. Single exception: imminent-harm pattern match.
-5. **Never recurse drift handling into full embodied engagement.** Thank-ask-space is one ~30s move; if it fails, re-glimpse; if that fails, ratified re-target. Recursion (running locate → describe → thank → ask-space → Self-energy → 8 C's on the *blending* part) is the single most common failure mode that produces directionless sessions. Hard rule.
-6. Phases never narrated to the user.
-7. **Stable Self bears the unbearable.** Phase 7 (exile contact / unburdening) is only safe from Self — never from a Self-like part. The four-factor gate exists for one reason: Self-like-part doing exile work is the exact failure mode Self-like-parts spotting prevents. Both gates (Phase-1 clean texture + current-continuation no-Self-like-part) hold this line.
+Doctrinal lines live in SKILL.md. Phases tracked internally; never narrated.
 
 ## §6 — State load (lazy three-tier)
 
@@ -47,7 +37,7 @@ Tier 2 (on demand, after trailhead phase):
 Tier 3 (on demand, mid-session):
 - `FAQ.md` loaded only when user asks a conceptual question pattern-matching a topic, or when Claude needs to explain a concept it's about to invoke. The 4 imitators are the most common load trigger — when the texture-gate offers an imitator observation and the user asks "what's that?" or "what's the difference?", load `FAQ.md` and read back the relevant section in plain prose, not by reading the whole file aloud.
 
-## §0 — Check-in (live)
+## §0 — Check-in
 
 Three-step micro-sequence:
 
@@ -57,7 +47,7 @@ Three-step micro-sequence:
 
 One-line echo (no hedging): *"OK — <tier>, picking up <short paraphrase>. Starting there."* Then route into Phase 1.
 
-## §1 — Phase 1 — Shift into Self (live)
+## §1 — Phase 1 — Shift into Self
 
 Self-first opener. The session's architectural foundation. Runs immediately after the check-in's one-line echo. Never narrated as "entering Phase 1."
 
@@ -113,15 +103,13 @@ The user's response routes:
 
 - **User confirms** (yes / sounds right / probably / yeah I think so): treat as detected. Frontmatter: `self_texture: murky`, `self_like_part_detected: true`. Route to §1d-engage-self-like-part.
 - **User denies** (no / it really does feel already-here / I think it's just X): trust the answer. Frontmatter: `self_texture: clean`, `self_like_part_detected: false`. Proceed to §1d-clean.
-- **User isn't sure** (maybe / I don't know / it's hard to tell): re-glimpse once. Frontmatter: increment `re_glimpses`. Use the briefer form *"Let's notice again — what's here when there's no problem to solve?"* and re-ask the texture question. After the second pass, route as above (treating "still not sure" as a soft denial — proceed to §1d-clean, but flag in event_log via implicit narrative — `re_glimpses` count tells the story).
+- **User isn't sure** (maybe / I don't know / it's hard to tell): re-glimpse once. Frontmatter: increment `re_glimpses`. Use the briefer form *"Let's notice again — what's here when there's no problem to solve?"* and re-ask the texture question. After the second pass, route as above (treating "still not sure" as a soft denial — proceed to §1d-clean; the `re_glimpses` count carries the signal).
 
 ### §1d — Routing out of Phase 1
 
 **§1d-clean** (clean texture, or denied imitator, or post-re-glimpse settled): Phase 1 is complete. Proceed to Phase 2.
 
-In slice 3, Phase 2 is still stubbed — route into `§5stub` (post-Phase-1 stub middle).
-
-**§1d-engage-self-like-part** (Self-like part detected, user confirmed): engage the Self-like part as a part using a **constrained mini-loop** of the Phase 3 protocol — locate / thank / ask space only. Do **not** run the full Phase 3 (no "feel Self-energy in opened space", no "how do you feel toward that part" — those land in slice 4 as full Phase 3).
+**§1d-engage-self-like-part** (Self-like part detected, user confirmed): engage the Self-like part as a part using a **constrained mini-loop** of the Phase 3 protocol — locate / thank / ask space only. Do **not** run the full Phase 3 (no "feel Self-energy in opened space", no "how do you feel toward that part").
 
 Sequence:
 
@@ -135,17 +123,17 @@ Then re-glimpse: type the (briefer) glimpse prompt and re-ask the texture questi
 
 **Routing after re-glimpse:**
 
-- **Texture now clean** → Phase 1 complete. `self_like_part_detected:` stays `true` (it was detected, even though it stepped back), but proceed to Phase 2 (slice 3: `§5stub`). The session's Phase 7 block flag is **not** raised — the part stepped back, exile contact remains permissible if other gates pass.
+- **Texture now clean** → Phase 1 complete. `self_like_part_detected:` stays `true` (it was detected, even though it stepped back), but proceed to Phase 2. The session's Phase 7 block flag is **not** raised — the part stepped back, exile contact remains permissible if other gates pass.
 - **Texture still murky / part won't make space**: the Self-like part becomes the **focus part** for the session. Propose-and-ratify per doctrinal line 4:
 
   > *"It looks like this part is who's most present right now. Want to let it be the focus today, or close and come back to it?"*
 
-  - **User ratifies "let it be the focus"** → set `focus_part_is_self_like` flag internally. Set the session's **Phase-7-blocked** internal flag (regardless of tier, per §5a). In slice 3, full Phase 3+ engagement is still stubbed — route into `§5stub` with the Self-like part recorded as the focus, and surface in the session note frontmatter as `self_like_part_detected: true`. Slice 4+ will run real Phase 3 on this focus.
+  - **User ratifies "let it be the focus"** → set `focus_part_is_self_like` flag internally. Set the session's **Phase-7-blocked** internal flag (regardless of tier, per §5a). Run Phase 3 on this focus; surface in session-note frontmatter as `self_like_part_detected: true`.
   - **User ratifies "close"** → set `metadata.status = "interrupted"`, route to closing ritual.
 
 In all paths, the texture answer and any imitator observation are recorded only in the frontmatter fields (`self_texture`, `self_like_part_detected`, `re_glimpses`) — never in the body. Phases never narrated.
 
-## §2 — Phase 2 — Notice what's present + focus part selection (live)
+## §2 — Phase 2 — Notice what's present + focus part selection
 
 Runs after Phase 1's `§1d-clean` route. Skipped when §1d ratified a Self-like part as focus (that path goes straight to Phase 3 with `is_self_like: true` already set). Single conversational beat, no narration.
 
@@ -178,9 +166,9 @@ Other parts surfacing during Phase 3 (or anytime after) get acknowledged with Se
 
 Surface them via `## Open threads` of the new session note. The skill never starts engaging a second part; the discipline is one focus per session.
 
-## §3 — Phase 3 — Engage embodied (live)
+## §3 — Phase 3 — Engage embodied
 
-Six steps, free-text after Step 1. Run unchanged from Loch Kelly's published protocol. Pulse-check at entry only if `re_glimpses > 0` from Phase 1, or any §1d engagement happened — otherwise the glimpse just landed and a pulse adds friction.
+Six steps, free-text after Step 1. Run unchanged from Loch Kelly's published protocol. Pulse-check at entry per §4-pulse (full continuation check at this high-risk transition).
 
 ### §3-1 — Locate in body (with dissociation cue)
 
@@ -225,7 +213,7 @@ The 8 C's pulse + passive Self-like-parts pattern-match.
 Wait. Listen for:
 
 - **8 C's tone** (curious / compassionate / calm / connected / clear / confident / courageous / creative — or close synonyms): Self is in the chair. Note state in user's own words.
-- **Self-like-parts pattern** (passive): if the answer is "I want to fix it / get rid of it / understand it / ignore it" or has the managed/performed/intellectual/flat quality, that's a part-toward-part response. In slice 4, log via `phase1_state` only if it shows up here (frontmatter signal); full re-glimpse handling is Phase 4 (slice 5+). For now offer ONE light reflection: *"That sounds like another part has come in. Want to ask it to give space too, or stay with what's here?"* Take user's pick at face value; no recursion.
+- **Self-like-parts pattern** (passive): if the answer is "I want to fix it / get rid of it / understand it / ignore it" or has the managed/performed/intellectual/flat quality, that's a part-toward-part response. Phase 4 owns full re-glimpse handling. Here, offer ONE light reflection: *"That sounds like another part has come in. Want to ask it to give space too, or stay with what's here?"* Take user's pick at face value; no recursion.
 
 After §3-6, route to §3-naming.
 
@@ -253,16 +241,16 @@ Never synthesize. Never project. Never suggest a phrase the user didn't say.
 
 > *"This sounds like '<existing title>' from <previous-session-link>. Same as that one, or new?"*
 
-Trust the user's answer (per PRD §33). If "same": `is_new = false`, working_title = existing title, queue `update_last_seen` (+ `append_alias` if surfaced phrase differs). If "new": `is_new = true`, queue `create_part`. If unsure, ask once; if user demurs, treat as new.
+Trust the user's answer. If "same": `is_new = false`, working_title = existing title, queue `update_last_seen` (+ `append_alias` if surfaced phrase differs). If "new": `is_new = true`, queue `create_part`. If unsure, ask once; if user demurs, treat as new.
 
 Pending-changes queued at end of naming step:
 
 - `is_new = true` → `create_part { title, initial_frontmatter: { type: part, part_type: unknown, status: active, aliases: [], first_met: <date>, last_seen: <date>, age_felt: null, protects: [], polarized_with: [], allies: [], tags: [ifs, part] } }`
 - `is_new = false` → `update_last_seen { part_ref: working_title, date: <date> }` (+ `append_alias { part_ref: working_title, new_phrase: surfaced_phrase }` if different)
 
-`part_type` defaults to `unknown` — never set automatically by the skill in slice 4. User-supplied or Phase 5–6-elicited (later slices) sets it via `set_part_type`. Same with `record_protects` — type exists for future use; not actively populated in slice 4.
+`part_type` defaults to `unknown` — never set automatically by the skill. User-supplied or Phase 5–6-elicited sets it via `set_part_type`. `record_protects` is queued only when a clear protector→exile relationship surfaces (see §6-4).
 
-### §3-naming-rename — Inline collaborative rename offer (slice 9)
+### §3-naming-rename — Inline collaborative rename offer
 
 Fires only on the existing-part "same as X" path, AFTER `append_alias` has been queued (i.e. `surfaced_phrase` differs from the existing `working_title` and an alias was appended). One inline question, no follow-ups:
 
@@ -308,7 +296,7 @@ End-of-session mechanics for `rename_part { old_title, new_title, reason? }` (fu
 3. Rewrite session-note backlinks (`Sessions/*.md`): every occurrence of `[[<old_title>]]` becomes `[[<new_title>|<old phrase as it appeared then>]]`. The "old phrase as it appeared then" is sourced from the session note's surrounding context (e.g. the `### [[<old_title>]]` heading is rewritten as `### [[<new_title>|<old_title>]]`; references in `parts_touched:` frontmatter become `[[<new_title>|<old_title>]]`). This preserves the historical phrasing in the place it was used while keeping the link live.
 4. Rewrite other-part-page backlinks (`Parts/*.md`, frontmatter list values like `protects:`, `polarized_with:`, `allies:`): every occurrence of `[[<old_title>]]` becomes plain `[[<new_title>]]`. These references the part in the abstract, not tied to a moment, so no aliased form is needed.
 
-## §4 — Phase 4 — Continuation check + hybrid drift handling (live)
+## §4 — Phase 4 — Continuation check + hybrid drift handling
 
 Runs after §3-naming completes. Two responsibilities:
 
@@ -317,12 +305,10 @@ Runs after §3-naming completes. Two responsibilities:
 
 ### §4-pulse — Pulse cadence
 
-Two flavors of pulse, both used in slice 5:
+Two flavors of pulse:
 
 - **Light pulse** (every phase transition): one line — *"Still here and oriented? Want to continue?"* Yes → continue. Anything else (no / "I'm done" / "actually I'm checking out a bit" / silence indicating exit) → branch to bail handling (closing ritual, `status: interrupted`).
-- **Full continuation check** (three high-risk transitions: entering Phase 3, entering Phase 7, pre-close): light pulse + texture pulse + Self-like-parts spotting (per §5a). The texture pulse re-asks the §1b question briefly: *"And — what's it like for you right now? Located somewhere, or more open?"* Self-like-parts spotting is passive listening on the answer; only offers an imitator observation if the texture answer pattern-matches. Phase 7 is not built yet — flag for slice 7+.
-
-Pulse-check entry into Phase 3 is **unconditional** in slice 5 (full continuation check), replacing slice 4's conditional version. The PRD §16 says full continuation check at three high-risk transitions; cycle detection isn't here yet but the entry pulse is now standard.
+- **Full continuation check** (three high-risk transitions: entering Phase 3, entering Phase 7, pre-close): light pulse + texture pulse + Self-like-parts spotting (per §5a). The texture pulse re-asks the §1b question briefly: *"And — what's it like for you right now? Located somewhere, or more open?"* Self-like-parts spotting is passive listening on the answer; only offers an imitator observation if the texture answer pattern-matches.
 
 Log every pulse to `event_log` as `pulse_check { result: "continue" | "bail" | "drift_detected" }`.
 
@@ -338,7 +324,7 @@ After Phase 3 (or any time mid-engagement past Phase 3), watch for:
 If any signal trips:
 
 1. Log `blend_at_f4 { blended_part_ref: <current focus working_title> }` to `event_log`.
-2. Increment `cycle_state.blend_counts[<current focus working_title>]` (slice 8 cycle-detection counter).
+2. Increment `cycle_state.blend_counts[<current focus working_title>]`.
 3. **Check cycle signal 1** (repeat blend at Phase 4): if `cycle_state.blend_counts[<current focus>] >= 2`, route to §4-cycle (cycle handler) — do NOT run §4-handle. Identify the cycle pair best-effort: `[<blended part>, <previous focus this part re-targeted from, OR last surfaced "other part" from transcript context, OR null>]`. Set `cycle_state.cycle_detected = true`, `cycle_state.cycle_pair = <pair>`.
 4. Otherwise route into §4-handle.
 
@@ -400,7 +386,7 @@ Wait. Trust the user's pick at face value:
   - **Check cycle signal 2** (re-target pile-up): if `cycle_state.re_targets_distinct >= 3`, set `cycle_state.cycle_detected = true`, `cycle_state.cycle_pair = [<original focus.working_title>, <new target's working_title or surfaced_phrase>]` (bookends — original focus + most-recent re-target). Route to §4-cycle. Do NOT run Phase 3 on the new focus — the cycle handler replaces that.
   - **Otherwise** (no cycle trip):
     - Move the original focus to `## Open threads` of the new note (subagent appends — the skill flags it via the `re_targets` event log entries; the original `focus_part` stays in the input as the *first* part touched, but with `state_at_end = "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"` or similar plain phrasing).
-    - The new target becomes the focus part. Run Phase 3 on it (locate → describe → thank → ask-space → Self-energy → "how do you feel toward that part?" → naming). The new focus accumulates as a *separate* `focus_part` entry — slice 5 tracks this as a `re_targeted_parts[]` list passed to the subagent (each entry has the same shape as `focus_part`, plus `re_targeted_from: <previous focus working_title>`).
+    - The new target becomes the focus part. Run Phase 3 on it (locate → describe → thank → ask-space → Self-energy → "how do you feel toward that part?" → naming). The new focus accumulates as a *separate* entry in `re_targeted_parts[]` (each entry has the same shape as `focus_part`, plus `re_targeted_from: <previous focus working_title>`).
     - **Re-targets stack linearly** until cycle signal 2 trips. A → B → C is fine if no part has been the focus twice; the third *distinct* re-target trips the cycle handler.
     - After Phase 3 completes on the new focus, run Phase 4 again (continuation check). If drift detected again, hybrid handling runs again on the *new* focus. Re-targets keep stacking until signal 1 (repeat blend) or signal 2 (pile-up) trips.
 
@@ -428,7 +414,7 @@ Subagent renders each part (original `focus_part` + every `re_targeted_parts[]` 
 
 After Phase 4 completes (no drift detected, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable, OR cycle handled via `pick_one_and_commit`), route into Phase 5 (Befriend). The current focus = `re_targeted_parts[-1]` if non-empty, else `focus_part`.
 
-### §4-cycle — Cycle detection (slice 8)
+### §4-cycle — Cycle detection
 
 Triggered when `cycle_state.cycle_detected` flips `true` from §4-detect step 3 (signal 1: same part blended at Phase 4 twice) OR §4-handle-3 cycle-trip (signal 2: three distinct re-targets). The cycle handler **replaces** the rest of Phase 4 — no remaining §4-handle moves, no Phase 3 on a new focus.
 
@@ -455,7 +441,7 @@ Wait. Trust the user's pick. Set `cycle_state.cycle_resolution`:
 - **"polarization" / "(i)"**: → §4-polarization-work.
 - **"pick one" / "(ii)"**: → §4-cycle-pick-one (resume Phase 5 on the committed focus).
 - **"close" / "(iii)"**: → §4-cycle-close-and-log.
-- **Disengages / silent / can't decide**: default to (iii) close-and-log (per PRD §21).
+- **Disengages / silent / can't decide**: default to (iii) close-and-log.
 
 #### §4-cycle-pick-one — Pick-one-and-commit
 
@@ -465,7 +451,7 @@ Plain prose, one line:
 
 Wait. The picked part becomes the **current focus** for the rest of the session. Mutate `re_targeted_parts[]` so the picked part is the current focus (or, if it's the original `focus_part`, clear later re-targets so resolution lands there). The other parts in `cycle_pair` (and any other previously-current re-targets) go to `## Open threads` of the new note.
 
-Queue `record_polarization { pair: <cycle_pair> }` in `pending_changes` (mirrored `polarized_with:` per PRD acceptance criterion — even on pick-one path, the cycle observation is recorded across both pages).
+Queue `record_polarization { pair: <cycle_pair> }` in `pending_changes` (mirrored `polarized_with:` — even on pick-one path, the cycle observation is recorded across both pages).
 
 Route to Phase 5 (per §4-postphase) on the committed focus.
 
@@ -479,7 +465,7 @@ Queue `record_polarization { pair: <cycle_pair> }` in `pending_changes`. Set `me
 
 Subagent populates `## What Self noticed` with prose like *"`<a>` and `<b>` cycled — likely polarized. Closed and logged."*
 
-### §4-polarization-work — Polarization work (slice 8 — Schwartz 7-step, Kelly-retained)
+### §4-polarization-work — Polarization work (Schwartz 7-step, Kelly-retained)
 
 Activated when `cycle_state.cycle_resolution === "polarization_work"`. **Replaces remainder of session** — no Phase 5, no Phase 6, no Phase 7 on either polarized part. After step 7, route directly to §7-pre-close + closing.
 
@@ -538,7 +524,7 @@ The phrasing is critical: *"what does each of them need"* (asked of the user, pl
 
 Wait. Capture into `polarization_state.what_each_protects` as `[<verbatim for a>, <verbatim for b>]`. (Empty-string fallback if user only lands one side — don't push.)
 
-If a clear protector→exile relationship surfaces for either side that wasn't already captured in slice 6 §6-4, optionally queue `record_protects` per the same rules.
+If a clear protector→exile relationship surfaces for either side that wasn't already captured in §6-4, optionally queue `record_protects` per the same rules.
 
 #### Step 6 — Ask for cooperation, not merger
 
@@ -557,7 +543,7 @@ Either way, proceed to step 7. Do NOT loop back asking again.
 
 Queue `record_polarization { pair: <polarization_state.pair> }` in `pending_changes`. Subagent mirrors `polarized_with:` on both part pages.
 
-Route to §7-pre-close + closing. Polarization work **replaces** remainder of session — no Phase 5, no Phase 6, no Phase 7. Per PRD acceptance criterion: *"After step 7, route directly to closing ritual. No befriend/fears on either polarized part after naming."*
+Route to §7-pre-close + closing. Polarization work **replaces** remainder of session — no Phase 5, no Phase 6, no Phase 7 on either polarized part.
 
 Closing ritual targets the **current focus** (last entry in `re_targeted_parts[]` if any, else `focus_part`). The original focus and any intermediate re-targets are addressed in `## Parts encountered` body sections only — closing's permission-to-return question targets the most-engaged-most-recently part. If user wants to grant permission for multiple, they say so in plain prose; the skill defaults to current-focus-only for `permission_granted` frontmatter.
 
@@ -576,7 +562,7 @@ Suspect texture → Claude offers ONE observation as a question. Never asserts a
 
 On detected Self-like part: engage it as a part (locate → thank → ask space) and re-glimpse. If it won't make space, it becomes the focus part. **Phase 7 is blocked for this session regardless of tier.**
 
-## §5 — Phase 5 — Befriend (live)
+## §5 — Phase 5 — Befriend
 
 Runs after Phase 4 settles (no drift, OR drift handled with current focus restored, OR drift handled with re-target → new Phase 3 → Phase 4 stable). Schwartz-orthodox relationship-building, Kelly-retained: the user gets to know the part better from Self. Always Self-directed; never role-played; doctrinal line 1 holds.
 
@@ -584,7 +570,7 @@ Current focus = last entry in `re_targeted_parts[]` if non-empty, else `focus_pa
 
 ### §5-1 — Light pulse on transition
 
-Phase 4 → Phase 5 is a phase transition (not high-risk per PRD §16). Light pulse only:
+Phase 4 → Phase 5 is a phase transition (not high-risk). Light pulse only:
 
 > *"Still here and oriented? Want to continue?"*
 
@@ -626,7 +612,7 @@ Wait. Trust the user's pick:
 - **"Stay here"** (or wants more time / another follow-up): loop back to §5-2 with another open turn. After the user signals settled, re-offer the transition. If user declines transition entirely, route directly to §7-0 (skip Phase 6) once user signals done with befriend; Phase 7's gate evaluation handles whether deeper work runs or routes to §7-block + §7-pre-close.
 - **"Close" / disengages**: bail handling. Silence under propose-and-ratify defaults to "close here."
 
-## §6 — Phase 6 — Fears (live)
+## §6 — Phase 6 — Fears
 
 Runs after Phase 5's transition is ratified. The canonical Schwartz "what does it fear if it stopped its job?" move. Surfaces what the part protects. Self-directed; never voiced.
 
@@ -636,9 +622,9 @@ Runs after Phase 5's transition is ratified. The canonical Schwartz "what does i
 
 Wait. Yes → §6-2. Anything else → bail handling.
 
-### §6-2 — Wrap-clock check (slice 7 — full clock active for all tiers)
+### §6-2 — Wrap-clock check
 
-Run `wrap_check()` (§wrap) at the entrance of Phase 6. All tiers covered uniformly.
+Run `wrap_check()` (§wrap) at the entrance of Phase 6.
 
 - If a soft or firm wrap fires AND the user ratifies "wrap": route directly to §7-pre-close + closing (Phase 6 deferred).
 - If user picks "keep going" at the soft wrap (silenced for ~10 min) OR no trigger fires: proceed to §6-3.
@@ -662,7 +648,7 @@ If the fear-answer reveals a clear protector→exile relationship — e.g. *"if 
 Wait. Trust the answer:
 
 - **Confirms**: queue `record_protects { part_ref: <current_focus.working_title>, exile_ref: <exile descriptor or [[<existing-exile-title>]]> }`. Set `current_focus.protects_ref = <exile descriptor>`. Set `phase6_state.protector_relationship_captured = true`.
-  - `exile_ref` may be a **description-only placeholder** (e.g. `"the small one inside"`) when the exile hasn't been contacted yet. Phase 7 (later slice) is where exile contact happens. For slice 6 the goal is just to capture the relationship.
+  - `exile_ref` may be a **description-only placeholder** (e.g. `"the small one inside"`) when the exile hasn't been contacted yet. Phase 7 is where exile contact happens; Phase 6 just captures the relationship.
   - If the descriptor exactly matches a known part page (best-effort skill-side glob over `Parts/`), use the wikilink form `[[<existing title>]]`.
 - **Denies / unsure**: don't queue. The fear text stays captured in `current_focus.fears`; the relationship can land in a later session.
 
@@ -680,7 +666,7 @@ Wait. Append to `current_focus.fears`. Don't loop more than once — Phase 6 is 
 
 After Phase 6 settles, the part page body sections `## Role` / `## Fears` / `## What it needs from Self` are populated by the subagent from `befriend_notes` + `fears` + (if applicable) `protects_ref`. The skill does NOT write any of this directly. No additional pending-changes type needed; the part page is touched via `update_last_seen` (or `create_part`) and the subagent Edits the body sections at write time. `## Burdens` may be inferred lightly when fear patterns suggest a burden, but full burden work is Phase 7 — typically `## Burdens` stays as the empty-heading template line.
 
-## §7 — Phase 7 — Optional deeper work (live)
+## §7 — Phase 7 — Optional deeper work
 
 Optional deeper work — exile contact and (optionally) unburdening. **Two-factor gated** (PRD: "two-factor" but evaluated as four conjunctive factors). Doctrinal line 7 governs: stable Self bears the unbearable; a Self-like part doing exile work is the exact failure mode Self-like-parts spotting prevents.
 
@@ -703,11 +689,11 @@ Set `phase7_state.gates_evaluated = true`.
 - `phase1_state.self_texture === "clean"` AND `phase1_state.focus_part_is_self_like === false`: pass.
 - Otherwise: `gates_block_reason = "self_like_part_detected"` (or `"texture_murky"`). Route to §7-block. Doctrinal line 7 holds.
 
-A confirmed-then-stepped-back Self-like part (`self_like_part_detected: true` with §1d-clean-after-mini-loop) does NOT block — what matters is `focus_part_is_self_like` AND current texture. The slice-3 §1d doctrine: Phase 7 is permissible if other gates pass.
+A confirmed-then-stepped-back Self-like part (`self_like_part_detected: true` with §1d-clean-after-mini-loop) does NOT block — what matters is `focus_part_is_self_like` AND current texture. Phase 7 remains permissible if other gates pass.
 
 ### §7-3 — Pre-Phase-7 full continuation check (factor 4)
 
-The third high-risk transition per PRD §16. Texture must hold *now*, not just at Phase 1.
+A high-risk transition. Texture must hold *now*, not just at Phase 1.
 
 1. *"Still here and oriented? Want to continue?"* — wait.
 2. *"And the texture right now — located somewhere, or more open?"* — wait. Listen on Self-like-parts spotting axis (§5a).
@@ -779,20 +765,20 @@ Route to §7-pre-close.
 
 ### §7-pre-close — Pre-close full continuation check
 
-The third high-risk transition (PRD §16). Always runs after Phase 7 settles (whether full, blocked, or wrap-skipped).
+The third high-risk transition. Always runs after Phase 7 settles (whether full, blocked, or wrap-skipped).
 
 1. *"Still here and oriented? Want to close cleanly, or anything else surfacing?"* — wait.
 2. *"And the texture right now — open, or located somewhere?"* — wait. Log `pulse_check`.
 
 - **Continue**: route to closing (§5f).
 - **Bail**: graceful bail. Closing still runs.
-- **Drift detected**: in slice 7 the pre-close pulse does NOT loop back into Phase 4 — work is winding down. Note in `event_log`, route to closing. (Caveat: if `phase7_state.unburdening === true` and texture went murky after, it's most likely a young-self emergence rather than a Self-like part — closing's rest-in-Self gives it a held container without re-opening the work.)
+- **Drift detected**: pre-close pulse does NOT loop back into Phase 4 — work is winding down. Note in `event_log`, route to closing. (Caveat: if `phase7_state.unburdening === true` and texture went murky after, it's most likely a young-self emergence rather than a Self-like part — closing's rest-in-Self gives it a held container without re-opening the work.)
 
 The closing ritual targets the **current focus**. Permission-to-return targets the current focus by working title.
 
 If the Self-like-part-as-focus path ratified through §1d, the part is the focus. Phase 7 is blocked via factor 3 (`gates_block_reason = "self_like_part_detected"`); §1d Self-like-as-focus sessions never reach §7-5.
 
-## §wrap — Tier wrap clock (live)
+## §wrap — Tier wrap clock
 
 Silently track `elapsed_min = now - start_ts` against `wrap_state.tier_upper_min` (set at check-in step 2: `short → 25`, `medium → 45`, `long → 90`). Wrap-clock checks fire at every phase transition AND mid-phase between user turns when the elapsed time changes — **never mid-prompt-wait**. Wrap proposals NEVER cut a phase mid-step; if elapsed crosses a threshold mid-engagement, finish the current phase's contact, then propose at the next natural seam.
 
@@ -819,11 +805,11 @@ Silently track `elapsed_min = now - start_ts` against `wrap_state.tier_upper_min
 
 **Wrap-shortens-the-work-not-the-close**: §5f closing ALWAYS runs after a ratified wrap. Even firm wrap routes through closing — only imminent-harm exit skips it.
 
-**Mid-Phase-7 wrap behavior**: wrap-clock checks at sub-step transitions, not mid-prompt-wait. If wrap crosses a threshold while the user is mid-answer at e.g. unburdening step 3 ("let it release"), let them land that step and step 4 ("what's here now"), then propose at the next natural seam (before step 5). The PRD's "wrap NEVER cuts mid-phase" rule means complete the phase's *contact*. Step 5 is the natural seam if past step 4.
+**Mid-Phase-7 wrap behavior**: wrap-clock checks at sub-step transitions, not mid-prompt-wait. If wrap crosses a threshold while the user is mid-answer at e.g. unburdening step 3 ("let it release"), let them land that step and step 4 ("what's here now"), then propose at the next natural seam (before step 5). "Wrap never cuts mid-phase" means complete the phase's *contact*; step 5 is the natural seam if past step 4.
 
 **Wrap proposals are propose-and-ratify (doctrinal line 4)**, with one exception: imminent-harm pattern match. Crisis-pattern override ignores wrap state and closes immediately — the crisis link goes out FIRST regardless of where in the wrap clock the session is.
 
-## §5f — Phase 8 — Closing ritual (live; mandatory unless `crisis_exit`)
+## §5f — Phase 8 — Closing ritual (mandatory unless `crisis_exit`)
 
 Always runs on graceful close, graceful bail, AND ratified wrap. Never runs on imminent-harm exit. Wrap shortens the work, never the close.
 
@@ -839,6 +825,3 @@ Five steps, in order:
 
 Order matters: rest-in-Self before step-out so re-orientation happens *from* Self, not as an exit. Sessions don't get logged as `complete` until the ritual runs.
 
-## Build complete
-
-Slice 9 was the last planned slice. All phases (0–8), pulse cadence, dissociation cue, cycle detection / polarization work, tier wrap clock, naming with aliases and inline collaborative rename + backlink rewriting, and closing ritual are live. No further procedural content is planned in this PROTOCOL.md; future changes are bug-fix / dogfooding-driven rather than slice-driven.

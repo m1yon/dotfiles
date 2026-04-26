@@ -120,7 +120,7 @@ Sub-decisions:
 - `status: unburdened` is a real recorded event.
 - `age_felt` = how old the part feels, not user's age when it formed.
 - `left_without_resolution: true` added by bailed sessions; cleared on next visit.
-- **Titles are descriptive phrases only — never proper names.** Examples: `wants me to double-check everything`, `the small one at the window`, `the tight jaw`. **The canonical title is expected to evolve.** As a part shows up over multiple sessions with new phrasings, the most fitting description usually shifts. The naming protocol (`PROTOCOL.md` §3-naming) handles this with two layers: (1) `append_alias` accumulates new phrasings to `aliases:` whenever the part surfaces with a phrase that doesn't exactly match the current title; (2) the inline rename offer at alias-discovery time lets the user collaboratively rework the canonical title — when they do, the old title appends to `aliases:`, the file is renamed, session-note backlinks become `[[New|old phrase]]` (preserving the phrasing in the moment it was written), and other-part-page backlinks become plain `[[New]]`. `aliases:` is append-only and never compressed; the alias list reads as the chronological record of how the part has been seen over time.
+- **Titles are descriptive phrases only — never proper names.** Examples: `wants me to double-check everything`, `the small one at the window`, `the tight jaw`. The canonical title is expected to evolve; `aliases:` is append-only and never compressed, reading as the chronological record of how the part has been seen over time. See `PROTOCOL.md` §3-naming and §3-naming-rename for the alias-accumulation and collaborative-rename mechanics.
 
 ## Session note schema
 

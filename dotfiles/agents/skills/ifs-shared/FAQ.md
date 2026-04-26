@@ -2,8 +2,6 @@
 
 Lazy-loaded only when the user asks a conceptual question pattern-matching a topic below, or when Claude is about to invoke a concept that benefits from a longer explanation than `PROTOCOL.md` carries. Not loaded by default.
 
-Slice 3 lands the 4 imitators in long form (load when the Phase 1 Self-like-parts gate trips and the user asks "what's that?"). Other topics are stubbed and land in later slices.
-
 ---
 
 ## The 4 imitators (Self-like parts) — long form
@@ -58,26 +56,18 @@ The four imitators below cover the patterns Kelly names explicitly. Real Self te
 
 ## Why "What is here when there is no problem to solve?"
 
-Stub. Long form lands when slice work surfaces a need to explain it.
-
-Short form: the prompt isn't asking the user to *find* something. It's pointing at what's underneath the search — the awareness that's already noticing whether there's a problem or not. The prompt is shaped as an inversion of search-mode; the answer isn't a thing, it's the noticing itself.
+The prompt isn't asking the user to *find* something. It's pointing at what's underneath the search — the awareness that's already noticing whether there's a problem or not. Shaped as an inversion of search-mode; the answer isn't a thing, it's the noticing itself.
 
 ---
 
 ## The 11 i's of Self Essence
 
-Stub. Lands when the texture pulse needs deeper vocabulary.
-
-Loch Kelly's vocabulary for Self-texture:
+Loch Kelly's vocabulary for Self-texture (descriptors, not a checklist):
 
 - intimate, immediate, intrinsic, inherent, inclusive, infinite, intelligent, ineffable, invitational, integrated, indivisible
-
-Reference for the texture pulse — these are descriptors, not a checklist.
 
 ---
 
 ## EM vs. Schwartz distinction
 
-Stub. Lands when the user asks why this skill diverges from classical IFS.
-
-Short form: classical Schwartz IFS is *unblend-first* — find a part, ask other parts to step back, then Self emerges. Loch Kelly's EM+IFS is *Self-first* — glimpse Self, then engage parts from stable Self. The Phase 1 glimpse practice and Self-like-parts spotting are the two distinctive Kelly guardrails.
+Classical Schwartz IFS is *unblend-first* — find a part, ask other parts to step back, then Self emerges. Loch Kelly's EM+IFS is *Self-first* — glimpse Self, then engage parts from stable Self. The Phase 1 glimpse practice and Self-like-parts spotting are the two distinctive Kelly guardrails.
