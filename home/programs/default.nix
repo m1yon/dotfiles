@@ -27,6 +27,7 @@
     ./onlyoffice.nix
     ./openai.nix
     ./lazycommit.nix
+    ./lazydocker.nix
     ./lazygit.nix
     ./linear.nix
     ./localsend.nix
