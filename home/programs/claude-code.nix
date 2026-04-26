@@ -51,12 +51,8 @@ let
     export CPATH=${
       pkgs.lib.makeSearchPath "include" (map (p: p.dev or p) voicemodeBuildInputs)
     }''${CPATH:+:$CPATH}
-    export LIBRARY_PATH=${
-      pkgs.lib.makeLibraryPath voicemodeBuildInputs
-    }''${LIBRARY_PATH:+:$LIBRARY_PATH}
-    export LD_LIBRARY_PATH=${
-      pkgs.lib.makeLibraryPath voicemodeBuildInputs
-    }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+    export LIBRARY_PATH=${pkgs.lib.makeLibraryPath voicemodeBuildInputs}''${LIBRARY_PATH:+:$LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath voicemodeBuildInputs}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
     exec uvx --from voice-mode voicemode "$@"
   '';
 in

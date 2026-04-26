@@ -2,4 +2,5 @@
 .claude/auto-memory/
 .claude/cache/
 .claude/sessions/
+progress-*.txt
 
