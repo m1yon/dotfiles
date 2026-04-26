@@ -23,8 +23,8 @@ Frame choices in a sentence, not a bare list — *"how much time would you like 
 4. **Glimpse is point-at-the-door, not stepwise walkthrough.** Type the prompt and wait.
 5. **Phases tracked internally, never narrated.** No "moving to Phase 4 now."
 6. **Propose-and-ratify on every scope change.** Focus pivots, re-targets, cycle responses, wrap proposals, close — all ratified explicitly. Single exception: imminent-harm pattern match.
-7. **Never recurse drift handling into full embodied engagement.** Thank-and-ask-space → re-glimpse → ratified re-target. Do **not** run locate → describe → thank → ask-space → Self-energy → 8 C's on the *blending* part.
-8. **Stable Self bears the unbearable.** Phase 7 only from Self. The four-factor gate (tier + protector permission + clean Phase-1 texture + no current Self-like-part) holds this line.
+7. **Never recurse drift handling into full embodied engagement.** Thank-and-ask-space → ratified re-target. Do **not** run locate → describe → thank → ask-space → Self-energy → 8 C's on the *blending* part.
+8. **Stable Self bears the unbearable.** Phase 7 only from Self. The two-factor gate (tier + protector permission) holds this line — protectors won't release their exiles when Self isn't holding, so the protector-permission step is the safety floor.
 
 ## Pre-flight
 
@@ -35,12 +35,12 @@ Resolve vault root from `OBSIDIAN.md`. Bootstrap `Sessions/` and `Parts/` folder
 Initialize at session start, after pre-flight. The shape mirrors the subagent's input contract (see `ifs-session-writer.md` "Input contract" for full field-by-field semantics and defaults — do not duplicate here):
 
 - `metadata` — date, tier, duration_min, status (`complete` | `interrupted` | `crisis_exit`), previous_session_link.
-- `phase1_state` — self_texture, self_like_part_detected, re_glimpses, focus_part_is_self_like.
-- `focus_part` — working_title, surfaced_phrase, body_location, description, is_new, is_self_like, permission_granted, state_at_end, befriend_notes, fears, protects_ref. `null` until Phase 2 selects.
+- `phase1_state` — re_glimpses (counts user-initiated and polarization-step-1 re-glimpses).
+- `focus_part` — working_title, surfaced_phrase, body_location, description, is_new, permission_granted, state_at_end, befriend_notes, fears, protects_ref. `null` until Phase 2 selects.
 - `re_targeted_parts[]` — same shape as `focus_part`, plus `re_targeted_from` and `re_target_note`. Current focus is `re_targeted_parts[-1]` if non-empty, else `focus_part`.
 - `phase4_state` — unblending_events, re_targets, drift_detected_count, last_pulse_result.
 - `phase5_state`, `phase6_state` — befriend_complete / fears_surfaced / protector_relationship_captured.
-- `phase7_state` — explicit_request, gates_evaluated, gates_passed, gates_block_reason, exile_contact, unburdening, exile_ref.
+- `phase7_state` — explicit_request, gates_evaluated, gates_passed, gates_block_reason (`tier_short | tier_medium_no_explicit_request | no_protector_permission | null`), exile_contact, unburdening, exile_ref.
 - `wrap_state` — tier_upper_min (set at check-in step 1: short→25, medium→45, long→90), soft/firm flags, silence-window timestamp.
 - `cycle_state` — blend_counts (per part, signal 1 trips at ≥2), re_targets_distinct (signal 2 trips at ≥3), cycle_detected, cycle_pair, cycle_resolution.
 - `polarization_state` — entered, pair, what_each_protects, cooperation_agreed, completed.
@@ -60,12 +60,7 @@ Run each phase per its PROTOCOL.md section (§0 check-in through §8 closing, pl
 
 ## Pulse cadence
 
-Per `SAFETY.md` "Pulse cadence":
-
-- **Light pulse** (*"Still here and oriented? Want to continue?"*) at every phase transition. "No"/silence-as-exit → bail handling.
-- **Full continuation check** (light pulse + texture pulse + Self-like-parts spotting from PROTOCOL §5a) at three high-risk transitions: entering Phase 3, entering Phase 7 (factor 4), pre-close.
-- Drift detected at Phase-3 entry pulse → Phase 4 hybrid handling on the focus before Step 1.
-- Drift detected at pre-close pulse → log only; closing ritual is the recovery.
+Per `SAFETY.md` "Pulse cadence": **light pulse** (*"Still here and oriented? Want to continue?"*) at every phase transition. "No"/silence-as-exit → bail handling. Drift detection (per PROTOCOL §4-detect) is behavioral and runs continuously during Phase 3+ engagement; it does not require a separate texture-pulse question.
 
 ## Tier wrap clock
 
@@ -116,5 +111,5 @@ The subagent returns `{ written, failed, summary }`. Emit `summary` as the closi
 - `../ifs-shared/SAFETY.md` — pre-flight refusals, mood gate, imminent-harm pattern, dissociation cue, pulse cadence, tier matrix, wrap behavior, bail handling.
 - `../ifs-shared/OBSIDIAN.md` — vault paths, frontmatter schemas, body templates, Trailheads.md format, pending-changes log schema, event log types, write order.
 - `../ifs-shared/TAXONOMY.md` — manager / firefighter / exile.
-- `../ifs-shared/FAQ.md` — lazy-loaded conceptual reference (no problem to solve, 4 imitators, 11 i's of Self Essence, EM vs. Schwartz).
+- `../ifs-shared/FAQ.md` — lazy-loaded conceptual reference (no problem to solve, 11 i's of Self Essence, EM vs. Schwartz).
 - `../../../claude/agents/ifs-session-writer.md` — subagent input contract, write order, partial-failure handling.

@@ -1,6 +1,6 @@
 # SAFETY.md — refusal criteria, crisis patterns, dissociation cue, tier matrix
 
-Hard guardrails for `/em-ifs-session`. EM+IFS assumes stable Self gives the user enough access to notice; safety is mostly passive. The active checks are: pre-flight scaffolding, mood-step refusal, mid-session imminent-harm pattern match, dissociation cue at locate-in-body.
+Hard guardrails for `/em-ifs-session`. EM+IFS assumes stable Self gives the user enough access to notice; safety is mostly passive. The active checks are: pre-flight scaffolding, mood-step refusal, mid-session imminent-harm pattern match, dissociation cue at locate-in-body. Phase 7 (deeper work) is two-factor gated (tier + protector permission); the protector-permission step is the safety floor — protectors won't release their exiles when Self isn't holding.
 
 ## Pre-flight refusals (run before check-in)
 
@@ -54,30 +54,24 @@ At locate-in-body, ask:
 
 A bail at that cue is treated as a hard "close now, no deeper contact" — route to closing ritual; do not enter Phase 3 step 2.
 
-## Pulse cadence (mid-session, hybrid)
+## Pulse cadence (mid-session)
 
-- **Light pulse at every phase transition.** *"Still here and oriented? Want to continue?"* Yes → continue. Anything else → branch to closing ritual.
-- **Full continuation check** at three high-risk transitions: entering Phase 3, entering Phase 7, pre-close. Full check = light pulse + texture pulse + Self-like-parts spotting (per `PROTOCOL.md` §5a).
-- Otherwise passive — over-scanning is fragile and infantilizing.
+**Light pulse at every phase transition.** *"Still here and oriented? Want to continue?"* Yes → continue. Anything else → branch to closing ritual. Drift detection during Phase 3+ engagement runs on behavioral signals (per `PROTOCOL.md` §4-detect) — no separate texture-pulse question. Over-scanning is fragile and infantilizing.
 
 ## Tier matrix (depth gating)
 
 | Tier   | Range       | Phase 7 (exile contact / unburdening) |
 | ------ | ----------- | -------------------------------------- |
 | Short  | ~15–25 min  | Blocked entirely                       |
-| Medium | ~30–45 min  | Only with explicit user request + protector permission + clean Self texture + no Self-like-part in latest continuation check |
-| Long   | ~60–90 min  | Per protocol (protector permission + clean texture + no current Self-like-part required) |
+| Medium | ~30–45 min  | Only with explicit user request + protector permission |
+| Long   | ~60–90 min  | Protector permission required          |
 
-**Two-factor gate for Phase 7.** All four must hold:
+**Two-factor gate for Phase 7.** Both must hold:
 
 1. Tier permits (medium with explicit request, or long).
 2. Protector permission.
-3. Phase 1 produced clean Self texture (no Self-like-part detected at the gate).
-4. No Self-like-part detected in current continuation check.
 
-Either factor failing blocks Phase 7. Even on a long session with protector permission, murky texture is a stop.
-
-**Self-like-part detected at any gate → Phase 7 blocked for this session regardless of tier.** This is a hard rule, not a tier-dependent one.
+Either factor failing blocks Phase 7.
 
 ## Bail handling
 

@@ -32,10 +32,7 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     previous_session_link: "[[YYYY-MM-DD — short-desc]]" | null
   },
   phase1_state: {
-    self_texture: "clean" | "murky" | "unknown",
-    self_like_part_detected: bool,
-    re_glimpses: int,
-    focus_part_is_self_like: bool
+    re_glimpses: int                      // counts user-initiated re-glimpses + polarization-step-1 re-glimpses
   },
   focus_part: {
     working_title: string | null,         // descriptive phrase, or "Unnamed YYYY-MM-DD #N", or null if no focus selected
@@ -43,7 +40,6 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     body_location: string | null,         // e.g. "chest", "throat-and-jaw"
     description: string | null,           // user's verbatim Phase 3 step 2 answer
     is_new: bool,                          // true → caller queued create_part; false → caller queued update_last_seen
-    is_self_like: bool,                   // mirrors phase1_state.focus_part_is_self_like
     permission_granted: bool,             // set in closing step 3 when user grants permission to return
     state_at_end: string | null,          // one-line user-language state at end of Phase 3, OR
                                           //   "re-targeted away from at Phase 4 — wouldn't step back, re-glimpse didn't restore"
@@ -66,7 +62,6 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
       body_location: string | null,
       description: string | null,
       is_new: bool,
-      is_self_like: bool,                  // always false for re-target entries
       permission_granted: bool,
       state_at_end: string | null,
       befriend_notes: [string, ...],       // slice 6
@@ -82,7 +77,7 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
     unblending_events: int,                // number of §4-handle-1 thank-and-ask-space attempts (success OR failure)
     re_targets: int,                       // number of ratified re-targets (matches re_targeted_parts.length)
     drift_detected_count: int,
-    last_pulse_result: "continue" | "bail" | "drift_detected" | null
+    last_pulse_result: "continue" | "bail" | null
   },
   phase5_state: {                          // SLICE 6
     befriend_complete: bool,               // true once Phase 5 produced at least one substantive answer for any part
@@ -94,9 +89,9 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
   },
   phase7_state: {                          // SLICE 7
     explicit_request: bool,                // medium-tier-only: user explicitly asked to go deeper mid-session
-    gates_evaluated: bool,                 // true when the four-factor gate was run at the Phase 7 entrance
-    gates_passed: bool,                    // true when all four factors passed; false when any gate failed
-    gates_block_reason: string | null,     // tier_short | tier_medium_no_explicit_request | self_like_part_detected | texture_murky | self_like_part_in_continuation | no_protector_permission | null (if gates_passed: true)
+    gates_evaluated: bool,                 // true when the two-factor gate was run at the Phase 7 entrance
+    gates_passed: bool,                    // true when both factors passed; false when either gate failed
+    gates_block_reason: string | null,     // tier_short | tier_medium_no_explicit_request | no_protector_permission | null (if gates_passed: true)
     exile_contact: bool,                   // true when Phase 7 step 1 (locate the exile) ran
     unburdening: bool,                     // true when the unburdening sub-protocol completed (step 5 substantive answer)
     exile_ref: string | null               // exile descriptor or "[[<existing-title>]]" wikilink; null if Phase 7 didn't reach contact
@@ -148,11 +143,11 @@ Never write outside `6 - Full Notes/IFS/`. Never shell out — you only have `Re
 }
 ```
 
-Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `pending_renames: {}` is the common case — populated only when the user picked the inline rename offer at end-of-naming. `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` defaults (`unknown` / `false` / `0` / `false`) are valid when Phase 1 didn't run. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run. `phase7_state` defaults (`false` / `false` / `false` / `null` / `false` / `false` / `null`) are valid when Phase 7 didn't run (gate evaluated and blocked, OR Phases 5/6 didn't reach the entrance). `wrap_state` defaults (with `tier_upper_min` set after check-in step 1 and all other fields `false`/`null`) are valid when no wrap proposal fired. `cycle_state` defaults (`{}` / `0` / `false` / `null` / `null`) are valid when no cycle was detected (the common case). `polarization_state` defaults (`false` / `null` / `[]` / `false` / `false`) are valid when polarization work didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). On any part (focus_part or re_targeted_parts entry), `befriend_notes: []`, `fears: []`, and `protects_ref: null` are valid — those are the defaults when Phase 5/6 didn't engage that part (or didn't run at all).
+Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead` entries is valid (Phase-1-only / pre-Phase-2 bail). `pending_renames: {}` is the common case — populated only when the user picked the inline rename offer at end-of-naming. `focus_part: null` is valid when no Phase 2 focus was selected (crisis exit pre-Phase-2, trailhead bail, etc.). `phase1_state` default (`re_glimpses: 0`) is valid when Phase 1 didn't trigger any re-glimpse. `phase4_state` defaults (`0` / `0` / `0` / `null`) are valid when Phase 4 didn't run. `phase5_state` and `phase6_state` defaults (`false` / `false`) are valid when Phases 5–6 didn't run. `phase7_state` defaults (`false` / `false` / `false` / `null` / `false` / `false` / `null`) are valid when Phase 7 didn't run (gate evaluated and blocked, OR Phases 5/6 didn't reach the entrance). `wrap_state` defaults (with `tier_upper_min` set after check-in step 1 and all other fields `false`/`null`) are valid when no wrap proposal fired. `cycle_state` defaults (`{}` / `0` / `false` / `null` / `null`) are valid when no cycle was detected (the common case). `polarization_state` defaults (`false` / `null` / `[]` / `false` / `false`) are valid when polarization work didn't run. `re_targeted_parts: []` is valid (the common case — no re-target happened). On any part (focus_part or re_targeted_parts entry), `befriend_notes: []`, `fears: []`, and `protects_ref: null` are valid — those are the defaults when Phase 5/6 didn't engage that part (or didn't run at all).
 
 **Populating session-note frontmatter from input**:
 
-- `self_texture`, `self_like_part_detected`, `re_glimpses` ← copy directly from `phase1_state`. Note `re_glimpses` may be > 0 from Phase-1 §1c re-glimpse OR from Phase-4 §4-handle-2 fallback re-glimpse — both increment the same counter; final value lands in frontmatter.
+- `re_glimpses` ← copy directly from `phase1_state`. Non-zero values come from user-initiated re-glimpse or polarization-work step 1 (Phase 1 has no auto-triggered re-glimpse).
 - `parts_touched` ← list of `[[<working_title>]]` for every part that reached Phase 3 engagement (any of `body_location`, `description` non-null). Includes `focus_part` if applicable AND every entry in `re_targeted_parts[]`. Order: original `focus_part` first, then `re_targeted_parts[]` in encounter order.
 - `new_parts` ← list of `[[<working_title>]]` for every part with `is_new === true` (across `focus_part` + `re_targeted_parts[]`).
 - `permission_granted` ← list of `[[<working_title>]]` for every part with `permission_granted === true` (across `focus_part` + `re_targeted_parts[]`). The current focus is the most common entry; earlier focuses default to `false` unless the closing ritual explicitly granted them.
@@ -161,7 +156,7 @@ Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead`
 - `exile_contact` ← `phase7_state.exile_contact` (direct copy; slice 7).
 - `unburdening` ← `phase7_state.unburdening` (direct copy; slice 7).
 - `cycle_detected` ← `cycle_state.cycle_detected` (direct copy; slice 8).
-- `polarization_work` ← `polarization_state.completed` (direct copy; slice 8). Note: `cycle_state.cycle_resolution === "polarization_work"` is necessary but not sufficient — the resolution may be set early but `completed` only flips at §4-polarization-work step 7. If polarization-work was abandoned mid-protocol (e.g. fell back to close-and-log because step 1 re-glimpse came up murky), `polarization_work: false` even though `cycle_resolution` started out `polarization_work`.
+- `polarization_work` ← `polarization_state.completed` (direct copy; slice 8). Note: `cycle_state.cycle_resolution === "polarization_work"` is necessary but not sufficient — the resolution may be set early but `completed` only flips at §4-polarization-work step 7. If polarization-work was abandoned mid-protocol (e.g. fell back to close-and-log because the user bailed at step 1's light pulse), `polarization_work: false` even though `cycle_resolution` started out `polarization_work`.
 - `polarization_pair` ← derive from `cycle_state.cycle_pair`. Render as a YAML list of `[[<title>]]` wikilinks. Each pair member: if non-null, wrap in `[[...]]`; if null, render as the empty entry. Examples:
   - `cycle_pair: ["wants me to double-check everything", "the perfectionist"]` → `polarization_pair: [[wants me to double-check everything]], [[the perfectionist]]`
   - `cycle_pair: ["wants me to double-check everything", null]` → `polarization_pair: [[wants me to double-check everything]]` (one-element list)
@@ -176,7 +171,7 @@ Empty `event_log` is valid. `pending_changes` containing only `strike_trailhead`
 **Slice 7 — Phase 7 / wrap-clock data**:
 
 - `phase7_state.exile_contact` and `phase7_state.unburdening` populate session-note frontmatter directly (`exile_contact: bool`, `unburdening: bool`). Both default `false` when Phase 7 didn't reach contact / didn't run unburdening.
-- `phase7_state.gates_block_reason` (if non-null) is rendered as a brief plain-prose note in `## Arc` ("Held deeper work for next time — texture went murky at pre-7 check"). Never with apology / therapist-voice. If `gates_passed: true`, no block-reason rendering.
+- `phase7_state.gates_block_reason` (if non-null) is rendered as a brief plain-prose note in `## Arc` ("Held deeper work for next time — protector didn't give permission" or "tier was short — held for next time"). Never with apology / therapist-voice. If `gates_passed: true`, no block-reason rendering.
 - `phase7_state.exile_ref`: when set AND `exile_ref` is a `[[<existing-title>]]` wikilink, the corresponding part page is touched with `update_last_seen` AND (if `phase7_state.unburdening: true`) the `set_status { part_ref: <exile_ref>, status: unburdened }` entry should be in `pending_changes`. Apply it: Edit the exile's part page frontmatter to set `status: unburdened`. When `exile_ref` is a description-only placeholder (no part page), no part-page touch happens — the unburdening is recorded only in `event_log` and session-note frontmatter. Future sessions can promote the descriptor to a part page if and when the exile becomes its own focus.
 - `wrap_state` is consumed for `## Arc` synthesis only — if a wrap proposal fired (`soft_wrap_proposed: true` or `firm_wrap_proposed: true`), mention it briefly in `## Arc`, plain prose ("Soft wrap at minute 40, kept going; firm wrap at 45 closed cleanly"). No separate frontmatter field; `metadata.duration_min` already captures the wall-clock outcome.
 - **Part page body population (slice 7 — Phase 7 outcomes)**: when `phase7_state.exile_contact: true` AND `phase7_state.exile_ref` is a `[[<existing-title>]]` wikilink, the exile's part page body sections are touched the same way as slice 6 (the exile's `## Role` / `## Fears` / `## What it needs from Self` populated from the user's verbatim Phase 7 step 2 description and step 5 "what it needs" answer — read these out of the transcript context surrounding the `exile_contact` and `unburdening` event-log entries). When `phase7_state.unburdening: true`, additionally populate `## Burdens` on the exile's page with the user's verbatim Phase-7-unburdening step 1 answer ("what it's been carrying"), date-stamped per slice-6 convention `(YYYY-MM-DD.)`. The skill never queues `set_status` for descriptor-only exile_refs (no part page); the body-population rules don't fire either in that case.
@@ -241,8 +236,6 @@ tier: short | medium | long
 duration_min: <int>
 status: complete | interrupted | crisis_exit
 checkin_state: <free text from mood step, or "" if crisis_exit before mood>
-self_texture: clean | murky | unknown
-self_like_part_detected: false
 re_glimpses: 0
 parts_touched: []
 new_parts: []
@@ -274,7 +267,7 @@ strike_trailhead entries and event_log is empty>
 skeleton runs: "Check-in complete. Session middle skipped (tracer skeleton).
 Closed via the standard ritual." or similar minimal text. For slice-4 runs
 that reached Phase 3, synthesize the inner movement from the transcript:
-glimpse → texture → focus part surfaced → engaged embodied → state at end.
+glimpse → focus part surfaced → engaged embodied → state at end.
 One paragraph, two at most. Reflect the user's own language; do not classify.>
 
 ## Parts encountered
@@ -344,7 +337,7 @@ Empty section if none.>
 
 Sub-rules from §9:
 
-- Self-texture and re-glimpse counts go in frontmatter, not narrated. `## What Self noticed` may prose-comment on Self-stability if notable.
+- Re-glimpse counts go in frontmatter, not narrated. `## What Self noticed` may prose-comment on Self-stability if notable.
 - Drift events (`unblending_events`) counted in frontmatter only — not separately enumerated in body. The body's per-part section records *how it appeared*, including drift, as part of that.
 - Re-targets logged as their own `### [[part name]]` section under `## Parts encountered`, with the verbatim `re_target_note` from the input (e.g. *"re-targeted from [[wants me to double-check everything]] at Phase 4 — wouldn't step back, re-glimpse didn't restore."*). Original focus's `state_at_end` reflects "re-targeted away from at Phase 4 — …" when applicable.
 - Cycle detection events go in `## What Self noticed` plus `cycle_detected: true` and `polarization_pair:` in frontmatter, plus mirrored `polarized_with:` on each part page.
@@ -412,7 +405,6 @@ What this part has asked for, or what would help it relax.
 Sub-rules:
 
 - **No `8Cs_present` field** — Self-energy is session-level, not part-level.
-- **No `self_texture` field** on parts — texture is session-level.
 - **`polarized_with:` mirrored on both pages** — when applying `record_polarization`, Edit both files.
 - **`status: unburdened`** is a real recorded state — set by an explicit `set_status` entry, never inferred.
 - **`age_felt`** = how old the part feels, not the user's age when it formed.

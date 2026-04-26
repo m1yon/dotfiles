@@ -2,17 +2,17 @@
 
 Phase procedures (§0–§8), drift handling, cycle detection, polarization work, naming, rename mechanics, tier wrap clock, closing ritual.
 
-For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`. For longer-form imitator explanations, see `FAQ.md`.
+For pre-flight + mood-gate, see `SAFETY.md`. For vault paths and schemas, see `OBSIDIAN.md`. For parts taxonomy, see `TAXONOMY.md`. For conceptual reference (the glimpse prompt, EM vs. Schwartz), see `FAQ.md`.
 
 ## Phase spine (tracked internally, never narrated)
 
 ```
 0. Check-in              (tier / mood / trailhead — see SAFETY.md mood gate)
-1. Shift into Self       (glimpse + texture check + Self-like-parts spot)
+1. Shift into Self       (glimpse — point-at-the-door, no follow-up question)
 2. Notice what's present (parts arise from Self; pick the focus part)
 3. Engage embodied       (locate → describe → thank → request space →
-                          feel Self-energy in opened space → texture pulse)
-4. Continuation check    (drift detection; hybrid drift handling)
+                          feel Self-energy in opened space → 8 C's pulse)
+4. Continuation check    (drift detection; thank-and-ask-space → ratified re-target)
 5. Befriend              (relationship-building)
 6. Fears                 (what the part protects)
 7. Optional deeper       (exile contact / unburdening — two-factor gated, see SAFETY.md)
@@ -35,7 +35,7 @@ Tier 2 (on demand, after trailhead phase):
 - Never preload the full active roster.
 
 Tier 3 (on demand, mid-session):
-- `FAQ.md` loaded only when user asks a conceptual question pattern-matching a topic, or when Claude needs to explain a concept it's about to invoke. The 4 imitators are the most common load trigger — when the texture-gate offers an imitator observation and the user asks "what's that?" or "what's the difference?", load `FAQ.md` and read back the relevant section in plain prose, not by reading the whole file aloud.
+- `FAQ.md` loaded only when user asks a conceptual question pattern-matching a topic, or when Claude needs to explain a concept it's about to invoke. Read back the relevant section in plain prose, not by reading the whole file aloud.
 
 ## §0 — Check-in
 
@@ -53,7 +53,7 @@ Self-first opener. The session's architectural foundation. Runs immediately afte
 
 ### §1a — Glimpse delivery (point-at-the-door)
 
-Open with a brief settling preamble, then the glimpse prompt in italics, then a brief pause line — do **not** walk the glimpse itself through stepwise, do not break it into sub-steps, do not narrate what should be happening *during* the glimpse. The preamble warms the room; the glimpse itself stays untouched. The user signals arrival in their own words.
+Open with a brief settling preamble, then the glimpse prompt in italics, then a brief pause line — do **not** walk the glimpse itself through stepwise, do not break it into sub-steps, do not narrate what should be happening *during* the glimpse. The preamble warms the room; the glimpse itself stays untouched.
 
 Shape:
 
@@ -61,87 +61,21 @@ Shape:
 >
 > *"What is here when there is no problem to solve?"*
 >
-> Take a moment with that. Let me know what you notice.
+> Take a moment with that.
 
-Wait. Let the silence work. The user's next turn — anything from "ok" to a paragraph of texture — is the signal to proceed to §1b.
+Wait. Let the silence work. The user's next turn — anything from "ok" to a paragraph — is the signal to proceed to Phase 2. Do **not** ask a follow-up question about the glimpse (no "did that land?", no texture question). Trust the user; never make them intellectualize the experience.
 
-### §1b — Texture question (post-glimpse)
-
-Once the user signals arrival, ask exactly one open felt-sense question:
-
-> *"Where does it feel located, if anywhere — and does it feel already-here or achieved?"*
-
-Verbatim. Do not soften, do not append, do not pre-explain what "located" means. Wait for the answer.
-
-Real Self texture: boundless, no locator, already-here, effortless, clear knowing without effort. Self-like-part texture: located somewhere (head, chest, "around"), achieved/managed/held, "doing this right" flavor, performed.
-
-### §1c — Self-like-parts spotting (gate, not checklist)
-
-Listen to the texture answer and route on it. This is a **gate**, not a checklist — the user sees a single response, not an inventory of imitators.
-
-**Clean texture** (no locator OR explicitly "already-here", "spacious", "everywhere", "nowhere in particular", "just here", "vast", "open", or similar — and no "I'm doing this", "trying to", "should be", "supposed to", "managing to" framing): proceed silently to §1d. Frontmatter: `self_texture: clean`, `self_like_part_detected: false`. Do not mention imitators. Do not ask follow-up texture questions. Do not pulse-check here — Phase 1 just landed.
-
-**Suspect texture** (located somewhere AND/OR has "achieved/managed/doing-this-right" flavor AND/OR matches one of the 4 imitator patterns from §5a): offer ONE observation as a question (per doctrinal line 3 — reflection-only). Pattern-match the most likely imitator from §5a and name only that one:
-
-> *"That sounds a bit like managed-calm — does it feel performed, or already-here?"*
-
-or for spiritual-bypass:
-
-> *"That sounds a bit like a part that goes to spaciousness — does it have a body location, or is it 'above' the body somehow?"*
-
-or for intellectual-overpass:
-
-> *"That sounds a bit like the part that explains it really well — is there a felt sense in the body, or is it more in the head?"*
-
-or for psychological-underpass:
-
-> *"That sounds a bit flat — is there energy here, or more of a 'nothing's really here' quality?"*
-
-Pick **one**. Never list. Never assert ("this IS managed-calm"). Always offer as a question. If the user asks what you mean, lazy-load `FAQ.md` and read back the relevant section in plain prose.
-
-The user's response routes:
-
-- **User confirms** (yes / sounds right / probably / yeah I think so): treat as detected. Frontmatter: `self_texture: murky`, `self_like_part_detected: true`. Route to §1d-engage-self-like-part.
-- **User denies** (no / it really does feel already-here / I think it's just X): trust the answer. Frontmatter: `self_texture: clean`, `self_like_part_detected: false`. Proceed to §1d-clean.
-- **User isn't sure** (maybe / I don't know / it's hard to tell): re-glimpse once. Frontmatter: increment `re_glimpses`. Use the briefer form *"Let's notice again — what's here when there's no problem to solve?"* and re-ask the texture question. After the second pass, route as above (treating "still not sure" as a soft denial — proceed to §1d-clean; the `re_glimpses` count carries the signal).
-
-### §1d — Routing out of Phase 1
-
-**§1d-clean** (clean texture, or denied imitator, or post-re-glimpse settled): Phase 1 is complete. Proceed to Phase 2.
-
-**§1d-engage-self-like-part** (Self-like part detected, user confirmed): engage the Self-like part as a part using a **constrained mini-loop** of the Phase 3 protocol — locate / thank / ask space only. Do **not** run the full Phase 3 (no "feel Self-energy in opened space", no "how do you feel toward that part").
-
-Sequence:
-
-1. **Locate.** *"Can you sense where in the body it lives — chest, head, throat, somewhere else?"* Wait.
-2. **Thank.** *"Take a moment to thank it for what it's been doing — it sounds like it's been working hard to keep things steady."* Wait.
-3. **Ask space.** *"Now, gently, ask if it would be willing to give a little space — not go away, just step back enough for something else to come through."* Wait.
-
-Do not recurse. If the user starts deep-engaging it (befriending, asking its fears), redirect lightly: *"For now we're just asking it to make space — we can come back to it more fully if it ends up being where we land today."*
-
-Then re-glimpse: type the (briefer) glimpse prompt and re-ask the texture question. Frontmatter: increment `re_glimpses`.
-
-**Routing after re-glimpse:**
-
-- **Texture now clean** → Phase 1 complete. `self_like_part_detected:` stays `true` (it was detected, even though it stepped back), but proceed to Phase 2. The session's Phase 7 block flag is **not** raised — the part stepped back, exile contact remains permissible if other gates pass.
-- **Texture still murky / part won't make space**: the Self-like part becomes the **focus part** for the session. Propose-and-ratify per doctrinal line 4:
-
-  > *"It looks like this part is who's most present right now. Want to let it be the focus today, or close and come back to it?"*
-
-  - **User ratifies "let it be the focus"** → set `focus_part_is_self_like` flag internally. Set the session's **Phase-7-blocked** internal flag (regardless of tier, per §5a). Run Phase 3 on this focus; surface in session-note frontmatter as `self_like_part_detected: true`.
-  - **User ratifies "close"** → set `metadata.status = "interrupted"`, route to closing ritual.
-
-In all paths, the texture answer and any imitator observation are recorded only in the frontmatter fields (`self_texture`, `self_like_part_detected`, `re_glimpses`) — never in the body. Phases never narrated.
+**Re-glimpse** is the §1a prompt re-issued (briefer form acceptable: *"Let's notice again — what's here when there's no problem to solve?"*). It auto-triggers nowhere outside Phase 1. It remains available when (a) the user explicitly requests a moment to re-settle, (b) §4-polarization-work step 1 invokes it as a structural restart. Each invocation increments `re_glimpses`.
 
 ## §2 — Phase 2 — Notice what's present + focus part selection
 
-Runs after Phase 1's `§1d-clean` route. Skipped when §1d ratified a Self-like part as focus (that path goes straight to Phase 3 with `is_self_like: true` already set). Single conversational beat, no narration.
+Runs after Phase 1's glimpse settles (user's response to §1a is the readiness signal). Single conversational beat, no narration.
 
 ### §2a — Open the field
 
 Verbatim:
 
-> *"What's here, or what's surfacing now?"*
+> *"What's surfacing now — anything in the body, any feeling, anything asking for attention?"*
 
 Wait. Capture the user's verbatim phrase as `focus_part.surfaced_phrase`.
 
@@ -198,7 +132,7 @@ Wait.
 
 ### §3-5 — Feel Self-energy in opened space
 
-The move §1d explicitly skipped. Critical: this is where Self lands in the field with the part rather than around it.
+Critical: this is where Self lands in the field with the part rather than around it.
 
 > *"What's here in the space that opened?"*
 
@@ -206,14 +140,14 @@ Wait. Capture the user's verbatim answer (warmth, openness, curiosity, quiet, cl
 
 ### §3-6 — How do you feel toward that part?
 
-The 8 C's pulse + passive Self-like-parts pattern-match.
+The 8 C's pulse.
 
 > *"From where you are now, how do you feel toward the part?"*
 
 Wait. Listen for:
 
 - **8 C's tone** (curious / compassionate / calm / connected / clear / confident / courageous / creative — or close synonyms): Self is in the chair. Note state in user's own words.
-- **Self-like-parts pattern** (passive): if the answer is "I want to fix it / get rid of it / understand it / ignore it" or has the managed/performed/intellectual/flat quality, that's a part-toward-part response. Phase 4 owns full re-glimpse handling. Here, offer ONE light reflection: *"That sounds like another part has come in. Want to ask it to give space too, or stay with what's here?"* Take user's pick at face value; no recursion.
+- **Drift signal** (passive): if the answer is "I want to fix it / get rid of it / understand it / ignore it", that's a part-toward-part response. Offer ONE light reflection: *"That sounds like another part has come in. Want to ask it to give space too, or stay with what's here?"* Take user's pick at face value; no recursion. (Phase 4 owns full drift handling if the user picks "ask it to give space.")
 
 After §3-6, route to §3-naming.
 
@@ -296,21 +230,17 @@ Runs after §3-naming completes. Two responsibilities:
 
 ### §4-pulse — Pulse cadence
 
-Two flavors of pulse:
+**Light pulse** at every phase transition: one line — *"Still here and oriented? Want to continue?"* Yes → continue. Anything else (no / "I'm done" / "actually I'm checking out a bit" / silence indicating exit) → branch to bail handling (closing ritual, `status: interrupted`).
 
-- **Light pulse** (every phase transition): one line — *"Still here and oriented? Want to continue?"* Yes → continue. Anything else (no / "I'm done" / "actually I'm checking out a bit" / silence indicating exit) → branch to bail handling (closing ritual, `status: interrupted`).
-- **Full continuation check** (three high-risk transitions: entering Phase 3, entering Phase 7, pre-close): light pulse + texture pulse + Self-like-parts spotting (per §5a). The texture pulse re-asks the §1b question briefly: *"And — what's it like for you right now? Located somewhere, or more open?"* Self-like-parts spotting is passive listening on the answer; only offers an imitator observation if the texture answer pattern-matches.
-
-Log every pulse to `event_log` as `pulse_check { result: "continue" | "bail" | "drift_detected" }`.
+Log every pulse to `event_log` as `pulse_check { result: "continue" | "bail" | "drift_detected" }`. (`drift_detected` is only emitted by §4-detect's behavioral signals during ongoing engagement, not by the light pulse itself.)
 
 ### §4-detect — Drift detection signals
 
 After Phase 3 (or any time mid-engagement past Phase 3), watch for:
 
-- **Texture murky** at the §3-6 "how do you feel toward the part?" answer — fix-it / get-rid-of-it / understand-it / ignore-it framing, or any of the 4 imitator patterns (§5a).
+- **Part-toward-part framing** at the §3-6 "how do you feel toward the part?" answer — fix-it / get-rid-of-it / understand-it / ignore-it.
 - **8 C's absent** — no curiosity / compassion / calm / connection in the answer; the user describes a charged stance toward the part.
 - **User reports blending** — *"I think it's taking over"*, *"I am the part right now"*, *"I can't find me"*, or similar self-report of identification with the part.
-- **Pulse-check returns `drift_detected`** at a phase boundary — texture or Self-like-parts spotting flags murkiness.
 
 If any signal trips:
 
@@ -321,11 +251,11 @@ If any signal trips:
 
 If no signals trip, continue (no narration; just keep going).
 
-### §4-handle — Hybrid drift handling (three escalating moves, never recursive)
+### §4-handle — Drift handling (two escalating moves, never recursive)
 
 **Hard rule (doctrinal line 5)**: drift handling **never** runs a full embodied engagement on the blending part. No locate → describe → thank → ask space → Self-energy → 8 C's loop on the *blending* part. That recursion is the failure mode that produces directionless sessions where the part-doing-the-handling becomes the new focus and the original work disappears.
 
-Three moves, in order. Each is one ~30-second beat. If a move succeeds (Self texture restored), continue with the original focus part. If it fails, escalate to the next move. After move 3, the session has either re-targeted or closed.
+Two moves, in order. If thank-and-ask-space succeeds (space opens, the original focus is reachable again), continue with the original focus. If it fails, escalate to ratified re-target.
 
 #### §4-handle-1 — Thank-and-ask-space (~30 seconds)
 
@@ -340,31 +270,14 @@ Then attend to Self-energy in the opened space:
 
 Wait. Log `light_touch_step_back { success: true | false }` to `event_log`. Increment `unblending_events` regardless of success (the drift + attempted step-back is the count).
 
-- **Success** (texture clean, space opened, user reports softening / room / stepping back): continue with the original focus part. Do not re-narrate where you are.
-- **Failure** (texture still murky, user can't sense space opening, the blending part stays loud): escalate to §4-handle-2.
+- **Success** (space opened, user reports softening / room / stepping back): continue with the original focus part. Do not re-narrate where you are.
+- **Failure** (user can't sense space opening, the blending part stays loud): escalate to §4-handle-2.
 
 This is **NOT** a full Phase 3. No "describe the part", no naming, no "how do you feel toward it" — those would be recursion. One thank, one ask-space, one Self-energy check. Done.
 
-#### §4-handle-2 — Re-glimpse fallback
+#### §4-handle-2 — Ratified re-target (propose-and-ratify, doctrinal line 4)
 
-If thank-and-ask-space fails, run the glimpse prompt again. Briefer form is acceptable:
-
-> *"Let's notice again — what's here when there's no problem to solve?"*
-
-> Take a moment with that.
-
-Wait. Then re-check texture briefly:
-
-> *"What's it like for you now — located somewhere, or more open?"*
-
-Log `pulse_check { result: "drift_detected" | "continue" }` based on the answer. Increment `re_glimpses` in `phase1_state` regardless.
-
-- **Success** (texture clean now): continue with the original focus part.
-- **Failure** (texture still murky / user reports the blending part is still in the way): escalate to §4-handle-3.
-
-#### §4-handle-3 — Ratified re-target (propose-and-ratify, doctrinal line 4)
-
-Both lighter moves failed. The blending part is the real focus right now. Propose-and-ratify a pivot. Plain prose, three options:
+Thank-and-ask-space failed. The blending part is the real focus right now. Propose-and-ratify a pivot. Plain prose, three options:
 
 > *"This part isn't stepping back, and re-glimpse didn't restore Self contact. We can pivot the session to it, come back to `<focus_part.working_title>` next time, or close here. Which?"*
 
@@ -390,7 +303,7 @@ After Phase 4 completes (no drift detected, OR drift handled with current focus 
 
 ### §4-cycle — Cycle detection
 
-Triggered when `cycle_state.cycle_detected` flips `true` from §4-detect step 3 (signal 1: same part blended at Phase 4 twice) OR §4-handle-3 cycle-trip (signal 2: three distinct re-targets). The cycle handler **replaces** the rest of Phase 4 — no remaining §4-handle moves, no Phase 3 on a new focus.
+Triggered when `cycle_state.cycle_detected` flips `true` from §4-detect step 3 (signal 1: same part blended at Phase 4 twice) OR §4-handle-2 cycle-trip (signal 2: three distinct re-targets). The cycle handler **replaces** the rest of Phase 4 — no remaining §4-handle moves, no Phase 3 on a new focus.
 
 Log `cycle_detected { signal: "repeat_blend" | "re_target_pile_up", parts: <cycle_pair as list> }` to `event_log`.
 
@@ -447,24 +360,20 @@ Set `polarization_state.entered = true`, `polarization_state.pair = cycle_state.
 
 **Hard rules**:
 
-- Polarization work must be entered from clean Self. Step 1's re-glimpse is the gate; murky texture falls back to §4-cycle-close-and-log.
+- Polarization work is entered with a re-glimpse (structural restart). User-bail at the post-glimpse light pulse falls back to §4-cycle-close-and-log.
 - Polarization work is NOT: (a) full embodied engagement on each part — no locate → describe → thank → ask-space → Self-energy on either side; (b) a resolution attempt — the move is externalize / surface protections / ask cooperation / log; (c) role relinquishment — neither part is asked to step aside; both stay present.
 - Doctrinal line 1 holds throughout. Never voice either part. All questions are Self-directed (asked of the user).
 
-#### Step 1 — Re-glimpse to verify Self
+#### Step 1 — Re-glimpse + light pulse
 
 > *"Before we work between them — let's notice again. What's here when there's no problem to solve?"*
 >
 > Take a moment with that.
 
-Wait. Re-check texture briefly:
+Wait. Increment `phase1_state.re_glimpses`. Then light pulse: *"Ready to keep going?"* Log `pulse_check { result }`.
 
-> *"What's it like for you now — located somewhere, or more open?"*
-
-Wait. Increment `phase1_state.re_glimpses`. Log `pulse_check { result }`.
-
-- **Texture clean**: proceed to step 2.
-- **Texture murky / Self-like-part pattern**: polarization work cannot proceed from this Self-state. Plain one-line: *"Texture didn't land — letting it be, logging the cycle, closing here."* Fall through to §4-cycle-close-and-log queueing + closing.
+- **Continue**: proceed to step 2.
+- **Bail / silence-as-exit**: *"OK — letting it be, logging the cycle, closing here."* Fall through to §4-cycle-close-and-log queueing + closing.
 
 #### Step 2 — Name the polarization
 
@@ -520,21 +429,6 @@ Queue `record_polarization { pair: <polarization_state.pair> }` in `pending_chan
 Route to §7-pre-close + closing. Polarization work **replaces** remainder of session — no Phase 5, no Phase 6, no Phase 7 on either polarized part.
 
 Closing ritual targets the **current focus** (last entry in `re_targeted_parts[]` if any, else `focus_part`). The original focus and any intermediate re-targets are addressed in `## Parts encountered` body sections only — closing's permission-to-return question targets the most-engaged-most-recently part. If user wants to grant permission for multiple, they say so in plain prose; the skill defaults to current-focus-only for `permission_granted` frontmatter.
-
-## §5a — Self-like-parts spotting (terse pattern-match list)
-
-Used by §1c to pick the most likely imitator. Full prose explanations live in `FAQ.md`. Mid-session pattern-match only:
-
-1. **Calm/peaceful manager** — *performs* calm to manage the system. Tell: located somewhere (head, chest), feels held/maintained, has a "doing this right" flavor.
-2. **Spiritual-bypass part** — uses spiritual framing to avoid felt experience. Tell: words like "everything is one", "no real self anyway", "this is just ego" appearing where felt sense was asked for.
-3. **Intellectual overpass** — *"I understand it now"* insight that bypasses contact. Tell: clean explanatory frame appearing without bodily reference.
-4. **Psychological underpass** — resignation/depression mimicking groundedness. Tell: flatness, "fine", "whatever", absence rather than presence.
-
-Real Self texture: boundless, no locator, already-here, effortless, clear knowing without effort.
-
-Suspect texture → Claude offers ONE observation as a question. Never asserts an imitator-verdict. See §1c for the exact routing.
-
-On detected Self-like part: engage it as a part (locate → thank → ask space) and re-glimpse. If it won't make space, it becomes the focus part. **Phase 7 is blocked for this session regardless of tier.**
 
 ## §5 — Phase 5 — Befriend
 
@@ -642,13 +536,13 @@ After Phase 6 settles, the part page body sections `## Role` / `## Fears` / `## 
 
 ## §7 — Phase 7 — Optional deeper work
 
-Optional deeper work — exile contact and (optionally) unburdening. **Two-factor gated** (PRD: "two-factor" but evaluated as four conjunctive factors). Doctrinal line 7 governs: stable Self bears the unbearable; a Self-like part doing exile work is the exact failure mode Self-like-parts spotting prevents.
+Optional deeper work — exile contact and (optionally) unburdening. **Two-factor gated** (tier + protector permission). Doctrinal line 7 governs: stable Self bears the unbearable; the protector-permission step is the safety floor (a protector won't release its exile when Self isn't holding).
 
-Runs after Phase 6 settles, IF the gate passes. If any gate fails, Phase 7 is blocked and the session routes to §7-pre-close, then closing.
+Runs after Phase 6 settles, IF the gate passes. If either gate fails, Phase 7 is blocked and the session routes to §7-pre-close, then closing.
 
-### §7-0 — Wrap-clock check
+### §7-0 — Wrap-clock check + light pulse
 
-Run `wrap_check()` (see §wrap below) at the entrance of Phase 7. If a wrap fires AND the user ratifies "wrap", route directly to §7-pre-close + closing — Phase 7 is skipped. If user picks "keep going", proceed to §7-1.
+Run `wrap_check()` (see §wrap below) at the entrance of Phase 7. If a wrap fires AND the user ratifies "wrap", route directly to §7-pre-close + closing — Phase 7 is skipped. If user picks "keep going", emit the standard transition light pulse: *"Still here and oriented? Want to continue?"* Bail → graceful bail (`status: interrupted`). Continue → §7-1.
 
 ### §7-1 — Tier permits check (factor 1)
 
@@ -658,27 +552,7 @@ Set `phase7_state.gates_evaluated = true`.
 - **Medium tier**: factor 1 requires explicit user request earlier in session. If `phase7_state.explicit_request === true`: pass. Else: `gates_block_reason = "tier_medium_no_explicit_request"`. Route to §7-block. Do NOT prompt the user for a deeper-work request — the protocol leaves it to the user to surface.
 - **Long tier**: factor 1 passes by default.
 
-### §7-2 — Phase-1 Self texture check (factor 3)
-
-- `phase1_state.self_texture === "clean"` AND `phase1_state.focus_part_is_self_like === false`: pass.
-- Otherwise: `gates_block_reason = "self_like_part_detected"` (or `"texture_murky"`). Route to §7-block. Doctrinal line 7 holds.
-
-A confirmed-then-stepped-back Self-like part (`self_like_part_detected: true` with §1d-clean-after-mini-loop) does NOT block — what matters is `focus_part_is_self_like` AND current texture. Phase 7 remains permissible if other gates pass.
-
-### §7-3 — Pre-Phase-7 full continuation check (factor 4)
-
-A high-risk transition. Texture must hold *now*, not just at Phase 1.
-
-1. *"Still here and oriented? Want to continue?"* — wait.
-2. *"And the texture right now — located somewhere, or more open?"* — wait. Listen on Self-like-parts spotting axis (§5a).
-
-Log `pulse_check { result }`.
-
-- **Continue** (yes + clean + no Self-like-part pattern): pass.
-- **Bail**: graceful bail. `status: interrupted`.
-- **Drift detected**: factor 4 fails. `gates_block_reason = "self_like_part_in_continuation"`. Route to §7-block. Doctrinal line 7 holds — this is exactly the case the gate was built for.
-
-### §7-4 — Protector permission check (factor 2)
+### §7-2 — Protector permission check (factor 2)
 
 The current focus = `re_targeted_parts[-1]` if non-empty, else `focus_part`. The current focus is the protector. Plain prose, one line:
 
@@ -689,7 +563,7 @@ Wait. Trust the answer:
 - **Confirms**: pass. Set `current_focus.permission_granted = true`. Set `phase7_state.gates_passed = true`.
 - **Denies / unsure**: `gates_block_reason = "no_protector_permission"`. Route to §7-block.
 
-### §7-5 — Exile contact
+### §7-3 — Exile contact
 
 All four gates pass. Set `phase7_state.exile_contact = true`. Log `exile_contact { part_ref: <exile_ref> }`.
 
@@ -705,7 +579,7 @@ Sequence (free-text, wait at each, never voice):
 
 Reflection-only stance (doctrinal line 3). Never voice the exile (doctrinal line 1). Play back the user's own words once if helpful; no more.
 
-### §7-6 — Unburdening (optional)
+### §7-4 — Unburdening (optional)
 
 Propose-and-ratify per doctrinal line 4, plain prose, one line:
 
@@ -737,20 +611,16 @@ Emit ONE line, plain prose, no apology, no therapist-voice:
 
 Route to §7-pre-close.
 
-### §7-pre-close — Pre-close full continuation check
+### §7-pre-close — Pre-close light pulse
 
-The third high-risk transition. Always runs after Phase 7 settles (whether full, blocked, or wrap-skipped).
+Always runs after Phase 7 settles (whether full, blocked, or wrap-skipped).
 
-1. *"Still here and oriented? Want to close cleanly, or anything else surfacing?"* — wait.
-2. *"And the texture right now — open, or located somewhere?"* — wait. Log `pulse_check`.
+> *"Still here and oriented? Want to close cleanly, or anything else surfacing?"* — wait. Log `pulse_check`.
 
 - **Continue**: route to closing (§5f).
 - **Bail**: graceful bail. Closing still runs.
-- **Drift detected**: pre-close pulse does NOT loop back into Phase 4 — work is winding down. Note in `event_log`, route to closing. (Caveat: if `phase7_state.unburdening === true` and texture went murky after, it's most likely a young-self emergence rather than a Self-like part — closing's rest-in-Self gives it a held container without re-opening the work.)
 
 The closing ritual targets the **current focus**. Permission-to-return targets the current focus by working title.
-
-If the Self-like-part-as-focus path ratified through §1d, the part is the focus. Phase 7 is blocked via factor 3 (`gates_block_reason = "self_like_part_detected"`); §1d Self-like-as-focus sessions never reach §7-5.
 
 ## §wrap — Tier wrap clock
 
@@ -785,7 +655,7 @@ Wrap proposals are propose-and-ratify; only imminent-harm pattern match override
 
 Runs on graceful close, graceful bail, and ratified wrap. Five steps, in order:
 
-1. **Thank.** Each part contacted. (In stub-middle / no-parts-touched cases, plain language: *"Take a breath. Anything you want to thank — yourself, anyone you reached, anything that surfaced — go ahead."*) When a Self-like part was engaged in §1d, that counts as a part contacted — name it in plain prose: *"Including the part that came up at the start — it gave space (or didn't) — anything to thank it for?"*
+1. **Thank.** Each part contacted. (In stub-middle / no-parts-touched cases, plain language: *"Take a breath. Anything you want to thank — yourself, anyone you reached, anything that surfaced — go ahead."*)
 2. **Ask more.** *"Anything else wants to be heard before we close?"*
 3. **Permission to come back.** *"OK to come back to this another time?"* (Directed at parts contacted in real sessions; plain framing in stub-middle.)
 4. **Rest in Self.** Type and wait:

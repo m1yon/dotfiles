@@ -65,7 +65,7 @@ list from "6 - Full Notes/IFS/Parts" where status = "unburdened"
 ```
 ````
 
-Deliberately excluded: recent-sessions list, "parts not seen in N days" query, aggregated open-threads view, Self-texture / glimpse-history dashboard. Those would invite manager behavior, completion anxiety, or gaming the texture answer.
+Deliberately excluded: recent-sessions list, "parts not seen in N days" query, aggregated open-threads view, glimpse-history dashboard. Those would invite manager behavior or completion anxiety.
 
 ## Crisis Plan.md (purpose)
 
@@ -113,7 +113,6 @@ What this part has asked for, or what would help it relax.
 
 Sub-decisions:
 - No `8Cs_present` field on parts (Self-energy is a session-level observation).
-- No Self-texture field on parts (texture is session-level).
 - `polarized_with:` mirrored on both parts (subagent writes both sides).
 - Recent encounters surfaced via Obsidian backlinks, not a maintained section.
 - `status: unburdened` is a real recorded event.
@@ -133,8 +132,6 @@ tier: medium                     # short | medium | long
 duration_min: 35
 status: complete                 # complete | interrupted | crisis_exit
 checkin_state: tight chest, mild dread
-self_texture: clean              # clean | murky
-self_like_part_detected: false
 re_glimpses: 0
 parts_touched: [[wants me to double-check everything]], [[the tight jaw]]
 new_parts: [[the tight jaw]]
@@ -181,6 +178,7 @@ Sub-decisions:
 - Session notes are never retroactively edited. New understanding goes on the *part* page or in the *next* session's `## What Self noticed`.
 - `## Open threads` written as Obsidian task checkboxes (`- [ ]`); next session reads as a checklist.
 - Drift events counted in frontmatter (`unblending_events`), not separately enumerated in the body.
+- Re-glimpses counted in frontmatter (`re_glimpses`) — Phase 1 has no auto-triggered re-glimpse, so non-zero values come from user-initiated re-glimpse or polarization-work step 1.
 - Re-targets logged as their own `### [[part]]` section under `## Parts encountered`.
 - Cycle detection events go in `## What Self noticed` plus `cycle_detected: true` and `polarization_pair:` in frontmatter.
 
