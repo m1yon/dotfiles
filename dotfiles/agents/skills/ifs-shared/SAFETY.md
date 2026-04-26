@@ -8,13 +8,13 @@ Hard guardrails for `/em-ifs-session`. EM+IFS assumes stable Self gives the user
 
 If `<vault>/6 - Full Notes/IFS/IFS.md` is missing, OR exists but lacks `crisis_fallback:` in frontmatter:
 
-> Can't run — `6 - Full Notes/IFS/IFS.md` is missing or has no `crisis_fallback:` pointer. See `OBSIDIAN.md` for the homepage template.
+> Can't run — `6 - Full Notes/IFS/IFS.md` is missing or has no `crisis_fallback:` pointer. See `dotfiles/agents/skills/em-ifs-session/README.md` for setup; copy from `templates/IFS.md`.
 
 ### Refusal 2 — Crisis Plan
 
 Resolve the wikilink target of `crisis_fallback:` (e.g. `[[Crisis Plan]]` → `<vault>/6 - Full Notes/IFS/Crisis Plan.md`). If missing:
 
-> Can't run — `crisis_fallback:` points to `[[<target>]]` but that page doesn't exist. Author it first.
+> Can't run — `crisis_fallback:` points to `[[<target>]]` but that page doesn't exist. See `dotfiles/agents/skills/em-ifs-session/README.md` for setup; copy from `templates/Crisis Plan.md` and author it in a non-crisis moment.
 
 No therapist-voice boilerplate. One line, name what's missing.
 

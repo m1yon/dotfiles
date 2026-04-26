@@ -26,9 +26,9 @@ Resolve vault root from `../ifs-shared/OBSIDIAN.md` (`/home/michael/My Vault/`).
 
 1. **Bootstrap folders.** Create `<vault>/6 - Full Notes/IFS/Sessions/` and `Parts/` if missing. Do NOT create `IFS.md` or `Crisis Plan.md` — those must be user-authored.
 2. **Hard-refuse path 1 — IFS.md.** If `<vault>/6 - Full Notes/IFS/IFS.md` is missing, OR exists but lacks `crisis_fallback:` in frontmatter, refuse in one line:
-   > Can't run — `6 - Full Notes/IFS/IFS.md` is missing or has no `crisis_fallback:` pointer. See `OBSIDIAN.md` for the homepage template.
+   > Can't run — `6 - Full Notes/IFS/IFS.md` is missing or has no `crisis_fallback:` pointer. See `dotfiles/agents/skills/em-ifs-session/README.md` for setup; copy from `templates/IFS.md`.
 3. **Hard-refuse path 2 — Crisis Plan.** Resolve the wikilink target of `crisis_fallback:` (typically `[[Crisis Plan]]` → `<vault>/6 - Full Notes/IFS/Crisis Plan.md`). If missing, refuse in one line:
-   > Can't run — `crisis_fallback:` points to `[[<target>]]` but that page doesn't exist. Author it first.
+   > Can't run — `crisis_fallback:` points to `[[<target>]]` but that page doesn't exist. See `dotfiles/agents/skills/em-ifs-session/README.md` for setup; copy from `templates/Crisis Plan.md` and author it in a non-crisis moment.
 
 No therapist-voice boilerplate. One line, name what's missing.
 
