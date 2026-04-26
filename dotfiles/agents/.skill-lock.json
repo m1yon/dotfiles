@@ -51,9 +51,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "improve-codebase-architecture/SKILL.md",
-      "skillFolderHash": "78b2029cbf4a74fa798c97ea27bc02bdeb2e3237",
+      "skillFolderHash": "008dfd3cf28adfe7e8e89bdbb8de85a1e70601d7",
       "installedAt": "2026-04-19T20:34:28.439Z",
-      "updatedAt": "2026-04-19T20:34:28.439Z"
+      "updatedAt": "2026-04-26T18:32:16.656Z"
     },
     "write-a-skill": {
       "source": "mattpocock/skills",
@@ -69,9 +69,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "ubiquitous-language/SKILL.md",
-      "skillFolderHash": "8c52deebe26f5a73a98b94ef844b20e4907c1671",
+      "skillFolderHash": "483fe10b01bed81b7eba7ee26df3f1bef9540c88",
       "installedAt": "2026-04-19T20:35:30.392Z",
-      "updatedAt": "2026-04-19T20:35:30.392Z"
+      "updatedAt": "2026-04-26T18:32:18.396Z"
     },
     "design-an-interface": {
       "source": "mattpocock/skills",
@@ -114,9 +114,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/everyinc/compound-engineering-plugin.git",
       "skillPath": "plugins/compound-engineering/skills/ce-resolve-pr-feedback/SKILL.md",
-      "skillFolderHash": "498eb078e9f39fb18ee25f40f5acf24ed7e00ad9",
+      "skillFolderHash": "aa135917a5fae5a24ee5c60b0fdefa0fe152e28f",
       "installedAt": "2026-04-23T16:11:08.315Z",
-      "updatedAt": "2026-04-23T16:11:08.315Z"
+      "updatedAt": "2026-04-26T18:32:20.669Z"
     },
     "gh-address-comments": {
       "source": "openai/skills",
