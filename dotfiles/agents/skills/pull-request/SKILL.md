@@ -128,8 +128,6 @@ Use this template exactly:
 #### 1. `path/to/updated/package`
 *Brief explanation of what this package now handles.*
 
-<sub>**Files changed:** [`file_a.go`](<pr_url>/files#diff-<sha>), [`file_b.go`](<pr_url>/files#diff-<sha>)</sub>
-
 <details>
 <summary>🔍 View Interface Changes</summary>
 
@@ -138,6 +136,15 @@ Use this template exactly:
 + func NewFeature() error
 ```
 </details>
+
+<sub>**Files changed:** [`file_a.go`](<pr_url>/files#diff-<sha>), [`file_b.go`](<pr_url>/files#diff-<sha>)</sub>
+
+---
+
+#### 1. `path/to/updated/package2`
+*Brief explanation of what this package now handles.*
+
+...
 
 ## 🧹 Housekeeping & Secondary Changes
 * Renamed `oldVar` to `newVar` in `utils.go` for clarity.
