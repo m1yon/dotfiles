@@ -28,10 +28,10 @@ Use the `AskUserQuestion` tool early to ask: **draft or ready-for-review?** Do t
 
 ### 3. Find the linked PRD issue
 
-Check the conversation context for a referenced GitHub issue (PRD). If none, search:
+Check the conversation context for a referenced GitHub issue (PRD). If none, list recent issues and inspect titles to find the matching PRD (PRDs are titled with a `PRD:` prefix, but match on meaning — the prefix may be missing or vary):
 
 ```bash
-gh issue list --label prd --json number,title,url --limit 20
+gh issue list --json number,title,url --limit 20
 ```
 
 Confirm the match with the user before proceeding. Add `Closes #<num>` at the end of the PR body so merging auto-closes it. If no PRD applies, skip.
