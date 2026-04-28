@@ -66,7 +66,7 @@ Before drafting, note for yourself:
 - Did it **widen** one (more public entry points, more for callers to learn)?
 - Did it **carve out** a new module from an existing one?
 
-Mention this in "The Fix" if relevant — it's the highest-signal framing for an architecturally-minded reader.
+Mention this in "The Solution" if relevant — it's the highest-signal framing for an architecturally-minded reader.
 
 ### 7. Draft the title
 
@@ -84,27 +84,49 @@ Pick the type from the dominant change in the diff — if the PR is mostly a fix
 
 Use this template exactly:
 
-```md
-## The Problem
+````md
+## 🐛 The Problem
 
-[1-3 sentences. The user-facing or developer-facing problem this PR solves. Not what the code does — what was broken, missing, or painful before.]
+[2-4 concise bullet points. Each bullet ≤ 1 line. The user-facing or developer-facing problem — what was broken, missing, or painful before. Skimmable at a glance.]
 
-## The Fix
+* Bullet one
+* Bullet two
 
-[1-3 sentences. The high-level approach. Mention deepening / widening / extraction if it applies.]
+## 🛠 The Solution
 
-## Public Interface Changes
+[2-4 concise bullet points. Each bullet ≤ 1 line. The high-level approach. Mention deepening / widening / extraction if it applies. Skimmable at a glance.]
 
-[Fenced ```diff blocks. Show signatures only, never bodies. Group by module/package. If nothing public changed, write "None".]
+* Bullet one
+* Bullet two
 
-## Other Interface Changes
+## 🏗 Architecture & Public Interface Changes
+### 🗺 Interface Movements
+| Interface / Symbol | Old Location / Status | New Location / Status | Notes |
+| :--- | :--- | :--- | :--- |
+| `ExampleFunc` | `oldpackage` | `newpackage` | Extracted for reuse |
+| `ConfigStruct` | 🔒 Private | 🌐 Public | Exported for testing |
 
-[Private helpers, refactors, internal restructuring, test changes. Bullet list or short diff blocks. If nothing notable, write "None".]
+### 📦 Package Breakdowns
+#### 1. `path/to/updated/package`
+*Brief explanation of what this package now handles.*
+<details>
+<summary>🔍 View Interface Changes</summary>
+
+```diff
+# Highlight key additions (+) or deletions (-) here, or just leave a note.
++ func NewFeature() error
+```
+</details>
+
+## 🧹 Housekeeping & Secondary Changes
+* Renamed `oldVar` to `newVar` in `utils.go` for clarity.
+* Fixed typos in comments across the `oversightreport` package.
+* Bumped dependency `xyz` to version `1.2.3`.
 
 Closes #<num>
-```
+````
 
-Keep "The Problem" and "The Fix" tight. Resist narrating every commit. Omit the `Closes` line if no PRD applies.
+Keep "The Problem" and "The Fix" as short, glanceable bullet points. Resist narrating every commit. Omit the `Closes` line if no PRD applies.
 
 ### 9. Push and create (or update)
 
