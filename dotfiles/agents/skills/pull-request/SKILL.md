@@ -26,7 +26,17 @@ If the working tree is dirty, show the uncommitted files and ask the user: stage
 
 Use the `AskUserQuestion` tool early to ask: **draft or ready-for-review?** Do this before drafting the body so the answer is ready when it's time to push.
 
-### 3. Get the diff against the base branch
+### 3. Find the linked PRD issue
+
+Check the conversation context for a referenced GitHub issue (PRD). If none, search:
+
+```bash
+gh issue list --label prd --json number,title,url --limit 20
+```
+
+Confirm the match with the user before proceeding. Add `Closes #<num>` at the end of the PR body so merging auto-closes it. If no PRD applies, skip.
+
+### 4. Get the diff against the base branch
 
 Default base branch is `dev` unless the user specified otherwise. No need to verify.
 
@@ -35,7 +45,7 @@ git log dev..HEAD --oneline
 git diff dev...HEAD
 ```
 
-### 4. Classify each change as public or private
+### 5. Classify each change as public or private
 
 A change is **public** if a caller outside the module/package would notice it:
 
@@ -48,7 +58,7 @@ A change is **public** if a caller outside the module/package would notice it:
 
 Everything else (local helpers, private methods, internal types, tests, refactors that preserve the surface) is private. When in doubt, ask: "would a caller notice this?" If no, it's private.
 
-### 5. Reason about module depth
+### 6. Reason about module depth
 
 Before drafting, note for yourself:
 
@@ -58,7 +68,7 @@ Before drafting, note for yourself:
 
 Mention this in "The Fix" if relevant — it's the highest-signal framing for an architecturally-minded reader.
 
-### 6. Draft the title
+### 7. Draft the title
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) style: `<type>(<scope>): <subject>`.
 
@@ -70,7 +80,7 @@ Add `!` after the type/scope for breaking public-interface changes: `feat(parser
 
 Pick the type from the dominant change in the diff — if the PR is mostly a fix with incidental refactor, it's `fix`.
 
-### 7. Draft the body
+### 8. Draft the body
 
 Use this template exactly:
 
@@ -90,11 +100,13 @@ Use this template exactly:
 ## Other Interface Changes
 
 [Private helpers, refactors, internal restructuring, test changes. Bullet list or short diff blocks. If nothing notable, write "None".]
+
+Closes #<num>
 ```
 
-Keep "The Problem" and "The Fix" tight. Resist narrating every commit.
+Keep "The Problem" and "The Fix" tight. Resist narrating every commit. Omit the `Closes` line if no PRD applies.
 
-### 8. Push and create (or update)
+### 9. Push and create (or update)
 
 Do not confirm the title or body with the user — just create the PR. Use the draft/ready answer from step 2. The base branch is `dev` unless the user said otherwise.
 
