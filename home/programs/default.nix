@@ -22,6 +22,7 @@
     ./gpg.nix
     ./go-task.nix
     ./gtk.nix
+    ./hidpi.nix
     ./nixfmt.nix
     ./neovim.nix
     ./obsidian.nix
