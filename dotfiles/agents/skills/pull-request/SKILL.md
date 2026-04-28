@@ -103,14 +103,14 @@ Use the file's basename (not the full path) as the link text — the package hea
 Use this template exactly:
 
 ````md
-## 🐛 The Problem
+## 🚩 The Problem
 
 [2-4 concise bullet points. Each bullet ≤ 1 line. The user-facing or developer-facing problem — what was broken, missing, or painful before. Skimmable at a glance.]
 
 * Bullet one
 * Bullet two
 
-## 🛠 The Solution
+## 💡 The Solution
 
 [2-4 concise bullet points. Each bullet ≤ 1 line. The high-level approach. Mention deepening / widening / extraction if it applies. Skimmable at a glance.]
 
