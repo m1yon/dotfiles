@@ -80,7 +80,25 @@ Add `!` after the type/scope for breaking public-interface changes: `feat(parser
 
 Pick the type from the dominant change in the diff — if the PR is mostly a fix with incidental refactor, it's `fix`.
 
-### 8. Draft the body
+### 8. Build "Files changed" anchor links
+
+Each package breakdown gets a comma-separated `<sub>`-wrapped line linking every file in that package to its diff in the PR's Files changed tab.
+
+GitHub's per-file anchor in `/files` is `#diff-<sha256(path)>`. Build each link as `<pr_url>/files#diff-<sha>`:
+
+- Group the changed files (`git diff --name-only dev...HEAD`) by package.
+- For each file, compute the anchor: `printf '%s' "<path>" | sha256sum | cut -d' ' -f1`.
+- For a brand-new PR (no URL yet), get the URL after `gh pr create` returns, then `gh pr edit` the body in. For an existing PR, use the URL from `gh pr view --json url`.
+
+Render as:
+
+```md
+<sub>**Files changed:** [`generator.go`](<pr_url>/files#diff-<sha>), [`filename.go`](<pr_url>/files#diff-<sha>)</sub>
+```
+
+Use the file's basename (not the full path) as the link text — the package heading already supplies the directory.
+
+### 9. Draft the body
 
 Use this template exactly:
 
@@ -109,6 +127,9 @@ Use this template exactly:
 ### 📦 Package Breakdowns
 #### 1. `path/to/updated/package`
 *Brief explanation of what this package now handles.*
+
+<sub>**Files changed:** [`file_a.go`](<pr_url>/files#diff-<sha>), [`file_b.go`](<pr_url>/files#diff-<sha>)</sub>
+
 <details>
 <summary>🔍 View Interface Changes</summary>
 
@@ -128,9 +149,11 @@ Closes #<num>
 
 Keep "The Problem" and "The Fix" as short, glanceable bullet points. Resist narrating every commit. Omit the `Closes` line if no PRD applies.
 
-### 9. Push and create (or update)
+### 10. Push and create (or update)
 
 Do not confirm the title or body with the user — just create the PR. Use the draft/ready answer from step 2. The base branch is `dev` unless the user said otherwise.
+
+For a new PR: create it with placeholder anchor URLs (or omit the Files-changed line), capture the returned URL, then `gh pr edit` to inject the real `<pr_url>/files#diff-<sha>` links.
 
 ```bash
 git push -u origin HEAD                                    # if branch is unpushed
