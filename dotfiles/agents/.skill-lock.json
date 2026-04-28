@@ -73,10 +73,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
-      "skillFolderHash": "a41ddd9a5e8c15ca8338f6ba9de0dc29c2c30200",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "84e6f860ff4ae4593f31fd5406084ceeb0f42268",
       "installedAt": "2026-04-28T16:23:00.491Z",
-      "updatedAt": "2026-04-28T16:23:00.491Z"
+      "updatedAt": "2026-04-28T21:10:12.598Z"
     },
     "tdd": {
       "source": "mattpocock/skills",
@@ -93,30 +92,27 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/engineering/to-issues/SKILL.md",
-      "skillFolderHash": "55e27359b5ea5309e45b2d6f1d2b55dc5e994b38",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "2bf2903405724ce27038fc91f1c4304c4a63ae16",
       "installedAt": "2026-04-28T16:23:00.491Z",
-      "updatedAt": "2026-04-28T16:23:00.491Z"
+      "updatedAt": "2026-04-28T21:10:15.314Z"
     },
     "to-prd": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/engineering/to-prd/SKILL.md",
-      "skillFolderHash": "0188d29b5d2d8f501f4dd2095ffe0ab6bdd22ba1",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "63e890f04a30b69c9931615f36700fc45eb8d1ad",
       "installedAt": "2026-04-28T16:23:00.491Z",
-      "updatedAt": "2026-04-28T16:23:00.491Z"
+      "updatedAt": "2026-04-28T21:10:16.676Z"
     },
     "triage": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/engineering/triage/SKILL.md",
-      "skillFolderHash": "c9fa59c71ad45ff5944c2599e223d21fd1e994b0",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "de4f182c30876a2460ca307e2f601b9b892527e5",
       "installedAt": "2026-04-28T16:23:00.492Z",
-      "updatedAt": "2026-04-28T16:23:00.492Z"
+      "updatedAt": "2026-04-28T21:10:18.036Z"
     },
     "write-a-skill": {
       "source": "mattpocock/skills",
