@@ -148,12 +148,34 @@ Print the PR URL when done.
 
 Use fenced ```diff blocks. Strip implementations — show signatures only.
 
+Separate logical groups (different symbols, removals vs. additions, related families) with blank lines. A wall of contiguous `-`/`+` lines is hard to scan; whitespace gives the eye anchor points.
+
+Good:
+
+````md
+```diff
+- const PearsuiteAppBaseURL = "https://app.pearsuite.com"
+
+- type OversightReportGenerator struct{ ... }
+
+- func NewOversightReportGenerator(
+-   dl datalake.Datalake,
+-   goldDatabase string,
+-   filename FilenameGenerator,
+- ) (*OversightReportGenerator, error)
+
+- const mountainTimezone = "America/Denver"
++ const MountainTimezone = "America/Denver"
+```
+````
+
 Good:
 
 ````md
 ```diff
 - func ParseURL(s string) (*URL, error)
 + func ParseURL(s string, opts ...Option) (*URL, error)
+
 + type Option func(*parser)
 + func WithStrict() Option
 ```
