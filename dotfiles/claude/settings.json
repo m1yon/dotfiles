@@ -9,7 +9,7 @@
     "typescript-lsp@claude-plugins-official": false,
     "gopls-lsp@claude-plugins-official": false,
     "linear@claude-plugins-official": false,
-    "voicemode@voicemode": true
+    "voicemode@voicemode": false
   },
   "extraKnownMarketplaces": {
     "claude-notifications-go": {
