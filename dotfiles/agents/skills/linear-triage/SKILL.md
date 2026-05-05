@@ -82,7 +82,7 @@ The maintainer invokes `/linear-triage` and describes what they want in natural 
 Query Linear (scoped to team `{linear.team}`) and present three buckets, oldest first:
 
 1. **Triage state, no role labels** — never triaged.
-2. **Triage state with no `needs-info` label** — evaluation in progress.
+2. **Triage state with at least one role label and no `needs-info` label** — evaluation in progress.
 3. **Triage state with `needs-info` label, with reporter activity since the last triage notes** — needs re-evaluation.
 
 Show counts and a one-line summary per issue (Linear identifier + title). Let the maintainer pick.

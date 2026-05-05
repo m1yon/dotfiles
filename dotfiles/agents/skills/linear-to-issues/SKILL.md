@@ -86,4 +86,6 @@ After all sub-issues are created and their parent / blocker relations are wired 
 
 On **yes**: for the PRD and each newly-created sub-issue, if the issue is currently in Linear's **Triage** state, transition it to **Backlog** and add the `ready-for-agent` label. Skip any issue that is already in a non-Triage state (idempotency — the user may have promoted the PRD via `linear-triage` before running breakdown). Report which issues were transitioned and which were skipped.
 
-On **no**: leave everything in Triage. The user can promote individual issues later via `linear-triage`.
+This bulk promotion intentionally **does not** post the agent brief comment that `linear-triage`'s canonical `ready-for-agent` transition would. Sub-issues coming out of this flow have a structured body (`What to build` + `Acceptance criteria` derived from the approved PRD breakdown) and a parent PRD link, which together stand in for the brief. Do not emit a separate brief comment, and do not treat the absence of one as a defect when those issues are later picked up.
+
+On **no**: leave everything in Triage. The user can promote individual issues later via `linear-triage` (which will then ask whether to write an agent brief at promotion time).
