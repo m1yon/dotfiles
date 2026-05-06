@@ -21,7 +21,7 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-3. Write the PRD using the template below, then publish it to Linear: create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with the title set to a short summary and the body set to the rendered template. Apply two labels: `prd`, and one of `bug` or `enhancement` depending on whether the PRD describes a defect or new capability. Do not apply any other labels at creation — the Triage state is what makes the PRD show up in Linear's Triage inbox for explicit promotion.
+3. Write the PRD using the template below, then publish it to Linear: create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with the title set to a short summary, the body set to the rendered template, and the assignee set to `me`. Apply two labels: `prd`, and one of `bug` or `enhancement` depending on whether the PRD describes a defect or new capability. Do not apply any other labels at creation — the Triage state is what makes the PRD show up in Linear's Triage inbox for explicit promotion.
 
 4. After the issue is created, output the Linear issue identifier (e.g. `PER-42`) and suggest the user run `linear-to-issues` next to break the PRD down into sub-issues. Do **not** offer a "promote to ready-for-agent" prompt — PRDs are always parents of sub-issues, never units of work themselves, and promotion happens at the end of `linear-to-issues` once sub-issues exist.
 

@@ -55,7 +55,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Publish the issues to Linear
 
-For each approved slice, create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with `parentId` set to the PRD's Linear issue id on the create call. Apply exactly one category label: `bug` or `enhancement`, depending on whether the slice fixes a defect or delivers new capability. Do **not** apply the `prd` label — sub-issues are not PRDs. Use the issue body template below.
+For each approved slice, create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with `parentId` set to the PRD's Linear issue id and the assignee set to `me` on the create call. Apply exactly one category label: `bug` or `enhancement`, depending on whether the slice fixes a defect or delivers new capability. Do **not** apply the `prd` label — sub-issues are not PRDs. Use the issue body template below.
 
 Publish issues in **dependency order** (blockers first) so that when you wire up the dependency graph the blocker's Linear id already exists.
 
