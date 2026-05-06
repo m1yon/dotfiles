@@ -9,7 +9,7 @@ Move issues on Linear through a small state machine of triage roles.
 
 This skill assumes the repo is tide-configured and uses Linear as its issue tracker. Team identity is read from `<repoRoot>/.tide/config.ts` (`linear.team`). If `.tide/config.ts` does not exist at the repo root, hard-stop and tell the user: "This skill requires `.tide/config.ts` at the repo root with a `linear.team` key. Run `tide init` (or add the file) before invoking `linear-triage`." Do not prompt for the team mid-flow.
 
-All Linear operations go through the registered `linear-server` MCP server. Describe the operation you want to perform in prose ("transition Linear issue `PER-42` from state Triage to Backlog and add the `ready-for-agent` label", "post a comment on `PER-42` with body X") and pick the appropriate MCP tool at runtime; do not hardcode tool names.
+All Linear operations go through the registered `linear-server` MCP server. Describe the operation you want to perform in prose ("transition Linear issue `PER-42` from state Triage to Todo and add the `ready-for-agent` label", "post a comment on `PER-42` with body X") and pick the appropriate MCP tool at runtime; do not hardcode tool names.
 
 Reference Linear issues by their team-prefixed identifier (e.g. `PER-42`), not by URL.
 
@@ -63,8 +63,14 @@ Category labels (`bug`, `enhancement`) are orthogonal to state and remain set ac
 
 - **`needs-info` (apply)** — keep the issue in **Triage** state, add the `needs-info` label, post the needs-info template comment.
 - **`needs-info` (reporter response detected)** — remove the `needs-info` label, keep the issue in **Triage** state, present the updated picture. The issue does not churn between states.
-- **`ready-for-agent`** — transition state **Triage → Backlog**, add the `ready-for-agent` label, post the agent brief comment ([AGENT-BRIEF.md](AGENT-BRIEF.md)).
-- **`ready-for-human`** — transition state **Triage → Backlog**, add the `ready-for-human` label, post the brief.
+- **`ready-for-agent`** —
+  - **Workflow state: transition Triage → Todo. This is mandatory; the label alone is not sufficient.**
+  - Add the `ready-for-agent` label.
+  - Post the agent brief comment ([AGENT-BRIEF.md](AGENT-BRIEF.md)).
+- **`ready-for-human`** —
+  - **Workflow state: transition Triage → Todo. This is mandatory; the label alone is not sufficient.**
+  - Add the `ready-for-human` label.
+  - Post the brief.
 - **`wontfix` (bug)** — transition state to **Canceled**, close the issue, post a polite explanation comment.
 - **`wontfix` (enhancement)** — transition state to **Canceled**, close the issue, write to `.out-of-scope/`, post a comment linking to the file ([OUT-OF-SCOPE.md](OUT-OF-SCOPE.md)).
 
@@ -100,12 +106,20 @@ Show counts and a one-line summary per issue (Linear identifier + title). Let th
 4. **Grill (if needed).** If the issue needs fleshing out, run a `/grill-with-docs` session.
 
 5. **Apply the outcome:**
-   - `ready-for-agent` — transition Triage → Backlog, add the `ready-for-agent` label, post an agent brief comment ([AGENT-BRIEF.md](AGENT-BRIEF.md)).
-   - `ready-for-human` — transition Triage → Backlog, add the `ready-for-human` label, post the same brief structure as `ready-for-agent`, but note why it can't be delegated (judgment calls, external access, design decisions, manual testing).
+   - `ready-for-agent` — perform all three of the following as discrete actions; do not skip any:
+     1. **Transition the workflow state: Triage → Todo.** This is a mandatory, standalone step. Labelling the issue without moving the state leaves it stuck in Triage and is a failure mode.
+     2. Add the `ready-for-agent` label.
+     3. Post an agent brief comment ([AGENT-BRIEF.md](AGENT-BRIEF.md)).
+   - `ready-for-human` — perform all three of the following as discrete actions; do not skip any:
+     1. **Transition the workflow state: Triage → Todo.** This is a mandatory, standalone step. Labelling the issue without moving the state leaves it stuck in Triage and is a failure mode.
+     2. Add the `ready-for-human` label.
+     3. Post the same brief structure as `ready-for-agent`, but note why it can't be delegated (judgment calls, external access, design decisions, manual testing).
    - `needs-info` — keep state Triage, add the `needs-info` label, post triage notes (template below).
    - `wontfix` (bug) — polite explanation comment, transition to Canceled, close.
    - `wontfix` (enhancement) — write to `.out-of-scope/`, post a comment linking to the file, transition to Canceled, close ([OUT-OF-SCOPE.md](OUT-OF-SCOPE.md)).
    - `needs-triage` — leave the issue in Triage state with no role label. Optional comment if there's partial progress.
+
+6. **Verify after apply.** For any outcome that changes workflow state or labels (especially `ready-for-agent` and `ready-for-human`), re-fetch the issue from Linear and confirm both the workflow state and the expected label(s) are set as intended. If either is missing, retry the missing operation once. If it still doesn't stick, surface the failure to the maintainer rather than reporting success.
 
 ## Quick state override
 
