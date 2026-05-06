@@ -13,7 +13,7 @@ All Linear operations go through the registered `linear-server` MCP server. Desc
 
 Reference Linear issues by their team-prefixed identifier (e.g. `PER-42`), not by URL.
 
-When creating a new issue, set the assignee to `me`.
+When creating a new issue, set the assignee to `me` and explicitly set the workflow state to **Triage**. Linear does not default new issues to Triage — omitting the state lands them in Backlog and they will be missed by triage queries.
 
 Every comment or issue posted to Linear during triage **must** start with this disclaimer:
 
