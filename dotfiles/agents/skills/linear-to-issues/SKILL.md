@@ -11,7 +11,7 @@ This skill assumes the repo is tide-configured and uses Linear as its issue trac
 
 ## Repo prefix on issue titles
 
-Every Linear issue this skill creates (or whose title it updates) **must** have its title prefixed with `[<repo>] ` — bracket, repo name, bracket, single space, then the title (e.g. `[dotfiles] store repo in linear issues`). Compute `<repo>` at issue-creation time from `git remote get-url origin`: take the last path segment and strip a trailing `.git`. If `origin` is not configured, hard-stop and tell the user: "This skill requires an `origin` git remote so it can derive the `[<repo>] ` issue-title prefix. Run `git remote add origin <url>` before invoking this skill." The prefix is idempotent: if a title already starts with the exact computed `[<repo>] ` string, do not add a second one — applies to new issues, sub-issues (even children of an already-prefixed parent), and title updates. The convention covers titles only; comment bodies are unchanged. See [`docs/adr/0001-linear-issue-title-prefix.md`](../../../../docs/adr/0001-linear-issue-title-prefix.md) for rationale.
+Prefix every created or retitled issue with `[<repo>] ` (e.g. `[dotfiles] store repo in linear issues`). Compute `<repo>` from `git remote get-url origin` — last path segment, strip trailing `.git`. If `origin` is missing, hard-stop: "This skill requires an `origin` git remote. Run `git remote add origin <url>` first." Idempotent — never double-prefix. Applies to all new issues and sub-issues (regardless of parent) and title updates; titles only, not comment bodies.
 
 All Linear operations go through the registered `linear-server` MCP server. Describe the operation you want to perform in prose ("create a Linear issue with title X, body Y, team `{linear.team}`, state Triage, labels [...], parentId `<prd-id>`") and pick the appropriate MCP tool at runtime; do not hardcode tool names.
 
@@ -59,7 +59,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Publish the issues to Linear
 
-For each approved slice, create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with `parentId` set to the PRD's Linear issue id and the assignee set to `me` on the create call. Apply the `[<repo>] ` title prefix to every sub-issue per the rule above — the parent already carrying the prefix does **not** exempt children. Apply exactly one category label: `bug` or `enhancement`, depending on whether the slice fixes a defect or delivers new capability. Do **not** apply the `prd` label — sub-issues are not PRDs. Use the issue body template below.
+For each approved slice, create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with `parentId` set to the PRD's Linear issue id and the assignee set to `me` on the create call. Prefix the title with `[<repo>] ` (children are not exempt because the parent already carries it). Apply exactly one category label: `bug` or `enhancement`, depending on whether the slice fixes a defect or delivers new capability. Do **not** apply the `prd` label — sub-issues are not PRDs. Use the issue body template below.
 
 Publish issues in **dependency order** (blockers first) so that when you wire up the dependency graph the blocker's Linear id already exists.
 
