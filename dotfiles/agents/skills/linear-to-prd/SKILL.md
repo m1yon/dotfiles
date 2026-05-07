@@ -7,6 +7,10 @@ This skill takes the current conversation context and codebase understanding and
 
 This skill assumes the repo is tide-configured and uses Linear as its issue tracker. Team identity is read from `<repoRoot>/.tide/config.ts` (`linear.team`). If `.tide/config.ts` does not exist at the repo root, hard-stop and tell the user: "This skill requires `.tide/config.ts` at the repo root with a `linear.team` key. Run `tide init` (or add the file) before invoking `linear-to-prd`." Do not prompt for the team mid-flow.
 
+## Repo prefix on issue titles
+
+Prefix every created or retitled issue with `[<repo>] ` (e.g. `[dotfiles] store repo in linear issues`). Compute `<repo>` from `git remote get-url origin` — last path segment, strip trailing `.git`. If `origin` is missing, hard-stop: "This skill requires an `origin` git remote. Run `git remote add origin <url>` first." Idempotent — never double-prefix. Titles only, not comment bodies.
+
 All Linear operations go through the registered `linear-server` MCP server. Describe the operation you want to perform in prose ("create a Linear issue with title X, body Y, team `{linear.team}`, state Triage, labels [...]") and pick the appropriate MCP tool at runtime; do not hardcode tool names.
 
 Reference Linear issues by their team-prefixed identifier (e.g. `PER-42`), not by URL.
@@ -21,7 +25,7 @@ A deep module (as opposed to a shallow module) is one which encapsulates a lot o
 
 Check with the user that these modules match their expectations. Check with the user which modules they want tests written for.
 
-3. Write the PRD using the template below, then publish it to Linear: create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with the title set to a short summary, the body set to the rendered template, and the assignee set to `me`. Apply two labels: `prd`, and one of `bug` or `enhancement` depending on whether the PRD describes a defect or new capability. Do not apply any other labels at creation — the Triage state is what makes the PRD show up in Linear's Triage inbox for explicit promotion.
+3. Write the PRD using the template below, then publish it to Linear: create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with the title set to a short summary prefixed with `[<repo>] `, the body set to the rendered template, and the assignee set to `me`. Apply two labels: `prd`, and one of `bug` or `enhancement` depending on whether the PRD describes a defect or new capability. Do not apply any other labels at creation — the Triage state is what makes the PRD show up in Linear's Triage inbox for explicit promotion.
 
 4. After the issue is created, output the Linear issue identifier (e.g. `PER-42`) and suggest the user run `linear-to-issues` next to break the PRD down into sub-issues. Do **not** offer a "promote to ready-for-agent" prompt — PRDs are always parents of sub-issues, never units of work themselves, and promotion happens at the end of `linear-to-issues` once sub-issues exist.
 

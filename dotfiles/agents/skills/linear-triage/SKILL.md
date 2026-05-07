@@ -9,6 +9,10 @@ Move issues on Linear through a small state machine of triage roles.
 
 This skill assumes the repo is tide-configured and uses Linear as its issue tracker. Team identity is read from `<repoRoot>/.tide/config.ts` (`linear.team`). If `.tide/config.ts` does not exist at the repo root, hard-stop and tell the user: "This skill requires `.tide/config.ts` at the repo root with a `linear.team` key. Run `tide init` (or add the file) before invoking `linear-triage`." Do not prompt for the team mid-flow.
 
+## Repo prefix on issue titles
+
+Prefix every created or retitled issue with `[<repo>] ` (e.g. `[dotfiles] store repo in linear issues`). Compute `<repo>` from `git remote get-url origin` — last path segment, strip trailing `.git`. If `origin` is missing, hard-stop: "This skill requires an `origin` git remote. Run `git remote add origin <url>` first." Idempotent — never double-prefix. Titles only, not comment bodies. On retitle, strip any matching leading prefix from the current title before applying the new one, then re-prefix.
+
 All Linear operations go through the registered `linear-server` MCP server. Describe the operation you want to perform in prose ("transition Linear issue `PER-42` from state Triage to Todo and add the `ready-for-agent` label", "post a comment on `PER-42` with body X") and pick the appropriate MCP tool at runtime; do not hardcode tool names.
 
 Reference Linear issues by their team-prefixed identifier (e.g. `PER-42`), not by URL.

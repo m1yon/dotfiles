@@ -9,6 +9,10 @@ Break a plan into independently-grabbable Linear sub-issues using vertical slice
 
 This skill assumes the repo is tide-configured and uses Linear as its issue tracker. Team identity is read from `<repoRoot>/.tide/config.ts` (`linear.team`). If `.tide/config.ts` does not exist at the repo root, hard-stop and tell the user: "This skill requires `.tide/config.ts` at the repo root with a `linear.team` key. Run `tide init` (or add the file) before invoking `linear-to-issues`." Do not prompt for the team mid-flow.
 
+## Repo prefix on issue titles
+
+Prefix every created or retitled issue with `[<repo>] ` (e.g. `[dotfiles] store repo in linear issues`). Compute `<repo>` from `git remote get-url origin` — last path segment, strip trailing `.git`. If `origin` is missing, hard-stop: "This skill requires an `origin` git remote. Run `git remote add origin <url>` first." Idempotent — never double-prefix. Applies to all new issues and sub-issues (regardless of parent) and title updates; titles only, not comment bodies.
+
 All Linear operations go through the registered `linear-server` MCP server. Describe the operation you want to perform in prose ("create a Linear issue with title X, body Y, team `{linear.team}`, state Triage, labels [...], parentId `<prd-id>`") and pick the appropriate MCP tool at runtime; do not hardcode tool names.
 
 Reference Linear issues by their team-prefixed identifier (e.g. `PER-42`), not by URL.
@@ -55,7 +59,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Publish the issues to Linear
 
-For each approved slice, create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with `parentId` set to the PRD's Linear issue id and the assignee set to `me` on the create call. Apply exactly one category label: `bug` or `enhancement`, depending on whether the slice fixes a defect or delivers new capability. Do **not** apply the `prd` label — sub-issues are not PRDs. Use the issue body template below.
+For each approved slice, create a Linear issue in team `{linear.team}` (read from `.tide/config.ts`), in Linear's built-in **Triage** state, with `parentId` set to the PRD's Linear issue id and the assignee set to `me` on the create call. Prefix the title with `[<repo>] ` (children are not exempt because the parent already carries it). Apply exactly one category label: `bug` or `enhancement`, depending on whether the slice fixes a defect or delivers new capability. Do **not** apply the `prd` label — sub-issues are not PRDs. Use the issue body template below.
 
 Publish issues in **dependency order** (blockers first) so that when you wire up the dependency graph the blocker's Linear id already exists.
 
