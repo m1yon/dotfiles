@@ -86,33 +86,6 @@
       "installedAt": "2026-04-28T16:23:00.491Z",
       "updatedAt": "2026-04-28T16:23:00.491Z"
     },
-    "to-issues": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/to-issues/SKILL.md",
-      "skillFolderHash": "2bf2903405724ce27038fc91f1c4304c4a63ae16",
-      "installedAt": "2026-04-28T16:23:00.491Z",
-      "updatedAt": "2026-04-28T21:10:15.314Z"
-    },
-    "to-prd": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/to-prd/SKILL.md",
-      "skillFolderHash": "63e890f04a30b69c9931615f36700fc45eb8d1ad",
-      "installedAt": "2026-04-28T16:23:00.491Z",
-      "updatedAt": "2026-04-28T21:10:16.676Z"
-    },
-    "triage": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/triage/SKILL.md",
-      "skillFolderHash": "de4f182c30876a2460ca307e2f601b9b892527e5",
-      "installedAt": "2026-04-28T16:23:00.492Z",
-      "updatedAt": "2026-04-28T21:10:18.036Z"
-    },
     "write-a-skill": {
       "source": "mattpocock/skills",
       "sourceType": "github",
