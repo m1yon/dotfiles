@@ -9,11 +9,17 @@ Move issues on Linear through a small state machine of triage roles.
 
 This skill assumes the repo is tide-configured and uses Linear as its issue tracker. Team identity is read from `<repoRoot>/.tide/config.ts` (`linear.team`). If `.tide/config.ts` does not exist at the repo root, hard-stop and tell the user: "This skill requires `.tide/config.ts` at the repo root with a `linear.team` key. Run `tide init` (or add the file) before invoking `linear-triage`." Do not prompt for the team mid-flow.
 
+## Repo prefix on issue titles
+
+Every Linear issue this skill creates (or whose title it updates) **must** have its title prefixed with `[<repo>] ` — bracket, repo name, bracket, single space, then the title (e.g. `[dotfiles] store repo in linear issues`). Compute `<repo>` at issue-creation time from `git remote get-url origin`: take the last path segment and strip a trailing `.git`. If `origin` is not configured, hard-stop and tell the user: "This skill requires an `origin` git remote so it can derive the `[<repo>] ` issue-title prefix. Run `git remote add origin <url>` before invoking this skill." The prefix is idempotent: if a title already starts with the exact computed `[<repo>] ` string, do not add a second one — applies to new issues, sub-issues (even children of an already-prefixed parent), and title updates. The convention covers titles only; comment bodies are unchanged. See [`docs/adr/0001-linear-issue-title-prefix.md`](../../../../docs/adr/0001-linear-issue-title-prefix.md) for rationale.
+
 All Linear operations go through the registered `linear-server` MCP server. Describe the operation you want to perform in prose ("transition Linear issue `PER-42` from state Triage to Todo and add the `ready-for-agent` label", "post a comment on `PER-42` with body X") and pick the appropriate MCP tool at runtime; do not hardcode tool names.
 
 Reference Linear issues by their team-prefixed identifier (e.g. `PER-42`), not by URL.
 
-When creating a new issue, set the assignee to `me` and explicitly set the workflow state to **Triage**. Linear does not default new issues to Triage — omitting the state lands them in Backlog and they will be missed by triage queries.
+When creating a new issue, set the assignee to `me` and explicitly set the workflow state to **Triage**. Linear does not default new issues to Triage — omitting the state lands them in Backlog and they will be missed by triage queries. Apply the `[<repo>] ` title prefix per the rule above.
+
+When the maintainer asks to re-title an existing issue, fetch the current title first, strip any leading `[<repo>] ` that matches the computed prefix, apply the maintainer's new title, then re-prefix. Never double-prefix; never drop the prefix.
 
 Every comment or issue posted to Linear during triage **must** start with this disclaimer:
 
