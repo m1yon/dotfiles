@@ -27,7 +27,7 @@
     };
     Service = {
       EnvironmentFile = config.sops.templates."openchamber-env".path;
-      ExecStart = "${config.home.profileDirectory}/bin/openchamber serve --foreground --host 127.0.0.1";
+      ExecStart = "${config.home.profileDirectory}/bin/openchamber serve --foreground --host 127.0.0.1 --port 41823";
       Restart = "on-failure";
       RestartSec = 10;
     };
