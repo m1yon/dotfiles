@@ -13,7 +13,7 @@ let
       ]
     }''${PATH:+:$PATH}
     export npm_config_libc=glibc
-    exec ${pkgs.bun}/bin/bunx --bun @openchamber/web@latest "$@"
+    exec ${pkgs.bun}/bin/bunx --bun @openchamber/web@1.10.4 "$@"
   '';
 in
 {

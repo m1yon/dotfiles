@@ -4,5 +4,6 @@
     ./hyprpaper.nix
     ./mako.nix
     ./onedrive.nix
+    ./openchamber.nix
   ];
 }
