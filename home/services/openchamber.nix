@@ -16,12 +16,8 @@
   systemd.user.services.openchamber = {
     Unit = {
       Description = "OpenChamber web UI";
-      After = [
-        "network-online.target"
-        "sops-nix.service"
-      ];
+      After = [ "network-online.target" ];
       Wants = [ "network-online.target" ];
-      Requires = [ "sops-nix.service" ];
       StartLimitIntervalSec = 60;
       StartLimitBurst = 3;
     };
