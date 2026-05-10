@@ -10,24 +10,6 @@
       "installedAt": "2026-04-19T20:31:17.159Z",
       "updatedAt": "2026-04-19T20:31:17.159Z"
     },
-    "find-skills": {
-      "source": "vercel-labs/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/vercel-labs/skills.git",
-      "skillPath": "skills/find-skills/SKILL.md",
-      "skillFolderHash": "3013fdeb8a11b10b1eb795ec3ae8bfca38f7c26d",
-      "installedAt": "2026-04-26T19:23:57.638Z",
-      "updatedAt": "2026-04-26T19:23:57.638Z"
-    },
-    "compress-prompt": {
-      "source": "jbrukh/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/jbrukh/skills.git",
-      "skillPath": "skills/compress-prompt/SKILL.md",
-      "skillFolderHash": "c904dcf4b8b896e9fa1972a6e8801498605a09f1",
-      "installedAt": "2026-04-27T18:15:26.462Z",
-      "updatedAt": "2026-04-27T18:15:26.462Z"
-    },
     "diagnose": {
       "source": "mattpocock/skills",
       "sourceType": "github",
@@ -92,16 +74,6 @@
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/productivity/write-a-skill/SKILL.md",
       "skillFolderHash": "2f252b35aa238879afc5a230ac30343708dee0b3",
-      "pluginName": "mattpocock-skills",
-      "installedAt": "2026-04-28T16:23:00.492Z",
-      "updatedAt": "2026-04-28T16:23:00.492Z"
-    },
-    "zoom-out": {
-      "source": "mattpocock/skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/mattpocock/skills.git",
-      "skillPath": "skills/engineering/zoom-out/SKILL.md",
-      "skillFolderHash": "6ecebabdea814d12888f56a611da7bf182b5fb26",
       "pluginName": "mattpocock-skills",
       "installedAt": "2026-04-28T16:23:00.492Z",
       "updatedAt": "2026-04-28T16:23:00.492Z"
