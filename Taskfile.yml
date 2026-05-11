@@ -1,7 +1,7 @@
 version: "3"
 
 vars:
-  FLAKE_DIR: ~/GitHub/dotfiles
+  FLAKE_DIR: "{{.TASKFILE_DIR}}"
 
 tasks:
   rebuild:
