@@ -1,5 +1,10 @@
 [
   {
+    "name": "OpenChamber",
+    "url": "https://control.meca-ai.com",
+    "workspace": "2"
+  },
+  {
     "name": "Linear",
     "url": "https://linear.app",
     "workspace": "8",
