@@ -34,7 +34,6 @@
     ./linear.nix
     ./localsend.nix
     ./opencode.nix
-    ./openchamber.nix
     ./playerctl.nix
     ./screenshot.nix
     ./sftp.nix
