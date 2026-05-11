@@ -4,5 +4,6 @@
   "permission": {
     "websearch": "allow",
     "codesearch": "allow"
-  }
+  },
+  "lsp": true
 }
