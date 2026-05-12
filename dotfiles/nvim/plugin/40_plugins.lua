@@ -312,3 +312,9 @@ later(function()
 		end,
 	})
 end)
+
+-- 99 AI =======================================================================
+later(function()
+	add("ThePrimeagen/99")
+	require("99").setup({})
+end)

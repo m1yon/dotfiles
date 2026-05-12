@@ -4,4 +4,5 @@
 .claude/sessions/
 progress-*.txt
 node_modules
+tmp
 

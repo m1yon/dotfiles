@@ -63,8 +63,10 @@ _G.Config.leader_group_clues = {
   { mode = 'n', keys = '<Leader>o', desc = '+Other' },
   { mode = 'n', keys = '<Leader>s', desc = '+Session' },
   { mode = 'n', keys = '<Leader>t', desc = '+Terminal' },
+  { mode = 'n', keys = '<Leader>a', desc = '+AI' },
   { mode = 'n', keys = '<Leader>v', desc = '+Visits' },
 
+  { mode = 'x', keys = '<Leader>a', desc = '+AI' },
   { mode = 'x', keys = '<Leader>g', desc = '+Git' },
   { mode = 'x', keys = '<Leader>l', desc = '+Language' },
   { mode = 'x', keys = '<Leader>n', desc = '+Notes' },
@@ -277,4 +279,50 @@ nmap_leader('vv', '<Cmd>lua MiniVisits.add_label("core")<CR>', 'Add "core" label
 nmap_leader('vV', '<Cmd>lua MiniVisits.remove_label("core")<CR>', 'Remove "core" label')
 nmap_leader('vl', '<Cmd>lua MiniVisits.add_label()<CR>', 'Add label')
 nmap_leader('vL', '<Cmd>lua MiniVisits.remove_label()<CR>', 'Remove label')
+
+-- a is for 'AI'. Uses the 99 plugin (ThePrimeagen/99).
+-- - `<Leader>as` - search project with AI, results go to quickfix
+-- - `<Leader>av` - vibe coding session
+-- - `<Leader>ao` - open last AI interaction
+-- - `<Leader>al` - view request logs
+-- - `<Leader>ax` - cancel all in-flight AI requests
+-- - `<Leader>ac` - clear previous request history
+-- - `<Leader>aw` - set current work description
+-- - `<Leader>aW` - search what's left to complete the work
+-- - `<Leader>am` - select AI model via picker
+-- - `<Leader>ap` - select AI provider via picker
+-- - `<Leader>ae` - edit visual selection with AI (visual mode)
+local select_model = function()
+	local pu = require("99.extensions.pickers")
+	pu.get_models(nil, function(models, current)
+		vim.ui.select(models, {
+			prompt = "99: Select Model (current: " .. current .. ")",
+		}, function(choice)
+			if choice then pu.on_model_selected(choice) end
+		end)
+	end)
+end
+
+local select_provider = function()
+	local pu = require("99.extensions.pickers")
+	local info = pu.get_providers()
+	vim.ui.select(info.names, {
+		prompt = "99: Select Provider (current: " .. info.current .. ")",
+	}, function(choice)
+		if choice then pu.on_provider_selected(choice, info.lookup) end
+	end)
+end
+
+nmap_leader('ac', '<Cmd>lua require("99").clear_previous_requests()<CR>', 'Clear history')
+nmap_leader('al', '<Cmd>lua require("99").view_logs()<CR>', 'Logs')
+nmap_leader('am', select_model, 'Model')
+nmap_leader('ao', '<Cmd>lua require("99").open()<CR>', 'Open last')
+nmap_leader('ap', select_provider, 'Provider')
+nmap_leader('as', '<Cmd>lua require("99").search()<CR>', 'Search')
+nmap_leader('av', '<Cmd>lua require("99").vibe()<CR>', 'Vibe')
+nmap_leader('aw', '<Cmd>lua require("99").Extensions.Worker.set_work()<CR>', 'Set work')
+nmap_leader('aW', '<Cmd>lua require("99").Extensions.Worker.search()<CR>', 'Work search')
+nmap_leader('ax', '<Cmd>lua require("99").stop_all_requests()<CR>', 'Cancel all')
+
+xmap_leader('ae', '<Cmd>lua require("99").visual()<CR>', 'Edit selection')
 -- stylua: ignore end
