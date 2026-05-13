@@ -58,12 +58,6 @@ tasks:
       - nix flake update nixpkgs --flake {{.FLAKE_DIR}}
       - task: rebuild
 
-  update-tide:
-    desc: Update the tide flake input and rebuild
-    cmds:
-      - nix flake update tide --flake {{.FLAKE_DIR}}
-      - task: rebuild
-
   onedrive-reauth:
     desc: "Re-authenticate an OneDrive instance (usage: task onedrive-reauth -- personal|carecoordinators)"
     cmds:

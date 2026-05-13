@@ -5,5 +5,6 @@
     "websearch": "allow",
     "codesearch": "allow"
   },
-  "lsp": true
+  "lsp": true,
+  "plugin": ["@mohak34/opencode-notifier@latest"]
 }

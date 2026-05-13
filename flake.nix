@@ -43,9 +43,6 @@
       url = "github:Sawrz/t3code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    tide = {
-      url = "github:m1yon/tide";
-    };
   };
 
   outputs =

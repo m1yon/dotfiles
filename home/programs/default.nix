@@ -44,7 +44,6 @@
     ./starship.nix
     ./tealdeer.nix
     ./t3code.nix
-    ./tide.nix
     ./todoist.nix
     ./zsh.nix
     ./yazi.nix
