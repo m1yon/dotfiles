@@ -25,6 +25,7 @@
     ./hidpi.nix
     ./nixfmt.nix
     ./neovim.nix
+    ./ntfy.nix
     ./obsidian.nix
     ./onlyoffice.nix
     ./openai.nix
