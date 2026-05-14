@@ -28,7 +28,6 @@
     ./ntfy.nix
     ./obsidian.nix
     ./onlyoffice.nix
-    ./openai.nix
     ./lazycommit.nix
     ./lazydocker.nix
     ./lazygit.nix

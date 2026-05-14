@@ -1,0 +1,10 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "autoupdate": false,
+  "permission": {
+    "websearch": "allow",
+    "codesearch": "allow"
+  },
+  "lsp": true,
+  "plugin": ["@mohak34/opencode-notifier@latest"]
+}
