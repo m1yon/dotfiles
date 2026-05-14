@@ -7,7 +7,7 @@ description: 'Fast agent specialized for exploring codebases. Use this when you
   the desired thoroughness level: "quick" for basic searches, "medium" for
   moderate exploration, or "very thorough" for comprehensive analysis across
   multiple locations and naming conventions.'
-model: openai/gpt-5.4-nano
+model: opencode/gpt-5.4-nano
 permission:
   "*": deny
   doom_loop: ask
