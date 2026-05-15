@@ -1,1 +1,1 @@
-**IMPORTANT**: do NOT add comments to code.
+**IMPORTANT**: do NOT add comments to code unless explicitly told by the user.
