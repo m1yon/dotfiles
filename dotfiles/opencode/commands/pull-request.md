@@ -1,11 +1,10 @@
 ---
-name: pull-request
-description: Write a pull request for the current branch with the body focused on public interface changes. Use when the user wants to create a PR, write a PR description, open a pull request, or update a PR body.
+description: Write or update a pull request for the current branch, focused on public interface changes.
 ---
 
 # Pull Request
 
-Write a PR for the current branch. The body emphasizes what changed at the **public interface** — the surface other modules depend on — over private implementation churn.
+Write a PR for the current branch. The body emphasizes what changed at the **public interface** - the surface other modules depend on - over private implementation churn.
 
 This mirrors Ousterhout's view: interface change is the change that matters to callers. Deep modules expose little; a good PR description reflects that by spending most of its words on the small surface that actually shifted, not the large body of internals that did.
 
@@ -24,11 +23,11 @@ If the working tree is dirty, show the uncommitted files and ask the user: stage
 
 ### 2. Ask draft or ready-for-review
 
-Use the `AskUserQuestion` tool early to ask: **draft or ready-for-review?** Do this before drafting the body so the answer is ready when it's time to push.
+Ask the user early: **draft or ready-for-review?** Do this before drafting the body so the answer is ready when it's time to push.
 
 ### 3. Find the linked PRD issue
 
-Check the conversation context for a referenced GitHub issue (PRD). If none, list recent issues and inspect titles to find the matching PRD (PRDs are titled with a `PRD:` prefix, but match on meaning — the prefix may be missing or vary):
+Check the conversation context for a referenced GitHub issue (PRD). If none, list recent issues and inspect titles to find the matching PRD (PRDs are titled with a `PRD:` prefix, but match on meaning - the prefix may be missing or vary):
 
 ```bash
 gh issue list --json number,title,url --limit 20
@@ -66,19 +65,19 @@ Before drafting, note for yourself:
 - Did it **widen** one (more public entry points, more for callers to learn)?
 - Did it **carve out** a new module from an existing one?
 
-Mention this in "The Solution" if relevant — it's the highest-signal framing for an architecturally-minded reader.
+Mention this in "The Solution" if relevant - it's the highest-signal framing for an architecturally-minded reader.
 
 ### 7. Draft the title
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) style: `<type>(<scope>): <subject>`.
 
 - **type**: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `build`, `ci`, `chore`
-- **scope**: optional — the module, package, or area (e.g., `nvim`, `auth`, `parser`)
-- **subject**: imperative, lowercase, no trailing period, ≤ ~70 chars total
+- **scope**: optional - the module, package, or area (e.g., `nvim`, `auth`, `parser`)
+- **subject**: imperative, lowercase, no trailing period, <= ~70 chars total
 
 Add `!` after the type/scope for breaking public-interface changes: `feat(parser)!: drop legacy ParseURL signature`.
 
-Pick the type from the dominant change in the diff — if the PR is mostly a fix with incidental refactor, it's `fix`.
+Pick the type from the dominant change in the diff - if the PR is mostly a fix with incidental refactor, it's `fix`.
 
 ### 8. Build "Files changed" anchor links
 
@@ -96,7 +95,7 @@ Render as:
 <sub>**Files changed:** [`generator.go`](<pr_url>/files#diff-<sha>), [`filename.go`](<pr_url>/files#diff-<sha>)</sub>
 ```
 
-Use the file's basename (not the full path) as the link text — the package heading already supplies the directory.
+Use the file's basename (not the full path) as the link text - the package heading already supplies the directory.
 
 ### 9. Draft the body
 
@@ -105,14 +104,14 @@ Use this template exactly:
 ````md
 ## 🚩 The Problem
 
-[2-4 concise bullet points. Each bullet ≤ 1 line. The user-facing or developer-facing problem — what was broken, missing, or painful before. Skimmable at a glance.]
+[2-4 concise bullet points. Each bullet <= 1 line. The user-facing or developer-facing problem - what was broken, missing, or painful before. Skimmable at a glance.]
 
 * Bullet one
 * Bullet two
 
 ## 💡 The Solution
 
-[2-4 concise bullet points. Each bullet ≤ 1 line. The high-level approach. Mention deepening / widening / extraction if it applies. Skimmable at a glance.]
+[2-4 concise bullet points. Each bullet <= 1 line. The high-level approach. Mention deepening / widening / extraction if it applies. Skimmable at a glance.]
 
 * Bullet one
 * Bullet two
@@ -154,11 +153,11 @@ Use this template exactly:
 Closes #<num>
 ````
 
-Keep "The Problem" and "The Fix" as short, glanceable bullet points. Resist narrating every commit. Omit the `Closes` line if no PRD applies.
+Keep "The Problem" and "The Solution" as short, glanceable bullet points. Resist narrating every commit. Omit the `Closes` line if no PRD applies.
 
 ### 10. Push and create (or update)
 
-Do not confirm the title or body with the user — just create the PR. Use the draft/ready answer from step 2. The base branch is `dev` unless the user said otherwise.
+Do not confirm the title or body with the user - just create the PR. Use the draft/ready answer from step 2. The base branch is `dev` unless the user said otherwise.
 
 For a new PR: create it with placeholder anchor URLs (or omit the Files-changed line), capture the returned URL, then `gh pr edit` to inject the real `<pr_url>/files#diff-<sha>` links.
 
@@ -176,7 +175,7 @@ Print the PR URL when done.
 
 ## Diff format for interface changes
 
-Use fenced ```diff blocks. Strip implementations — show signatures only.
+Use fenced ```diff blocks. Strip implementations - show signatures only.
 
 Separate logical groups (different symbols, removals vs. additions, related families) with blank lines. A wall of contiguous `-`/`+` lines is hard to scan; whitespace gives the eye anchor points.
 
@@ -211,7 +210,7 @@ Good:
 ```
 ````
 
-Bad — bodies included, private helper leaked in:
+Bad - bodies included, private helper leaked in:
 
 ````md
 ```diff
@@ -233,4 +232,4 @@ For non-code interfaces (HTTP routes, CLI flags, config keys), use a similar bef
 
 - Never add `Co-Authored-By` or "Generated with Claude Code" footers unless asked.
 - Always pass `--json` on `gh` subcommands that support it.
-- Don't run tests/lint here; that's the author's job before invoking this skill.
+- Don't run tests/lint here; that's the author's job before invoking this command.

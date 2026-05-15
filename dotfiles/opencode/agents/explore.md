@@ -30,7 +30,6 @@ permission:
     /home/michael/.claude/skills/zoom-out/*: allow
     /home/michael/.claude/skills/architecture-diagram/*: allow
     /home/michael/.claude/skills/grill-with-docs/*: allow
-    /home/michael/.claude/skills/pull-request/*: allow
     /home/michael/.claude/skills/find-skills/*: allow
     /home/michael/.agents/skills/linear-triage/*: allow
     /home/michael/.agents/skills/ralph-issues/*: allow
@@ -47,7 +46,6 @@ permission:
     /home/michael/.agents/skills/architecture-diagram/*: allow
     /home/michael/.agents/skills/setup-matt-pocock-skills/*: allow
     /home/michael/.agents/skills/grill-with-docs/*: allow
-    /home/michael/.agents/skills/pull-request/*: allow
     /home/michael/.agents/skills/find-skills/*: allow
     /home/michael/GitHub/dotfiles/.claude/skills/sops/*: allow
     /home/michael/GitHub/dotfiles/.agents/skills/sops/*: allow
