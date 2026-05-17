@@ -1,6 +1,17 @@
 {
   "version": 3,
-  "skills": {},
+  "skills": {
+    "setup-matt-pocock-skills": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+      "skillFolderHash": "77638955bebe492948244f1338e54ca1a9445c29",
+      "pluginName": "mattpocock-skills",
+      "installedAt": "2026-05-15T20:47:42.667Z",
+      "updatedAt": "2026-05-15T20:47:42.667Z"
+    }
+  },
   "dismissed": {
     "findSkillsPrompt": true
   },
@@ -11,6 +22,7 @@
     "codex",
     "cursor",
     "deepagents",
+    "dexto",
     "firebender",
     "gemini-cli",
     "github-copilot",
