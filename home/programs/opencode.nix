@@ -15,6 +15,10 @@ in
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
   ];
 
+  home.sessionVariables = {
+    OPENCODE_ENABLE_EXA = "true";
+  };
+
   home.file = {
     ".config/opencode/".source = outOfStore "${dotfiles}/opencode";
   };
