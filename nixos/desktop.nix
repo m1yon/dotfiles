@@ -50,12 +50,6 @@
     fi
   '';
 
-  services.logind.settings.Login = {
-    HandleLidSwitch = "suspend";
-    HandleLidSwitchExternalPower = "ignore";
-    HandleLidSwitchDocked = "ignore";
-  };
-
   programs.thunar = {
     enable = true;
     plugins = with pkgs.xfce; [
