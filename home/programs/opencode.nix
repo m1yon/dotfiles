@@ -17,6 +17,7 @@ in
 
   home.sessionVariables = {
     OPENCODE_ENABLE_EXA = "true";
+    OPENCODE_EXPERIMENTAL_WORKSPACES = "true";
   };
 
   home.file = {
