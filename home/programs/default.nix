@@ -15,7 +15,6 @@
     ./datagrip.nix
     ./discord.nix
     ./docker.nix
-    ./easyeffects.nix
     ./eza.nix
     ./fzf.nix
     ./git.nix
