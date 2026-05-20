@@ -40,6 +40,7 @@
       };
 
       push.autoSetupRemote = true;
+      fetch.prune = true;
 
       delta = {
         navigate = true;
