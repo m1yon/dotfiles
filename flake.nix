@@ -65,6 +65,9 @@
       };
       unstableOverlay = final: prev: {
         yazi = unstablePkgs.yazi;
+        jetbrains = prev.jetbrains // {
+          datagrip = unstablePkgs.jetbrains.datagrip;
+        };
       };
     in
     {
