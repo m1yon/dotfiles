@@ -6,7 +6,10 @@
     "codesearch": "allow"
   },
   "lsp": true,
-  "plugin": ["@mohak34/opencode-notifier@latest"],
+  "plugin": [
+    "@mohak34/opencode-notifier@latest",
+    "@tarquinen/opencode-dcp@latest"
+  ],
   "provider": {
     "openai": {
       "options": {
