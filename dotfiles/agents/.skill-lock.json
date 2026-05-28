@@ -19,6 +19,15 @@
       "skillFolderHash": "c1470a475a0472fceda2401ea6763708a91680a8",
       "installedAt": "2026-05-17T18:05:20.339Z",
       "updatedAt": "2026-05-17T18:05:20.339Z"
+    },
+    "thermo-nuclear-code-quality-review": {
+      "source": "cursor/plugins",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/cursor/plugins.git",
+      "skillPath": "thermos/skills/thermo-nuclear-code-quality-review/SKILL.md",
+      "skillFolderHash": "d9c8935dd560b3b6f5941247d04a1843f8c7cc35",
+      "installedAt": "2026-05-28T16:06:56.434Z",
+      "updatedAt": "2026-05-28T16:06:56.434Z"
     }
   },
   "dismissed": {
@@ -38,6 +47,6 @@
     "kimi-cli",
     "opencode",
     "warp",
-    "claude-code"
+    "zed"
   ]
 }
