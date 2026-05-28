@@ -4,9 +4,8 @@
   "permission": {
     "websearch": "allow",
     "codesearch": "allow",
-    "read": {
-      "~/.effect": "allow",
-      "~/.effect/**": "allow"
+    "external_directory": {
+      "/home/michael/.effect/*": "allow"
     }
   },
   "lsp": true,
