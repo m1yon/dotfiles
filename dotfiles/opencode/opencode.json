@@ -3,7 +3,11 @@
   "autoupdate": false,
   "permission": {
     "websearch": "allow",
-    "codesearch": "allow"
+    "codesearch": "allow",
+    "read": {
+      "~/.effect": "allow",
+      "~/.effect/**": "allow"
+    }
   },
   "lsp": true,
   "plugin": [
