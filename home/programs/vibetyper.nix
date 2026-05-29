@@ -1,4 +1,8 @@
-{ pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 let
   vibetyper = pkgs.appimageTools.wrapType2 {
     pname = "vibetyper";
@@ -28,4 +32,19 @@ in
     vibetyper
     pkgs.wl-clipboard
   ];
+
+  home.activation.disableVibeTyperAutoUpdates = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+    config_file="${config.xdg.configHome}/vibe-typer/config.json"
+    if [ -f "$config_file" ]; then
+      tmp_file="$(${pkgs.coreutils}/bin/mktemp)"
+      if ${pkgs.jq}/bin/jq '.user.automaticUpdatesEnabled = false' "$config_file" > "$tmp_file"; then
+        ${pkgs.coreutils}/bin/mv "$tmp_file" "$config_file"
+      else
+        ${pkgs.coreutils}/bin/rm -f "$tmp_file"
+      fi
+    else
+      ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$config_file")"
+      ${pkgs.coreutils}/bin/printf '%s\n' '{"version":4,"user":{"automaticUpdatesEnabled":false}}' > "$config_file"
+    fi
+  '';
 }

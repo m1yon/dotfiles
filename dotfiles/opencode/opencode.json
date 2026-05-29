@@ -5,7 +5,8 @@
     "websearch": "allow",
     "codesearch": "allow",
     "external_directory": {
-      "/home/michael/.effect/*": "allow"
+      "/home/michael/.effect/*": "allow",
+      "/nix/store/*": "allow"
     }
   },
   "lsp": true,
