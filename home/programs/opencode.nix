@@ -20,6 +20,24 @@ in
     OPENCODE_EXPERIMENTAL_WORKSPACES = "true";
   };
 
+  sops.secrets = {
+    ynab_api_token.sopsFile = ../../secrets/ynab.yaml;
+    ynab_budget_id.sopsFile = ../../secrets/ynab.yaml;
+  };
+
+  sops.templates."opencode-ynab-env" = {
+    content = ''
+      export YNAB_API_TOKEN="${config.sops.placeholder.ynab_api_token}"
+      export YNAB_BUDGET_ID="${config.sops.placeholder.ynab_budget_id}"
+    '';
+  };
+
+  programs.zsh.initContent = ''
+    [ -f "${config.sops.templates."opencode-ynab-env".path}" ] && source "${
+      config.sops.templates."opencode-ynab-env".path
+    }"
+  '';
+
   home.file = {
     ".config/opencode/".source = outOfStore "${dotfiles}/opencode";
   };

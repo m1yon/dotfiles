@@ -10,6 +10,20 @@
     }
   },
   "lsp": true,
+  "mcp": {
+    "ynab": {
+      "type": "local",
+      "command": [
+        "bunx",
+        "github:calebl/ynab-mcp-server#36634cf98bdbea6c86dd237f1b048a51310559b4"
+      ],
+      "enabled": true,
+      "environment": {
+        "YNAB_API_TOKEN": "{env:YNAB_API_TOKEN}",
+        "YNAB_BUDGET_ID": "{env:YNAB_BUDGET_ID}"
+      }
+    }
+  },
   "plugin": [
     "@mohak34/opencode-notifier@latest",
     "@tarquinen/opencode-dcp@latest"
