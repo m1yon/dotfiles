@@ -6,6 +6,7 @@
     "codesearch": "allow",
     "external_directory": {
       "/home/michael/.effect/*": "allow",
+      "/home/michael/.effect-best-practices/*": "allow",
       "/nix/store/*": "allow"
     }
   },
