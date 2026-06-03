@@ -10,7 +10,7 @@
 
   # Ensure dynamically-linked apps (e.g. miniaudio/malgo) can find ALSA + PipeWire plugin.
   environment.sessionVariables = {
-    LD_LIBRARY_PATH = "${pkgs.alsa-lib}/lib";
+    LD_LIBRARY_PATH = [ "${pkgs.alsa-lib}/lib" ];
     ALSA_PLUGIN_DIR = "${pkgs.pipewire}/lib/alsa-lib";
   };
 

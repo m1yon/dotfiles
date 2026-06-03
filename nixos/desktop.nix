@@ -76,6 +76,14 @@
     ];
   };
 
+  hardware.sane = {
+    enable = true;
+    extraBackends = with pkgs; [
+      epsonscan2
+      sane-airscan
+    ];
+  };
+
   services.avahi = {
     enable = true;
     nssmdns4 = true;
@@ -95,6 +103,7 @@
     unzip
     file-roller
     brightnessctl
+    simple-scan
   ];
 
   fonts.packages = with pkgs; [
