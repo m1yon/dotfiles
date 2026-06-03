@@ -141,7 +141,7 @@ now_if_args(function()
 		"yamlls",
 		"tailwindcss",
 		"eslint",
-		"vtsls",
+		"tsgo",
 		"taplo",
 		"nixd",
 	})

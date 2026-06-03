@@ -9,6 +9,10 @@
 let
   dotfiles = "${nixConfigDir}/dotfiles";
   outOfStore = config.lib.file.mkOutOfStoreSymlink;
+  unstablePkgs = import inputs.nixpkgs-unstable {
+    system = pkgs.stdenv.hostPlatform.system;
+    config.allowUnfree = true;
+  };
 in
 {
   imports = [
@@ -26,7 +30,7 @@ in
       yaml-language-server
       tailwindcss-language-server
       vscode-langservers-extracted
-      vtsls
+      unstablePkgs.typescript-go
       taplo
       nixd
       golangci-lint
