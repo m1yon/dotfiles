@@ -37,6 +37,7 @@ in
       gofumpt
       gotools
       golines
+      ripgrep
       prettierd
       stylua
       ruff
