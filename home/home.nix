@@ -25,8 +25,10 @@ in
   };
 
   home.packages = [
+    pkgs.cups
     pkgs.file
     pkgs.ripgrep
+    pkgs.system-config-printer
   ];
 
   imports = [

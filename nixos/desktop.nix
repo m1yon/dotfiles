@@ -63,7 +63,24 @@
   services.gvfs.enable = true;
   services.tumbler.enable = true;
 
-  services.printing.enable = true;
+  services.printing = {
+    enable = true;
+    webInterface = true;
+    browsed.enable = true;
+    drivers = with pkgs; [
+      brlaser
+      epson-escpr
+      gutenprint
+      hplip
+      splix
+    ];
+  };
+
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
   # Vibetyper: uinput access for virtual input devices and hotkey detection
   hardware.uinput.enable = true;
