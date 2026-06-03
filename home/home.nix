@@ -26,6 +26,7 @@ in
 
   home.packages = [
     pkgs.file
+    pkgs.ripgrep
   ];
 
   imports = [
