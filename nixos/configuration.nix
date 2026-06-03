@@ -6,6 +6,7 @@
     ./boot.nix
     ./networking.nix
     ./desktop.nix
+    ./printing-scanning.nix
     ./audio.nix
     ./bluetooth.nix
     ./users.nix

@@ -15,8 +15,6 @@
       "video"
       "input"
       "uinput"
-      "scanner"
-      "lp"
     ];
     packages = with pkgs; [ ];
     shell = pkgs.zsh;
