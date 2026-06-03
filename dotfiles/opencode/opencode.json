@@ -18,16 +18,23 @@
         "bunx",
         "github:calebl/ynab-mcp-server#36634cf98bdbea6c86dd237f1b048a51310559b4"
       ],
-      "enabled": true,
+      "enabled": false,
       "environment": {
         "YNAB_API_TOKEN": "{env:YNAB_API_TOKEN}",
         "YNAB_BUDGET_ID": "{env:YNAB_BUDGET_ID}"
       }
+    },
+    "sentry": {
+      "type": "remote",
+      "url": "https://mcp.sentry.dev/mcp",
+      "enabled": true,
+      "oauth": {}
     }
   },
   "plugin": [
     "@mohak34/opencode-notifier@latest",
-    "@tarquinen/opencode-dcp@latest"
+    "@tarquinen/opencode-dcp@latest",
+    "@datadog/opencode-plugin"
   ],
   "provider": {
     "openai": {
