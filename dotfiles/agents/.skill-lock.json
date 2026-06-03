@@ -28,15 +28,6 @@
       "skillFolderHash": "d9c8935dd560b3b6f5941247d04a1843f8c7cc35",
       "installedAt": "2026-05-28T16:06:56.434Z",
       "updatedAt": "2026-05-28T16:06:56.434Z"
-    },
-    "effect-ts": {
-      "source": "paulrberg/agent-skills",
-      "sourceType": "github",
-      "sourceUrl": "https://github.com/paulrberg/agent-skills.git",
-      "skillPath": "skills/effect-ts/SKILL.md",
-      "skillFolderHash": "2aa01d2b0441a8807cbd5e12a89fe7e2fc219715",
-      "installedAt": "2026-06-02T16:38:58.438Z",
-      "updatedAt": "2026-06-02T16:38:58.438Z"
     }
   },
   "dismissed": {

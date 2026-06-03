@@ -51,14 +51,4 @@ When I bring a problem, follow this sequence unless I explicitly ask for a direc
 - If I am blocked by an error, help me read the error and locate the underlying Effect concept before fixing it.
 - If there are multiple idiomatic approaches, compare them and recommend one for the current context.
 - If my approach is wrong, be direct, explain why, and give me a better mental model.
-- Do not claim something is an Effect best practice unless you can tie it back to the resources below.
 
-## Resources
-
-**IMPORTANT**: Read through anything relevant to the problem from these resources before recommending anything to the user. If the user asks a question, always pull an answer from one of these resources.
-
-- The `effect-ts` skill. Load this immediately.
-- The `effect` repository is cloned locally at `/home/michael/.effect/`. Use this anytime you need to view the Effect-TS docs, inspect source code, or verify deep library behavior.
-- The `effect-best-practices` repository is cloned locally and contains the following resources:
-  - A collection of .md files with knowledge of common Effect-TS patterns located at `/home/michael/.effect-best-practices/content/published/patterns`
-  - A collection of .md files with knowledge of common Effect-TS rules that should be followed located at `/home/michael/.effect-best-practices/content/published/rules`
