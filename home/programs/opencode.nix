@@ -13,6 +13,7 @@ in
 {
   home.packages = [
     inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.opencode
+    pkgs.nodejs
   ];
 
   home.sessionVariables = {
@@ -25,16 +26,18 @@ in
     ynab_budget_id.sopsFile = ../../secrets/ynab.yaml;
   };
 
-  sops.templates."opencode-ynab-env" = {
+  sops.templates."opencode-mcp-env" = {
     content = ''
       export YNAB_API_TOKEN="${config.sops.placeholder.ynab_api_token}"
       export YNAB_BUDGET_ID="${config.sops.placeholder.ynab_budget_id}"
+      export XERO_CLIENT_ID="${config.sops.placeholder.xero_client_id}"
+      export XERO_CLIENT_SECRET="${config.sops.placeholder.xero_client_secret}"
     '';
   };
 
   programs.zsh.initContent = ''
-    [ -f "${config.sops.templates."opencode-ynab-env".path}" ] && source "${
-      config.sops.templates."opencode-ynab-env".path
+    [ -f "${config.sops.templates."opencode-mcp-env".path}" ] && source "${
+      config.sops.templates."opencode-mcp-env".path
     }"
   '';
 

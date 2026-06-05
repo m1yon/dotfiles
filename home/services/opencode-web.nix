@@ -10,6 +10,8 @@
     path = "${config.xdg.configHome}/opencode/env";
     content = ''
       OPENCODE_SERVER_PASSWORD=${config.sops.placeholder.opencode_web_ui_password}
+      XERO_CLIENT_ID=${config.sops.placeholder.xero_client_id}
+      XERO_CLIENT_SECRET=${config.sops.placeholder.xero_client_secret}
     '';
   };
 
