@@ -315,6 +315,18 @@ end)
 
 -- 99 AI =======================================================================
 later(function()
+	add("zbirenbaum/copilot.lua")
+	require("copilot").setup({
+		suggestion = {
+			auto_trigger = true,
+			keymap = {
+				accept = "<C-a>",
+			},
+		},
+	})
+end)
+
+later(function()
 	add("ThePrimeagen/99")
 	require("99").setup({})
 end)

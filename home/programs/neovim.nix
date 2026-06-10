@@ -41,6 +41,7 @@ in
     enable = true;
     extraPackages = with pkgs; [
       gcc
+      nodejs
       gopls
       lua-language-server
       basedpyright
