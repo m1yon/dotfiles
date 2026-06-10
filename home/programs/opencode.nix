@@ -30,8 +30,6 @@ in
     content = ''
       export YNAB_API_TOKEN="${config.sops.placeholder.ynab_api_token}"
       export YNAB_BUDGET_ID="${config.sops.placeholder.ynab_budget_id}"
-      export XERO_CLIENT_ID="${config.sops.placeholder.xero_client_id}"
-      export XERO_CLIENT_SECRET="${config.sops.placeholder.xero_client_secret}"
     '';
   };
 

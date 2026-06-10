@@ -94,17 +94,6 @@ in
           type = "http";
           url = "https://mcp.mercury.com/mcp";
         };
-        xero = {
-          command = "npx";
-          args = [
-            "-y"
-            "@xeroapi/xero-mcp-server@latest"
-          ];
-          env = {
-            XERO_CLIENT_ID = config.sops.placeholder.xero_client_id;
-            XERO_CLIENT_SECRET = config.sops.placeholder.xero_client_secret;
-          };
-        };
         voicemode = {
           command = "${voicemode}/bin/voicemode";
           args = [ ];

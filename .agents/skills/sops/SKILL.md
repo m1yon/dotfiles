@@ -86,7 +86,7 @@ Instruct the user to run:
 task sops-edit -- <filename>.yaml
 ```
 
-Existing files: `aws.yaml`, `linear.yaml`, `onedrive.yaml`, `sftp.yaml`, `xero.yaml`, `ssh_config`.
+Existing files: `aws.yaml`, `linear.yaml`, `onedrive.yaml`, `sftp.yaml`, `ssh_config`.
 
 ## Key rules
 
