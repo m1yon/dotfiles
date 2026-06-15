@@ -34,6 +34,16 @@
     "@tarquinen/opencode-dcp@latest",
     "@datadog/opencode-plugin"
   ],
+  "references": {
+    "effect": {
+      "repository": "𝚐𝚒𝚝𝚑𝚞𝚋.𝚌𝚘𝚖/𝙴𝚏𝚏𝚎𝚌𝚝-𝚃𝚂/𝚎𝚏𝚏𝚎𝚌𝚝-𝚜𝚖𝚘𝚕",
+      "description": "use this when there's a question about effect or you need to know how to do something in effect."
+    },
+    "opencode-local": {
+      "repository": "~/.local/share/opencode",
+      "description": "This folder contains your logs and your database. You can use it to introspect yourself and figure out any issues."
+    }
+  },
   "provider": {
     "openai": {
       "options": {
