@@ -5,7 +5,9 @@
     "websearch": "allow",
     "codesearch": "allow",
     "external_directory": {
-      "/nix/store/*": "allow"
+      "/nix/store/*": "allow",
+      "~/.local/share/opencode/repos/*": "allow",
+      "~/My Vault/*": "allow"
     }
   },
   "lsp": true,
@@ -29,19 +31,18 @@
       "oauth": {}
     }
   },
-  "plugin": [
-    "@mohak34/opencode-notifier@latest",
-    "@tarquinen/opencode-dcp@latest",
-    "@datadog/opencode-plugin"
-  ],
+  "plugin": ["@mohak34/opencode-notifier@latest"],
   "references": {
     "effect": {
-      "repository": "𝚐𝚒𝚝𝚑𝚞𝚋.𝚌𝚘𝚖/𝙴𝚏𝚏𝚎𝚌𝚝-𝚃𝚂/𝚎𝚏𝚏𝚎𝚌𝚝-𝚜𝚖𝚘𝚕",
-      "description": "use this when there's a question about effect or you need to know how to do something in effect."
+      "repository": "Effect-TS/effect-smol",
+      "description": "Use this when there's a question about effect or you need to know how to do something in effect."
     },
     "opencode-local": {
-      "repository": "~/.local/share/opencode",
+      "path": "~/.local/share/opencode",
       "description": "This folder contains your logs and your database. You can use it to introspect yourself and figure out any issues."
+    },
+    "obsidian": {
+      "path": "~/My Vault"
     }
   },
   "provider": {

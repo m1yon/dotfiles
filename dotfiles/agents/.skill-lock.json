@@ -38,6 +38,25 @@
       "pluginName": "mattpocock-skills",
       "installedAt": "2026-06-09T20:26:30.030Z",
       "updatedAt": "2026-06-09T20:26:30.030Z"
+    },
+    "improve-codebase-architecture": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+      "skillFolderHash": "688c17ec27fe9309d84987716aca37b5ce7f3a88",
+      "pluginName": "mattpocock-skills",
+      "installedAt": "2026-06-15T22:02:24.822Z",
+      "updatedAt": "2026-06-15T22:02:24.822Z"
+    },
+    "obsidian-vault": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/mattpocock/skills.git",
+      "skillPath": "skills/personal/obsidian-vault/SKILL.md",
+      "skillFolderHash": "1e814d168a215762391895aee58f4de06c8e3b7f",
+      "installedAt": "2026-06-17T22:40:19.684Z",
+      "updatedAt": "2026-06-17T22:40:19.684Z"
     }
   },
   "dismissed": {
