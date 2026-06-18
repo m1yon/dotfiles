@@ -6,10 +6,9 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
-      "skillFolderHash": "77638955bebe492948244f1338e54ca1a9445c29",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "8d7fc1569ee7c4a50827091a795daa490212506d",
       "installedAt": "2026-05-15T20:47:42.667Z",
-      "updatedAt": "2026-05-15T20:47:42.667Z"
+      "updatedAt": "2026-06-18T20:47:52.967Z"
     },
     "agent-browser": {
       "source": "vercel-labs/agent-browser",
@@ -18,7 +17,7 @@
       "skillPath": "skills/agent-browser/SKILL.md",
       "skillFolderHash": "c1470a475a0472fceda2401ea6763708a91680a8",
       "installedAt": "2026-05-17T18:05:20.339Z",
-      "updatedAt": "2026-05-17T18:05:20.339Z"
+      "updatedAt": "2026-06-18T20:48:44.274Z"
     },
     "thermo-nuclear-code-quality-review": {
       "source": "cursor/plugins",
@@ -34,20 +33,18 @@
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/productivity/teach/SKILL.md",
-      "skillFolderHash": "f04dec872f386f9b6db0cbb88fcb6605a151d34c",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "3b6a4245e2aaeacb308ba6175ab3e7f2e43b0c47",
       "installedAt": "2026-06-09T20:26:30.030Z",
-      "updatedAt": "2026-06-09T20:26:30.030Z"
+      "updatedAt": "2026-06-18T20:47:54.492Z"
     },
     "improve-codebase-architecture": {
       "source": "mattpocock/skills",
       "sourceType": "github",
       "sourceUrl": "https://github.com/mattpocock/skills.git",
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
-      "skillFolderHash": "688c17ec27fe9309d84987716aca37b5ce7f3a88",
-      "pluginName": "mattpocock-skills",
+      "skillFolderHash": "e5beae48471adf87c513b5cbcb0ca347467546da",
       "installedAt": "2026-06-15T22:02:24.822Z",
-      "updatedAt": "2026-06-15T22:02:24.822Z"
+      "updatedAt": "2026-06-18T20:47:55.821Z"
     },
     "obsidian-vault": {
       "source": "mattpocock/skills",
