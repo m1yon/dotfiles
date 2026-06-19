@@ -7,6 +7,8 @@ description: Interview Prep 2026 plan cadence. Use when the user asks to update 
 
 Maintain Michael's Obsidian interview plan at `/home/michael/My Vault/6 - Full Notes/Interview Prep 2026`.
 
+Load the `obsidian-vault` skill before reading or editing vault notes.
+
 ## Source Map
 
 - Dashboard: `/home/michael/My Vault/4 - Indexes/Interview Prep 2026.md`
@@ -20,6 +22,7 @@ Treat the dashboard and daily pages as the plan's source of truth. Treat tracker
 
 - Goal: senior fullstack interviews at medium-sized companies in 2026.
 - Bias: design-led prep, practical engineering judgment, AI/practical coding, behavioral readiness, and interview communication over FAANG-style algorithm breadth.
+- Default objective: complete all planned courses by the end of the plan.
 - Each day is 90 minutes.
 - Reviews are normally 10 minutes.
 - Non-review work should not be split into blocks under 25 minutes.
@@ -28,6 +31,7 @@ Treat the dashboard and daily pages as the plan's source of truth. Treat tracker
 - Days are incremental whole numbers. When adding or reshaping course work, create or reshape whole-number daily pages and keep navigation sequential.
 - Completed days are historical record. Never update completed daily pages.
 - Course adjustments should distribute load across the remaining incomplete course unless the user asks for a concentrated block.
+- Adding a significant amount of material should trigger Course Rebalance instead of local patching.
 
 ## Workflow
 
@@ -77,4 +81,4 @@ If the user says to update the plan without a range, treat every incomplete dail
 
 ### Course Rebalance
 
-When shifting time between system design, AI coding, behavioral, DS&A, low-level design, or another track, read that track's reference note, tracker, nearby daily pages, and neighboring days around the affected range. Distribute the change across the remaining incomplete course unless the user asks for a concentrated block. Update affected day metadata plus `Previous`/`Next` links. Update the dashboard rules if the change becomes a new standing policy. Otherwise keep the change local to daily pages.
+When shifting time between system design, AI coding, behavioral, DS&A, low-level design, or another track, or when adding a significant amount of material, read that track's reference note, tracker, nearby daily pages, and neighboring days around the affected range. Use the reference note's time estimates as the source of truth over existing daily-note estimates, so each day's allotted work is realistic, neither overloaded nor padded. Calculate remaining reference-estimated work against remaining incomplete-day capacity before editing. If the work does not fit, give the user three choices with math: extend the plan by the needed number of days, cut or defer specific lower-priority work with minutes saved, or use a hybrid of fewer added days plus selected cuts. Treat course completion as the default objective, and make any course cuts explicit before asking the user to choose. Distribute the chosen change across the remaining incomplete course unless the user asks for a concentrated block. Update affected day metadata plus `Previous`/`Next` links. Update the dashboard rules if the change becomes a new standing policy. Otherwise keep the change local to daily pages.
