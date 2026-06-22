@@ -32,6 +32,7 @@
 
     brews = [ ];
     casks = [
+      "codex-app"
       "ghostty"
       "google-chrome"
       "obsidian"
