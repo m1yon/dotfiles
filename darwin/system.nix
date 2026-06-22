@@ -60,6 +60,7 @@
 
     NSGlobalDomain = {
       AppleShowAllExtensions = true;
+      AppleInterfaceStyle = "Dark";
       NSDocumentSaveNewDocumentsToCloud = false;
     };
   };
