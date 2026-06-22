@@ -25,6 +25,8 @@ ensure_sops_age_key() {
     printf 'Copy one of these from an already-authorized machine, then rerun setup:\n' >&2
     printf '  %s\n' "$age_key_file" >&2
     printf '  %s\n' "$ssh_key" >&2
+    printf 'Preferred transfer command from this machine:\n' >&2
+    printf '  mkdir -p "%s" && scp michael@nixbook:~/.config/sops/age/keys.txt "%s" && chmod 600 "%s"\n' "$age_key_dir" "$age_key_file" "$age_key_file" >&2
     printf 'A newly generated key will not decrypt the existing secrets until the secrets are rekeyed for it.\n' >&2
     exit 1
   fi
