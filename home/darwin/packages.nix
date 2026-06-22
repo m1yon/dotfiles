@@ -1,0 +1,5 @@
+{ homeDirectory, ... }:
+
+{
+  home.homeDirectory = homeDirectory;
+}

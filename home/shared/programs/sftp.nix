@@ -1,8 +1,8 @@
 { config, ... }:
 {
   sops.secrets = {
-    molina_sftp_from_path.sopsFile = ../../secrets/sftp.yaml;
-    pres_sftp_from_path.sopsFile = ../../secrets/sftp.yaml;
+    molina_sftp_from_path.sopsFile = ../../../secrets/sftp.yaml;
+    pres_sftp_from_path.sopsFile = ../../../secrets/sftp.yaml;
   };
 
   sops.templates."sftp-env" = {

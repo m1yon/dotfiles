@@ -1,0 +1,34 @@
+{
+  imports = [
+    ./agents.nix
+    ./atuin.nix
+    ./awscli.nix
+    ./btm.nix
+    ./bun.nix
+    ./coderabbit.nix
+    ./difftastic.nix
+    ./direnv.nix
+    ./docker.nix
+    ./eza.nix
+    ./fzf.nix
+    ./git.nix
+    ./go-task.nix
+    ./gpg.nix
+    ./lazycommit.nix
+    ./lazydocker.nix
+    ./lazygit.nix
+    ./linear.nix
+    ./neovim.nix
+    ./nixfmt.nix
+    ./ntfy.nix
+    ./opencode.nix
+    ./sftp.nix
+    ./sops.nix
+    ./ssh.nix
+    ./starship.nix
+    ./t3code.nix
+    ./tealdeer.nix
+    ./yazi.nix
+    ./zoxide.nix
+  ];
+}

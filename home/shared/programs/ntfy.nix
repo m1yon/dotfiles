@@ -1,7 +1,7 @@
 { config, ... }:
 {
   sops.secrets = {
-    ntfy_auth_token.sopsFile = ../../secrets/ntfy.yaml;
+    ntfy_auth_token.sopsFile = ../../../secrets/ntfy.yaml;
   };
 
   sops.templates."ntfy-env" = {

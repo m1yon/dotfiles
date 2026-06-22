@@ -1,13 +1,8 @@
 {
-  pkgs,
-  ...
-}:
-{
   programs.zsh = {
     enable = true;
     shellAliases = {
       cd = "z";
-      open = "setsid xdg-open";
       src = "unset __HM_SESS_VARS_SOURCED && source ~/.zshenv && source ~/.zshrc";
     };
     initContent = ''

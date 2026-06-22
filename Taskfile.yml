@@ -5,21 +5,50 @@ vars:
 
 tasks:
   rebuild:
-    desc: Rebuild NixOS and switch to new configuration
+    desc: Rebuild system configuration and switch
     cmds:
-      - nixos-rebuild switch --flake {{.FLAKE_DIR}} --sudo
-      - restart-app vicinae server
+      - |
+        case "$(uname -s)" in
+          Darwin)
+            sudo darwin-rebuild switch --flake {{.FLAKE_DIR}}#macbook
+            ;;
+          Linux)
+            nixos-rebuild switch --flake {{.FLAKE_DIR}}#nixbook --sudo
+            restart-app vicinae server
+            ;;
+          *)
+            echo "Unsupported OS: $(uname -s)" >&2
+            exit 1
+            ;;
+        esac
 
   rebuild-home:
     desc: Rebuild Home Manager configuration independently
     cmds:
-      - nix run home-manager -- switch --flake {{.FLAKE_DIR}}
-      - restart-app vicinae server
+      - |
+        case "$(uname -s)" in
+          Darwin)
+            nix run home-manager -- switch --flake {{.FLAKE_DIR}}#michael@macbook
+            ;;
+          Linux)
+            nix run home-manager -- switch --flake {{.FLAKE_DIR}}#michael@nixbook
+            restart-app vicinae server
+            ;;
+          *)
+            echo "Unsupported OS: $(uname -s)" >&2
+            exit 1
+            ;;
+        esac
 
   format:
     desc: Format all Nix files with nixfmt
     dir: "{{.FLAKE_DIR}}"
-    cmd: git ls-files '*.nix' | xargs -r nixfmt
+    cmd: |
+      git ls-files --cached --others --exclude-standard '*.nix' | while IFS= read -r file; do
+        if [ -e "$file" ]; then
+          nixfmt "$file"
+        fi
+      done
 
   update-llm-agents:
     desc: Update the llm-agents flake input and rebuild
@@ -31,10 +60,19 @@ tasks:
     desc: Run all setup tasks for a fresh machine
     cmds:
       - task: sops-age-key
-      - task: onedrive-reauth
-        vars: { CLI_ARGS: personal }
-      - task: onedrive-reauth
-        vars: { CLI_ARGS: carecoordinators }
+      - |
+        case "$(uname -s)" in
+          Darwin)
+            ;;
+          Linux)
+            task onedrive-reauth -- personal
+            task onedrive-reauth -- carecoordinators
+            ;;
+          *)
+            echo "Unsupported OS: $(uname -s)" >&2
+            exit 1
+            ;;
+        esac
 
   sops-age-key:
     desc: Convert SSH ed25519 key to age key for sops CLI
@@ -59,14 +97,14 @@ tasks:
       - task: rebuild
 
   onedrive-reauth:
-    desc: "Re-authenticate an OneDrive instance (usage: task onedrive-reauth -- personal|carecoordinators)"
+    desc: "Linux only: re-authenticate an OneDrive instance (usage: task onedrive-reauth -- personal|carecoordinators)"
     cmds:
       - systemctl --user stop onedrive-{{.CLI_ARGS}}
       - onedrive --confdir=~/.config/onedrive-{{.CLI_ARGS}} --reauth --sync
       - systemctl --user start onedrive-{{.CLI_ARGS}}
 
   onedrive-status:
-    desc: Show status of all OneDrive sync services
+    desc: "Linux only: show status of all OneDrive sync services"
     cmds:
       - systemctl --user status onedrive-personal --no-pager
       - systemctl --user status onedrive-carecoordinators --no-pager

@@ -1,7 +1,7 @@
 { config, ... }:
 {
   sops.secrets = {
-    linear_api_key.sopsFile = ../../secrets/linear.yaml;
+    linear_api_key.sopsFile = ../../../secrets/linear.yaml;
   };
 
   sops.templates."linear-env" = {

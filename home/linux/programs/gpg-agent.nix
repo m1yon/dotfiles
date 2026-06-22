@@ -1,12 +1,6 @@
-{
-  pkgs,
-  ...
-}:
-{
-  programs.gpg = {
-    enable = true;
-  };
+{ pkgs, ... }:
 
+{
   services.gpg-agent = {
     enable = true;
     defaultCacheTtl = 3600;

@@ -13,7 +13,7 @@ in
 {
   home.packages = [ pkgs.cloudflared ];
 
-  sops.secrets.cloudflared_credentials_json.sopsFile = ../../secrets/cloudflared.yaml;
+  sops.secrets.cloudflared_credentials_json.sopsFile = ../../../secrets/cloudflared.yaml;
 
   sops.templates."cloudflared-credentials.json" = {
     path = "${configDir}/credentials.json";

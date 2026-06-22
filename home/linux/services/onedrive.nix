@@ -35,9 +35,9 @@ in
 
   # Decrypt OneDrive secrets from sops
   sops.secrets = {
-    onedrive_sharepoint_drive_id.sopsFile = ../../secrets/onedrive.yaml;
-    onedrive_reporting_drive_id.sopsFile = ../../secrets/onedrive.yaml;
-    azure_tenant_id.sopsFile = ../../secrets/onedrive.yaml;
+    onedrive_sharepoint_drive_id.sopsFile = ../../../secrets/onedrive.yaml;
+    onedrive_reporting_drive_id.sopsFile = ../../../secrets/onedrive.yaml;
+    azure_tenant_id.sopsFile = ../../../secrets/onedrive.yaml;
   };
 
   # Personal OneDrive config (no secrets needed)

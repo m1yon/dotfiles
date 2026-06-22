@@ -1,0 +1,27 @@
+{
+  imports = [
+    ./agent-browser.nix
+    ./browsers.nix
+    ./claude-code.nix
+    ./claude-devtools.nix
+    ./datagrip.nix
+    ./discord.nix
+    ./ghostty.nix
+    ./gpg-agent.nix
+    ./gtk.nix
+    ./hidpi.nix
+    ./localsend.nix
+    ./obsidian.nix
+    ./onlyoffice.nix
+    ./playerctl.nix
+    ./screenshot.nix
+    ./slack.nix
+    ./spotify.nix
+    ./stylix.nix
+    ./todoist.nix
+    ./vibetyper.nix
+    ./vicinae.nix
+    ./waybar.nix
+    ./webapps.nix
+  ];
+}

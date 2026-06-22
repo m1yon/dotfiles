@@ -4,7 +4,7 @@
 }:
 
 {
-  sops.secrets.opencode_web_ui_password.sopsFile = ../../secrets/opencode-web.yaml;
+  sops.secrets.opencode_web_ui_password.sopsFile = ../../../secrets/opencode-web.yaml;
 
   sops.templates."opencode-web-env" = {
     path = "${config.xdg.configHome}/opencode/env";

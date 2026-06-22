@@ -25,7 +25,7 @@ in
   home.packages = [ lazycommit ];
 
   sops.secrets = {
-    opencode_zen_api_key.sopsFile = ../../secrets/github.yaml;
+    opencode_zen_api_key.sopsFile = ../../../secrets/github.yaml;
   };
 
   sops.templates.".lazycommit.yaml" = {

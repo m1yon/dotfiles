@@ -22,8 +22,8 @@ in
   };
 
   sops.secrets = {
-    ynab_api_token.sopsFile = ../../secrets/ynab.yaml;
-    ynab_budget_id.sopsFile = ../../secrets/ynab.yaml;
+    ynab_api_token.sopsFile = ../../../secrets/ynab.yaml;
+    ynab_budget_id.sopsFile = ../../../secrets/ynab.yaml;
   };
 
   sops.templates."opencode-mcp-env" = {
