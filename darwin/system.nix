@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   username,
   homeDirectory,
@@ -17,6 +18,30 @@
 
   programs.zsh.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
+
+  power = {
+    sleep = {
+      computer = "never";
+      display = "never";
+      harddisk = "never";
+      allowSleepByPowerButton = false;
+    };
+
+    restartAfterFreeze = true;
+  };
+
+  system.activationScripts.power.text = lib.mkAfter ''
+    setPmset() {
+      if ! /usr/bin/pmset -a "$@"; then
+        echo "pmset $* is not supported on this Mac; skipping." >&2
+      fi
+    }
+
+    setPmset hibernatemode 0
+    setPmset standby 0
+    setPmset autopoweroff 0
+    setPmset powermode 2
+  '';
 
   system.defaults = {
     dock = {
