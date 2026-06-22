@@ -46,6 +46,10 @@
   system.defaults = {
     dock = {
       autohide = true;
+      persistent-apps = [
+        "/Applications/Google Chrome.app"
+        "/Applications/Ghostty.app"
+      ];
       show-recents = false;
     };
 
