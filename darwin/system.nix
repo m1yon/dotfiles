@@ -58,6 +58,10 @@
       FXPreferredViewStyle = "clmv";
     };
 
+    WindowManager = {
+      StandardHideWidgets = true;
+    };
+
     NSGlobalDomain = {
       AppleShowAllExtensions = true;
       AppleInterfaceStyle = "Dark";
