@@ -58,21 +58,7 @@ tasks:
 
   setup:
     desc: Run all setup tasks for a fresh machine
-    cmds:
-      - task: sops-age-key
-      - |
-        case "$(uname -s)" in
-          Darwin)
-            ;;
-          Linux)
-            task onedrive-reauth -- personal
-            task onedrive-reauth -- carecoordinators
-            ;;
-          *)
-            echo "Unsupported OS: $(uname -s)" >&2
-            exit 1
-            ;;
-        esac
+    cmd: bash {{.FLAKE_DIR}}/setup.sh
 
   sops-age-key:
     desc: Convert SSH ed25519 key to age key for sops CLI
