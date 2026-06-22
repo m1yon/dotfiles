@@ -35,6 +35,7 @@
       "codex-app"
       "ghostty"
       "google-chrome"
+      "linearmouse"
       "obsidian"
       "slack"
       "spotify"
