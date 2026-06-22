@@ -39,6 +39,7 @@
       "obsidian"
       "slack"
       "spotify"
+      "superwhisper"
     ];
     masApps = { };
   };
