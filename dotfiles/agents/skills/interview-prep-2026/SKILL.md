@@ -69,7 +69,7 @@ Completion criterion: every modified or created daily page follows the format, t
 
 ### 5. Validate
 
-Check all touched daily notes for valid frontmatter, 90-minute totals, dashboard links, tracker links, and `Previous`/`Next` consistency. Check that tracker topic names are existing names unless the request intentionally adds taxonomy.
+Check all touched daily notes for valid frontmatter, 90-minute totals, dashboard links, tracker links, broken wikilinks, and `Previous`/`Next` consistency. To check broken wikilinks, run `obsidian vault="My Vault" unresolved verbose format=json` and filter/report entries whose source files are touched pages or the dashboard. Check that tracker topic names are existing names unless the request intentionally adds taxonomy.
 
 Completion criterion: every touched file has been re-read after editing and the final response lists changed files plus any assumptions or follow-up decisions.
 
@@ -81,4 +81,15 @@ If the user says to update the plan without a range, treat every incomplete dail
 
 ### Course Rebalance
 
-When shifting time between system design, AI coding, behavioral, DS&A, low-level design, or another track, or when adding a significant amount of material, read that track's reference note, tracker, nearby daily pages, and neighboring days around the affected range. Use the reference note's time estimates as the source of truth over existing daily-note estimates, so each day's allotted work is realistic, neither overloaded nor padded. Calculate remaining reference-estimated work against remaining incomplete-day capacity before editing. If the work does not fit, give the user three choices with math: extend the plan by the needed number of days, cut or defer specific lower-priority work with minutes saved, or use a hybrid of fewer added days plus selected cuts. Treat course completion as the default objective, and make any course cuts explicit before asking the user to choose. Distribute the chosen change across the remaining incomplete course unless the user asks for a concentrated block. Update affected day metadata plus `Previous`/`Next` links. Update the dashboard rules if the change becomes a new standing policy. Otherwise keep the change local to daily pages.
+Use this branch when shifting time between system design, AI coding, behavioral, DS&A, low-level design, or another track, or when adding a significant amount of material.
+
+1. Read context: the relevant track reference note, tracker, nearby daily pages, and neighboring days around the affected range.
+2. Estimate load: use the reference note's time estimates as the source of truth over existing daily-note estimates, so each day's allotted work is realistic, neither overloaded nor padded.
+3. Check capacity: calculate remaining reference-estimated work against remaining incomplete-day capacity before editing.
+4. If the work does not fit, give the user three choices with math: extend the plan by the needed number of days; cut or defer specific lower-priority work with minutes saved; or use a hybrid of fewer added days plus selected cuts.
+5. Treat course completion as the default objective, and make any course cuts explicit before asking the user to choose.
+6. Distribute the chosen change across the remaining incomplete course unless the user asks for a concentrated block.
+7. Update affected day metadata plus `Previous`/`Next` links.
+8. Ensure every added or changed daily page has a corresponding linked flashcard page.
+9. Check touched pages for broken wikilinks after editing with `obsidian vault="My Vault" unresolved verbose format=json`.
+10. Update the dashboard rules if the change becomes a new standing policy. Otherwise keep the change local to daily pages.
