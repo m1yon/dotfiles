@@ -10,6 +10,44 @@ require_command() {
   fi
 }
 
+load_nix_profile() {
+  if command -v nix >/dev/null 2>&1; then
+    return
+  fi
+
+  if [ -r /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ]; then
+    set +u
+    . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+    set -u
+  fi
+}
+
+install_nix_macos() {
+  require_command curl
+
+  printf 'Installing Nix for macOS\n'
+  curl --proto '=https' --tlsv1.2 --silent --show-error --fail --location https://nixos.org/nix/install | sh -s -- --daemon
+}
+
+ensure_nix() {
+  load_nix_profile
+
+  if command -v nix >/dev/null 2>&1; then
+    return
+  fi
+
+  case "$(uname -s)" in
+    Darwin)
+      install_nix_macos
+      load_nix_profile
+      ;;
+    *)
+      ;;
+  esac
+
+  require_command nix
+}
+
 ensure_sops_age_key() {
   local ssh_key="${HOME}/.ssh/id_ed25519"
   local age_key_dir="${XDG_CONFIG_HOME:-${HOME}/.config}/sops/age"
@@ -77,13 +115,15 @@ run_rebuild_task() {
   nix --extra-experimental-features 'nix-command flakes' shell nixpkgs#go-task -c task --dir "$script_dir" rebuild
 }
 
-ensure_sops_age_key
-
 case "$(uname -s)" in
   Darwin)
+    ensure_nix
+    ensure_sops_age_key
     install_nix_darwin
     ;;
   Linux)
+    ensure_nix
+    ensure_sops_age_key
     onedrive_reauth personal
     onedrive_reauth carecoordinators
     ;;
