@@ -19,12 +19,6 @@
   programs.zsh.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
 
-  # Match a PC/Linux-style external keyboard layout on macOS.
-  system.keyboard = {
-    enableKeyMapping = true;
-    swapLeftCommandAndLeftAlt = true;
-  };
-
   power = {
     sleep = {
       computer = "never";
