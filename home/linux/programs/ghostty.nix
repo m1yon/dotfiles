@@ -6,6 +6,10 @@
       confirm-close-surface = false;
       clipboard-read = "allow";
       clipboard-write = "allow";
+      background-opacity = 1;
+      background-blur = false;
+      unfocused-split-opacity = 1;
+      alpha-blending = "linear-corrected";
       gtk-single-instance = true;
     };
   };

@@ -1,10 +1,37 @@
 { lib, pkgs, ... }:
 
+let
+  ghosttySettings = {
+    theme = "TokyoNight Night";
+    confirm-close-surface = false;
+    clipboard-read = "allow";
+    clipboard-write = "allow";
+    background-opacity = 1;
+    background-blur = false;
+    unfocused-split-opacity = 1;
+    alpha-blending = "linear-corrected";
+    auto-update = "off";
+  };
+
+  formatGhosttyValue =
+    value: if builtins.isBool value then lib.boolToString value else toString value;
+
+  ghosttyConfig =
+    lib.concatStringsSep "\n" (
+      lib.mapAttrsToList (name: value: "${name} = ${formatGhosttyValue value}") ghosttySettings
+    )
+    + "\n";
+in
 {
   imports = [
     ./packages.nix
     ./shell.nix
   ];
+
+  home.file."Library/Application Support/com.mitchellh.ghostty/config.ghostty" = {
+    force = true;
+    text = ghosttyConfig;
+  };
 
   home.activation.defaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if /usr/bin/open -Ra "Google Chrome" >/dev/null 2>&1; then
