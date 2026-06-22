@@ -21,7 +21,11 @@ ensure_sops_age_key() {
   fi
 
   if [ ! -f "$ssh_key" ]; then
-    printf 'SSH private key not found: %s\n' "$ssh_key" >&2
+    printf 'Missing SOPS identity for this machine.\n' >&2
+    printf 'Copy one of these from an already-authorized machine, then rerun setup:\n' >&2
+    printf '  %s\n' "$age_key_file" >&2
+    printf '  %s\n' "$ssh_key" >&2
+    printf 'A newly generated key will not decrypt the existing secrets until the secrets are rekeyed for it.\n' >&2
     exit 1
   fi
 
