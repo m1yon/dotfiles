@@ -10,7 +10,11 @@ tasks:
       - |
         case "$(uname -s)" in
           Darwin)
-            sudo darwin-rebuild switch --flake {{.FLAKE_DIR}}#macbook
+            if darwin_rebuild="$(command -v darwin-rebuild 2>/dev/null)"; then
+              sudo "$darwin_rebuild" switch --flake {{.FLAKE_DIR}}#macbook
+            else
+              sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake {{.FLAKE_DIR}}#macbook
+            fi
             ;;
           Linux)
             nixos-rebuild switch --flake {{.FLAKE_DIR}}#nixbook --sudo
