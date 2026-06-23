@@ -36,6 +36,7 @@
       "ghostty"
       "google-chrome"
       "linearmouse"
+      "microsoft-teams"
       "obsidian"
       "slack"
       "spotify"

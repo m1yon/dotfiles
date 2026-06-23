@@ -26,6 +26,7 @@ let
 in
 {
   imports = [
+    ./codex.nix
     ./packages.nix
     ./shell.nix
   ];
