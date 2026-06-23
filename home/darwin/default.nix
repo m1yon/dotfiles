@@ -16,12 +16,18 @@ let
     auto-update = "off";
   };
 
+  ghosttyKeybinds = [
+    # Send Ctrl-S so Cmd-S triggers Neovim's existing save mapping.
+    "super+s=text:\\x13"
+  ];
+
   formatGhosttyValue =
     value: if builtins.isBool value then lib.boolToString value else toString value;
 
   ghosttyConfig =
     lib.concatStringsSep "\n" (
       lib.mapAttrsToList (name: value: "${name} = ${formatGhosttyValue value}") ghosttySettings
+      ++ map (keybind: "keybind = ${keybind}") ghosttyKeybinds
     )
     + "\n";
 
