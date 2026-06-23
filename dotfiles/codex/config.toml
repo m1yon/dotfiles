@@ -65,6 +65,13 @@ ambient-suggestions-enabled = true
 show-context-window-usage = true
 git-pull-request-merge-method = "squash"
 keepRemoteControlAwakeWhilePluggedIn = true
+preventSleepWhileRunning = true
+
+[desktop.open-in-target-preferences]
+global = "ghostty"
+
+[desktop.open-in-target-preferences.perPath]
+"/Users/michael/GitHub/dotfiles" = "ghostty"
 
 [projects."/Users/michael/Documents/Codex/2026-06-22/can"]
 trust_level = "trusted"
