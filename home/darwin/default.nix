@@ -38,6 +38,7 @@ let
 in
 {
   imports = [
+    ./aerospace.nix
     ./codex.nix
     ./packages.nix
     ./shell.nix
