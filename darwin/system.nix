@@ -64,6 +64,11 @@ in
   programs.zsh.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
 
+  system.keyboard = {
+    enableKeyMapping = true;
+    swapLeftCommandAndLeftAlt = false;
+  };
+
   power = {
     sleep = {
       computer = "never";
@@ -107,11 +112,17 @@ in
   system.defaults = {
     dock = {
       autohide = true;
+      expose-group-apps = true;
+      mru-spaces = false;
       persistent-apps = [
         "/Applications/Google Chrome.app"
         "/Applications/Ghostty.app"
       ];
       show-recents = false;
+    };
+
+    spaces = {
+      spans-displays = true;
     };
 
     finder = {

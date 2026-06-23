@@ -90,6 +90,7 @@
           };
         in
         {
+          aerospace = unstablePkgs.aerospace;
           yazi = unstablePkgs.yazi;
           jetbrains = prev.jetbrains // {
             datagrip = unstablePkgs.jetbrains.datagrip;

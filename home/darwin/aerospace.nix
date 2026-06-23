@@ -9,7 +9,7 @@ in
     pkgs.aerospace
   ];
 
-  home.file.".config/aerospace/aerospace.toml" = {
+  home.file.".aerospace.toml" = {
     source = outOfStore "${dotfiles}/aerospace/aerospace.toml";
     force = true;
   };
