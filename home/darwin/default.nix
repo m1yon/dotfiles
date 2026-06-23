@@ -3,6 +3,7 @@
 let
   ghosttySettings = {
     theme = "TokyoNight Night";
+    font-size = 15;
     confirm-close-surface = false;
     clipboard-read = "allow";
     clipboard-write = "allow";
