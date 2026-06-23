@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AeroSpace Mac Config Plan</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8f5;
+      --paper: #ffffff;
+      --ink: #17211b;
+      --muted: #5d685f;
+      --line: #d8ddd4;
+      --blue: #2563eb;
+      --green: #15803d;
+      --orange: #b45309;
+      --red: #b91c1c;
+      --code: #f1f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.15;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      max-width: 880px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    code {
+      background: var(--code);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.92em;
+    }
+
+    pre code {
+      display: block;
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+      white-space: pre;
+    }
+
+    pre {
+      background: #111827;
+      color: #f8fafc;
+      border-radius: 8px;
+      overflow-x: auto;
+      padding: 14px 16px;
+      margin: 12px 0 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 0;
+      padding-left: 1.25rem;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef2ff;
+      color: #172554;
+      font-weight: 700;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 900px;
+      margin-top: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      padding: 4px 10px;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 0.9rem;
+    }
+
+    .pill.good {
+      color: var(--green);
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .pill.warn {
+      color: var(--orange);
+      border-color: #fed7aa;
+      background: #fff7ed;
+    }
+
+    .callout {
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin-top: 12px;
+    }
+
+    .risk {
+      border-left-color: var(--orange);
+      background: #fff7ed;
+    }
+
+    .done {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .pending {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .no {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 20px, 1120px);
+        padding-top: 20px;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>AeroSpace Migration Plan for the Mac Config</h1>
+      <p class="lede">
+        Goal: make the new macOS setup feel close to the Linux Hyprland setup while keeping every package,
+        setting, app rule, and config file declarative in this Nix flake.
+      </p>
+      <div class="status">
+        <span class="pill good">Planning only</span>
+        <span class="pill good">No Nix config edited</span>
+        <span class="pill good">Nix package exists: aerospace 0.19.2-Beta</span>
+        <span class="pill warn">User rebuild required after implementation</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>Executive Summary</h2>
+      <ul>
+        <li>Use <code>pkgs.aerospace</code> from the pinned <code>nixpkgs</code> first, not Homebrew.</li>
+        <li>Add a Darwin Home Manager module: <code>home/darwin/aerospace.nix</code>.</li>
+        <li>Keep the AeroSpace config in <code>dotfiles/aerospace/aerospace.toml</code>.</li>
+        <li>Symlink it to <code>~/.config/aerospace/aerospace.toml</code> with Home Manager, like the Codex config.</li>
+        <li>Keep workspaces <code>1</code> through <code>10</code>, plus <code>M</code> for the Spotify special-workspace replacement.</li>
+        <li>Use workspaces <code>1</code> through <code>5</code> as general/dev defaults with no forced app rules.</li>
+        <li>Use AeroSpace <code>on-window-detected</code> rules for default app placement.</li>
+        <li>Only add active app rules for apps installed now: Superhuman, Slack, Teams, and Spotify.</li>
+        <li>Launch workspace-managed startup apps from AeroSpace <code>after-startup-command</code>, not manual macOS Login Items.</li>
+        <li>Add a Nix-managed Login Items cleanup that removes Teams from macOS Login Items if the app re-adds itself.</li>
+        <li>Use commented placeholders for Linear, database apps, and other future apps.</li>
+        <li>Use accordion layouts on workspaces <code>8</code> and <code>9</code> to approximate Hyprland groups once those spaces have multiple apps.</li>
+        <li>Set macOS Mission Control defaults declaratively for better AeroSpace behavior.</li>
+      </ul>
+      <div class="callout risk">
+        Main recommendation: use <code>alt</code> as the AeroSpace modifier on macOS, even though Linux uses
+        <code>SUPER</code>. Binding <code>cmd-c</code>, <code>cmd-v</code>, <code>cmd-f</code>, or <code>cmd-r</code> to window-manager actions would fight normal macOS app shortcuts.
+      </div>
+    </section>
+
+    <section>
+      <h2>Current Linux Behavior to Preserve</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Hyprland Source</th>
+            <th>Mac/AeroSpace Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Core navigation</td>
+            <td><code>SUPER+h/j/k/l</code>, <code>SUPER+Shift+h/j/k/l</code></td>
+            <td><code>alt+h/j/k/l</code>, <code>alt+Shift+h/j/k/l</code></td>
+          </tr>
+          <tr>
+            <td>Workspaces</td>
+            <td><code>SUPER+1..0</code> maps to <code>1..10</code></td>
+            <td><code>alt+1..0</code> maps to <code>1..10</code></td>
+          </tr>
+          <tr>
+            <td>Move windows</td>
+            <td><code>SUPER+Shift+1..0</code></td>
+            <td><code>alt+Shift+1..0</code> with <code>move-node-to-workspace</code></td>
+          </tr>
+          <tr>
+            <td>Previous workspace</td>
+            <td><code>SUPER+Tab</code></td>
+            <td><code>alt+Tab</code> with <code>workspace-back-and-forth</code>, if it does not conflict with app switching preferences</td>
+          </tr>
+          <tr>
+            <td>Floating toggle</td>
+            <td><code>SUPER+v</code></td>
+            <td><code>alt+v</code> with <code>layout floating tiling</code></td>
+          </tr>
+          <tr>
+            <td>Fullscreen</td>
+            <td><code>SUPER+f</code></td>
+            <td><code>alt+f</code> with AeroSpace <code>fullscreen</code></td>
+          </tr>
+          <tr>
+            <td>Kill focused window</td>
+            <td><code>SUPER+c</code></td>
+            <td><code>alt+c</code> with AeroSpace <code>close</code></td>
+          </tr>
+          <tr>
+            <td>App launch chords</td>
+            <td><code>SUPER+Shift+t/b/f/n</code></td>
+            <td><code>alt+Shift+t/b/f/n</code> launching Ghostty, Chrome, Finder, Obsidian</td>
+          </tr>
+          <tr>
+            <td>Spotify special workspace</td>
+            <td><code>SUPER+m</code> toggles <code>special:spotify</code></td>
+            <td><code>alt+m</code> jumps to workspace <code>M</code>; optionally use <code>--auto-back-and-forth</code></td>
+          </tr>
+          <tr>
+            <td>Grouped workspaces</td>
+            <td>Workspaces <code>8</code> and <code>9</code> use <code>defaultgroup:on</code></td>
+            <td>Use <code>h_accordion</code> or <code>v_accordion</code> as the default layout for those workspaces</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Workspace Map</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Workspace</th>
+            <th>Purpose</th>
+            <th>Default Apps or Windows</th>
+            <th>Confidence</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>1</code></td>
+            <td>General/dev default</td>
+            <td>No forced app placement initially</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><code>2</code></td>
+            <td>General/dev default</td>
+            <td>No forced app placement initially</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><code>3</code></td>
+            <td>General/dev default</td>
+            <td>No forced app placement initially</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><code>4</code></td>
+            <td>General/dev default</td>
+            <td>No forced app placement initially</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><code>5</code></td>
+            <td>General/dev default</td>
+            <td>No forced app placement initially</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><code>6</code></td>
+            <td>Database</td>
+            <td>No active app rule. Keep a placeholder for a future database app.</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><code>7</code></td>
+            <td>Email</td>
+            <td>Native Superhuman app</td>
+            <td>High for installed app ID <code>com.superhuman.electron</code></td>
+          </tr>
+          <tr>
+            <td><code>8</code></td>
+            <td>Linear</td>
+            <td>No active rule until Linear is installed or a stable webapp window identity is confirmed.</td>
+            <td>Placeholder</td>
+          </tr>
+          <tr>
+            <td><code>9</code></td>
+            <td>Comms</td>
+            <td>Slack, Teams</td>
+            <td>High for installed Slack/Teams app IDs</td>
+          </tr>
+          <tr>
+            <td><code>10</code></td>
+            <td>Open/future workspace</td>
+            <td>No active app rule. Keep a placeholder for Calendar or another future app.</td>
+            <td>Placeholder</td>
+          </tr>
+          <tr>
+            <td><code>M</code></td>
+            <td>Music</td>
+            <td>Spotify, floated if desired</td>
+            <td>High for installed app ID <code>com.spotify.client</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Implementation Phases</h2>
+      <ol>
+        <li>
+          <strong>Create the AeroSpace Home Manager module.</strong>
+          Add <code>home/darwin/aerospace.nix</code>, import it from <code>home/darwin/default.nix</code>, install
+          <code>pkgs.aerospace</code>, and link <code>dotfiles/aerospace/aerospace.toml</code> into
+          <code>~/.config/aerospace/aerospace.toml</code>.
+        </li>
+        <li>
+          <strong>Add macOS defaults for AeroSpace stability.</strong>
+          In <code>darwin/system.nix</code>, add or confirm:
+          <code>system.defaults.dock.mru-spaces = false</code>,
+          <code>system.defaults.dock.expose-group-apps = true</code>, and
+          <code>system.defaults.spaces.spans-displays = true</code>.
+          The Spaces setting requires logout after rebuild.
+        </li>
+        <li>
+          <strong>Port the core keymap.</strong>
+          Start with <code>alt</code> as the main modifier. Keep the same letter/number layout as Linux.
+        </li>
+        <li>
+          <strong>Port the app placement rules.</strong>
+          Add active rules only for installed apps with confirmed bundle IDs. Keep commented placeholders for Linear,
+          database apps, Discord, Todoist, and Chrome webapps.
+        </li>
+        <li>
+          <strong>Launch startup apps from AeroSpace.</strong>
+          Put apps that should be routed to workspaces, such as Teams, in <code>after-startup-command</code>.
+          This makes AeroSpace start first, load the callbacks, then detect and place the app window.
+        </li>
+        <li>
+          <strong>Remove Teams from macOS Login Items declaratively.</strong>
+          Add an idempotent activation script in the Darwin config that deletes Teams from per-user Login Items.
+          This prevents Teams from racing AeroSpace at login.
+        </li>
+        <li>
+          <strong>Approximate Hyprland groups.</strong>
+          Set workspaces <code>8</code> and <code>9</code> to accordion layouts at startup.
+        </li>
+        <li>
+          <strong>Handle special-workspace behavior.</strong>
+          Replace <code>special:spotify</code> with persistent workspace <code>M</code> and bind <code>alt+m</code>.
+        </li>
+        <li>
+          <strong>Validate before switch, then ask Michael to rebuild.</strong>
+          Agent can run Nix eval/check commands, but Michael runs the rebuild/switch command.
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Proposed Nix Shape</h2>
+      <p class="small">This is a sketch, not an implementation patch. The TOML lives in <code>dotfiles/</code>; Nix only installs AeroSpace and links the file.</p>
+      <pre><code># home/darwin/default.nix
+{
+  imports = [
+    ./aerospace.nix
+    ./codex.nix
+    ./packages.nix
+    ./shell.nix
+  ];
+}
+
+# home/darwin/aerospace.nix
+{ config, nixConfigDir, pkgs, ... }:
+
+let
+  dotfiles = "${nixConfigDir}/dotfiles";
+  outOfStore = config.lib.file.mkOutOfStoreSymlink;
+in
+
+{
+  home.packages = [
+    pkgs.aerospace
+  ];
+
+  home.file.".config/aerospace/aerospace.toml" = {
+    source = outOfStore "${dotfiles}/aerospace/aerospace.toml";
+    force = true;
+  };
+}</code></pre>
+      <div class="callout">
+        Fallback only if needed: if the Nix package does not expose the app bundle in a way macOS can launch at login,
+        declare the upstream Homebrew tap through <code>nix-homebrew</code> and add the <code>aerospace</code> cask in
+        <code>darwin/homebrew.nix</code>. Do not run <code>brew install</code>.
+      </div>
+    </section>
+
+    <section>
+      <h2>Proposed AeroSpace Config Shape</h2>
+      <p class="small">This would live in <code>dotfiles/aerospace/aerospace.toml</code>. Exact app rules should be verified after install.</p>
+      <pre><code>config-version = 2
+start-at-login = true
+auto-reload-config = true
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+accordion-padding = 30
+automatically-unhide-macos-hidden-apps = true
+persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "M"]
+
+after-startup-command = [
+  # 1-5 are general/dev defaults.
+  # 6 is reserved for database work; no app rule until a database app is installed.
+  # 8 is reserved for Linear; add a rule once Linear is installed or identified.
+  'layout --workspace 8 --root h_accordion',
+  'layout --workspace 9 --root h_accordion',
+
+  # Launch workspace-managed startup apps after AeroSpace is ready.
+  # on-window-detected below moves Teams to workspace 9.
+  'exec-and-forget open -g -b com.microsoft.teams2',
+]
+
+[gaps]
+inner.horizontal = 5
+inner.vertical = 5
+outer.left = 10
+outer.bottom = 20
+outer.top = 10
+outer.right = 20
+
+[mode.main.binding]
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+
+alt-shift-h = 'move left'
+alt-shift-j = 'move down'
+alt-shift-k = 'move up'
+alt-shift-l = 'move right'
+
+alt-1 = 'workspace 1'
+alt-2 = 'workspace 2'
+alt-3 = 'workspace 3'
+alt-4 = 'workspace 4'
+alt-5 = 'workspace 5'
+alt-6 = 'workspace 6'
+alt-7 = 'workspace 7'
+alt-8 = 'workspace 8'
+alt-9 = 'workspace 9'
+alt-0 = 'workspace 10'
+alt-m = 'workspace --auto-back-and-forth M'
+alt-tab = 'workspace-back-and-forth'
+
+alt-shift-1 = 'move-node-to-workspace 1'
+alt-shift-2 = 'move-node-to-workspace 2'
+alt-shift-3 = 'move-node-to-workspace 3'
+alt-shift-4 = 'move-node-to-workspace 4'
+alt-shift-5 = 'move-node-to-workspace 5'
+alt-shift-6 = 'move-node-to-workspace 6'
+alt-shift-7 = 'move-node-to-workspace 7'
+alt-shift-8 = 'move-node-to-workspace 8'
+alt-shift-9 = 'move-node-to-workspace 9'
+alt-shift-0 = 'move-node-to-workspace 10'
+
+alt-c = 'close'
+alt-f = 'fullscreen'
+alt-v = 'layout floating tiling'
+alt-shift-r = 'reload-config'
+
+alt-shift-t = 'exec-and-forget open -na Ghostty'
+alt-shift-b = 'exec-and-forget open -na "Google Chrome"'
+alt-shift-f = 'exec-and-forget open -na Finder'
+alt-shift-n = 'exec-and-forget open -na Obsidian'</code></pre>
+    </section>
+
+    <section>
+      <h2>Startup App Strategy</h2>
+      <ul>
+        <li>Use AeroSpace <code>after-startup-command</code> for apps that should land on a specific AeroSpace workspace.</li>
+        <li>Do not add those apps manually in macOS Login Items, because they can launch before AeroSpace is ready.</li>
+        <li>For Teams specifically: start it from AeroSpace and remove it from macOS Login Items via Nix activation.</li>
+        <li>If Teams starts after AeroSpace is running, <code>on-window-detected</code> should move it to workspace <code>9</code>.</li>
+        <li>If Teams starts before AeroSpace is ready, the rule may not run until callbacks are applied again.</li>
+        <li>Keep background-only services in declarative Nix launchd/Home Manager config instead of AeroSpace.</li>
+      </ul>
+      <pre><code>after-startup-command = [
+  'layout --workspace 8 --root h_accordion',
+  'layout --workspace 9 --root h_accordion',
+
+  # Startup apps with workspace rules.
+  'exec-and-forget open -g -b com.microsoft.teams2',
+]
+
+on-window-detected = [
+  { if = 'test %{app-bundle-id} = com.microsoft.teams2', run = 'move-node-to-workspace 9' },
+]
+
+# Recovery command if an app was already open before rules applied:
+# aerospace run-callback --for-every-window on-window-detected</code></pre>
+    </section>
+
+    <section>
+      <h2>Login Items Plan</h2>
+      <p>
+        nix-darwin has <code>system.defaults.loginwindow</code>, but those options manage the login screen,
+        not the per-user app list shown in <em>System Settings -> General -> Login Items</em>.
+      </p>
+      <ul>
+        <li>There is no clean first-class nix-darwin option that says "the complete Login Items list is exactly this set."</li>
+        <li>The practical Nix-managed approach is an idempotent activation script that removes known unwanted login items.</li>
+        <li>Use that cleanup for Teams so AeroSpace owns Teams startup and workspace routing.</li>
+        <li>A stricter allowlist script is possible, but it is riskier because macOS and apps also use background helper items.</li>
+      </ul>
+      <pre><code># Proposed shape: darwin/login-items.nix
+{
+  lib,
+  username,
+  ...
+}:
+
+let
+  loginItemsToRemove = [
+    "Microsoft Teams"
+    "Teams"
+  ];
+
+  removeLoginItem = name: ''
+    launchctl asuser "$uid" sudo --user="$user" -- osascript -e ${lib.escapeShellArg ''
+      tell application "System Events"
+        if exists login item "${name}" then delete login item "${name}"
+      end tell
+    ''}
+  '';
+in
+{
+  system.activationScripts.removeUnmanagedLoginItems.text = lib.mkAfter ''
+    echo "removing unmanaged macOS Login Items..." >&2
+    user=${lib.escapeShellArg username}
+    uid="$(id -u -- "$user")"
+
+    ${lib.concatMapStringsSep "\n" removeLoginItem loginItemsToRemove}
+  '';
+}</code></pre>
+      <div class="callout risk">
+        Before implementation, verify the exact Login Item name with:
+        <code>osascript -e 'tell application "System Events" to get the name of every login item'</code>.
+        Keep both <code>Microsoft Teams</code> and <code>Teams</code> in the removal list if the name varies across versions.
+      </div>
+    </section>
+
+    <section>
+      <h2>Active App Rule Strategy</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>App</th>
+            <th>Rule</th>
+            <th>Known Identifier</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Superhuman native app</td>
+            <td>Move to workspace <code>7</code></td>
+            <td><code>com.superhuman.electron</code></td>
+          </tr>
+          <tr>
+            <td>Slack</td>
+            <td>Move to workspace <code>9</code></td>
+            <td><code>com.tinyspeck.slackmacgap</code></td>
+          </tr>
+          <tr>
+            <td>Teams</td>
+            <td>Move to workspace <code>9</code></td>
+            <td><code>com.microsoft.teams2</code></td>
+          </tr>
+          <tr>
+            <td>Spotify</td>
+            <td>Move to workspace <code>M</code>, optionally float</td>
+            <td><code>com.spotify.client</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Comment-only placeholders</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Future App or Workflow</th>
+            <th>Target Workspace</th>
+            <th>Why Placeholder Only</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Linear</td>
+            <td><code>8</code></td>
+            <td>Target workspace is known, but the app/window identity is not installed/confirmed yet.</td>
+          </tr>
+          <tr>
+            <td>Database app</td>
+            <td><code>6</code></td>
+            <td>No DataGrip on this Mac config right now.</td>
+          </tr>
+          <tr>
+            <td>Todoist</td>
+            <td>None</td>
+            <td>Explicitly ignored for this pass.</td>
+          </tr>
+          <tr>
+            <td>Discord</td>
+            <td>None</td>
+            <td>Ignored until installed.</td>
+          </tr>
+          <tr>
+            <td>Calendar / Chrome webapps</td>
+            <td><code>10</code> or future choice</td>
+            <td>Ignored until installed as stable apps or inspected through AeroSpace metadata.</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre><code>on-window-detected = [
+  # Active installed apps.
+  { if = 'test %{app-bundle-id} = com.superhuman.electron', run = 'move-node-to-workspace 7' },
+  { if = 'test %{app-bundle-id} = com.tinyspeck.slackmacgap', run = 'move-node-to-workspace 9' },
+  { if = 'test %{app-bundle-id} = com.microsoft.teams2', run = 'move-node-to-workspace 9' },
+  { if = 'test %{app-bundle-id} = com.spotify.client', run = ['move-node-to-workspace M', 'layout floating'] },
+
+  # Placeholder: Linear -> workspace 8 after app/webapp identity is confirmed.
+  # Placeholder: database app -> workspace 6 after one is installed.
+  # Placeholder: Todoist ignored for now.
+  # Placeholder: Discord ignored until installed.
+  # Placeholder: Calendar/Chrome webapps ignored until they have stable window metadata.
+]</code></pre>
+    </section>
+
+    <section>
+      <h2>Validation Checklist</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Command or Check</th>
+            <th>Expected Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pre-rebuild Nix evaluation</td>
+            <td><code>nix eval .#darwinConfigurations.macbook.config.system.build.toplevel</code></td>
+            <td>Nix config evaluates without switching</td>
+          </tr>
+          <tr>
+            <td>AeroSpace config parse</td>
+            <td><code>aerospace reload-config --dry-run --warnings-as-errors</code></td>
+            <td>No parse errors or warnings after rebuild</td>
+          </tr>
+          <tr>
+            <td>App identity discovery</td>
+            <td><code>aerospace list-apps --json</code></td>
+            <td>Bundle IDs match rules</td>
+          </tr>
+          <tr>
+            <td>Window identity discovery</td>
+            <td><code>aerospace list-windows --all --json</code></td>
+            <td>Only needed later for Linear/webapp placeholders</td>
+          </tr>
+          <tr>
+            <td>Workspace creation</td>
+            <td><code>aerospace list-workspaces --all</code></td>
+            <td><code>1..10</code> and <code>M</code> are present</td>
+          </tr>
+          <tr>
+            <td>Manual flow test</td>
+            <td>Launch Superhuman, Slack, Teams, and Spotify</td>
+            <td>Apps land in expected workspaces</td>
+          </tr>
+          <tr>
+            <td>Login Items cleanup</td>
+            <td><code>osascript -e 'tell application "System Events" to get the name of every login item'</code></td>
+            <td>Teams is absent from macOS Login Items after activation</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Open Decisions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Decision</th>
+            <th>Recommendation</th>
+            <th>Why</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Main modifier</td>
+            <td><code>alt</code></td>
+            <td>Preserves letter/number muscle memory without taking over core macOS <code>cmd</code> shortcuts.</td>
+          </tr>
+          <tr>
+            <td>Spotify special workspace replacement</td>
+            <td>Workspace <code>M</code></td>
+            <td>AeroSpace has workspaces, not Hyprland special workspaces. <code>M</code> keeps numbered workspaces predictable.</td>
+          </tr>
+          <tr>
+            <td>Launcher binding</td>
+            <td>Decide later: Raycast, Spotlight, or no binding</td>
+            <td>Linux uses Vicinae on <code>SUPER+Space</code>. The Mac config does not currently declare a launcher app.</td>
+          </tr>
+          <tr>
+            <td>Monitor pinning</td>
+            <td>Defer until after first AeroSpace run</td>
+            <td>AeroSpace monitor patterns depend on real macOS monitor names/order.</td>
+          </tr>
+          <tr>
+            <td>Visual active window border</td>
+            <td>Defer JankyBorders</td>
+            <td>AeroSpace does not draw borders. <code>pkgs.jankyborders</code> exists, but it is extra moving part.</td>
+          </tr>
+          <tr>
+            <td>Workspace bar</td>
+            <td>Defer SketchyBar</td>
+            <td>Waybar does not apply on macOS. AeroSpace tray plus shortcuts are enough for the first pass.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Known Gaps vs Hyprland</h2>
+      <ul>
+        <li><span class="no">No direct special workspace equivalent.</span> Use workspace <code>M</code> for Spotify.</li>
+        <li><span class="no">No Hyprland group tabs.</span> Use AeroSpace accordion layouts for workspaces <code>8</code> and <code>9</code>.</li>
+        <li><span class="no">No Linux media/brightness commands.</span> Let macOS handle media keys.</li>
+        <li><span class="no">No Waybar.</span> Defer SketchyBar until the core window workflow works.</li>
+        <li><span class="no">No active rules for uninstalled apps.</span> Linear, database apps, Todoist, Discord, and Calendar/webapps stay as comments until needed.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Definition of Done</h2>
+      <ul>
+        <li>AeroSpace is installed through Nix or declarative nix-homebrew fallback.</li>
+        <li>AeroSpace config is fully managed by Home Manager.</li>
+        <li>Core navigation and workspace movement shortcuts work.</li>
+        <li>Superhuman, Slack, Teams, and Spotify open on intended workspaces.</li>
+        <li>Teams starts from AeroSpace and is removed from macOS Login Items by Nix activation.</li>
+        <li>Linear/database/future app rules exist only as commented placeholders.</li>
+        <li>Workspaces <code>8</code> and <code>9</code> behave like grouped/stacked task and comms spaces.</li>
+        <li>Nix evaluation passes before Michael runs the rebuild.</li>
+        <li>After rebuild, AeroSpace dry-run config validation passes.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Files to Touch During Implementation</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>darwin/login-items.nix</code></td>
+            <td>New Darwin module that removes Teams from macOS Login Items so AeroSpace owns Teams startup.</td>
+          </tr>
+          <tr>
+            <td><code>darwin/configuration.nix</code></td>
+            <td>Import <code>./login-items.nix</code> if that cleanup is split into its own module.</td>
+          </tr>
+          <tr>
+            <td><code>dotfiles/aerospace/aerospace.toml</code></td>
+            <td>New source-of-truth AeroSpace config, kept next to the other managed dotfiles.</td>
+          </tr>
+          <tr>
+            <td><code>home/darwin/aerospace.nix</code></td>
+            <td>New Home Manager module for package install and symlink to <code>dotfiles/aerospace/aerospace.toml</code>.</td>
+          </tr>
+          <tr>
+            <td><code>home/darwin/default.nix</code></td>
+            <td>Import <code>./aerospace.nix</code>.</td>
+          </tr>
+          <tr>
+            <td><code>darwin/system.nix</code></td>
+            <td>Add Mission Control/Dock defaults needed by AeroSpace.</td>
+          </tr>
+          <tr>
+            <td><code>darwin/homebrew.nix</code></td>
+            <td>Only if the Nix package app bundle fails and declarative cask fallback is needed.</td>
+          </tr>
+          <tr>
+            <td><code>flake.nix</code> and <code>flake.lock</code></td>
+            <td>Only if adding the upstream Homebrew tap fallback.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>PR Phases</h2>
+      <p>
+        Recommended split: <strong>3 PRs</strong> for the actual implementation, plus an optional follow-up PR
+        after using the setup on the Mac for a day or two.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>PR</th>
+            <th>Scope</th>
+            <th>Files</th>
+            <th>Validation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>PR 1</strong><br>Install and link AeroSpace</td>
+            <td>
+              Add the Home Manager module, install <code>pkgs.aerospace</code>, create
+              <code>dotfiles/aerospace/aerospace.toml</code>, and symlink it into
+              <code>~/.config/aerospace/aerospace.toml</code>.
+            </td>
+            <td>
+              <code>home/darwin/aerospace.nix</code><br>
+              <code>home/darwin/default.nix</code><br>
+              <code>dotfiles/aerospace/aerospace.toml</code>
+            </td>
+            <td>
+              <code>nix eval .#darwinConfigurations.macbook.config.system.build.toplevel</code>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>PR 2</strong><br>Core window-manager behavior</td>
+            <td>
+              Add the main AeroSpace keymap, persistent workspaces, workspace layouts, gaps,
+              Mission Control/Dock defaults, and the workspace map with comment placeholders.
+            </td>
+            <td>
+              <code>dotfiles/aerospace/aerospace.toml</code><br>
+              <code>darwin/system.nix</code>
+            </td>
+            <td>
+              Nix evaluation before rebuild. After Michael rebuilds: <code>aerospace reload-config --dry-run --warnings-as-errors</code>.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>PR 3</strong><br>Startup apps and app routing</td>
+            <td>
+              Add active app placement rules for Superhuman, Slack, Teams, and Spotify.
+              Start Teams from AeroSpace and remove Teams from macOS Login Items through Nix activation.
+            </td>
+            <td>
+              <code>dotfiles/aerospace/aerospace.toml</code><br>
+              <code>darwin/login-items.nix</code><br>
+              <code>darwin/configuration.nix</code>
+            </td>
+            <td>
+              Confirm Teams is absent from Login Items, then launch Superhuman, Slack, Teams, and Spotify and verify workspaces.
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Optional PR 4</strong><br>Post-rebuild tuning</td>
+            <td>
+              Capture fixes that require real runtime data: exact app/window IDs, monitor assignments,
+              whether <code>alt-tab</code> conflicts, and whether SketchyBar/JankyBorders are worth adding.
+            </td>
+            <td>
+              Usually <code>dotfiles/aerospace/aerospace.toml</code>; possibly new bar/border modules if chosen.
+            </td>
+            <td>
+              <code>aerospace list-apps --json</code>, <code>aerospace list-windows --all --json</code>,
+              and manual workflow checks on the actual Mac.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        PR 1 and PR 2 can be combined if speed matters, but keeping them separate makes review cleaner:
+        one PR wires the tool into the system, the next changes window-manager behavior.
+      </div>
+    </section>
+  </main>
+</body>
+</html>
