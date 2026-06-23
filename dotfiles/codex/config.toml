@@ -1,6 +1,7 @@
 notify = ["/Users/michael/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
 model = "gpt-5.5"
 model_reasoning_effort = "xhigh"
+personality = "pragmatic"
 
 [marketplaces.openai-bundled]
 last_updated = "2026-06-22T22:18:33Z"

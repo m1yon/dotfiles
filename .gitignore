@@ -6,4 +6,5 @@ progress-*.txt
 node_modules
 tmp
 dotfiles/opencode/opencode-notifier-state.json
+.repos
 
