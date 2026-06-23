@@ -29,12 +29,12 @@ after-startup-command = [
 ]
 
 [gaps]
-inner.horizontal = 5
-inner.vertical = 5
+inner.horizontal = 16
+inner.vertical = 16
 outer.left = 10
-outer.bottom = 20
+outer.bottom = 10
 outer.top = 10
-outer.right = 20
+outer.right = 10
 
 [mode.main.binding]
 alt-h = 'focus left'
