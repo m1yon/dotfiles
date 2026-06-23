@@ -24,8 +24,8 @@ after-startup-command = [
   # AeroSpace 0.20.3-Beta does not support per-workspace layout commands.
   # Later phase: set workspaces 8 and 9 to accordion once upstream exposes it.
 
-  # Later phase: start Teams here after app routing is active.
-  # 'exec-and-forget open -g -b com.microsoft.teams2',
+  # Startup apps with workspace rules.
+  'exec-and-forget open -g -b com.microsoft.teams2',
 ]
 
 [gaps]
@@ -81,14 +81,24 @@ alt-shift-b = 'exec-and-forget open -na "Google Chrome"'
 alt-shift-f = 'exec-and-forget open -na Finder'
 alt-shift-n = 'exec-and-forget open -na Obsidian'
 
-# Later phase: add app routing rules for Superhuman, Slack, Teams, and Spotify.
-# Placeholder: Superhuman -> workspace 7 after bundle ID is confirmed.
-# Placeholder: Slack -> workspace 9 after bundle ID is confirmed.
-# Placeholder: Teams -> workspace 9 after Teams startup moves under AeroSpace.
-# Placeholder: Spotify -> workspace M after bundle ID is confirmed.
+[[on-window-detected]]
+if.app-bundle-id = 'com.superhuman.electron'
+run = 'move-node-to-workspace 7'
+
+[[on-window-detected]]
+if.app-bundle-id = 'com.tinyspeck.slackmacgap'
+run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+if.app-bundle-id = 'com.microsoft.teams2'
+run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+if.app-bundle-id = 'com.spotify.client'
+run = ['move-node-to-workspace M', 'layout floating']
+
 # Placeholder: Linear -> workspace 8 after app/window identity is confirmed.
 # Placeholder: database app -> workspace 6 after one is installed.
+# Placeholder: Todoist ignored for now.
+# Placeholder: Discord ignored until installed.
 # Placeholder: Calendar/Chrome webapps ignored until they have stable window metadata.
-
-# Later phase: clean up macOS Login Items declaratively from Nix so Teams
-# startup is owned by AeroSpace instead of macOS Login Items.
