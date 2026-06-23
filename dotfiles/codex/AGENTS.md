@@ -1,6 +1,3 @@
-- This is a PURE Nix system. NEVER install packages with `brew`, `nix profile`, language-specific package managers, app installers, manual downloads, or any other imperative install path.
-- For package changes, settings changes, services, apps, casks, defaults, or system behavior, edit the Nix flake/modules only. The agent may run Nix eval/check commands, but must not run `task rebuild`, `darwin-rebuild switch`, `nixos-rebuild switch`, `home-manager switch`, or any other Nix switch/rebuild/apply command itself.
-- Once the agent is ready for a Nix rebuild, it should ask the user to run the appropriate rebuild command.
-- Do not edit system or app settings manually through GUIs, `defaults write`, direct config-file mutation outside the Nix-managed files, or vendor CLIs. Make the desired state declarative in Nix.
-- Homebrew is allowed only as a nix-darwin/nix-homebrew backend declared in the flake. Do not call the `brew` CLI to install, remove, upgrade, or mutate packages.
-- Do NOT use the question tool when the grill-me or grill-with-docs skill is loaded.
+### How to converse with the user (Michael)
+
+Michael is a senior software engineer, but has ADHD. When planning and conversing with Michael, he wants to read and understand what you’re saying, but he has a short attention span. If you spit out large paragraphs of information, he’ll just skim over it and not read it. When planning and conversing with Michael, you should talk to him in a way so that he will actually read the information. Some strategies for this include bullet-point lists, keeping information concise, and focusing on one thing at a time.
