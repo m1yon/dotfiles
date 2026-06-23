@@ -34,9 +34,11 @@
     casks = [
       "cleanshot"
       "codex-app"
+      "discord"
       "ghostty"
       "google-chrome"
       "grammarly-desktop"
+      "linear"
       "linearmouse"
       "microsoft-teams"
       "obsidian"
@@ -44,6 +46,7 @@
       "spotify"
       "superhuman"
       "superwhisper"
+      "todoist-app"
     ];
     masApps = { };
   };

@@ -15,9 +15,9 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "M"]
 # 1-5: general/dev defaults.
 # 6: database placeholder; add app routing after a database app is installed.
 # 7: email.
-# 8: Linear placeholder; add app routing after the app/window identity is confirmed.
+# 8: Linear.
 # 9: comms.
-# 10: open/future.
+# 10: Todoist.
 # M: Spotify.
 
 after-startup-command = [
@@ -27,6 +27,9 @@ after-startup-command = [
   # Startup apps with workspace rules.
   'exec-and-forget open -g -b com.microsoft.teams2',
 ]
+
+[exec.env-vars]
+PATH = '/etc/profiles/per-user/${USER}/bin:${HOME}/.local/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin'
 
 [gaps]
 inner.horizontal = 16
@@ -76,7 +79,14 @@ alt-f = 'fullscreen'
 alt-v = 'layout floating tiling'
 alt-shift-r = 'reload-config'
 
-alt-shift-t = 'exec-and-forget open -na Ghostty'
+alt-shift-t = '''exec-and-forget AEROSPACE=/etc/profiles/per-user/michael/bin/aerospace
+CUR_WS="$("$AEROSPACE" list-workspaces --focused)" &&
+  if [ "$(osascript -e 'application id "com.mitchellh.ghostty" is running')" = "true" ]; then
+    osascript -e 'tell application id "com.mitchellh.ghostty" to new window' -e 'tell application id "com.mitchellh.ghostty" to activate' &&
+    "$AEROSPACE" move-node-to-workspace --focus-follows-window "$CUR_WS"
+  else
+    open -a Ghostty
+  fi'''
 alt-shift-b = 'exec-and-forget open -na "Google Chrome"'
 alt-shift-f = 'exec-and-forget open -na Finder'
 alt-shift-n = 'exec-and-forget open -na Obsidian'
@@ -84,6 +94,10 @@ alt-shift-n = 'exec-and-forget open -na Obsidian'
 [[on-window-detected]]
 if.app-id = 'com.superhuman.electron'
 run = 'move-node-to-workspace 7'
+
+[[on-window-detected]]
+if.app-id = 'com.linear'
+run = 'move-node-to-workspace 8'
 
 [[on-window-detected]]
 if.app-id = 'com.tinyspeck.slackmacgap'
@@ -94,11 +108,16 @@ if.app-id = 'com.microsoft.teams2'
 run = 'move-node-to-workspace 9'
 
 [[on-window-detected]]
+if.app-id = 'com.hnc.Discord'
+run = 'move-node-to-workspace 9'
+
+[[on-window-detected]]
+if.app-id = 'com.todoist.mac.Todoist'
+run = 'move-node-to-workspace 10'
+
+[[on-window-detected]]
 if.app-id = 'com.spotify.client'
 run = ['move-node-to-workspace M', 'layout floating']
 
-# Placeholder: Linear -> workspace 8 after app/window identity is confirmed.
 # Placeholder: database app -> workspace 6 after one is installed.
-# Placeholder: Todoist ignored for now.
-# Placeholder: Discord ignored until installed.
 # Placeholder: Calendar/Chrome webapps ignored until they have stable window metadata.
