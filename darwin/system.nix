@@ -6,6 +6,11 @@
   ...
 }:
 
+let
+  spotlightItem = enabled: name: {
+    inherit enabled name;
+  };
+in
 {
   system.primaryUser = username;
   system.stateVersion = 6;
@@ -69,6 +74,39 @@
 
     WindowManager = {
       StandardHideWidgets = true;
+    };
+
+    CustomUserPreferences = {
+      "com.apple.spotlight" = {
+        # Show apps and web results, but keep local files/data out of Spotlight.
+        orderedItems =
+          (map (spotlightItem true) [
+            "APPLICATIONS"
+            "MENU_WEBSEARCH"
+            "MENU_SPOTLIGHT_SUGGESTIONS"
+          ])
+          ++ (map (spotlightItem false) [
+            "MENU_CONVERSION"
+            "MENU_EXPRESSION"
+            "MENU_DEFINITION"
+            "SYSTEM_PREFS"
+            "DOCUMENTS"
+            "DIRECTORIES"
+            "PRESENTATIONS"
+            "SPREADSHEETS"
+            "PDF"
+            "MESSAGES"
+            "CONTACT"
+            "EVENT_TODO"
+            "IMAGES"
+            "BOOKMARKS"
+            "MUSIC"
+            "MOVIES"
+            "FONTS"
+            "MENU_OTHER"
+          ]);
+        parsecEnabled = true;
+      };
     };
 
     NSGlobalDomain = {
