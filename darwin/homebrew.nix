@@ -32,6 +32,7 @@
 
     brews = [ ];
     casks = [
+      "cleanshot"
       "codex-app"
       "ghostty"
       "google-chrome"

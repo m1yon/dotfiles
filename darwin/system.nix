@@ -10,6 +10,46 @@ let
   spotlightItem = enabled: name: {
     inherit enabled name;
   };
+
+  disabledHotKeyValue =
+    charCode: keyCode: modifiers:
+    "{ enabled = 0; value = { parameters = (${toString charCode}, ${toString keyCode}, ${toString modifiers}); type = standard; }; }";
+
+  screenshotHotKeys = [
+    # Screenshot shortcuts in System Settings > Keyboard > Keyboard Shortcuts.
+    {
+      id = 28;
+      value = disabledHotKeyValue 51 20 1179648; # Shift-Command-3
+    }
+    {
+      id = 29;
+      value = disabledHotKeyValue 51 20 1441792; # Control-Shift-Command-3
+    }
+    {
+      id = 30;
+      value = disabledHotKeyValue 52 21 1179648; # Shift-Command-4
+    }
+    {
+      id = 31;
+      value = disabledHotKeyValue 52 21 1441792; # Control-Shift-Command-4
+    }
+    {
+      id = 181;
+      value = disabledHotKeyValue 54 22 1179648; # Shift-Command-6, Touch Bar
+    }
+    {
+      id = 182;
+      value = disabledHotKeyValue 54 22 1441792; # Control-Shift-Command-6, Touch Bar
+    }
+    {
+      id = 184;
+      value = disabledHotKeyValue 53 23 1179648; # Shift-Command-5
+    }
+  ];
+
+  disableScreenshotHotKey =
+    hotKey:
+    "launchctl asuser \"$uid\" sudo --user=\"$user\" -- defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add ${toString hotKey.id} ${lib.escapeShellArg hotKey.value}";
 in
 {
   system.primaryUser = username;
@@ -55,6 +95,13 @@ in
     if ! launchctl asuser "$uid" sudo --user="$user" -- osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'; then
       echo "Unable to refresh the live macOS appearance state; defaults were still written." >&2
     fi
+  '';
+
+  system.activationScripts.disableScreenshotShortcuts.text = lib.mkAfter ''
+    echo "disabling macOS screenshot shortcuts..." >&2
+    user=${lib.escapeShellArg username}
+    uid="$(id -u -- "$user")"
+    ${lib.concatMapStringsSep "\n" disableScreenshotHotKey screenshotHotKeys}
   '';
 
   system.defaults = {
