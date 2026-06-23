@@ -82,19 +82,19 @@ alt-shift-f = 'exec-and-forget open -na Finder'
 alt-shift-n = 'exec-and-forget open -na Obsidian'
 
 [[on-window-detected]]
-if.app-bundle-id = 'com.superhuman.electron'
+if.app-id = 'com.superhuman.electron'
 run = 'move-node-to-workspace 7'
 
 [[on-window-detected]]
-if.app-bundle-id = 'com.tinyspeck.slackmacgap'
+if.app-id = 'com.tinyspeck.slackmacgap'
 run = 'move-node-to-workspace 9'
 
 [[on-window-detected]]
-if.app-bundle-id = 'com.microsoft.teams2'
+if.app-id = 'com.microsoft.teams2'
 run = 'move-node-to-workspace 9'
 
 [[on-window-detected]]
-if.app-bundle-id = 'com.spotify.client'
+if.app-id = 'com.spotify.client'
 run = ['move-node-to-workspace M', 'layout floating']
 
 # Placeholder: Linear -> workspace 8 after app/window identity is confirmed.
