@@ -24,6 +24,11 @@ let
       lib.mapAttrsToList (name: value: "${name} = ${formatGhosttyValue value}") ghosttySettings
     )
     + "\n";
+
+  codexDefaults = {
+    SUEnableAutomaticChecks = false;
+    SUAutomaticallyUpdate = false;
+  };
 in
 {
   imports = [
@@ -36,6 +41,8 @@ in
     force = true;
     text = ghosttyConfig;
   };
+
+  targets.darwin.defaults."com.openai.codex" = codexDefaults;
 
   home.activation.defaultBrowser = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     if /usr/bin/open -Ra "Google Chrome" >/dev/null 2>&1; then

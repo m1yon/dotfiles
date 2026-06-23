@@ -25,8 +25,8 @@
     taps = builtins.attrNames config.nix-homebrew.taps;
 
     onActivation = {
-      autoUpdate = false;
-      upgrade = false;
+      autoUpdate = true;
+      upgrade = true;
       cleanup = "zap";
     };
 
@@ -35,11 +35,13 @@
       "codex-app"
       "ghostty"
       "google-chrome"
+      "grammarly-desktop"
       "linearmouse"
       "microsoft-teams"
       "obsidian"
       "slack"
       "spotify"
+      "superhuman"
       "superwhisper"
     ];
     masApps = { };
