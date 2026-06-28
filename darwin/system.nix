@@ -122,7 +122,7 @@ in
     };
 
     finder = {
-      AppleShowAllExtensions = true;
+      AppleShowAllExtensions = false;
       FXPreferredViewStyle = "clmv";
     };
 
@@ -131,7 +131,7 @@ in
     };
 
     NSGlobalDomain = {
-      AppleShowAllExtensions = true;
+      AppleShowAllExtensions = false;
       AppleInterfaceStyle = "Dark";
       AppleInterfaceStyleSwitchesAutomatically = false;
       NSDocumentSaveNewDocumentsToCloud = false;
