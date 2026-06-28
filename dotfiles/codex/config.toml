@@ -92,3 +92,9 @@ trust_level = "trusted"
 
 [projects."/Users/michael/Documents/Codex/2026-06-26/find-me-gluten-free-brunch-places"]
 trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-06-28/i"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-06-28/use"]
+trust_level = "trusted"
