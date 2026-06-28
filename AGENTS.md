@@ -1,4 +1,5 @@
-- This is a PURE Nix system. NEVER install packages with `brew`, `nix profile`, language-specific package managers, app installers, manual downloads, or any other imperative install path.
+- This is a PURE Nix system. NEVER install global/system packages with `brew`, `nix profile`, language-specific package managers, app installers, manual downloads, or any other imperative install path.
+- Project-local dependency commands are allowed when they operate inside a repo project and update that project's normal lockfiles/dependency state. Example: running `bun install` inside `scripts/bun/` is allowed; running `bun add -g`, `npm install -g`, or using a language package manager to install global tools is not.
 - For package changes, settings changes, services, apps, casks, defaults, or system behavior, edit the Nix flake/modules only. The agent may run Nix eval/check commands, but must not run `task rebuild`, `darwin-rebuild switch`, `nixos-rebuild switch`, `home-manager switch`, or any other Nix switch/rebuild/apply command itself.
 - Once the agent is ready for a Nix rebuild, it should ask the user to run the appropriate rebuild command.
 - Do not edit system or app settings manually through GUIs, `defaults write`, direct config-file mutation outside the Nix-managed files, or vendor CLIs. Make the desired state declarative in Nix.

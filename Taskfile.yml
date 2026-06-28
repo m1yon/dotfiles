@@ -18,7 +18,7 @@ tasks:
             ;;
           Linux)
             nixos-rebuild switch --flake {{.FLAKE_DIR}}#nixbook --sudo
-            restart-app vicinae server
+            "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
             ;;
           *)
             echo "Unsupported OS: $(uname -s)" >&2
@@ -36,7 +36,7 @@ tasks:
             ;;
           Linux)
             nix run home-manager -- switch --flake {{.FLAKE_DIR}}#michael@nixbook
-            restart-app vicinae server
+            "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
             ;;
           *)
             echo "Unsupported OS: $(uname -s)" >&2

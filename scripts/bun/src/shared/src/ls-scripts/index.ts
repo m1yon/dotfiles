@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // ---
-// description: Lists all scripts from scripts-bash and scripts-bun
+// description: Lists all scripts from scripts/bash and scripts/bun
 // ---
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
@@ -24,21 +24,72 @@ if (!DOTFILES_ROOT) {
 
 const SOURCES: ScriptSource[] = [
   {
-    binDir: join(DOTFILES_ROOT, "scripts-bash"),
-    label: "bash",
+    binDir: join(DOTFILES_ROOT, "scripts/bash/shared"),
+    label: "shared",
     skipBinaries: true,
-    // bash scripts are their own source
+    // shell scripts are their own source
     resolveSource(name) {
       return join(this.binDir, name);
     },
   },
   {
-    binDir: join(DOTFILES_ROOT, "scripts-bun/bin"),
-    label: "bun",
-    skipBinaries: false,
-    // bun scripts compile from src/<name>/index.ts
+    binDir: join(DOTFILES_ROOT, "scripts/bash/darwin"),
+    label: "darwin",
+    skipBinaries: true,
+    // shell scripts are their own source
     resolveSource(name) {
-      return join(DOTFILES_ROOT!, "scripts-bun/src", name, "index.ts");
+      return join(this.binDir, name);
+    },
+  },
+  {
+    binDir: join(DOTFILES_ROOT, "scripts/bash/linux"),
+    label: "linux",
+    skipBinaries: true,
+    // shell scripts are their own source
+    resolveSource(name) {
+      return join(this.binDir, name);
+    },
+  },
+  {
+    binDir: join(DOTFILES_ROOT, "scripts/bun/bin/shared"),
+    label: "bun/shared",
+    skipBinaries: false,
+    // bun scripts compile from <scope>/src/<name>/index.ts
+    resolveSource(name) {
+      return join(
+        DOTFILES_ROOT!,
+        "scripts/bun/src/shared/src",
+        name,
+        "index.ts",
+      );
+    },
+  },
+  {
+    binDir: join(DOTFILES_ROOT, "scripts/bun/bin/darwin"),
+    label: "bun/darwin",
+    skipBinaries: false,
+    // bun scripts compile from <scope>/src/<name>/index.ts
+    resolveSource(name) {
+      return join(
+        DOTFILES_ROOT!,
+        "scripts/bun/src/darwin/src",
+        name,
+        "index.ts",
+      );
+    },
+  },
+  {
+    binDir: join(DOTFILES_ROOT, "scripts/bun/bin/linux"),
+    label: "bun/linux",
+    skipBinaries: false,
+    // bun scripts compile from <scope>/src/<name>/index.ts
+    resolveSource(name) {
+      return join(
+        DOTFILES_ROOT!,
+        "scripts/bun/src/linux/src",
+        name,
+        "index.ts",
+      );
     },
   },
 ];
@@ -172,8 +223,12 @@ async function main() {
   };
 
   const labelColors: Record<string, string> = {
-    bash: useColor ? "\x1b[33m" : "", // yellow
-    bun: useColor ? "\x1b[35m" : "", // magenta
+    shared: useColor ? "\x1b[33m" : "", // yellow
+    darwin: useColor ? "\x1b[32m" : "", // green
+    linux: useColor ? "\x1b[36m" : "", // cyan
+    "bun/shared": useColor ? "\x1b[35m" : "", // magenta
+    "bun/darwin": useColor ? "\x1b[32m" : "", // green
+    "bun/linux": useColor ? "\x1b[36m" : "", // cyan
   };
 
   for (const script of allScripts) {

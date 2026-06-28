@@ -8,7 +8,7 @@ open_in_nvim = [
   { run = "nvim %s", for = "unix", block = true, desc = "Open in Neovim" },
 ]
 open_microsoft_cloud = [
-  { run = '/home/michael/.local/bin/od-open %s', orphan = true, desc = "Open in Microsoft Cloud" },
+  { run = "od-open %s", orphan = true, desc = "Open in Microsoft Cloud" },
 ]
 
 [open]

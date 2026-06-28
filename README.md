@@ -38,7 +38,7 @@ NixOS, nix-darwin, Home Manager, and app dotfiles for Michael's machines.
 ├── home/                     # Home Manager profiles and user-level configuration
 │   ├── users/                # User entrypoints that import shared Home Manager config
 │   │   └── michael.nix       # Michael's common Home Manager identity and state version
-│   ├── shared/               # Cross-platform Home Manager config with no OS conditionals
+│   ├── shared/               # Common Home Manager config reused by both profiles
 │   │   ├── default.nix       # Aggregate import list for shared modules
 │   │   ├── env.nix           # Shared environment derived from host metadata
 │   │   ├── packages.nix      # Portable base CLI packages and session variables
@@ -71,8 +71,13 @@ NixOS, nix-darwin, Home Manager, and app dotfiles for Michael's machines.
 │   ├── waybar/               # Waybar configuration for Linux desktop
 │   ├── yazi/                 # Yazi file manager configuration
 │   └── ...
-├── scripts-bash/             # Bash scripts exposed on the Home Manager PATH
-├── scripts-bun/              # Bun scripts exposed on the Home Manager PATH
+├── scripts/                  # Repo-managed scripts exposed on the Home Manager PATH
+│   ├── bash/                 # Shell scripts by platform
+│   │   ├── shared/           # Cross-platform shell scripts
+│   │   ├── darwin/           # macOS-only shell scripts
+│   │   └── linux/            # Linux-only shell scripts
+│   └── bun/                  # Bun scripts by platform
+│       └── src/              # shared, darwin, and linux Bun script workspaces
 ├── secrets/                  # SOPS-encrypted secrets consumed by Nix and Home Manager
 ├── wallpapers/               # Wallpaper assets used by desktop modules
 └── docs/                     # Plans, architecture notes, and agent-facing documentation

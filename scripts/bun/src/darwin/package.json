@@ -1,0 +1,5 @@
+{
+  "name": "@dotfiles/bun-scripts-darwin",
+  "private": true,
+  "type": "module"
+}

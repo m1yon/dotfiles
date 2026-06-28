@@ -1,15 +1,21 @@
 {
-  config,
+  lib,
   nixConfigDir,
+  pkgs,
   ...
 }:
 
 let
-  outOfStore = config.lib.file.mkOutOfStoreSymlink;
+  scriptDirs = [
+    "${nixConfigDir}/scripts/bash/shared"
+  ]
+  ++ lib.optionals pkgs.stdenv.isDarwin [
+    "${nixConfigDir}/scripts/bash/darwin"
+  ]
+  ++ lib.optionals pkgs.stdenv.isLinux [
+    "${nixConfigDir}/scripts/bash/linux"
+  ];
 in
 {
-  home.file.".local/bin" = {
-    source = outOfStore "${nixConfigDir}/scripts-bash";
-    recursive = true;
-  };
+  home.sessionPath = scriptDirs;
 }
