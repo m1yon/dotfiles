@@ -25,14 +25,11 @@ after-startup-command = [
   # Later phase: set workspaces 8 and 9 to accordion once upstream exposes it.
 
   # Startup apps with workspace rules.
-  'exec-and-forget open -g -b com.superhuman.electron',
-  'exec-and-forget open -g -b com.linear',
-  'exec-and-forget open -g -b com.todoist.mac.Todoist',
-  'exec-and-forget open -g -b com.microsoft.teams2',
+  'exec-and-forget aerospace-startup-apps',
 ]
 
 [exec.env-vars]
-PATH = '/etc/profiles/per-user/${USER}/bin:${HOME}/.local/bin:/run/current-system/sw/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin'
+PATH = '/etc/profiles/per-user/${USER}/bin:${HOME}/.local/bin:${HOME}/GitHub/dotfiles/scripts/bun/bin/shared:${HOME}/GitHub/dotfiles/scripts/bun/bin/darwin:/run/current-system/sw/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/bin:/bin:/usr/sbin:/sbin'
 
 [gaps]
 inner.horizontal = 16
@@ -97,33 +94,46 @@ alt-shift-b = 'exec-and-forget open -na "Google Chrome"'
 alt-shift-f = 'exec-and-forget open -na Finder'
 alt-shift-n = 'exec-and-forget open -na Obsidian'
 
-[[on-window-detected]]
-if.app-id = 'com.superhuman.electron'
-run = 'move-node-to-workspace 7'
+# BEGIN generated app rules from dotfiles/aerospace/apps.json
 
-[[on-window-detected]]
-if.app-id = 'com.linear'
-run = 'move-node-to-workspace 8'
+# Edit the registry, then run: cd scripts/bun && bun run aerospace:generate
 
+# Superhuman
 [[on-window-detected]]
-if.app-id = 'com.tinyspeck.slackmacgap'
-run = 'move-node-to-workspace 9'
+if.app-id = "com.superhuman.electron"
+run = "move-node-to-workspace 7"
 
+# Linear
 [[on-window-detected]]
-if.app-id = 'com.microsoft.teams2'
-run = 'move-node-to-workspace 9'
+if.app-id = "com.linear"
+run = "move-node-to-workspace 8"
 
+# Todoist
 [[on-window-detected]]
-if.app-id = 'com.hnc.Discord'
-run = 'move-node-to-workspace 9'
+if.app-id = "com.todoist.mac.Todoist"
+run = "move-node-to-workspace 8"
 
+# Teams
 [[on-window-detected]]
-if.app-id = 'com.todoist.mac.Todoist'
-run = 'move-node-to-workspace 8'
+if.app-id = "com.microsoft.teams2"
+run = "move-node-to-workspace 9"
 
+# Slack
 [[on-window-detected]]
-if.app-id = 'com.spotify.client'
-run = ['move-node-to-workspace M', 'layout floating']
+if.app-id = "com.tinyspeck.slackmacgap"
+run = "move-node-to-workspace 9"
+
+# Discord
+[[on-window-detected]]
+if.app-id = "com.hnc.Discord"
+run = "move-node-to-workspace 9"
+
+# Spotify
+[[on-window-detected]]
+if.app-id = "com.spotify.client"
+run = ["move-node-to-workspace M", "layout floating"]
+
+# END generated app rules from dotfiles/aerospace/apps.json
 
 # Placeholder: database app -> workspace 6 after one is installed.
 # Placeholder: Calendar/Chrome webapps ignored until they have stable window metadata.

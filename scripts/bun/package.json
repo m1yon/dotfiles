@@ -8,6 +8,7 @@
     "src/linux"
   ],
   "scripts": {
+    "aerospace:generate": "bun src/darwin/src/aerospace-generate-config/index.ts",
     "build": "bun run build.ts",
     "test": "bun test src",
     "typecheck": "tsc --noEmit"

@@ -4,8 +4,15 @@ vars:
   FLAKE_DIR: "{{.TASKFILE_DIR}}"
 
 tasks:
+  build-bun-scripts:
+    desc: Build compiled Bun CLI scripts
+    dir: "{{.FLAKE_DIR}}/scripts/bun"
+    cmd: bun run build
+
   rebuild:
     desc: Rebuild system configuration and switch
+    deps:
+      - build-bun-scripts
     cmds:
       - |
         case "$(uname -s)" in
@@ -28,6 +35,8 @@ tasks:
 
   rebuild-home:
     desc: Rebuild Home Manager configuration independently
+    deps:
+      - build-bun-scripts
     cmds:
       - |
         case "$(uname -s)" in
