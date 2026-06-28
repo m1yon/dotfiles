@@ -25,6 +25,9 @@ after-startup-command = [
   # Later phase: set workspaces 8 and 9 to accordion once upstream exposes it.
 
   # Startup apps with workspace rules.
+  'exec-and-forget open -g -b com.superhuman.electron',
+  'exec-and-forget open -g -b com.linear',
+  'exec-and-forget open -g -b com.todoist.mac.Todoist',
   'exec-and-forget open -g -b com.microsoft.teams2',
 ]
 
