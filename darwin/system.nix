@@ -7,10 +7,6 @@
 }:
 
 let
-  spotlightItem = enabled: name: {
-    inherit enabled name;
-  };
-
   disabledHotKeyValue =
     charCode: keyCode: modifiers:
     "{ enabled = 0; value = { parameters = (${toString charCode}, ${toString keyCode}, ${toString modifiers}); type = standard; }; }";
@@ -132,39 +128,6 @@ in
 
     WindowManager = {
       StandardHideWidgets = true;
-    };
-
-    CustomUserPreferences = {
-      "com.apple.spotlight" = {
-        # Show apps and web results, but keep local files/data out of Spotlight.
-        orderedItems =
-          (map (spotlightItem true) [
-            "APPLICATIONS"
-            "MENU_WEBSEARCH"
-            "MENU_SPOTLIGHT_SUGGESTIONS"
-          ])
-          ++ (map (spotlightItem false) [
-            "MENU_CONVERSION"
-            "MENU_EXPRESSION"
-            "MENU_DEFINITION"
-            "SYSTEM_PREFS"
-            "DOCUMENTS"
-            "DIRECTORIES"
-            "PRESENTATIONS"
-            "SPREADSHEETS"
-            "PDF"
-            "MESSAGES"
-            "CONTACT"
-            "EVENT_TODO"
-            "IMAGES"
-            "BOOKMARKS"
-            "MUSIC"
-            "MOVIES"
-            "FONTS"
-            "MENU_OTHER"
-          ]);
-        parsecEnabled = true;
-      };
     };
 
     NSGlobalDomain = {

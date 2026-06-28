@@ -5,7 +5,7 @@ personality = "pragmatic"
 service_tier = "priority"
 
 [marketplaces.openai-bundled]
-last_updated = "2026-06-28T19:52:57Z"
+last_updated = "2026-06-28T21:42:04Z"
 source_type = "local"
 source = "/Users/michael/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
