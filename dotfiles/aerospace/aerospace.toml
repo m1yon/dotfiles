@@ -94,46 +94,5 @@ alt-shift-b = 'exec-and-forget open -na "Google Chrome"'
 alt-shift-f = 'exec-and-forget open -na Finder'
 alt-shift-n = 'exec-and-forget open -na Obsidian'
 
-# BEGIN generated app rules from dotfiles/aerospace/apps.json
-
-# Edit the registry, then run: cd scripts/bun && bun run aerospace:generate
-
-# Superhuman
-[[on-window-detected]]
-if.app-id = "com.superhuman.electron"
-run = "move-node-to-workspace 7"
-
-# Linear
-[[on-window-detected]]
-if.app-id = "com.linear"
-run = "move-node-to-workspace 8"
-
-# Todoist
-[[on-window-detected]]
-if.app-id = "com.todoist.mac.Todoist"
-run = "move-node-to-workspace 8"
-
-# Teams
-[[on-window-detected]]
-if.app-id = "com.microsoft.teams2"
-run = "move-node-to-workspace 9"
-
-# Slack
-[[on-window-detected]]
-if.app-id = "com.tinyspeck.slackmacgap"
-run = "move-node-to-workspace 9"
-
-# Discord
-[[on-window-detected]]
-if.app-id = "com.hnc.Discord"
-run = "move-node-to-workspace 9"
-
-# Spotify
-[[on-window-detected]]
-if.app-id = "com.spotify.client"
-run = ["move-node-to-workspace M", "layout floating"]
-
-# END generated app rules from dotfiles/aerospace/apps.json
-
 # Placeholder: database app -> workspace 6 after one is installed.
 # Placeholder: Calendar/Chrome webapps ignored until they have stable window metadata.
