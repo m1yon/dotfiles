@@ -27,7 +27,12 @@
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      cleanup = "zap";
+      # nix-darwin's cleanup modes still pass Homebrew's deprecated --cleanup flag.
+      cleanup = "none";
+      extraFlags = [
+        "--force-cleanup"
+        "--zap"
+      ];
     };
 
     brews = [ ];
