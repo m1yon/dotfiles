@@ -17,7 +17,6 @@
     ./screenshot.nix
     ./slack.nix
     ./spotify.nix
-    ./stylix.nix
     ./todoist.nix
     ./vibetyper.nix
     ./vicinae.nix

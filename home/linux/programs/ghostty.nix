@@ -2,7 +2,7 @@
   programs.ghostty = {
     enable = true;
     settings = {
-      theme = "TokyoNight Night"; # TODO: move to stylix
+      theme = "TokyoNight Night";
       confirm-close-surface = false;
       clipboard-read = "allow";
       clipboard-write = "allow";

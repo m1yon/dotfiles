@@ -44,14 +44,6 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix = {
-      url = "github:danth/stylix/release-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    tt-schemes = {
-      url = "github:tinted-theming/schemes";
-      flake = false;
-    };
     t3code-nix = {
       url = "github:Sawrz/t3code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -132,7 +124,6 @@
             home-manager.extraSpecialArgs = mkSpecialArgs "nixbook" hosts.nixbook;
             home-manager.sharedModules = [
               inputs.sops-nix.homeManagerModules.sops
-              inputs.stylix.homeModules.stylix
             ];
           }
         ];
@@ -156,7 +147,6 @@
             home-manager.extraSpecialArgs = mkSpecialArgs "macbook" hosts.macbook;
             home-manager.sharedModules = [
               inputs.sops-nix.homeManagerModules.sops
-              inputs.stylix.homeModules.stylix
             ];
           }
         ];
@@ -167,7 +157,6 @@
         extraSpecialArgs = mkSpecialArgs "nixbook" hosts.nixbook;
         modules = [
           inputs.sops-nix.homeManagerModules.sops
-          inputs.stylix.homeModules.stylix
           ./home/users/michael.nix
           ./home/linux
         ];
@@ -178,7 +167,6 @@
         extraSpecialArgs = mkSpecialArgs "macbook" hosts.macbook;
         modules = [
           inputs.sops-nix.homeManagerModules.sops
-          inputs.stylix.homeModules.stylix
           ./home/users/michael.nix
           ./home/darwin
         ];
