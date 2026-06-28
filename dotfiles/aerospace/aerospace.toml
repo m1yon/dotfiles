@@ -15,9 +15,9 @@ persistent-workspaces = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "M"]
 # 1-5: general/dev defaults.
 # 6: database placeholder; add app routing after a database app is installed.
 # 7: email.
-# 8: Linear.
+# 8: Linear/Todoist.
 # 9: comms.
-# 10: Todoist.
+# 10: Calendar/Chrome webapps placeholder.
 # M: Spotify.
 
 after-startup-command = [
@@ -113,7 +113,7 @@ run = 'move-node-to-workspace 9'
 
 [[on-window-detected]]
 if.app-id = 'com.todoist.mac.Todoist'
-run = 'move-node-to-workspace 10'
+run = 'move-node-to-workspace 8'
 
 [[on-window-detected]]
 if.app-id = 'com.spotify.client'
