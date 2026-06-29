@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>transfer-env-files Implementation Plan</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7f4;
+      --paper: #ffffff;
+      --ink: #18211c;
+      --muted: #5c675f;
+      --line: #d9ded4;
+      --blue: #2563eb;
+      --green: #15803d;
+      --orange: #b45309;
+      --red: #b91c1c;
+      --violet: #6d28d9;
+      --code-bg: #111827;
+      --code-ink: #f8fafc;
+      --inline-code: #f1f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--line);
+      margin-bottom: 22px;
+      padding-bottom: 20px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.15;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      max-width: 900px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin: 18px 0 8px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    code {
+      background: var(--inline-code);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.92em;
+    }
+
+    pre {
+      background: var(--code-bg);
+      border-radius: 8px;
+      color: var(--code-ink);
+      font-size: 0.88rem;
+      line-height: 1.5;
+      margin: 12px 0 0;
+      overflow-x: auto;
+      padding: 14px 16px;
+    }
+
+    pre code {
+      background: transparent;
+      border: 0;
+      color: inherit;
+      display: block;
+      padding: 0;
+      white-space: pre;
+    }
+
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      margin: 16px 0;
+      padding: 20px;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 0;
+      padding-left: 1.25rem;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    table {
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      margin-top: 12px;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef2ff;
+      color: #172554;
+      font-weight: 700;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-top: 10px;
+      max-width: 920px;
+    }
+
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      display: inline-flex;
+      font-size: 0.9rem;
+      font-weight: 650;
+      min-height: 30px;
+      padding: 4px 10px;
+    }
+
+    .pill.green {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: var(--green);
+    }
+
+    .pill.orange {
+      background: #fff7ed;
+      border-color: #fed7aa;
+      color: var(--orange);
+    }
+
+    .pill.violet {
+      background: #f5f3ff;
+      border-color: #ddd6fe;
+      color: var(--violet);
+    }
+
+    .callout {
+      background: #eff6ff;
+      border-left: 4px solid var(--blue);
+      border-radius: 6px;
+      margin-top: 12px;
+      padding: 12px 14px;
+    }
+
+    .warning {
+      background: #fff7ed;
+      border-left-color: var(--orange);
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .mini h3 {
+      margin-top: 0;
+    }
+
+    .checklist {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .checklist li {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 18px 1fr;
+    }
+
+    .box {
+      border: 2px solid var(--line);
+      border-radius: 4px;
+      display: inline-block;
+      height: 14px;
+      margin-top: 5px;
+      width: 14px;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 24px, 1120px);
+        padding-top: 24px;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>transfer-env-files Implementation Plan</h1>
+      <p class="lede">
+        Build a shared Bun CLI that pulls project-local <code>.env</code> files from an old machine's GitHub workspace into the current machine's GitHub workspace, creating missing directories and skipping existing local secrets by default.
+      </p>
+      <div class="status" aria-label="Plan summary">
+        <span class="pill green">Shared Bun CLI</span>
+        <span class="pill violet">SSH + rsync</span>
+        <span class="pill orange">Secrets-aware defaults</span>
+        <span class="pill">No global installs</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>Target Behavior</h2>
+      <p>
+        Run this on the new/current machine:
+      </p>
+      <pre><code>transfer-env-files old-mac.local
+transfer-env-files michael@192.168.1.50 --dry-run
+transfer-env-files old-linux --remote-root ~/github --local-root ~/GitHub --overwrite</code></pre>
+      <ul>
+        <li>Source machine is the positional SSH target, such as <code>old-mac.local</code>, <code>old-linux</code>, or <code>michael@192.168.1.50</code>.</li>
+        <li>Remote workspace defaults to <code>~/GitHub</code> if present, then <code>~/github</code>.</li>
+        <li>Local workspace defaults to <code>$HOME/GitHub</code> if present, then <code>$HOME/github</code>.</li>
+        <li>Files copied: <code>.env</code> and <code>.env.*</code>.</li>
+        <li>Files skipped: examples/templates such as <code>.env.example</code>, plus dependency/build/cache directories.</li>
+        <li>Existing local env files are skipped unless <code>--overwrite</code> is passed.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Key Decisions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Decision</th>
+            <th>Plan</th>
+            <th>Reason</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Script scope</td>
+            <td><code>scripts/bun/src/shared/src/transfer-env-files/index.ts</code></td>
+            <td>Works on macOS and Linux, and matches the existing Bun script layout.</td>
+          </tr>
+          <tr>
+            <td>Transport</td>
+            <td><code>rsync</code> over SSH</td>
+            <td>Preserves relative paths, creates directories, supports dry runs, and handles incremental copies.</td>
+          </tr>
+          <tr>
+            <td>Overwrite policy</td>
+            <td>Skip existing files by default with <code>--ignore-existing</code></td>
+            <td>A bootstrap command should not destroy newer local secrets accidentally.</td>
+          </tr>
+          <tr>
+            <td>Secret handling</td>
+            <td>Copy files only between machines; never commit copied env files into this repo</td>
+            <td>This repo manages durable machine secrets through SOPS. Project env files remain project-local.</td>
+          </tr>
+          <tr>
+            <td>Package dependency</td>
+            <td>Add <code>pkgs.rsync</code> to <code>home/shared/packages.nix</code> if it is not already present</td>
+            <td>Pure Nix rule: runtime tools must be declared, not installed imperatively.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout warning">
+        <strong>Important:</strong> <code>rsync</code> must exist on both machines. After adding it declaratively, Michael should run the appropriate rebuild on each managed machine that needs to send or receive env files.
+      </div>
+    </section>
+
+    <section>
+      <h2>CLI Contract</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Argument or option</th>
+            <th>Default</th>
+            <th>Behavior</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>&lt;host&gt;</code></td>
+            <td>Required</td>
+            <td>SSH target for the source machine. Rely on <code>~/.ssh/config</code> for custom ports, users, and keys.</td>
+          </tr>
+          <tr>
+            <td><code>--remote-root &lt;path&gt;</code></td>
+            <td>Auto-detect <code>~/GitHub</code>, then <code>~/github</code></td>
+            <td>Remote workspace to scan for env files.</td>
+          </tr>
+          <tr>
+            <td><code>--local-root &lt;path&gt;</code></td>
+            <td>Auto-detect <code>$HOME/GitHub</code>, then <code>$HOME/github</code></td>
+            <td>Local destination workspace. Create it if missing.</td>
+          </tr>
+          <tr>
+            <td><code>--dry-run</code></td>
+            <td><code>false</code></td>
+            <td>Print what would copy without writing files.</td>
+          </tr>
+          <tr>
+            <td><code>--overwrite</code></td>
+            <td><code>false</code></td>
+            <td>Allow remote env files to replace local env files.</td>
+          </tr>
+          <tr>
+            <td><code>--include-examples</code></td>
+            <td><code>false</code></td>
+            <td>Also copy <code>.env.example</code>, <code>.env.sample</code>, and <code>.env.template</code> when needed.</td>
+          </tr>
+          <tr>
+            <td><code>--verbose</code></td>
+            <td><code>false</code></td>
+            <td>Show the resolved roots and the generated rsync command without printing secret contents.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Implementation Steps</h2>
+      <ol>
+        <li>Create <code>scripts/bun/src/shared/src/transfer-env-files/index.ts</code> as a tiny entry point with the required shebang and front matter description.</li>
+        <li>Move <code>yargs</code> setup and input validation into <code>cli.ts</code>, returning a typed options object instead of running transfer logic directly.</li>
+        <li>Add <code>roots.ts</code> for local/remote GitHub root detection and SSH/rsync preflight checks.</li>
+        <li>Add <code>rsync.ts</code> for include/exclude filters, argv construction, command execution, and rsync summary parsing.</li>
+        <li>Add <code>transfer.ts</code> for the high-level workflow: parse options, resolve roots, create the local root, run rsync, and print the result.</li>
+        <li>Keep shared types and constants close to the file that owns the behavior; only add a separate <code>types.ts</code> later if duplication becomes noisy.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Module Layout</h2>
+      <p>
+        Keep the source layout to five files. This gives the main behaviors names without turning the tool into a maze of tiny modules.
+      </p>
+      <pre><code>scripts/bun/src/shared/src/transfer-env-files/
+  index.ts      # shebang, front matter, runCli(), error-to-exit handling
+  cli.ts        # yargs parser, defaults, validation, typed options
+  roots.ts      # local/remote root detection plus ssh/rsync preflight
+  rsync.ts      # rsync filters, argv construction, execution, summary parsing
+  transfer.ts   # high-level workflow orchestration and terminal summary</code></pre>
+      <div class="callout">
+        The entry point should look roughly like <code>runCli(process.argv).catch(handleCliError)</code>. Avoid separate <code>config.ts</code>, <code>process.ts</code>, <code>preflight.ts</code>, <code>summary.ts</code>, or <code>types.ts</code> unless the first implementation proves they are needed.
+      </div>
+    </section>
+
+    <section>
+      <h2>Rsync Shape</h2>
+      <p>
+        The implementation should build argv directly and call <code>Bun.spawn</code>. Do not interpolate this through a shell.
+      </p>
+      <pre><code>rsync \
+  -a \
+  --prune-empty-dirs \
+  --itemize-changes \
+  --stats \
+  --chmod=F600 \
+  --ignore-existing \
+  --exclude='**/.git/***' \
+  --exclude='**/node_modules/***' \
+  --exclude='**/.direnv/***' \
+  --exclude='**/.next/***' \
+  --exclude='**/dist/***' \
+  --exclude='**/build/***' \
+  --exclude='**/coverage/***' \
+  --exclude='.env.example' \
+  --exclude='.env.sample' \
+  --exclude='.env.template' \
+  --include='*/' \
+  --include='.env' \
+  --include='.env.*' \
+  --exclude='*' \
+  old-mac.local:~/GitHub/ \
+  ~/GitHub/</code></pre>
+      <div class="callout">
+        When <code>--overwrite</code> is passed, remove <code>--ignore-existing</code>. When <code>--dry-run</code> is passed, add <code>--dry-run</code> and keep every other behavior the same.
+      </div>
+    </section>
+
+    <section>
+      <h2>Files To Change</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>File</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>scripts/bun/src/shared/src/transfer-env-files/index.ts</code></td>
+            <td>New thin CLI entry point with shebang, front matter, and top-level error handling only.</td>
+          </tr>
+          <tr>
+            <td><code>scripts/bun/src/shared/src/transfer-env-files/cli.ts</code></td>
+            <td>Parse command arguments, hold CLI defaults, validate unsafe input, and return typed options.</td>
+          </tr>
+          <tr>
+            <td><code>scripts/bun/src/shared/src/transfer-env-files/roots.ts</code></td>
+            <td>Resolve local and remote GitHub workspace roots, and check local tools, SSH reachability, remote <code>rsync</code>, and remote root availability.</td>
+          </tr>
+          <tr>
+            <td><code>scripts/bun/src/shared/src/transfer-env-files/rsync.ts</code></td>
+            <td>Hold transfer filters, build rsync argv, run the command through an injectable runner, and parse rsync summary output.</td>
+          </tr>
+          <tr>
+            <td><code>scripts/bun/src/shared/src/transfer-env-files/transfer.ts</code></td>
+            <td>Coordinate parsing, root resolution, directory creation, rsync execution, and concise result reporting without exposing secret contents.</td>
+          </tr>
+          <tr>
+            <td><code>scripts/bun/src/shared/src/transfer-env-files/*.test.ts</code></td>
+            <td>Add focused tests for CLI parsing, root detection, rsync argv, and workflow behavior.</td>
+          </tr>
+          <tr>
+            <td><code>home/shared/packages.nix</code></td>
+            <td>Add <code>pkgs.rsync</code>. Consider <code>pkgs.openssh</code> too if SSH client availability is not guaranteed on every target.</td>
+          </tr>
+          <tr>
+            <td><code>scripts/bun/README.md</code></td>
+            <td>Add one short usage example after implementation.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Security Guardrails</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>No secret output</h3>
+          <p>Never print file contents. Logs should show paths and transfer summaries only.</p>
+        </div>
+        <div class="mini">
+          <h3>Skip by default</h3>
+          <p>Do not overwrite existing local env files unless <code>--overwrite</code> is explicit.</p>
+        </div>
+        <div class="mini">
+          <h3>Restrictive file mode</h3>
+          <p>Apply <code>--chmod=F600</code> so copied env files are readable only by the current user.</p>
+        </div>
+        <div class="mini">
+          <h3>SOPS boundary</h3>
+          <p>Do not convert copied project env files into repo-managed secrets in this command. SOPS remains the path for durable system secrets.</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Test Layout</h2>
+      <p>
+        Keep tests close to the module they describe. Integration tests should use fake command runners and temporary directories, not real SSH hosts.
+      </p>
+      <pre><code>scripts/bun/src/shared/src/transfer-env-files/
+  cli.test.ts        # required host, aliases, defaults, bad input rejection
+  roots.test.ts      # local root selection, remote root detection, preflight
+  rsync.test.ts      # include/exclude filters, dry-run, overwrite behavior
+  transfer.test.ts   # workflow behavior with fake runner and tmp dirs</code></pre>
+      <div class="callout">
+        The highest-value tests are <code>rsync.test.ts</code> and <code>transfer.test.ts</code>, because they protect the dangerous behavior: what gets copied and whether existing files are overwritten.
+      </div>
+    </section>
+
+    <section>
+      <h2>Testing Plan</h2>
+      <ul class="checklist">
+        <li><span class="box" aria-hidden="true"></span><span>Run <code>bun run typecheck</code> from <code>scripts/bun</code>.</span></li>
+        <li><span class="box" aria-hidden="true"></span><span>Run <code>bun test src/shared/src/transfer-env-files</code> from <code>scripts/bun</code>.</span></li>
+        <li><span class="box" aria-hidden="true"></span><span>Run <code>bun run build shared</code> and confirm <code>scripts/bun/bin/shared/transfer-env-files</code> is produced.</span></li>
+        <li><span class="box" aria-hidden="true"></span><span>Manual dry run against a reachable host: <code>transfer-env-files old-host --dry-run --verbose</code>.</span></li>
+        <li><span class="box" aria-hidden="true"></span><span>Manual copy into a temporary local root: <code>transfer-env-files old-host --local-root /tmp/env-transfer-test</code>.</span></li>
+        <li><span class="box" aria-hidden="true"></span><span>Verify existing local <code>.env</code> files are not replaced without <code>--overwrite</code>.</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Done Criteria</h2>
+      <ul>
+        <li><code>transfer-env-files &lt;host&gt;</code> copies missing env files from the remote GitHub workspace into the local GitHub workspace.</li>
+        <li>Missing project directories are created automatically.</li>
+        <li>Existing local env files are preserved by default.</li>
+        <li>Dry-run output is clear enough to trust before a real transfer.</li>
+        <li>The script is available through the existing Bun script build and Nix PATH setup after Michael runs the appropriate rebuild.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
