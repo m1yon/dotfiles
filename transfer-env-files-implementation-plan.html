@@ -377,11 +377,6 @@ transfer-env-files old-linux --remote-root ~/github --local-root ~/GitHub --over
             <td>Allow remote env files to replace local env files.</td>
           </tr>
           <tr>
-            <td><code>--include-examples</code></td>
-            <td><code>false</code></td>
-            <td>Also copy <code>.env.example</code>, <code>.env.sample</code>, and <code>.env.template</code> when needed.</td>
-          </tr>
-          <tr>
             <td><code>--verbose</code></td>
             <td><code>false</code></td>
             <td>Show the resolved roots and the generated rsync command without printing secret contents.</td>
@@ -428,7 +423,6 @@ transfer-env-files old-linux --remote-root ~/github --local-root ~/GitHub --over
   --prune-empty-dirs \
   --itemize-changes \
   --stats \
-  --chmod=F600 \
   --ignore-existing \
   --exclude='**/.git/***' \
   --exclude='**/node_modules/***' \
@@ -482,10 +476,6 @@ transfer-env-files old-linux --remote-root ~/github --local-root ~/GitHub --over
             <td>Coordinate parsing, root resolution, directory creation, rsync execution, and concise result reporting without exposing secret contents.</td>
           </tr>
           <tr>
-            <td><code>scripts/bun/src/shared/src/transfer-env-files/*.test.ts</code></td>
-            <td>Add focused tests for CLI parsing, root detection, rsync argv, and workflow behavior.</td>
-          </tr>
-          <tr>
             <td><code>home/shared/packages.nix</code></td>
             <td>Add <code>pkgs.rsync</code>. Consider <code>pkgs.openssh</code> too if SSH client availability is not guaranteed on every target.</td>
           </tr>
@@ -509,10 +499,6 @@ transfer-env-files old-linux --remote-root ~/github --local-root ~/GitHub --over
           <p>Do not overwrite existing local env files unless <code>--overwrite</code> is explicit.</p>
         </div>
         <div class="mini">
-          <h3>Restrictive file mode</h3>
-          <p>Apply <code>--chmod=F600</code> so copied env files are readable only by the current user.</p>
-        </div>
-        <div class="mini">
           <h3>SOPS boundary</h3>
           <p>Do not convert copied project env files into repo-managed secrets in this command. SOPS remains the path for durable system secrets.</p>
         </div>
@@ -520,28 +506,12 @@ transfer-env-files old-linux --remote-root ~/github --local-root ~/GitHub --over
     </section>
 
     <section>
-      <h2>Test Layout</h2>
-      <p>
-        Keep tests close to the module they describe. Integration tests should use fake command runners and temporary directories, not real SSH hosts.
-      </p>
-      <pre><code>scripts/bun/src/shared/src/transfer-env-files/
-  cli.test.ts        # required host, aliases, defaults, bad input rejection
-  roots.test.ts      # local root selection, remote root detection, preflight
-  rsync.test.ts      # include/exclude filters, dry-run, overwrite behavior
-  transfer.test.ts   # workflow behavior with fake runner and tmp dirs</code></pre>
-      <div class="callout">
-        The highest-value tests are <code>rsync.test.ts</code> and <code>transfer.test.ts</code>, because they protect the dangerous behavior: what gets copied and whether existing files are overwritten.
-      </div>
-    </section>
-
-    <section>
-      <h2>Testing Plan</h2>
+      <h2>Verification Plan</h2>
       <ul class="checklist">
         <li><span class="box" aria-hidden="true"></span><span>Run <code>bun run typecheck</code> from <code>scripts/bun</code>.</span></li>
-        <li><span class="box" aria-hidden="true"></span><span>Run <code>bun test src/shared/src/transfer-env-files</code> from <code>scripts/bun</code>.</span></li>
         <li><span class="box" aria-hidden="true"></span><span>Run <code>bun run build shared</code> and confirm <code>scripts/bun/bin/shared/transfer-env-files</code> is produced.</span></li>
-        <li><span class="box" aria-hidden="true"></span><span>Manual dry run against a reachable host: <code>transfer-env-files old-host --dry-run --verbose</code>.</span></li>
-        <li><span class="box" aria-hidden="true"></span><span>Manual copy into a temporary local root: <code>transfer-env-files old-host --local-root /tmp/env-transfer-test</code>.</span></li>
+        <li><span class="box" aria-hidden="true"></span><span>Manual dry run against the real source host: <code>transfer-env-files michael@nixbook.local --dry-run --verbose</code>.</span></li>
+        <li><span class="box" aria-hidden="true"></span><span>Manual copy into a temporary local root: <code>transfer-env-files michael@nixbook.local --local-root /tmp/env-transfer-test</code>.</span></li>
         <li><span class="box" aria-hidden="true"></span><span>Verify existing local <code>.env</code> files are not replaced without <code>--overwrite</code>.</span></li>
       </ul>
     </section>
