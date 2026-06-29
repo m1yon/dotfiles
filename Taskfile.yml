@@ -4,9 +4,16 @@ vars:
   FLAKE_DIR: "{{.TASKFILE_DIR}}"
 
 tasks:
+  install-bun-scripts:
+    desc: Install Bun script dependencies
+    dir: "{{.FLAKE_DIR}}/scripts/bun"
+    cmd: bun install --frozen-lockfile
+
   build-bun-scripts:
     desc: Build compiled Bun CLI scripts
     dir: "{{.FLAKE_DIR}}/scripts/bun"
+    deps:
+      - install-bun-scripts
     cmd: bun run build
 
   rebuild:
