@@ -13,6 +13,7 @@
     pkgs.openssl
     pkgs.pkg-config
     pkgs.ripgrep
+    pkgs.rsync
     pkgs.sqlite
     pkgs.tree
     pkgs.uv

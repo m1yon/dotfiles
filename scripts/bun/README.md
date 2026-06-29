@@ -21,3 +21,9 @@ bun run typecheck
 ```
 
 `bun run build` builds `shared` plus the current platform by default.
+
+## Example
+
+```bash
+transfer-env-files michael@nixbook.local --dry-run --verbose
+```
