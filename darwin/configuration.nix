@@ -3,5 +3,6 @@
     ./nix.nix
     ./system.nix
     ./homebrew.nix
+    ./programs
   ];
 }
