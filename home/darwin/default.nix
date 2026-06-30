@@ -45,6 +45,15 @@ in
     ./shell.nix
   ];
 
+  services.gpg-agent = {
+    enable = true;
+    defaultCacheTtl = 3600;
+    maxCacheTtl = 7200;
+    pinentry.package = pkgs.pinentry_mac;
+    enableSshSupport = false;
+    enableZshIntegration = true;
+  };
+
   home.file."Library/Application Support/com.mitchellh.ghostty/config.ghostty" = {
     force = true;
     text = ghosttyConfig;
