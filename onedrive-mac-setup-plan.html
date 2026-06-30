@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OneDrive Mac Setup Plan</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8f5;
+      --paper: #ffffff;
+      --ink: #17211b;
+      --muted: #5d685f;
+      --line: #d8ddd4;
+      --blue: #2563eb;
+      --green: #15803d;
+      --orange: #b45309;
+      --red: #b91c1c;
+      --code: #f1f5f9;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    header {
+      border-bottom: 2px solid var(--line);
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      line-height: 1.15;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      max-width: 900px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin: 0 0 12px;
+    }
+
+    a {
+      color: var(--blue);
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    code {
+      background: var(--code);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 0.1rem 0.35rem;
+      font-size: 0.92em;
+    }
+
+    pre code {
+      display: block;
+      background: transparent;
+      border: 0;
+      color: inherit;
+      padding: 0;
+      font-size: inherit;
+      white-space: pre;
+    }
+
+    pre {
+      background: #111827;
+      color: #f8fafc;
+      border-radius: 8px;
+      overflow-x: auto;
+      padding: 14px 16px;
+      margin: 12px 0 0;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    ul,
+    ol {
+      margin: 8px 0 0;
+      padding-left: 1.25rem;
+    }
+
+    li {
+      margin: 6px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eef2ff;
+      color: #172554;
+      font-weight: 700;
+    }
+
+    .lede {
+      color: var(--muted);
+      font-size: 1.05rem;
+      max-width: 900px;
+      margin-top: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      padding: 4px 10px;
+      color: var(--muted);
+      font-weight: 650;
+      font-size: 0.9rem;
+    }
+
+    .pill.good {
+      color: var(--green);
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .pill.warn {
+      color: var(--orange);
+      border-color: #fed7aa;
+      background: #fff7ed;
+    }
+
+    .pill.no {
+      color: var(--red);
+      border-color: #fecaca;
+      background: #fef2f2;
+    }
+
+    .callout {
+      border-left: 4px solid var(--blue);
+      background: #eff6ff;
+      padding: 12px 14px;
+      border-radius: 6px;
+      margin-top: 12px;
+    }
+
+    .risk {
+      border-left-color: var(--orange);
+      background: #fff7ed;
+    }
+
+    .danger {
+      border-left-color: var(--red);
+      background: #fef2f2;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .done {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .pending {
+      color: var(--orange);
+      font-weight: 700;
+    }
+
+    .no {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    @media (max-width: 760px) {
+      main {
+        width: min(100% - 20px, 1120px);
+        padding-top: 20px;
+      }
+
+      section {
+        padding: 16px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>OneDrive and SharePoint Sync Plan for macOS</h1>
+      <p class="lede">
+        Goal: add the native Microsoft OneDrive client to the Mac setup, sync the same business OneDrive and
+        SharePoint libraries as Linux, and preserve stable script paths under <code>~/OneDrive</code>.
+      </p>
+      <div class="status">
+        <span class="pill good">Planning only</span>
+        <span class="pill good">Nix-managed install</span>
+        <span class="pill good">Darwin program module</span>
+        <span class="pill good">Keeps ~/OneDrive paths</span>
+        <span class="pill warn">Manual Microsoft sign-in required</span>
+        <span class="pill warn">User rebuild required</span>
+      </div>
+    </header>
+
+    <section>
+      <h2>Executive Summary</h2>
+      <ul>
+        <li>Use Microsoft's native OneDrive for Mac app, installed declaratively from <code>darwin/programs/onedrive.nix</code>.</li>
+        <li>Keep <code>darwin/homebrew.nix</code> focused on Homebrew plumbing, taps, activation behavior, and any not-yet-localized apps.</li>
+        <li>Add <code>darwin/programs/default.nix</code> as the Darwin app-module import hub.</li>
+        <li>Let the OneDrive module own both <code>homebrew.casks = [ "onedrive" ]</code> and the <code>~/OneDrive</code> compatibility links.</li>
+        <li>Do not try to port the Linux <code>onedrive</code> service setup directly. In this flake, <code>pkgs.onedrive</code> is Linux-only.</li>
+        <li>Let macOS and OneDrive own the real sync root under <code>~/Library/CloudStorage</code>.</li>
+        <li>Create a compatibility directory at <code>~/OneDrive</code> for scripts and repos.</li>
+        <li>Inside <code>~/OneDrive</code>, create symlinks named <code>personal</code>, <code>carecoordinators</code>, and <code>reporting</code>.</li>
+        <li>Use SharePoint's <code>Add shortcut to My files</code> flow first. Use <code>Sync</code> only if shortcut behavior is not good enough.</li>
+        <li>Use Finder's <code>Always keep on this device</code> for folders that should behave like local clones.</li>
+      </ul>
+      <div class="callout risk">
+        Main constraint: OneDrive's actual macOS sync root is controlled by Apple's File Provider system. The plan keeps
+        <code>~/OneDrive</code> stable as a compatibility layer instead of fighting the system-owned location.
+      </div>
+    </section>
+
+    <section>
+      <h2>Current Linux Behavior</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Linux instance</th>
+            <th>Local path</th>
+            <th>Source</th>
+            <th>Mac target</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>onedrive-personal</code></td>
+            <td><code>~/OneDrive/personal</code></td>
+            <td>Business OneDrive</td>
+            <td>Symlink to the work/school OneDrive CloudStorage root.</td>
+          </tr>
+          <tr>
+            <td><code>onedrive-carecoordinators</code></td>
+            <td><code>~/OneDrive/carecoordinators</code></td>
+            <td>SharePoint library with encrypted <code>drive_id</code></td>
+            <td>Symlink to the Care Coordinators folder or synced SharePoint library.</td>
+          </tr>
+          <tr>
+            <td><code>onedrive-reporting</code></td>
+            <td><code>~/OneDrive/reporting</code></td>
+            <td>SharePoint library with encrypted <code>drive_id</code></td>
+            <td>Symlink to the Reporting folder or synced SharePoint library.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="small">
+        Linux source: <code>home/linux/services/onedrive.nix</code>. The Mac setup should preserve the path contract
+        without copying Linux's systemd service model.
+      </p>
+    </section>
+
+    <section>
+      <h2>Option Decision</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Option</th>
+            <th>Fit</th>
+            <th>Pros</th>
+            <th>Cons</th>
+            <th>Decision</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Native Microsoft OneDrive app</td>
+            <td>Best daily-driver fit</td>
+            <td>Finder integration, Office AutoSave, Files On-Demand, supported SharePoint sync.</td>
+            <td>Requires manual sign-in and browser SharePoint setup.</td>
+            <td><span class="done">Use this</span></td>
+          </tr>
+          <tr>
+            <td><code>rclone</code></td>
+            <td>Good for scripts and mounts</td>
+            <td>Nix-friendly, supports OneDrive and SharePoint, useful for automation.</td>
+            <td>Weaker Finder and Office integration. Two-way sync needs careful handling.</td>
+            <td>Keep as fallback</td>
+          </tr>
+          <tr>
+            <td>Third-party mounters</td>
+            <td>Niche</td>
+            <td>Can mount cloud storage like a drive.</td>
+            <td>Extra paid app surface and less native Office behavior.</td>
+            <td>Avoid unless needed</td>
+          </tr>
+          <tr>
+            <td>Linux <code>onedrive</code> CLI client</td>
+            <td>Poor Mac fit</td>
+            <td>Matches current Linux architecture.</td>
+            <td>Not packaged for Darwin in this flake. macOS support is not the happy path.</td>
+            <td><span class="no">Do not use</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Target Path Layout</h2>
+      <p>
+        The real paths will be discovered after OneDrive is installed and signed in. Expected examples:
+      </p>
+      <pre><code>~/Library/CloudStorage/OneDrive-MECA Therapies
+~/Library/CloudStorage/OneDrive - MECA Therapies
+~/Library/CloudStorage/OneDrive-Personal</code></pre>
+      <p class="small">
+        The exact folder name depends on OneDrive's current Mac client and the tenant display name.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Compatibility path</th>
+            <th>Likely target</th>
+            <th>Created by</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>~/OneDrive/personal</code></td>
+            <td><code>~/Library/CloudStorage/OneDrive-*</code> for the MECA work account</td>
+            <td>Home Manager activation script after OneDrive sign-in.</td>
+          </tr>
+          <tr>
+            <td><code>~/OneDrive/carecoordinators</code></td>
+            <td>A Care Coordinators shortcut or synced library inside <code>~/Library/CloudStorage</code></td>
+            <td>Home Manager activation script after the SharePoint library exists locally.</td>
+          </tr>
+          <tr>
+            <td><code>~/OneDrive/reporting</code></td>
+            <td>A Reporting shortcut or synced library inside <code>~/Library/CloudStorage</code></td>
+            <td>Home Manager activation script after the SharePoint library exists locally.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        Safe symlink direction: <code>~/OneDrive/name</code> points into <code>~/Library/CloudStorage</code>.
+        Avoid putting symlinks inside OneDrive that point to random outside folders and expecting OneDrive to sync them.
+      </div>
+    </section>
+
+    <section>
+      <h2>Implementation Phases</h2>
+      <ol>
+        <li>
+          <strong>Add a Darwin programs import hub.</strong>
+          Create <code>darwin/programs/default.nix</code>, import <code>./onedrive.nix</code> from it, and import
+          <code>./programs</code> from <code>darwin/configuration.nix</code>.
+        </li>
+        <li>
+          <strong>Create the OneDrive Darwin program module.</strong>
+          Create <code>darwin/programs/onedrive.nix</code>. This module should declare the OneDrive Homebrew cask and
+          the Home Manager activation script together.
+        </li>
+        <li>
+          <strong>Keep OneDrive out of the central cask list.</strong>
+          Do not add <code>"onedrive"</code> to <code>darwin/homebrew.nix</code>. That file remains the Homebrew backend
+          and shared activation policy.
+        </li>
+        <li>
+          <strong>Create the compatibility directory safely.</strong>
+          The OneDrive module should create <code>~/OneDrive</code> if it does not exist. If a non-directory already
+          exists there, it should warn and leave it alone.
+        </li>
+        <li>
+          <strong>Install and launch OneDrive through a user-run rebuild.</strong>
+          The agent can edit the Nix files and run eval/check commands. Michael runs the rebuild or switch command.
+        </li>
+        <li>
+          <strong>Sign in manually.</strong>
+          Open OneDrive, sign in with the MECA account, and let it create the macOS CloudStorage root.
+        </li>
+        <li>
+          <strong>Add the SharePoint libraries.</strong>
+          In SharePoint or Teams, add shortcuts for Care Coordinators and Reporting to OneDrive. If shortcuts are not
+          suitable, use the SharePoint <code>Sync</code> button instead.
+        </li>
+        <li>
+          <strong>Discover exact local names.</strong>
+          Run the discovery commands below, then update the module's target names if OneDrive used unexpected folder names.
+        </li>
+        <li>
+          <strong>Re-run Home Manager activation.</strong>
+          Once targets exist, the activation script creates or repairs <code>~/OneDrive/personal</code>,
+          <code>~/OneDrive/carecoordinators</code>, and <code>~/OneDrive/reporting</code>.
+        </li>
+        <li>
+          <strong>Pin local copies where needed.</strong>
+          In Finder, right-click the relevant folders and choose <code>Always keep on this device</code>.
+        </li>
+        <li>
+          <strong>Verify scripts.</strong>
+          Test scripts and repos that use <code>~/OneDrive</code>. If any script assumes Linux-only URL mapping, add a
+          Darwin branch rather than changing the shared path contract.
+        </li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>Discovery Commands</h2>
+      <p class="small">
+        Run these after OneDrive has signed in and after the SharePoint libraries have been added.
+      </p>
+      <pre><code>ls -la "$HOME/Library/CloudStorage"
+
+find "$HOME/Library/CloudStorage" \
+  -maxdepth 3 \
+  -type d \
+  \( -iname '*Care*' -o -iname '*Reporting*' -o -iname '*OneDrive*' \) \
+  -print</code></pre>
+      <div class="callout risk">
+        Do not use <code>rm -rf</code> or manually move OneDrive's CloudStorage folders. If a bad sync root appears, fix it
+        through OneDrive's account settings or uninstall/reset flow, then rerun the Nix activation.
+      </div>
+    </section>
+
+    <section>
+      <h2>Proposed Nix Shape</h2>
+      <p class="small">
+        This is the implementation sketch. The final target names may need adjustment after discovery.
+      </p>
+      <pre><code># darwin/configuration.nix
+{
+  imports = [
+    ./nix.nix
+    ./system.nix
+    ./homebrew.nix
+    ./programs
+  ];
+}</code></pre>
+      <pre><code># darwin/programs/default.nix
+{
+  imports = [
+    ./onedrive.nix
+  ];
+}</code></pre>
+      <pre><code># darwin/programs/onedrive.nix
+{ username, ... }:
+
+{
+  homebrew.casks = [ "onedrive" ];
+
+  home-manager.users.${username} = { config, lib, ... }:
+    let
+      homeDir = config.home.homeDirectory;
+    in
+    {
+      home.activation.onedriveCompatibilityLinks = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    set -eu
+
+    compat="${homeDir}/OneDrive"
+    cloud="${homeDir}/Library/CloudStorage"
+
+    if [ -e "$compat" ] && [ ! -d "$compat" ]; then
+      echo "$compat exists but is not a directory; leaving it unchanged." >&2
+      exit 0
+    fi
+
+    mkdir -p "$compat"
+
+    find_work_root() {
+      for dir in "$cloud"/OneDrive-* "$cloud"/"OneDrive - "*; do
+        [ -d "$dir" ] || continue
+
+        case "$(basename "$dir")" in
+          OneDrive-Personal|"OneDrive - Personal")
+            continue
+            ;;
+        esac
+
+        printf '%s\n' "$dir"
+        return 0
+      done
+
+      return 1
+    }
+
+    link_name() {
+      name="$1"
+      target="$2"
+      link="$compat/$name"
+
+      [ -e "$target" ] || [ -d "$target" ] || return 0
+
+      if [ -L "$link" ]; then
+        ln -sfn "$target" "$link"
+      elif [ ! -e "$link" ]; then
+        ln -s "$target" "$link"
+      else
+        echo "$link exists and is not a symlink; leaving it unchanged." >&2
+      fi
+    }
+
+    if work_root="$(find_work_root)"; then
+      link_name personal "$work_root"
+
+      for candidate in \
+        "$work_root/Care Coordinators" \
+        "$work_root/CareCoordinators" \
+        "$work_root/carecoordinators"
+      do
+        if [ -d "$candidate" ]; then
+          link_name carecoordinators "$candidate"
+          break
+        fi
+      done
+
+      for candidate in \
+        "$work_root/Reporting" \
+        "$work_root/reporting"
+      do
+        if [ -d "$candidate" ]; then
+          link_name reporting "$candidate"
+          break
+        fi
+      done
+    else
+      echo "No OneDrive work/school CloudStorage root found yet; sign in to OneDrive and rerun activation." >&2
+    fi
+      '';
+    };
+}</code></pre>
+      <div class="callout">
+        This module lives in the Darwin layer because <code>homebrew.casks</code> is a nix-darwin option. It can still
+        configure the user-level symlinks by setting <code>home-manager.users.${username}</code>. The activation is
+        intentionally idempotent, so it can run before OneDrive is configured, after sign-in, and after SharePoint
+        shortcuts are added.
+      </div>
+    </section>
+
+    <section>
+      <h2>Validation Checklist</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Check</th>
+            <th>Command or action</th>
+            <th>Expected result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Nix evaluation</td>
+            <td><code>nix flake check</code></td>
+            <td>Passes before asking Michael to rebuild.</td>
+          </tr>
+          <tr>
+            <td>OneDrive app installed</td>
+            <td>Open Applications or Spotlight</td>
+            <td>Microsoft OneDrive launches.</td>
+          </tr>
+          <tr>
+            <td>CloudStorage root exists</td>
+            <td><code>ls ~/Library/CloudStorage</code></td>
+            <td>A work/school <code>OneDrive-*</code> or <code>OneDrive - *</code> folder exists.</td>
+          </tr>
+          <tr>
+            <td>Compatibility root exists</td>
+            <td><code>ls -la ~/OneDrive</code></td>
+            <td>Directory exists with managed symlinks.</td>
+          </tr>
+          <tr>
+            <td>Personal path works</td>
+            <td><code>test -d ~/OneDrive/personal</code></td>
+            <td>Returns success.</td>
+          </tr>
+          <tr>
+            <td>SharePoint paths work</td>
+            <td><code>test -d ~/OneDrive/carecoordinators</code> and <code>test -d ~/OneDrive/reporting</code></td>
+            <td>Both return success after libraries are added.</td>
+          </tr>
+          <tr>
+            <td>Offline availability</td>
+            <td>Finder context menu</td>
+            <td>Required folders are marked <code>Always keep on this device</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Rollback</h2>
+      <ol>
+        <li>Remove the <code>./onedrive.nix</code> import from <code>darwin/programs/default.nix</code>.</li>
+        <li>Delete <code>darwin/programs/onedrive.nix</code>.</li>
+        <li>If OneDrive was the only Darwin program module, remove <code>./programs</code> from <code>darwin/configuration.nix</code> and delete <code>darwin/programs/default.nix</code>.</li>
+        <li>Ask Michael to run the appropriate rebuild command.</li>
+        <li>Remove compatibility symlinks under <code>~/OneDrive</code> only after confirming they are symlinks.</li>
+      </ol>
+      <div class="callout danger">
+        Do not delete anything inside <code>~/Library/CloudStorage</code> from scripts. Let OneDrive handle unsync,
+        account removal, or reset flows.
+      </div>
+    </section>
+
+    <section>
+      <h2>References</h2>
+      <ul>
+        <li><a href="https://learn.microsoft.com/en-us/sharepoint/deploy-and-configure-on-macos">Microsoft: Deploy and configure the OneDrive sync app for Mac</a></li>
+        <li><a href="https://support.microsoft.com/en-us/onedrive/missing-files-and-autosave-issues-with-onedrive-on-macos">Microsoft: OneDrive path moved to Library &gt; Cloud Storage</a></li>
+        <li><a href="https://support.microsoft.com/en-us/onedrive/save-disk-space-with-onedrive-files-on-demand-for-mac">Microsoft: Files On-Demand for Mac</a></li>
+        <li><a href="https://support.microsoft.com/en-us/onedrive/choose-which-onedrive-folders-you-want-to-sync-on-windows-or-macos">Microsoft: Choose OneDrive folders to sync on macOS</a></li>
+        <li><a href="https://rclone.org/onedrive/">rclone: Microsoft OneDrive documentation</a></li>
+      </ul>
+      <p class="small">Updated: June 30, 2026.</p>
+    </section>
+  </main>
+</body>
+</html>

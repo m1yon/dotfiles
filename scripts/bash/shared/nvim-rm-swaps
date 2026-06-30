@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# ---
+# description: Delete Neovim swap files from known Neovim swap directories
+# usage: nvim-rm-swaps [--dry-run|-n]
+# ---
+
+set -euo pipefail
+
+DRY_RUN=false
+
+case "${1:-}" in
+  --dry-run | -n)
+    DRY_RUN=true
+    shift
+    ;;
+  "" ) ;;
+  * )
+    echo "Usage: nvim-rm-swaps [--dry-run|-n]"
+    exit 1
+    ;;
+esac
+
+if [[ $# -ne 0 ]]; then
+  echo "Usage: nvim-rm-swaps [--dry-run|-n]"
+  exit 1
+fi
+
+STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+
+SWAP_DIRS=(
+  "$STATE_HOME/nvim/swap"
+  "$DATA_HOME/nvim/swap"
+  "$CACHE_HOME/nvim/swap"
+)
+
+COUNT=0
+
+for dir in "${SWAP_DIRS[@]}"; do
+  [[ -d "$dir" ]] || continue
+
+  while IFS= read -r -d "" file; do
+    COUNT=$((COUNT + 1))
+
+    if [[ "$DRY_RUN" == true ]]; then
+      printf '%s\n' "$file"
+    else
+      rm -f -- "$file"
+    fi
+  done < <(find "$dir" -type f -name '*.sw?' -print0)
+done
+
+if [[ "$DRY_RUN" == true ]]; then
+  echo "Found $COUNT Neovim swap file(s)."
+else
+  echo "Deleted $COUNT Neovim swap file(s)."
+fi
