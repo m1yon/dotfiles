@@ -39,8 +39,10 @@ in
 
   wrappers.neovim = {
     enable = true;
+    package = unstablePkgs.neovim-unwrapped;
     extraPackages = with pkgs; [
       gcc
+      tree-sitter
       nodejs
       gopls
       lua-language-server

@@ -94,7 +94,10 @@ now_if_args(function()
 		end
 	end
 	local ts_start = function(ev)
-		vim.treesitter.start(ev.buf)
+		local ok = pcall(vim.treesitter.start, ev.buf)
+		if not ok then
+			vim.notify_once("tree-sitter: parser unavailable for " .. vim.bo[ev.buf].filetype, vim.log.levels.WARN)
+		end
 	end
 	_G.Config.new_autocmd("FileType", filetypes, ts_start, "Start tree-sitter")
 end)
