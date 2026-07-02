@@ -52,6 +52,7 @@
       "superhuman"
       "superwhisper"
       "todoist-app"
+      "bruno"
     ];
     masApps = { };
   };
