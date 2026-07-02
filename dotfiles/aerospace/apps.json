@@ -1,6 +1,11 @@
 {
   "apps": [
     {
+      "name": "DataGrip",
+      "bundleId": "com.jetbrains.datagrip",
+      "workspace": "6"
+    },
+    {
       "name": "Superhuman",
       "bundleId": "com.superhuman.electron",
       "workspace": "7",
