@@ -3,9 +3,12 @@ model = "gpt-5.5"
 model_reasoning_effort = "xhigh"
 personality = "pragmatic"
 service_tier = "priority"
+approval_policy = "never"
+approvals_reviewer = "user"
+sandbox_mode = "danger-full-access"
 
 [marketplaces.openai-bundled]
-last_updated = "2026-07-02T17:01:01Z"
+last_updated = "2026-07-06T17:21:55Z"
 source_type = "local"
 source = "/Users/michael/.codex/.tmp/bundled-marketplaces/openai-bundled"
 
@@ -129,6 +132,57 @@ trust_level = "trusted"
 [projects."/Users/michael/GitHub/bruno-workspace"]
 trust_level = "trusted"
 
+[projects."/Users/michael/Documents/Codex/2026-07-02/use-the-chrome-bridge-to-play"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-02/use-the-chrome-bridge-to-play-2"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/new-chat"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/i-use-voice-to-text-a"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/patched-is-my-2024-tax-return"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/att"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/thank-you"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/i-have-you-need-a-budget"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/i-have-you-need-a-budget-2"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/i-have-you-need-a-budget-3"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/atta"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/in"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/ynab-2025-income-vs-tax-set-aside"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/freetaxusa-2025-tax-rate-investigation"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/xero-k1-core-project-income-reconciliation"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/my"]
+trust_level = "trusted"
+
+[projects."/Users/michael/Documents/Codex/2026-07-03/ynab-taxes-loan-payback-audit"]
+trust_level = "trusted"
+
 [mcp_servers.node_repl]
 args = []
 command = "/Applications/Codex.app/Contents/Resources/cua_node/bin/node_repl"
@@ -140,10 +194,10 @@ NODE_REPL_NODE_MODULE_DIRS = "/Applications/Codex.app/Contents/Resources/cua_nod
 NODE_REPL_NODE_PATH = "/Applications/Codex.app/Contents/Resources/cua_node/bin/node"
 NODE_REPL_TRUSTED_CODE_PATHS = "/Users/michael/.codex"
 CODEX_HOME = "/Users/michael/.codex"
-NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "cb79053fda6deb0f3b5d6f0d90d4257305ebdbd1e378a12e8fbc5bde782eb59b"
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "60e4902788f207f88fd09344dfeafe07769488bdb2924bbb12b322c3b9d2b999"
 BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
 NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.623.81905"
+BROWSER_USE_CODEX_APP_VERSION = "26.623.101652"
 CODEX_CLI_PATH = "/Applications/Codex.app/Contents/Resources/codex"

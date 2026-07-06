@@ -35,11 +35,14 @@
       ];
     };
 
-    brews = [ ];
+    brews = [
+      "mas"
+    ];
     casks = [
       "cleanshot"
       "codex-app"
       "discord"
+      "display-pilot"
       "ghostty"
       "google-chrome"
       "grammarly-desktop"
@@ -54,6 +57,8 @@
       "todoist-app"
       "bruno"
     ];
-    masApps = { };
+    masApps = {
+      "ScreenZen" = 1541027222;
+    };
   };
 }

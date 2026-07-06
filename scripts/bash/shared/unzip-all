@@ -1,0 +1,71 @@
+#!/usr/bin/env bash
+# ---
+# description: Unzip every zip file in a directory into same-named folders
+# usage: unzip-all <directory>
+# ---
+
+set -euo pipefail
+
+usage() {
+  echo "Usage: unzip-all <directory>"
+}
+
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 1
+fi
+
+case "$1" in
+  -h | --help)
+    usage
+    exit 0
+    ;;
+esac
+
+DIR="${1%/}"
+if [[ -z "$DIR" ]]; then
+  DIR="/"
+fi
+
+if [[ ! -d "$DIR" ]]; then
+  echo "Error: '$1' is not a directory"
+  exit 1
+fi
+
+if ! command -v unzip >/dev/null 2>&1; then
+  echo "Error: unzip is not available on PATH"
+  exit 1
+fi
+
+shopt -s dotglob nullglob nocaseglob
+
+found=0
+failed=0
+
+for zip_file in "$DIR"/*.zip; do
+  [[ -f "$zip_file" ]] || continue
+
+  found=$((found + 1))
+  filename="${zip_file##*/}"
+  output_dir="$DIR/${filename%.*}"
+
+  mkdir -p "$output_dir"
+
+  echo "Unzipping: $zip_file -> $output_dir"
+  if ! unzip -q -n "$zip_file" -d "$output_dir"; then
+    echo "  Failed: $zip_file"
+    failed=$((failed + 1))
+  fi
+done
+
+if [[ $found -eq 0 ]]; then
+  echo "No zip files found in '$DIR'"
+  exit 0
+fi
+
+if [[ $failed -ne 0 ]]; then
+  echo "Done with $failed failure(s) out of $found zip file(s)."
+  exit 1
+fi
+
+echo "Unzipped $found zip file(s)."
