@@ -55,11 +55,37 @@ followUpQueueMode = "queue"
 worktree-keep-count = 5
 notifications-turn-mode = "always"
 
+[desktop.appearanceLightChromeTheme]
+accent = "#339cff"
+contrast = 45
+ink = "#1a1c1f"
+opaqueWindows = false
+surface = "#ffffff"
+
 [desktop.appearanceLightChromeTheme.fonts]
 code = "JetBrainsMono Nerd Font Mono"
+ui = ""
+
+[desktop.appearanceLightChromeTheme.semanticColors]
+diffAdded = "#00a240"
+diffRemoved = "#ba2623"
+skill = "#924ff7"
+
+[desktop.appearanceDarkChromeTheme]
+accent = "#339cff"
+contrast = 60
+ink = "#ffffff"
+opaqueWindows = false
+surface = "#181818"
 
 [desktop.appearanceDarkChromeTheme.fonts]
 code = "JetBrainsMono Nerd Font Mono"
+ui = ""
+
+[desktop.appearanceDarkChromeTheme.semanticColors]
+diffAdded = "#40c977"
+diffRemoved = "#fa423e"
+skill = "#ad7bf9"
 
 [desktop.open-in-target-preferences]
 global = "ghostty"
