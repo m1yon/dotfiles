@@ -60,6 +60,10 @@ in
   programs.zsh.enable = true;
   security.pam.services.sudo_local.touchIdAuth = true;
 
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+  ];
+
   system.keyboard = {
     enableKeyMapping = true;
     swapLeftCommandAndLeftAlt = false;

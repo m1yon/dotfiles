@@ -55,6 +55,12 @@ followUpQueueMode = "queue"
 worktree-keep-count = 5
 notifications-turn-mode = "always"
 
+[desktop.appearanceLightChromeTheme.fonts]
+code = "JetBrainsMono Nerd Font Mono"
+
+[desktop.appearanceDarkChromeTheme.fonts]
+code = "JetBrainsMono Nerd Font Mono"
+
 [desktop.open-in-target-preferences]
 global = "ghostty"
 
