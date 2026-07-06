@@ -53,6 +53,7 @@ keepRemoteControlAwakeWhilePluggedIn = true
 preventSleepWhileRunning = true
 followUpQueueMode = "queue"
 worktree-keep-count = 5
+notifications-turn-mode = "always"
 
 [desktop.open-in-target-preferences]
 global = "ghostty"

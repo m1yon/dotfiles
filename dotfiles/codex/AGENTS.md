@@ -7,3 +7,6 @@ Michael is a senior software engineer, but has ADHD. When planning and conversin
 ### Learning Strategies
 
 Michael is a strong decomposition / systems-thinking learner. He likes learning from first principles and does really well when learning via chunking.
+
+### Rules
+- When a repo has an `.envrc`, run project commands through `direnv exec . <command>`
