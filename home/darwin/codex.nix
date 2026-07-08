@@ -10,10 +10,5 @@ in
       source = outOfStore "${dotfiles}/codex/AGENTS.md";
       force = true;
     };
-
-    ".codex/config.toml" = {
-      source = outOfStore "${dotfiles}/codex/config.toml";
-      force = true;
-    };
   };
 }
