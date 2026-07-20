@@ -39,6 +39,7 @@
       "mas"
     ];
     casks = [
+      "anki"
       "cleanshot"
       "codex-app"
       "discord"
