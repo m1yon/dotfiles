@@ -9,6 +9,7 @@ local spaces = require("hs.spaces")
 local task = require("hs.task")
 local timer = require("hs.timer")
 local window = require("hs.window")
+local windowFilter = require("hs.window.filter")
 
 local log = hs.logger.new("native-spaces", "info")
 window.animationDuration = 0
@@ -46,6 +47,10 @@ end
 
 hotkey.bind({"ctrl", "shift"}, "b", openNewChromeWindow)
 hotkey.bind({"ctrl", "shift"}, "t", openNewGhosttyWindow)
+hotkey.bind({"ctrl", "alt"}, "h", windowFilter.focusWest)
+hotkey.bind({"ctrl", "alt"}, "j", windowFilter.focusSouth)
+hotkey.bind({"ctrl", "alt"}, "k", windowFilter.focusNorth)
+hotkey.bind({"ctrl", "alt"}, "l", windowFilter.focusEast)
 
 local function orderedUserSpaces()
   local ids, err = spaces.spacesForScreen("Main")
