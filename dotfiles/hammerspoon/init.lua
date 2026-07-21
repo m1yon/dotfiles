@@ -1,13 +1,51 @@
+local application = require("hs.application")
 local eventtap = require("hs.eventtap")
+local hotkey = require("hs.hotkey")
 require("hs.ipc")
 local mouse = require("hs.mouse")
+local osascript = require("hs.osascript")
 local settings = require("hs.settings")
 local spaces = require("hs.spaces")
+local task = require("hs.task")
 local timer = require("hs.timer")
 local window = require("hs.window")
 
 local log = hs.logger.new("native-spaces", "info")
 window.animationDuration = 0
+
+local function openNewChromeWindow()
+  task.new("/usr/bin/open", function(exitCode, _, stderr)
+    if exitCode ~= 0 then
+      log.e("Could not open a new Chrome window: " .. stderr)
+      hs.alert.show("Could not open Chrome")
+    end
+  end, {"-n", "-a", "Google Chrome"}):start()
+end
+
+local function openNewGhosttyWindow()
+  if not application.get("com.mitchellh.ghostty") then
+    if not application.launchOrFocusByBundleID("com.mitchellh.ghostty") then
+      log.e("Could not launch Ghostty")
+      hs.alert.show("Could not open Ghostty")
+    end
+    return
+  end
+
+  local ok, _, errorDetails = osascript.applescript([[
+    tell application id "com.mitchellh.ghostty"
+      new window
+      activate
+    end tell
+  ]])
+  if not ok then
+    log.e("Could not open a window in the existing Ghostty instance: "
+      .. hs.inspect(errorDetails))
+    hs.alert.show("Could not open a Ghostty window")
+  end
+end
+
+hotkey.bind({"ctrl", "shift"}, "b", openNewChromeWindow)
+hotkey.bind({"ctrl", "shift"}, "t", openNewGhosttyWindow)
 
 local function orderedUserSpaces()
   local ids, err = spaces.spacesForScreen("Main")
