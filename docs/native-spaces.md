@@ -1,12 +1,13 @@
 # Native macOS Spaces
 
-macOS Spaces provide the workspace layer. Hammerspoon binds the keyboard and
-targets ordered Space IDs directly for switching, without running a tiling
-window manager.
+macOS Spaces provide the workspace layer. Native Control-number shortcuts
+switch directly to each desktop. Hammerspoon adds matching window-movement
+shortcuts without running a tiling window manager.
 
-The bindings use a keyboard event tap instead of macOS's Carbon hotkey registry.
-For window movement, Hammerspoon holds a one-pixel title-bar drag while invoking
-the corresponding native Mission Control shortcut. This works around
+Hammerspoon's keyboard event tap re-emits ordinary Control-number input as
+native macOS shortcuts and intercepts Control-Shift-number for window movement.
+For movement, it holds a one-pixel title-bar drag while invoking the
+corresponding native Mission Control shortcut. This works around
 [Hammerspoon issue #3698](https://github.com/Hammerspoon/hammerspoon/issues/3698),
 where `hs.spaces.moveWindowToSpace` returns success without moving the window on
 Sequoia and Tahoe.

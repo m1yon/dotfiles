@@ -56,9 +56,9 @@ let
     }
   ];
 
-  # Keep macOS's native Control-number Space shortcuts enabled. Hammerspoon
-  # targets Space IDs directly for ordinary switching, but the native shortcuts
-  # are required by its title-bar drag workaround for moving windows on Tahoe.
+  # Keep macOS's native Control-number Space shortcuts enabled. They provide
+  # ordinary switching without Hammerspoon briefly opening Mission Control and
+  # are also required by the title-bar drag workaround for moving windows.
   nativeSpaceHotKeys = [
     {
       id = 118;
