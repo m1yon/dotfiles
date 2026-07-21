@@ -47,10 +47,10 @@ end
 
 hotkey.bind({"ctrl", "shift"}, "b", openNewChromeWindow)
 hotkey.bind({"ctrl", "shift"}, "t", openNewGhosttyWindow)
-hotkey.bind({"ctrl", "alt"}, "h", windowFilter.focusWest)
-hotkey.bind({"ctrl", "alt"}, "j", windowFilter.focusSouth)
-hotkey.bind({"ctrl", "alt"}, "k", windowFilter.focusNorth)
-hotkey.bind({"ctrl", "alt"}, "l", windowFilter.focusEast)
+hotkey.bind({"ctrl"}, "h", windowFilter.focusWest)
+hotkey.bind({"ctrl"}, "j", windowFilter.focusSouth)
+hotkey.bind({"ctrl"}, "k", windowFilter.focusNorth)
+hotkey.bind({"ctrl"}, "l", windowFilter.focusEast)
 
 local function orderedUserSpaces()
   local ids, err = spaces.spacesForScreen("Main")

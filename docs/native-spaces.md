@@ -36,7 +36,7 @@ Activating an app follows it to its assigned Space via the declarative
 | `Control+Tab` | Switch to the previously active Space |
 | `Control+Shift+B` | Open a new Chrome window in the current Space |
 | `Control+Shift+T` | Open a new window in the existing Ghostty instance |
-| `Control+Option+H/J/K/L` | Focus the window left/down/up/right in the current Space |
+| `Control+H/J/K/L` | Focus the window left/down/up/right in the current Space |
 | `Control+Shift+1` … `Control+Shift+9` | Move the focused window to Space 1 … 9 and follow it |
 | `Control+Shift+0` | Move the focused window to Space 10 and follow it |
 
