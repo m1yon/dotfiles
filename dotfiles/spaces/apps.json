@@ -3,47 +3,46 @@
     {
       "name": "DataGrip",
       "bundleId": "com.jetbrains.datagrip",
-      "workspace": "6"
+      "space": 6
     },
     {
       "name": "Superhuman",
       "bundleId": "com.superhuman.electron",
-      "workspace": "7",
+      "space": 7,
       "startup": true
     },
     {
       "name": "Linear",
       "bundleId": "com.linear",
-      "workspace": "8",
+      "space": 8,
       "startup": true
     },
     {
       "name": "Todoist",
       "bundleId": "com.todoist.mac.Todoist",
-      "workspace": "8",
+      "space": 8,
       "startup": true
     },
     {
       "name": "Teams",
       "bundleId": "com.microsoft.teams2",
-      "workspace": "9",
+      "space": 9,
       "startup": true
     },
     {
       "name": "Slack",
       "bundleId": "com.tinyspeck.slackmacgap",
-      "workspace": "9"
+      "space": 9
     },
     {
       "name": "Discord",
       "bundleId": "com.hnc.Discord",
-      "workspace": "9"
+      "space": 9
     },
     {
       "name": "Spotify",
       "bundleId": "com.spotify.client",
-      "workspace": "M",
-      "extraCommands": ["layout floating"]
+      "space": 10
     }
   ]
 }

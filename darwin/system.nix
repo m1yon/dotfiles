@@ -7,9 +7,22 @@
 }:
 
 let
-  disabledHotKeyValue =
-    charCode: keyCode: modifiers:
-    "{ enabled = 0; value = { parameters = (${toString charCode}, ${toString keyCode}, ${toString modifiers}); type = standard; }; }";
+  symbolicHotKeyValue =
+    enabled: charCode: keyCode: modifiers:
+    builtins.toJSON {
+      inherit enabled;
+      value = {
+        parameters = [
+          charCode
+          keyCode
+          modifiers
+        ];
+        type = "standard";
+      };
+    };
+
+  disabledHotKeyValue = symbolicHotKeyValue false;
+  enabledHotKeyValue = symbolicHotKeyValue true;
 
   screenshotHotKeys = [
     # Screenshot shortcuts in System Settings > Keyboard > Keyboard Shortcuts.
@@ -43,9 +56,56 @@ let
     }
   ];
 
-  disableScreenshotHotKey =
-    hotKey:
-    "launchctl asuser \"$uid\" sudo --user=\"$user\" -- defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add ${toString hotKey.id} ${lib.escapeShellArg hotKey.value}";
+  # Keep macOS's native Control-number Space shortcuts enabled. Hammerspoon
+  # targets Space IDs directly for ordinary switching, but the native shortcuts
+  # are required by its title-bar drag workaround for moving windows on Tahoe.
+  nativeSpaceHotKeys = [
+    {
+      id = 118;
+      value = enabledHotKeyValue 49 18 262144; # Control-1
+    }
+    {
+      id = 119;
+      value = enabledHotKeyValue 50 19 262144; # Control-2
+    }
+    {
+      id = 120;
+      value = enabledHotKeyValue 51 20 262144; # Control-3
+    }
+    {
+      id = 121;
+      value = enabledHotKeyValue 52 21 262144; # Control-4
+    }
+    {
+      id = 122;
+      value = enabledHotKeyValue 53 23 262144; # Control-5
+    }
+    {
+      id = 123;
+      value = enabledHotKeyValue 54 22 262144; # Control-6
+    }
+    {
+      id = 124;
+      value = enabledHotKeyValue 55 26 262144; # Control-7
+    }
+    {
+      id = 125;
+      value = enabledHotKeyValue 56 28 262144; # Control-8
+    }
+    {
+      id = 126;
+      value = enabledHotKeyValue 57 25 262144; # Control-9
+    }
+    {
+      id = 127;
+      value = enabledHotKeyValue 48 29 262144; # Control-0
+    }
+  ];
+
+  configureSymbolicHotKey = hotKey: ''
+    /usr/bin/plutil -remove 'AppleSymbolicHotKeys.${toString hotKey.id}' "$shortcuts_plist" 2>/dev/null || true
+    /usr/bin/plutil -insert 'AppleSymbolicHotKeys.${toString hotKey.id}' -json ${lib.escapeShellArg hotKey.value} "$shortcuts_plist"
+  '';
 in
 {
   system.primaryUser = username;
@@ -100,16 +160,29 @@ in
     if ! launchctl asuser "$uid" sudo --user="$user" -- osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'; then
       echo "Unable to refresh the live macOS appearance state; defaults were still written." >&2
     fi
-  '';
 
-  system.activationScripts.disableScreenshotShortcuts.text = lib.mkAfter ''
-    echo "disabling macOS screenshot shortcuts..." >&2
-    user=${lib.escapeShellArg username}
-    uid="$(id -u -- "$user")"
-    ${lib.concatMapStringsSep "\n" disableScreenshotHotKey screenshotHotKeys}
+    echo "configuring macOS keyboard shortcuts..." >&2
+    shortcuts_plist="$(/usr/bin/mktemp -t dotfiles-symbolichotkeys)"
+    if launchctl asuser "$uid" sudo --user="$user" -- defaults export com.apple.symbolichotkeys - > "$shortcuts_plist"; then
+      ${lib.concatMapStringsSep "\n" configureSymbolicHotKey (screenshotHotKeys ++ nativeSpaceHotKeys)}
+      launchctl asuser "$uid" sudo --user="$user" -- defaults import com.apple.symbolichotkeys - < "$shortcuts_plist"
+      # Refresh the per-user preference cache and shortcut consumers.
+      launchctl asuser "$uid" sudo --user="$user" -- /usr/bin/killall cfprefsd 2>/dev/null || true
+      /bin/sleep 1
+      launchctl asuser "$uid" sudo --user="$user" -- /usr/bin/killall SystemUIServer 2>/dev/null || true
+      launchctl asuser "$uid" sudo --user="$user" -- /usr/bin/killall Dock 2>/dev/null || true
+    else
+      echo "Unable to export macOS keyboard shortcuts; leaving them unchanged." >&2
+    fi
+    /bin/rm -f "$shortcuts_plist"
   '';
 
   system.defaults = {
+    CustomUserPreferences."com.apple.dock" = {
+      # Follow an app to the native Space containing its windows.
+      "workspaces-auto-swoosh" = true;
+    };
+
     dock = {
       autohide = true;
       expose-group-apps = true;

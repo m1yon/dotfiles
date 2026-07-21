@@ -47,6 +47,7 @@
       "ghostty"
       "google-chrome"
       "grammarly-desktop"
+      "hammerspoon"
       "linear"
       "linearmouse"
       "microsoft-excel"

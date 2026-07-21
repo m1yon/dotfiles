@@ -38,9 +38,8 @@ let
 in
 {
   imports = [
-    ./aerospace.nix
     ./codex.nix
-    ./jankyborders.nix
+    ./hammerspoon.nix
     ./packages.nix
     ./shell.nix
   ];
