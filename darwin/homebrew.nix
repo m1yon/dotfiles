@@ -54,7 +54,7 @@
       "microsoft-teams"
       "microsoft-word"
       "obsidian"
-      "rectangle"
+      "rectangle-pro"
       "slack"
       "spotify"
       "superhuman"
