@@ -17,28 +17,34 @@ Choose the workflow that matches the user's intent before using tools:
 
 ## Card Formulation Principles
 
-### 1. SuperMemo’s “20 Rules of Formulating Knowledge”
+### Follow SuperMemo’s “20 Rules of Formulating Knowledge”
 
-- **Atomic Facts:** Keep questions and answers simple, clear, and concise — one fact per card.
-- **Minimum Information Principle:** Include only as much context as needed to answer accurately.
-- **Active Recall:** Avoid recognition-only questions unless necessary.
-- **Avoid Enumerations:** Split lists or multi-part answers into separate, individual cards.
-- **Precision:** Use precise, concrete language; avoid unnecessary or vague words.
-- **Unambiguous Prompts:** Ensure every question has exactly one correct answer. Use context so the card remains clear outside the original text.
+- Keep questions and answers simple, clear, and concise — one fact per card.
+- Break down complex information into atomic facts.
+- Use active recall and avoid recognition-only questions unless necessary.
+- Avoid cloze deletions unless they make the card simpler and unambiguous.
+- Use minimum information principle: include only as much as needed to answer.
+- Make cards unambiguous — ensure the question has only one correct answer.
+- Use context when needed so the meaning remains clear outside the original text.
+- Avoid unnecessary or vague words; use precise, concrete language.
+- Avoid “enumerations” — split lists into multiple cards.
+- Use visuals only when they meaningfully support recall.
 
-### 2. Andy Matuschak’s Principles
+### Apply Andy Matuschak’s principles
 
-- **Deep Understanding:** Frame questions to prompt deep thinking and connection, not just rote recall.
-- **Causal Prompts:** Where relevant, use *"Why...?"* or *"How...?"* questions to promote understanding.
-- **Mental Models:** Avoid isolated trivia — ensure cards connect to a broader mental model.
-- **Examples & Contrasts:** Use concrete examples and contrasts when dealing with abstract concepts.
+- Frame questions to prompt deep thinking and connection, not just rote recall.
+- Where relevant, use “Why…?” or “How…?” questions to promote understanding.
+- Avoid trivia in isolation — cards should connect to a bigger mental model.
+- Make the answer mentally satisfying to recall — aim for an “aha” moment.
+- For abstract concepts, use examples and contrasts.
 
-### 3. Control-Alt-Backspace’s Precision Guidance
+### Apply Control-Alt-Backspace’s “Precise” guidance
 
-- **Targeted Prompts:** Avoid overly broad or fuzzy prompts; keep them specific.
-- **Single-Test Focus:** Ensure questions test only one thing at a time.
-- **Speed Optimization:** Cards should be answerable within **5–10 seconds**.
-- **Differentiate Similar Concepts:** For concepts that are easily confused, explicitly differentiate them in the question.
+- Avoid overly broad or fuzzy prompts; make them specific and targeted.
+- Ensure questions test only one thing at a time.
+- Anticipate common wrong answers and adjust wording to avoid ambiguity.
+- Optimize for recall speed — the card should be answerable in 5–10 seconds.
+- For concepts that are similar or confusable, differentiate explicitly in the question.
 
 Use longer scenario cards only when the interview task requires integrated judgment. Keep the decision being tested narrow even when the scenario provides context.
 
