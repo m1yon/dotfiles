@@ -1,6 +1,6 @@
 ---
 name: interview-prep-anki
-description: Maintain Michael's Interview Prep Anki deck with the Anki tools. Use when the user asks to inspect, search, create, edit, tag, migrate, organize, review, or analyze interview-prep flashcards, or to turn Interview Prep 2026 material into Anki notes.
+description: Maintain Michael's Interview Prep Anki deck with the Anki tools. Use when the user asks to inspect, search, create, edit, tag, migrate, organize, or analyze interview-prep flashcards, or to turn Interview Prep 2026 material into Anki notes.
 ---
 
 # Interview Prep Anki
@@ -11,10 +11,9 @@ Create durable interview-prep flashcards, maintain their canonical tag taxonomy,
 
 Choose the workflow that matches the user's intent before using tools:
 
-- **Draft or create cards:** Formulate cards, tag them, check for duplicates, obtain approval unless the user requested direct addition, and create the notes.
+- **Draft or create cards:** Formulate cards, tag them, check for duplicates, preview every Front and Back, obtain explicit approval, and create the notes.
 - **Inspect, search, or analyze:** Use read-only note and card tools. Do not mutate the collection.
-- **Edit, tag, migrate, or organize:** Find and inspect the affected notes first. Preview material changes and mutate only the notes the user placed in scope.
-- **Conduct a review session:** Follow the review-session workflow below. Do not use GUI inspection tools as substitutes for review tools.
+- **Edit, tag, migrate, or organize:** Find and inspect the affected notes first. Preview the exact changes, obtain explicit approval, and mutate only the notes the user placed in scope.
 
 ## Card Formulation Principles
 
@@ -110,15 +109,40 @@ Add optional facets only when the metadata is known and useful:
 
 Before drafting a batch, retrieve the deck's tags to catch spelling collisions and identify legacy tags. Map concepts to the canonical taxonomy rather than allowing the legacy vocabulary to shape new tags.
 
-## Draft cards for approval
+## Require explicit approval before writes
 
-Unless the user requested direct addition, present cards before writing:
+Treat approval as a mandatory two-step gate. The user's initial request to add or edit cards is not approval because the user has not yet seen the exact proposed result.
+
+Before calling `add_note`, `add_notes`, or `update_note_fields`:
+
+1. Prepare the final proposed content.
+2. Show the exact Front and Back of every affected card.
+3. Ask the user to approve that specific preview.
+4. Wait for an explicit confirmation before writing.
+
+Preview new cards in this format:
 
 ```text
-Q: [Question]
-A: [Answer]
-Tags: [track tag, topic tag, kind tag, optional source/context]
+Card 1
+Front: [Exact proposed Front]
+Back: [Exact proposed Back]
 ```
+
+For an edit, show the note ID plus its current and proposed values:
+
+```text
+Note 123
+Current Front: [Current Front]
+Current Back: [Current Back]
+Proposed Front: [Exact proposed Front]
+Proposed Back: [Exact proposed Back]
+```
+
+Do not require tags in a Front/Back approval preview. Show tags when the user asks to inspect them or when tags are also being changed.
+
+Require a new preview and approval whenever any proposed Front or Back changes after approval. Do not interpret questions, requested revisions, silence, or approval of an earlier draft as approval of the current content.
+
+For tag-only, deck-placement, or card-state mutations, preview the exact change and affected scope and obtain explicit approval. Do not require every Front and Back when note text will remain unchanged.
 
 For every card, verify:
 
@@ -141,6 +165,7 @@ Before the first write in a task:
 1. Verify the deck with `list_decks`, the note type with `model_names`, and its fields with `model_field_names`. If they are missing or incompatible, stop and report the mismatch; do not create or change collection structure unless requested.
 2. Search the `Interview Prep` deck with `find_notes` and inspect likely matches with `notes_info`. Do not add a semantic duplicate merely because its wording differs.
 3. Preserve duplicate protection. Never enable duplicate creation unless the user explicitly requests it.
+4. Complete the mandatory preview-and-approval gate above.
 
 Use `add_note` for one card and `add_notes` for multiple cards. After writing, report which notes were created, skipped, or failed; never imply that a partial batch fully succeeded.
 
@@ -155,21 +180,10 @@ For a tag migration:
 
 1. Inventory the deck's tags and affected notes.
 2. Build an old-to-canonical mapping with note counts; separate ambiguous tags.
-3. Present the proposed mapping before applying it unless the user explicitly requested automatic migration.
+3. Present the proposed mapping and wait for explicit approval.
 4. Apply tag changes to the scoped note IDs with batched `tag_management` operations.
 5. Re-read representative notes and report migrated, skipped, ambiguous, and failed counts.
 6. Clear unused collection-wide tags only when the user explicitly requests that separate cleanup.
-
-## Conduct a review session
-
-1. Start `sync` and poll it to a terminal result before fetching cards.
-2. Never choose a destructive one-way conflict resolution without the user's explicit direction. Cancel safely when the correct side is unknown.
-3. Retrieve the next due card from `Interview Prep` in scheduler order with `get_due_cards`.
-4. Show its question with `present_card` and wait for the user's answer.
-5. Show its answer with `present_card`, evaluate the response, and suggest a rating.
-6. Wait for the user to confirm or change the rating before calling `rate_card`.
-7. Repeat until the user stops or no cards remain.
-8. Sync again when the session ends.
 
 ## Example
 
@@ -180,11 +194,11 @@ For a tag migration:
 **Generated draft**
 
 ```text
-Q: In TypeScript, what determines whether two types are compatible?
-A: Their structure, not their declared names.
+Front: In TypeScript, what determines whether two types are compatible?
+Back: Their structure, not their declared names.
 Tags: track::coding, topic::typescript::type-system, kind::mechanism
 
-Q: How does TypeScript's compatibility rule differ from Java and C#?
-A: TypeScript compares structure; Java and C# primarily use declared type identity.
+Front: How does TypeScript's compatibility rule differ from Java and C#?
+Back: TypeScript compares structure; Java and C# primarily use declared type identity.
 Tags: track::coding, topic::typescript::type-system, kind::comparison
 ```

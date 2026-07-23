@@ -1,4 +1,4 @@
 interface:
   display_name: "Interview Prep Anki"
-  short_description: "Create, maintain, and review interview cards"
+  short_description: "Create and maintain interview flashcards"
   default_prompt: "Use $interview-prep-anki to improve and maintain my Interview Prep Anki deck."
