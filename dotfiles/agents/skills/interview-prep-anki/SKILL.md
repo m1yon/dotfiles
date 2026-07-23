@@ -11,7 +11,7 @@ Create durable interview-prep flashcards, maintain their canonical tag taxonomy,
 
 Choose the workflow that matches the user's intent before using tools:
 
-- **Draft or create cards:** Formulate cards, tag them, check for duplicates, preview every Front and Back, obtain explicit approval, and create the notes.
+- **Draft or create cards:** Formulate cards in Anki Markdown, tag them, check for duplicates, preview every Front and Back, obtain explicit approval, and create the notes.
 - **Inspect, search, or analyze:** Use read-only note and card tools. Do not mutate the collection.
 - **Edit, tag, migrate, or organize:** Find and inspect the affected notes first. Preview the exact changes, obtain explicit approval, and mutate only the notes the user placed in scope.
 
@@ -41,6 +41,17 @@ Choose the workflow that matches the user's intent before using tools:
 - **Differentiate Similar Concepts:** For concepts that are easily confused, explicitly differentiate them in the question.
 
 Use longer scenario cards only when the interview task requires integrated judgment. Keep the decision being tested narrow even when the scenario provides context.
+
+## Format fields with Anki Markdown
+
+- Write all Front and Back content using Anki Markdown.
+- Keep formatting minimal and purposeful; formatting must support recall rather than decorate the card.
+- Use inline code for identifiers, commands, types, and short expressions.
+- Use fenced code blocks with a language identifier for multi-line code.
+- Use emphasis, blockquotes, tables, and lists only when they materially improve clarity.
+- Do not use a list to hide a multi-answer card that should be split under the formulation principles.
+- Avoid raw HTML unless the required Anki behavior cannot be represented in Anki Markdown.
+- Preserve the approved Markdown source exactly when writing it to Anki.
 
 ## Use the canonical tag taxonomy
 
@@ -116,7 +127,7 @@ Treat approval as a mandatory two-step gate. The user's initial request to add o
 Before calling `add_note`, `add_notes`, or `update_note_fields`:
 
 1. Prepare the final proposed content.
-2. Show the exact Front and Back of every affected card.
+2. Show the exact Anki Markdown source for the Front and Back of every affected card.
 3. Ask the user to approve that specific preview.
 4. Wait for an explicit confirmation before writing.
 
@@ -158,7 +169,7 @@ Use this default Anki configuration:
 
 - **Deck:** `Interview Prep`
 - **Note type:** `Basic`, unless the user requests another type
-- **Fields:** `Front` for the question and `Back` for the answer
+- **Fields:** `Front` for the question and `Back` for the answer, both containing the approved Anki Markdown
 
 Before the first write in a task:
 
@@ -194,11 +205,11 @@ For a tag migration:
 **Generated draft**
 
 ```text
-Front: In TypeScript, what determines whether two types are compatible?
-Back: Their structure, not their declared names.
+Front: In `TypeScript`, what determines whether two types are compatible?
+Back: Their **structure**, not their declared names.
 Tags: track::coding, topic::typescript::type-system, kind::mechanism
 
-Front: How does TypeScript's compatibility rule differ from Java and C#?
-Back: TypeScript compares structure; Java and C# primarily use declared type identity.
+Front: How does `TypeScript`'s compatibility rule differ from `Java` and `C#`?
+Back: `TypeScript` compares structure; `Java` and `C#` primarily use declared type identity.
 Tags: track::coding, topic::typescript::type-system, kind::comparison
 ```
