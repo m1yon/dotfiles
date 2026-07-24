@@ -51,6 +51,7 @@ Use longer scenario cards only when the interview task requires integrated judgm
 ## Format fields with Anki Markdown
 
 - Write all Front and Back content using Anki Markdown.
+- Default to JavaScript for requested code examples.
 - Keep formatting minimal and purposeful; formatting must support recall rather than decorate the card.
 - Use inline code for identifiers, commands, types, and short expressions.
 - Use fenced code blocks with a language identifier for multi-line code.
