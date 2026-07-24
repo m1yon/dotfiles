@@ -17,6 +17,15 @@ Choose the workflow that matches the user's intent before using tools:
 
 ## Card Formulation Principles
 
+### Prefer simple, practical language
+
+- Write like a practical engineer explaining the idea to another engineer.
+- Prefer plain, conversational language over academic, textbook, or research-paper phrasing.
+- Use the simplest words that preserve the technical meaning.
+- Introduce jargon only when the term itself is useful for the interview; explain it plainly the first time.
+- Favor concrete actions, consequences, examples, and tradeoffs over abstract definitions.
+- Keep necessary technical precision, but do not make a card sound more formal or complicated than the idea requires.
+
 ### Follow SuperMemo’s “20 Rules of Formulating Knowledge”
 
 - Keep questions and answers simple, clear, and concise — one fact per card.
@@ -166,6 +175,7 @@ For every card, verify:
 
 - Does the prompt make sense in isolation?
 - Does it test one thing with one intended answer?
+- Does it use simple, practical language instead of academic phrasing?
 - Is the answer as short as accuracy permits?
 - Can it normally be answered within 10 seconds?
 - Do the tags use the canonical spelling and required facets?
