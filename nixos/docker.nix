@@ -1,12 +1,15 @@
 { pkgs, ... }:
 {
-  virtualisation.docker.enable = true;
-  virtualisation.docker.rootless.enable = false;
+  virtualisation.docker = {
+    enable = true;
+    package = pkgs.docker_29;
+    rootless.enable = false;
+  };
 
   users.extraGroups.docker.members = [ "michael" ];
 
   environment.systemPackages = with pkgs; [
-    docker
+    docker_29
     docker-compose
   ];
 }

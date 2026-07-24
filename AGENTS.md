@@ -12,12 +12,16 @@
 
 ## Verification
 
-- On macOS and Linux, use `task rebuild` as the primary verification for Nix configuration changes.
-  - Run standalone Nix eval or check commands only to diagnose a rebuild failure or when Michael explicitly requests one.
-- Treat warnings as verification failures: fix them and rerun the relevant command until it completes without warnings.
+- Use the relevant Nix eval or check as the primary verification for Nix configuration changes.
+- Treat warnings as verification failures: fix them and rerun the eval or check until it completes without warnings.
 - Agents may stage newly added, imported Nix files when flake evaluation requires it; do not stage unrelated changes.
 
 ## Rebuild permissions
 
-- Run `task rebuild` only after `sudo -n -v` confirms an authenticated global sudo ticket. If it fails, ask Michael to run `sudo -v`; never initiate interactive authentication.
-- Do not run direct switch or apply commands.
+- Do not run:
+  - `task rebuild`
+  - `darwin-rebuild switch`
+  - `nixos-rebuild switch`
+  - `home-manager switch`
+  - Any other rebuild, switch, or apply command
+- After verification succeeds without warnings, ask Michael to run the appropriate `task rebuild` command.

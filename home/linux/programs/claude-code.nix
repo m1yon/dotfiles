@@ -72,7 +72,7 @@ in
     env.DISABLE_TELEMETRY = "";
     env.GH_PROMPT_DISABLED = "true";
     env.GH_PAGER = "less";
-    extraPackages =
+    runtimePkgs =
       (with pkgs; [
         typescript-language-server
         gopls
