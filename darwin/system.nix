@@ -118,7 +118,13 @@ in
   };
 
   programs.zsh.enable = true;
-  security.pam.services.sudo_local.touchIdAuth = true;
+  security = {
+    pam.services.sudo_local.touchIdAuth = true;
+    sudo.extraConfig = ''
+      Defaults:${username} timestamp_type=global
+      Defaults:${username} timestamp_timeout=30
+    '';
+  };
 
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono

@@ -40,7 +40,7 @@ in
   wrappers.neovim = {
     enable = true;
     package = unstablePkgs.neovim-unwrapped;
-    extraPackages = with pkgs; [
+    runtimePkgs = with pkgs; [
       gcc
       tree-sitter
       nodejs

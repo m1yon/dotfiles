@@ -7,6 +7,11 @@
 {
   programs.zsh.enable = true;
 
+  security.sudo.extraConfig = ''
+    Defaults:${username} timestamp_type=global
+    Defaults:${username} timestamp_timeout=30
+  '';
+
   users.users.${username} = {
     isNormalUser = true;
     description = "Michael";

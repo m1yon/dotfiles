@@ -25,13 +25,14 @@ tasks:
         case "$(uname -s)" in
           Darwin)
             if darwin_rebuild="$(command -v darwin-rebuild 2>/dev/null)"; then
-              sudo "$darwin_rebuild" switch --flake {{.FLAKE_DIR}}#macbook
+              sudo -n "$darwin_rebuild" switch --flake path:{{.FLAKE_DIR}}#macbook
             else
-              sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake {{.FLAKE_DIR}}#macbook
+              sudo -n nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake path:{{.FLAKE_DIR}}#macbook
             fi
             ;;
           Linux)
-            nixos-rebuild switch --flake {{.FLAKE_DIR}}#nixbook --sudo
+            nixos_rebuild="$(command -v nixos-rebuild)"
+            sudo -n "$nixos_rebuild" switch --flake path:{{.FLAKE_DIR}}#nixbook
             "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
             ;;
           *)
