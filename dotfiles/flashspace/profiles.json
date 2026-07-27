@@ -23,9 +23,9 @@
         {
           "apps" : [
             {
-              "autoOpen" : true,
               "bundleIdentifier" : "com.openai.codex",
-              "name" : "Codex"
+              "iconPath" : "/Applications/ChatGPT.app/Contents/Resources/electron.icns",
+              "name" : "ChatGPT"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+2",
