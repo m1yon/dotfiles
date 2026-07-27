@@ -39,7 +39,7 @@ in
 {
   imports = [
     ./codex.nix
-    ./hammerspoon.nix
+    ./flashspace.nix
     ./jankyborders.nix
     ./packages.nix
     ./shell.nix

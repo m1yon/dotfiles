@@ -1,0 +1,14 @@
+{
+  "activeWorkspaceOnFocusChange": true,
+  "changeWorkspaceOnAppAssign": true,
+  "checkForUpdatesAutomatically": false,
+  "displayMode": "static",
+  "enableFocusManagement": true,
+  "enableWorkspaceTransitions": false,
+  "focusDown": "ctrl+j",
+  "focusLeft": "ctrl+h",
+  "focusRight": "ctrl+l",
+  "focusUp": "ctrl+k",
+  "showRecentWorkspaceWhenActivatedTwice": true,
+  "switchToRecentWorkspace": "ctrl+tab"
+}

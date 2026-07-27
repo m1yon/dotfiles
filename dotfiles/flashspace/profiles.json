@@ -1,0 +1,155 @@
+{
+  "profiles" : [
+    {
+      "id" : "00000000-0000-4000-8000-000000000000",
+      "name" : "Default",
+      "workspaces" : [
+        {
+          "apps" : [
+
+          ],
+          "assignAppShortcut" : "ctrl+shift+1",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000001",
+          "name" : "General 1",
+          "shortcut" : "ctrl+1"
+        },
+        {
+          "apps" : [
+            {
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.openai.codex",
+              "name" : "Codex"
+            }
+          ],
+          "assignAppShortcut" : "ctrl+shift+2",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000002",
+          "name" : "Codex",
+          "openAppsOnActivation" : true,
+          "shortcut" : "ctrl+2"
+        },
+        {
+          "apps" : [
+            {
+              "bundleIdentifier" : "com.mitchellh.ghostty",
+              "iconPath" : "/Applications/Ghostty.app/Contents/Resources/Ghostty.icns",
+              "name" : "Ghostty"
+            }
+          ],
+          "assignAppShortcut" : "ctrl+shift+3",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000003",
+          "name" : "Development 1",
+          "shortcut" : "ctrl+3"
+        },
+        {
+          "apps" : [
+
+          ],
+          "assignAppShortcut" : "ctrl+shift+4",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000004",
+          "name" : "Development 2",
+          "shortcut" : "ctrl+4"
+        },
+        {
+          "apps" : [
+
+          ],
+          "assignAppShortcut" : "ctrl+shift+5",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000005",
+          "name" : "Development 3",
+          "shortcut" : "ctrl+5"
+        },
+        {
+          "apps" : [
+            {
+              "bundleIdentifier" : "com.jetbrains.datagrip",
+              "name" : "DataGrip"
+            }
+          ],
+          "assignAppShortcut" : "ctrl+shift+6",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000006",
+          "name" : "Database",
+          "shortcut" : "ctrl+6"
+        },
+        {
+          "apps" : [
+            {
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.superhuman.electron",
+              "name" : "Superhuman"
+            }
+          ],
+          "assignAppShortcut" : "ctrl+shift+7",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000007",
+          "name" : "Email",
+          "openAppsOnActivation" : true,
+          "shortcut" : "ctrl+7"
+        },
+        {
+          "apps" : [
+            {
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.linear",
+              "name" : "Linear"
+            },
+            {
+              "bundleIdentifier" : "com.todoist.mac.Todoist",
+              "iconPath" : "/Applications/Todoist.app/Contents/Resources/icon.icns",
+              "name" : "Todoist"
+            }
+          ],
+          "assignAppShortcut" : "ctrl+shift+8",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000008",
+          "name" : "Planning",
+          "openAppsOnActivation" : true,
+          "shortcut" : "ctrl+8"
+        },
+        {
+          "apps" : [
+            {
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.microsoft.teams2",
+              "name" : "Teams"
+            },
+            {
+              "bundleIdentifier" : "com.tinyspeck.slackmacgap",
+              "name" : "Slack"
+            },
+            {
+              "bundleIdentifier" : "com.hnc.Discord",
+              "name" : "Discord"
+            }
+          ],
+          "assignAppShortcut" : "ctrl+shift+9",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000009",
+          "name" : "Communication",
+          "openAppsOnActivation" : true,
+          "shortcut" : "ctrl+9"
+        },
+        {
+          "apps" : [
+            {
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.apple.iCal",
+              "name" : "Calendar"
+            }
+          ],
+          "assignAppShortcut" : "ctrl+shift+0",
+          "display" : "BenQ RD280UG",
+          "id" : "00000000-0000-4000-8000-000000000010",
+          "name" : "Calendar",
+          "openAppsOnActivation" : true,
+          "shortcut" : "ctrl+0"
+        }
+      ]
+    }
+  ]
+}
