@@ -7,17 +7,18 @@ startup are managed declaratively.
 
 ## Workspace map
 
-| Workspace | Purpose | Assigned apps |
-| --- | --- | --- |
-| 1 | Browser | Google Chrome (opens on activation) |
-| 2 | Codex | Codex (opens on activation) |
-| 3 | Terminal | Ghostty (opens on activation) |
-| 4–5 | Development | — |
-| 6 | Database | DataGrip |
-| 7 | Email | Superhuman |
-| 8 | Planning | Linear, Todoist |
-| 9 | Communication | Teams, Slack, Discord |
-| 0 | Calendar | Calendar (opens on activation) |
+| Workspace | Purpose | Icon | Assigned apps |
+| --- | --- | --- | --- |
+| 1 | Browser | Globe | Google Chrome (opens on activation) |
+| 2 | Codex | Magic wand and stars | Codex (opens on activation) |
+| 3 | Terminal | Terminal | Ghostty (opens on activation) |
+| 4 | Development 2 | Curly braces | — |
+| 5 | Development 3 | Code chevrons | — |
+| 6 | Database | Database cylinder | DataGrip |
+| 7 | Email | Envelope | Superhuman |
+| 8 | Planning | Checklist | Linear, Todoist |
+| 9 | Communication | Conversation bubbles | Teams, Slack, Discord |
+| 0 | Calendar | Calendar | Calendar (opens on activation) |
 
 Superwhisper is configured as a floating app, so it remains visible across
 workspaces.

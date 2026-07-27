@@ -18,7 +18,8 @@
           "id" : "00000000-0000-4000-8000-000000000001",
           "name" : "Browser",
           "openAppsOnActivation" : true,
-          "shortcut" : "ctrl+1"
+          "shortcut" : "ctrl+1",
+          "symbolIconName" : "globe"
         },
         {
           "apps" : [
@@ -33,7 +34,8 @@
           "id" : "00000000-0000-4000-8000-000000000002",
           "name" : "Codex",
           "openAppsOnActivation" : true,
-          "shortcut" : "ctrl+2"
+          "shortcut" : "ctrl+2",
+          "symbolIconName" : "wand.and.stars"
         },
         {
           "apps" : [
@@ -49,7 +51,8 @@
           "id" : "00000000-0000-4000-8000-000000000003",
           "name" : "Terminal",
           "openAppsOnActivation" : true,
-          "shortcut" : "ctrl+3"
+          "shortcut" : "ctrl+3",
+          "symbolIconName" : "terminal.fill"
         },
         {
           "apps" : [
@@ -59,7 +62,8 @@
           "display" : "BenQ RD280UG",
           "id" : "00000000-0000-4000-8000-000000000004",
           "name" : "Development 2",
-          "shortcut" : "ctrl+4"
+          "shortcut" : "ctrl+4",
+          "symbolIconName" : "curlybraces"
         },
         {
           "apps" : [
@@ -69,7 +73,8 @@
           "display" : "BenQ RD280UG",
           "id" : "00000000-0000-4000-8000-000000000005",
           "name" : "Development 3",
-          "shortcut" : "ctrl+5"
+          "shortcut" : "ctrl+5",
+          "symbolIconName" : "chevron.left.forwardslash.chevron.right"
         },
         {
           "apps" : [
@@ -82,7 +87,8 @@
           "display" : "BenQ RD280UG",
           "id" : "00000000-0000-4000-8000-000000000006",
           "name" : "Database",
-          "shortcut" : "ctrl+6"
+          "shortcut" : "ctrl+6",
+          "symbolIconName" : "cylinder.fill"
         },
         {
           "apps" : [
@@ -97,7 +103,8 @@
           "id" : "00000000-0000-4000-8000-000000000007",
           "name" : "Email",
           "openAppsOnActivation" : true,
-          "shortcut" : "ctrl+7"
+          "shortcut" : "ctrl+7",
+          "symbolIconName" : "envelope.fill"
         },
         {
           "apps" : [
@@ -117,7 +124,8 @@
           "id" : "00000000-0000-4000-8000-000000000008",
           "name" : "Planning",
           "openAppsOnActivation" : true,
-          "shortcut" : "ctrl+8"
+          "shortcut" : "ctrl+8",
+          "symbolIconName" : "checklist"
         },
         {
           "apps" : [
@@ -140,7 +148,8 @@
           "id" : "00000000-0000-4000-8000-000000000009",
           "name" : "Communication",
           "openAppsOnActivation" : true,
-          "shortcut" : "ctrl+9"
+          "shortcut" : "ctrl+9",
+          "symbolIconName" : "bubble.left.and.bubble.right.fill"
         },
         {
           "apps" : [
@@ -155,7 +164,8 @@
           "id" : "00000000-0000-4000-8000-000000000010",
           "name" : "Calendar",
           "openAppsOnActivation" : true,
-          "shortcut" : "ctrl+0"
+          "shortcut" : "ctrl+0",
+          "symbolIconName" : "calendar"
         }
       ]
     }
