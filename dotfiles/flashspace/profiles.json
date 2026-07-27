@@ -6,12 +6,18 @@
       "workspaces" : [
         {
           "apps" : [
-
+            {
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.google.Chrome",
+              "iconPath" : "/Applications/Google Chrome.app/Contents/Resources/app.icns",
+              "name" : "Google Chrome"
+            }
           ],
           "assignAppShortcut" : "ctrl+shift+1",
           "display" : "BenQ RD280UG",
           "id" : "00000000-0000-4000-8000-000000000001",
-          "name" : "General 1",
+          "name" : "Browser",
+          "openAppsOnActivation" : true,
           "shortcut" : "ctrl+1"
         },
         {
@@ -32,6 +38,7 @@
         {
           "apps" : [
             {
+              "autoOpen" : true,
               "bundleIdentifier" : "com.mitchellh.ghostty",
               "iconPath" : "/Applications/Ghostty.app/Contents/Resources/Ghostty.icns",
               "name" : "Ghostty"
@@ -40,7 +47,8 @@
           "assignAppShortcut" : "ctrl+shift+3",
           "display" : "BenQ RD280UG",
           "id" : "00000000-0000-4000-8000-000000000003",
-          "name" : "Development 1",
+          "name" : "Terminal",
+          "openAppsOnActivation" : true,
           "shortcut" : "ctrl+3"
         },
         {

@@ -9,6 +9,13 @@
   "focusLeft": "ctrl+h",
   "focusRight": "ctrl+l",
   "focusUp": "ctrl+k",
+  "floatingApps": [
+    {
+      "bundleIdentifier": "com.superduper.superwhisper",
+      "iconPath": "/Applications/superwhisper.app/Contents/Resources/AppIcon.icns",
+      "name": "superwhisper"
+    }
+  ],
   "showRecentWorkspaceWhenActivatedTwice": true,
   "switchToRecentWorkspace": "ctrl+tab"
 }

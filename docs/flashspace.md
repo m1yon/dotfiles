@@ -9,14 +9,18 @@ startup are managed declaratively.
 
 | Workspace | Purpose | Assigned apps |
 | --- | --- | --- |
-| 1 | General | — |
+| 1 | Browser | Google Chrome (opens on activation) |
 | 2 | Codex | Codex (opens on activation) |
-| 3–5 | Development | — |
+| 3 | Terminal | Ghostty (opens on activation) |
+| 4–5 | Development | — |
 | 6 | Database | DataGrip |
 | 7 | Email | Superhuman |
 | 8 | Planning | Linear, Todoist |
 | 9 | Communication | Teams, Slack, Discord |
 | 0 | Calendar | Calendar (opens on activation) |
+
+Superwhisper is configured as a floating app, so it remains visible across
+workspaces.
 
 The native FlashSpace configuration lives in `dotfiles/flashspace` and is
 linked directly into `~/.config/flashspace` with an out-of-store Home Manager
