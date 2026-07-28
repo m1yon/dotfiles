@@ -40,7 +40,6 @@ in
   imports = [
     ./codex.nix
     ./flashspace.nix
-    ./jankyborders.nix
     ./packages.nix
     ./shell.nix
   ];
