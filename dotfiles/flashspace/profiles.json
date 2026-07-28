@@ -24,6 +24,7 @@
         {
           "apps" : [
             {
+              "autoOpen" : true,
               "bundleIdentifier" : "com.openai.codex",
               "iconPath" : "/Applications/ChatGPT.app/Contents/Resources/electron.icns",
               "name" : "ChatGPT"
@@ -95,6 +96,7 @@
             {
               "autoOpen" : true,
               "bundleIdentifier" : "com.superhuman.electron",
+              "iconPath" : "/Applications/Superhuman.app/Contents/Resources/icon.icns",
               "name" : "Superhuman"
             }
           ],
@@ -114,6 +116,7 @@
               "name" : "Linear"
             },
             {
+              "autoOpen" : true,
               "bundleIdentifier" : "com.todoist.mac.Todoist",
               "iconPath" : "/Applications/Todoist.app/Contents/Resources/icon.icns",
               "name" : "Todoist"
@@ -130,17 +133,18 @@
         {
           "apps" : [
             {
-              "autoOpen" : true,
-              "bundleIdentifier" : "com.microsoft.teams2",
-              "name" : "Teams"
-            },
-            {
               "bundleIdentifier" : "com.tinyspeck.slackmacgap",
               "name" : "Slack"
             },
             {
               "bundleIdentifier" : "com.hnc.Discord",
               "name" : "Discord"
+            },
+            {
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.microsoft.teams2",
+              "iconPath" : "/Applications/Microsoft Teams.app/Contents/Resources/AppIcon.icns",
+              "name" : "Microsoft Teams"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+9",
