@@ -11,6 +11,16 @@
               "bundleIdentifier" : "com.google.Chrome",
               "iconPath" : "/Applications/Google Chrome.app/Contents/Resources/app.icns",
               "name" : "Google Chrome"
+            },
+            {
+              "bundleIdentifier" : "com.roblox.RobloxPlayer",
+              "iconPath" : "/Applications/Roblox.app/Contents/Resources/AppIcon.icns",
+              "name" : "Roblox"
+            },
+            {
+              "bundleIdentifier" : "com.microsoft.Excel",
+              "iconPath" : "/Applications/Microsoft Excel.app/Contents/Resources/Excel_macOS.icns",
+              "name" : "Microsoft Excel"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+1",
