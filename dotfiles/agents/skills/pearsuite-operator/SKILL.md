@@ -1,35 +1,36 @@
 ---
 name: pearsuite-operator
-description: Safely inspect, create, and update Pear Suite activity and flow templates through signed-in Chrome tabs. Use when working with Pear Suite sandbox or production environments, activities, scripts, assessments, flow maps, questions, data IDs, answer types, actions, dependencies, or full sandbox-to-production activity migrations that reproduce dependent entities while auditing the clinical team's source build before production.
+description: Route safe Pear Suite work through a signed-in Chrome tab. Use for open-ended read-only inspection of sandbox or production activities, flows, questions, data IDs, actions, dependencies, and configuration, or for an explicitly registered mutation workflow such as promoting a complete activity and its dependency graph from sandbox to production. Deny mutations that do not match a registered workflow.
 ---
 
 # Pear Suite Operator
 
-Operate Pear Suite only through the user's already-open, signed-in Chrome tab. Invoke and follow `chrome:control-chrome`; do not substitute another browser surface. If no suitable Pear Suite tab is open or authentication is missing, stop and ask the user to open or sign in to Pear Suite in Chrome.
+Act as a router. Permit flexible read-only inspection, but permit persistent mutation only through a workflow registered in this file.
 
-Never open, inspect, read, compare, copy, export, or edit Organization Settings in sandbox or production. Those settings are intentionally environment-specific and are outside this skill's scope. Reading the displayed organization selector label solely to identify the active environment is allowed; opening the Organization Settings page is not.
+Operate only through the user's already-open, signed-in Chrome tab. Invoke and follow `chrome:control-chrome`; do not substitute another browser surface. If no suitable tab is open or authentication is missing, ask the user to open or sign in to Pear Suite in Chrome.
 
-## Run the operation
+Read [safety-and-verification.md](references/safety-and-verification.md) before every task. Never open, inspect, read, compare, copy, export, or edit Organization Settings. The displayed organization selector label may be read only to identify the active environment.
 
-1. Read [safety-and-verification.md](references/safety-and-verification.md) before every task. Identify the environment before any write.
-2. Read [platform-map.md](references/platform-map.md) to choose the correct route and scope locators to the visible tabpanel or dialog.
-3. Read [ui-workflows.md](references/ui-workflows.md) for questions/data IDs, flows, and activities. Create dependencies in this order:
+## Route the request
 
-   ```text
-   Questions/data IDs -> Flow -> Activity
-   ```
+1. Classify the request by its intended side effects before interacting with Pear Suite.
+2. For read-only work, read [read-only-operations.md](references/read-only-operations.md). Use [platform-map.md](references/platform-map.md) and [ui-reference.md](references/ui-reference.md) only as needed. Read-only work is open-ended and does not require approval.
+3. For any persistent mutation, require an exact match in the Approved mutation workflows registry below. Read that workflow file completely and follow only its authorized scope.
+4. If no workflow matches, stop before filling forms, changing toggles, dragging graph nodes, or opening a create/copy action. Explain that the mutation is not registered. User approval cannot override a missing workflow.
+5. Use [maintenance.md](references/maintenance.md) for verified documentation updates. Never add or broaden an approved mutation workflow automatically.
 
-4. For any request to move, copy, promote, or recreate an activity from sandbox in production, read [sandbox-to-production.md](references/sandbox-to-production.md). Complete its dependency inventory, source-quality audit, production comparison, and preflight report before any production write.
-5. Inspect first. Reuse exact-title or exact-data-ID matches when they are semantically identical; pause on collisions, ambiguity, locked objects, cross-environment naming differences, or subscription warnings.
-6. Require explicit user approval immediately before every persistent change in every environment, including Create, Save, Update, Retire, scheduling, and action changes. Name the environment, object, and exact change. Do not treat an earlier general request as action-time approval; approval may cover only a precisely enumerated batch.
-7. For every production change, capture a relevant before screenshot before requesting approval. After approval and the write, reload, verify persistence, and capture a comparable after screenshot. Follow Chrome's screenshot guidance and retain both images for the final response. If safe evidence cannot be captured, stop before writing.
+A persistent mutation is any action that creates, updates, retires, deletes, copies, imports, schedules, connects, submits, or otherwise persists Pear Suite data or configuration. Approval is necessary inside a registered workflow, but approval alone is never sufficient.
+
+## Approved mutation workflows
+
+| Workflow | Match only when | Workflow file | Authorized mutation boundary |
+|---|---|---|---|
+| Promote activity from sandbox to production | The user asks to move, copy, promote, migrate, or recreate a specific sandbox activity and its dependencies in production | [workflow-sandbox-to-production.md](references/workflow-sandbox-to-production.md) | Create or update the approved production dependency graph required by that activity; no sandbox writes, deletes, retires, member-record changes, Organization Settings, or unrelated production changes |
+
+Do not infer new workflows from similarity. A one-off production edit, standalone create, direct sandbox edit, retirement, deletion, bulk cleanup, or other mutation is prohibited until the user explicitly asks to add an appropriate workflow to this skill and the registry is updated.
 
 ## Report the result
 
-State the environment, object titles/data IDs, whether a write occurred, and the reload-based verification result. For a production write, attach or render the two retained images under clear `Before` and `After` labels; the After image must show the reloaded persisted state. Call out anything that remains ambiguous or blocked. Do not expose member data, authentication state, session identifiers, or unrelated organization information.
+For read-only work, report what was inspected, the environment, and findings. For a registered mutation workflow, follow its evidence and reporting requirements. Always state whether a mutation occurred. Do not expose member data, authentication state, session identifiers, or unrelated organization information.
 
-## Maintain this skill
-
-Read [maintenance.md](references/maintenance.md) when the task reveals reusable Pear Suite behavior that is missing, changed, or contradicted here. Apply verified documentation-only updates before finishing when safe and permitted. Never weaken safety rules automatically.
-
-Use [regression-fixtures.md](references/regression-fixtures.md) only when validating IBCLC behavior or testing future revisions to this skill.
+Use [regression-fixtures.md](references/regression-fixtures.md) only for read-only validation of documented behavior.

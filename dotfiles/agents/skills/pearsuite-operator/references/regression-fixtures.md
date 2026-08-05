@@ -25,4 +25,4 @@ The production builder displayed the seven questions in sequence. `IBCLC07 -> Ye
 
 The historical sandbox dependency was named `Doula/Lactation Outreach`, without `Attempt`. Treat this as a cross-environment mismatch and pause instead of mapping it automatically.
 
-Use this fixture for read-only regression checks unless the user explicitly authorizes a write. Validate structure and action labels from the visible builder, but never save merely to test the skill.
+Use this fixture only for read-only regression checks. Validate structure and action labels from the visible builder, but never save merely to test the skill. User approval alone does not authorize a fixture mutation.

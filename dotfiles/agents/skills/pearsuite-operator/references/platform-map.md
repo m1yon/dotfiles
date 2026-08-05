@@ -22,7 +22,7 @@ Opening `/meca-therapies/templates` redirects to Activities.
 | Activities | `/meca-therapies/templates/activities` | `By Title`, `Add Activity Template` |
 | Flows | `/meca-therapies/templates/flows` | `Search by title...`, `Add Flow Template` |
 
-The Templates workspace also exposes Goals, Emails, Care Pathways, Care Plans, Events, Note Templates, Consents, PDF Templates, and Review Requests. Those areas are not yet documented for write operations.
+The Templates workspace also exposes Goals, Emails, Care Pathways, Care Plans, Events, Note Templates, Consents, PDF Templates, and Review Requests. They may be inspected read-only. They are not independently authorized mutation routes; a registered workflow may touch one only when it is an explicitly approved dependency inside that workflow's boundary.
 
 The Activities table currently shows Title, Tasks, Tags, Tracking, and Retire columns. The Flows table shows Title, Type, Version, Locked, Copy, Export, and Retire. Tables are paginated, so use their search field rather than scanning only the visible page.
 

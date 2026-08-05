@@ -1,35 +1,32 @@
 # Maintenance protocol
 
-Keep the skill current when a Pear Suite task reveals stable, reusable UI knowledge.
+Keep verified UI knowledge current without changing the mutation authorization model.
 
-## Update automatically
+## Documentation self-updates
 
-Make a documentation-only self-update when all are true:
+Make a documentation-only self-update when a fact is directly observed, reusable, non-sensitive, and fits an existing reference without weakening a protected rule.
 
-1. The fact was observed directly in the current signed-in Pear Suite UI or verified after reload.
-2. It is reusable across future tasks, not member-specific or a one-off transient state.
-3. It does not include personal, clinical, authentication, session, or secret data.
-4. It fits an existing reference file without weakening a safety rule.
-
-Examples: changed route, renamed control, new answer type, new task type, a newly verified persistence failure, or a locator-scoping requirement.
-
-## Route the change
+Route changes as follows:
 
 - Navigation, routes, tables, and control locations -> `platform-map.md`
-- Question, flow, or activity procedures -> `ui-workflows.md`
-- Sandbox-to-production discovery, audit, planning, execution, or reconciliation -> `sandbox-to-production.md`
-- Environment gates, blockers, and persistence checks -> `safety-and-verification.md`
-- Stable test cases -> `regression-fixtures.md`
-- Core orchestration or trigger scope -> `SKILL.md`
+- UI fields and mechanics -> `ui-reference.md`
+- Read-only boundaries and inspection patterns -> `read-only-operations.md`
+- Existing sandbox-to-production workflow details -> `workflow-sandbox-to-production.md`
+- Environment gates, blockers, evidence, and persistence checks -> `safety-and-verification.md`
+- Stable read-only test cases -> `regression-fixtures.md`
 
-Split a growing workflow into a new one-level reference file when a section becomes hard to scan. Add the new file directly to `SKILL.md`; do not create nested reference chains.
+Prefer correcting an existing statement over appending a duplicate. Add environment and verification date when behavior may differ. Re-check conflicting observations after reload; preserve both with environment/date labels if unresolved.
 
-## Evidence and conflict handling
+## Protected workflow registry
 
-- Add `Verified in <environment> on YYYY-MM-DD` for environment-sensitive observations.
-- Prefer correcting an existing statement over appending a duplicate.
-- If a new observation conflicts with an older one, re-check after reload. If still unresolved, preserve both observations with environment/date labels and report the conflict.
-- Do not generalize from sandbox to production or from one flow type to another without verification.
-- Do not change the Organization Settings prohibition, environment gate, migration preflight requirement, approval behavior, production screenshot evidence requirement, stop conditions, or protected-data rules automatically. Propose changes to the other protected rules to the user; Organization Settings must remain prohibited.
+Never automatically add, infer, broaden, rename, or remove a mutation workflow or change its authorized boundary. Never weaken the Organization Settings prohibition, mutation gate, action-time approval, production evidence, stop conditions, or protected-data rules.
 
-After a self-update, run the skill validator when `SKILL.md` or metadata changed. Briefly report which reference changed and why.
+A new mutation type remains prohibited until the user explicitly requests a skill update that:
+
+1. Adds a dedicated `references/workflow-<name>.md` file with narrow authorized scope, discovery, approval, evidence, verification, and stop rules.
+2. Registers that file in the top-level Approved mutation workflows table.
+3. Updates safety routing where needed and passes validation.
+
+Do not create and execute a new workflow within the same Pear Suite operation merely because a requested mutation lacks a route. Stop and ask the user to define or approve the skill change as a separate task.
+
+After any self-update, validate links. Also run the skill validator when `SKILL.md` or metadata changed, and report which files changed.
