@@ -67,7 +67,11 @@
         },
         {
           "apps" : [
-
+            {
+              "bundleIdentifier" : "md.obsidian",
+              "iconPath" : "/Applications/Obsidian.app/Contents/Resources/icon.icns",
+              "name" : "Obsidian"
+            }
           ],
           "assignAppShortcut" : "ctrl+shift+4",
           "display" : "BenQ RD280UG",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Pear Suite Operator"
+  short_description: "Safely operate Pear Suite through Chrome"
+  default_prompt: "Use $pearsuite-operator to inspect or update Pear Suite safely in my signed-in Chrome tab."
