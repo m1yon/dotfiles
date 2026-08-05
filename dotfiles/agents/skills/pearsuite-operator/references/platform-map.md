@@ -11,6 +11,8 @@ Verified in production on 2026-08-05.
 
 Use visible roles, labels, and exact accessible names. Scope ambiguous controls to the selected tabpanel or visible dialog because inactive tab content and custom dropdown portals can remain in the DOM.
 
+Organization Settings are a prohibited route. Do not open or inspect that page. The organization selector label may be read only as the environment signal defined in `safety-and-verification.md`.
+
 ## Template routes
 
 Opening `/meca-therapies/templates` redirects to Activities.

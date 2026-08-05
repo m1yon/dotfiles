@@ -13,6 +13,14 @@ Check the sandbox path first because its name extends the production slug. Requi
 
 Treat sandbox as read-only unless the user explicitly authorizes the specific sandbox write. For production creates, search the relevant production table for the exact title before opening a create form.
 
+## Forbidden area: Organization Settings
+
+Never navigate to, inspect, read, search, screenshot, compare, copy, export, or edit the Organization Settings page in sandbox or production. Organization Settings are intentionally configured per environment and must never be included in a migration, audit, dependency inventory, or verification.
+
+The top-level organization selector's displayed label may be read only to confirm sandbox versus production. Do not open the selector to investigate configuration beyond what is required to choose the already-known organization, and do not treat the selector as permission to inspect Organization Settings.
+
+If the current tab is already on an Organization Settings route, do not take a DOM snapshot or screenshot of its contents. Use the environment slug already visible in the URL to navigate directly to a known safe route such as Templates, then continue. If a request would require Organization Settings, stop and report that the area is prohibited by this skill, even if the user offers approval.
+
 ## Approval gate
 
 Require explicit user approval immediately before every persistent Pear Suite mutation in sandbox or production, even when the user's initial request asked for the change. Before asking, state:
@@ -33,6 +41,8 @@ Stop without writing when any of these is true:
 - The URL environment and organization selector disagree.
 - The open tab is not authenticated or is not the expected Pear Suite organization.
 - A production change cannot be documented with safe before-and-after screenshots.
+- A sandbox-to-production migration has unresolved source-quality findings, ambiguous dependencies, or scope not covered by the user's approval.
+- The requested task would require reading or changing Organization Settings.
 
 Do not work around a blocker by changing organizations, substituting a similarly named object, or creating a duplicate.
 

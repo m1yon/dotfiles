@@ -16,7 +16,8 @@ Examples: changed route, renamed control, new answer type, new task type, a newl
 ## Route the change
 
 - Navigation, routes, tables, and control locations -> `platform-map.md`
-- Question, flow, activity, or migration procedures -> `ui-workflows.md`
+- Question, flow, or activity procedures -> `ui-workflows.md`
+- Sandbox-to-production discovery, audit, planning, execution, or reconciliation -> `sandbox-to-production.md`
 - Environment gates, blockers, and persistence checks -> `safety-and-verification.md`
 - Stable test cases -> `regression-fixtures.md`
 - Core orchestration or trigger scope -> `SKILL.md`
@@ -29,6 +30,6 @@ Split a growing workflow into a new one-level reference file when a section beco
 - Prefer correcting an existing statement over appending a duplicate.
 - If a new observation conflicts with an older one, re-check after reload. If still unresolved, preserve both observations with environment/date labels and report the conflict.
 - Do not generalize from sandbox to production or from one flow type to another without verification.
-- Do not change the environment gate, approval behavior, production screenshot evidence requirement, stop conditions, or protected-data rules automatically. Propose those changes to the user.
+- Do not change the Organization Settings prohibition, environment gate, migration preflight requirement, approval behavior, production screenshot evidence requirement, stop conditions, or protected-data rules automatically. Propose changes to the other protected rules to the user; Organization Settings must remain prohibited.
 
 After a self-update, run the skill validator when `SKILL.md` or metadata changed. Briefly report which reference changed and why.

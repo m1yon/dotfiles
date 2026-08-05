@@ -90,13 +90,3 @@ Group Event
 ```
 
 The create page may label its persistent button `Update Activity Template`; verify the route and record existence rather than trusting the verb.
-
-## Cross-environment migration
-
-1. Inventory the source object's title, type, questions/data IDs, answers, graph connections, actions, and activity dependencies without editing the source.
-2. Switch to the target environment and re-run every exact-match search there.
-3. Build missing questions/data IDs first, then the flow, then the activity.
-4. Pause on any title, answer, type, version, locked-state, or dependency-name mismatch.
-5. Reload and verify each dependency before creating its consumer.
-
-Never assume identically positioned rows or similarly named dependencies are equivalent across environments.
