@@ -61,10 +61,12 @@ Do not begin production mutation until every blocker is resolved and the final m
 ## Phase 5: Migrate and verify
 
 1. Create or update only approved entities in dependency order: questions/data IDs, prerequisite action targets, flows in topological order, then the activity.
-2. Reload and verify each entity before creating a consumer that depends on it.
-3. Never overwrite an ambiguous object or create a suffixed duplicate as a workaround.
-4. Stop on a circular dependency; do not invent a shell-object workaround without a separately registered workflow.
-5. Capture comparable After evidence from the reloaded production state for every changed object or clearly evidenced batch.
+2. Treat flow layout as part of migration correctness. Place `Start` at the far left; advance every path left to right; align linear nodes in one lane; separate branches into clear, non-overlapping vertical lanes; place merges to the right of their branches; and eliminate backward, crossing, overlapping, or hidden connectors.
+3. For an existing production flow, verify the **Update Flow Template** impact list contains only approved services, click `Confirm`, and continue from the resulting flow-version URL. Dismissing or bypassing the dialog does not persist the edit.
+4. Reload and verify each entity, including flow node positions, before creating a consumer that depends on it.
+5. Never overwrite an ambiguous object or create a suffixed duplicate as a workaround.
+6. Stop on a circular dependency; do not invent a shell-object workaround without a separately registered workflow.
+7. Capture comparable After evidence from the reloaded production state for every changed object or clearly evidenced batch. Use overlapping left-to-right frames when a complete flow cannot fit one viewport.
 
 ## Phase 6: Reconcile and report
 

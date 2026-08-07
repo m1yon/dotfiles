@@ -46,6 +46,8 @@ Before an approved production mutation, read Chrome's screenshot guidance and ca
 
 If Chrome screenshot capture times out, have the user foreground and unminimize Chrome, then retry through the signed-in Chrome surface. Do not bypass the evidence gate or substitute an unverified browser surface.
 
+When a flow is wider than one fitted viewport, use overlapping left-to-right evidence frames. The complete set must show `Start`, every node and connection, all branch and merge geometry, and every terminal node before and after the mutation.
+
 After each approved write or coherent batch:
 
 1. Capture any visible result indicator.
@@ -54,7 +56,7 @@ After each approved write or coherent batch:
 4. Verify every field, ID, answer, node, connection, action, task mapping, and setting in the approved scope.
 5. Capture comparable After evidence from the reloaded state.
 
-Never trust the enabled or disabled state of `Save Changes`, `Create`, or `Update Activity Template`. An immediate post-save screenshot is not acceptable After evidence. If reload or evidence does not prove persistence, report the write as unverified.
+Never trust the enabled or disabled state of `Save Changes`, `Create`, or `Update Activity Template`. For an existing flow, saving is incomplete until the **Update Flow Template** impact dialog is verified and `Confirm` is clicked. An immediate post-save screenshot is not acceptable After evidence. If reload or evidence does not prove persistence, report the write as unverified.
 
 ### Known false-success failure
 

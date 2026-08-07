@@ -54,10 +54,34 @@ When a registered workflow builds a flow:
 2. Create or locate every approved question by exact data ID and semantic match.
 3. Drag question cards from the right panel onto the React Flow canvas.
 4. Connect Start and question nodes from source handles to target handles.
-5. Configure approved question and answer actions.
-6. Collapse the Builder sidebar with the top-left arrow, use `Fit View`, save, reload, collapse the sidebar again if it reopened, and verify graph structure, answers, and actions. Use the collapsed, fitted view for comparable flow screenshots.
+5. Apply the mandatory layout standard below.
+6. Configure approved question and answer actions.
+7. Collapse the Builder sidebar with the top-left arrow, use `Fit View`, save, reload, collapse the sidebar again if it reopened, and verify graph structure, answers, actions, and persisted node positions. Use the collapsed, fitted view for comparable flow screenshots.
+
+### Mandatory layout standard
+
+Treat visual layout as part of flow correctness:
+
+- Place `Start` at the far left. Every downstream connection must advance left to right.
+- Put a linear sequence in one horizontal lane ordered by execution, with aligned card tops and consistent non-overlapping gaps.
+- Put each branch in a distinct, non-overlapping vertical lane while every branch continues left to right. Preserve the source answer order and make it visually obvious which outgoing connector enters each lane.
+- Place a merge node to the right of every branch it joins. Avoid backward connectors, crossing connectors, overlapping cards, and connectors hidden behind cards.
+- Leave enough vertical space between branch lanes for card bodies, answer actions, and connector labels. Keep terminal nodes visibly at the right edge of their paths.
+- For a long flow that cannot fit at minimum zoom, preserve the left-to-right geometry and use horizontal panning; do not compress it into a misleading stack merely to fit one viewport.
+
+### Canvas interaction
+
+- Collapse the Builder sidebar before layout work. Use `Fit View` to locate the graph, but expect long flows to require horizontal panning because the canvas has a minimum zoom.
+- Drag from the card header. A missed header drag pans the canvas instead of moving the card; after every drop, verify that the card position changed and that the viewport did not move unexpectedly.
+- For long moves, center the card in the visible canvas and move it in short increments that keep the pointer inside the canvas. Place rightmost or terminal cards first and work backward to reduce overlap while arranging the graph.
+- If a card covers `Start` or another card's header, temporarily move the covering card, place the hidden element, then return the covering card to its intended position.
+- Do not save intermediate or visibly disordered layouts. If an unsaved attempt becomes unreliable, reload to restore the last persisted layout and begin again.
+- After layout, count and verify every node and connection and re-check all question and answer actions before saving. Node movement must not change flow semantics.
+- If the full graph does not fit one viewport, capture overlapping left-to-right screenshots that collectively show `Start`, every branch and merge, and every terminal node.
 
 The builder exposes `Save Changes`, `Zoom In`, `Zoom Out`, and `Fit View`. A disabled `Save Changes` button is not proof of persistence.
+
+In production, `Save Changes` on an existing flow opens an **Update Flow Template** dialog that lists impacted services, including activity templates. Verify that the displayed impact list is inside the approved scope, then click `Confirm`; dismissing or bypassing the dialog leaves the edit unsaved. Confirmation may navigate to a new flow-version URL. Reload that resulting URL and verify the persisted graph. Verified 2026-08-07.
 
 Scheduling an activity from an answer uses:
 
