@@ -25,6 +25,10 @@ When a registered workflow creates a question:
 
 Custom dropdown options may render outside the dialog. Scope ambiguous matches to the visible `[role="listbox"]` and active option.
 
+When exact rich-text spacing matters, create an intentional blank paragraph with two Enter presses instead of relying on pasted newline normalization. Reload the saved question and verify the rendered paragraph structure.
+
+The question editor may display a data-ID type suffix as `undefined` even when the backing data record has a valid type. Treat this as ambiguous UI state: verify the exact data ID and type under **Data Management -> Data** before classifying or reusing it.
+
 Observed answer types:
 
 ```text
@@ -51,7 +55,7 @@ When a registered workflow builds a flow:
 3. Drag question cards from the right panel onto the React Flow canvas.
 4. Connect Start and question nodes from source handles to target handles.
 5. Configure approved question and answer actions.
-6. Use `Fit View`, save, reload, and verify graph structure, answers, and actions.
+6. Collapse the Builder sidebar with the top-left arrow, use `Fit View`, save, reload, collapse the sidebar again if it reopened, and verify graph structure, answers, and actions. Use the collapsed, fitted view for comparable flow screenshots.
 
 The builder exposes `Save Changes`, `Zoom In`, `Zoom Out`, and `Fit View`. A disabled `Save Changes` button is not proof of persistence.
 

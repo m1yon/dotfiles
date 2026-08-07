@@ -44,6 +44,8 @@ Do not work around a blocker by changing organizations, substituting a similar o
 
 Before an approved production mutation, read Chrome's screenshot guidance and capture relevant Before evidence. Use comparable framing and exclude unrelated sensitive data.
 
+If Chrome screenshot capture times out, have the user foreground and unminimize Chrome, then retry through the signed-in Chrome surface. Do not bypass the evidence gate or substitute an unverified browser surface.
+
 After each approved write or coherent batch:
 
 1. Capture any visible result indicator.

@@ -70,4 +70,6 @@ Do not begin production mutation until every blocker is resolved and the final m
 
 Compare production against the approved manifest field by field. Confirm all intended questions/data definitions, answers, nodes, connections, actions, settings, tasks, versions, and dependencies; confirm no extra entity or unapproved correction was introduced.
 
+When Pear Suite assigns a newly created production flow version `v1` while the sandbox source has a later version, compare semantic content and report the source and resulting production versions as an intentional system-generated difference. Do not treat the version number alone as a blocker or try to force it unless the UI supports that operation and it was explicitly approved.
+
 Report created, updated, reused, skipped, and blocked entities separately. Include labeled Before and After production screenshots. The After evidence must show the reloaded persisted state. Call out every intentional approved difference from sandbox and any remaining uncertainty.

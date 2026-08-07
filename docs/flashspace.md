@@ -12,8 +12,8 @@ startup are managed declaratively.
 | 1 | Browser | Globe | Google Chrome (opens on activation) |
 | 2 | Codex | Magic wand and stars | Codex (opens on activation) |
 | 3 | Terminal | Terminal | Ghostty (opens on activation) |
-| 4 | Development 2 | Curly braces | — |
-| 5 | Development 3 | Code chevrons | — |
+| 4 | Notes | Note | Obsidian (opens on activation) |
+| 5 | Spreadsheets | Table cells | Microsoft Excel |
 | 6 | Database | Database cylinder | DataGrip |
 | 7 | Email | Envelope | Superhuman |
 | 8 | Planning | Checklist | Linear, Todoist |
