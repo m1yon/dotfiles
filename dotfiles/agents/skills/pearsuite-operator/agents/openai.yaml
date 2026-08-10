@@ -1,4 +1,0 @@
-interface:
-  display_name: "Pear Suite Operator"
-  short_description: "Route safe Pear Suite work through Chrome"
-  default_prompt: "Use $pearsuite-operator to inspect Pear Suite read-only or route an approved sandbox-to-production activity promotion."

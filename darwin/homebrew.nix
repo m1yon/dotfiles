@@ -36,6 +36,7 @@
     };
 
     brews = [
+      "herdr"
       "mas"
     ];
     casks = [
