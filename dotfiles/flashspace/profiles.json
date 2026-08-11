@@ -83,6 +83,11 @@
               "bundleIdentifier" : "com.microsoft.Excel",
               "iconPath" : "/Applications/Microsoft Excel.app/Contents/Resources/Excel_macOS.icns",
               "name" : "Microsoft Excel"
+            },
+            {
+              "bundleIdentifier" : "com.microsoft.Word",
+              "iconPath" : "/Applications/Microsoft Word.app/Contents/Resources/Word_macOS.icns",
+              "name" : "Microsoft Word"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+5",
@@ -109,7 +114,6 @@
         {
           "apps" : [
             {
-              "autoOpen" : true,
               "bundleIdentifier" : "com.superhuman.electron",
               "iconPath" : "/Applications/Superhuman.app/Contents/Resources/icon.icns",
               "name" : "Superhuman"
