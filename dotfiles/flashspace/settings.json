@@ -25,6 +25,11 @@
       "bundleIdentifier" : "com.superduper.superwhisper",
       "iconPath" : "/Applications/superwhisper.app/Contents/Resources/AppIcon.icns",
       "name" : "superwhisper"
+    },
+    {
+      "bundleIdentifier" : "net.ankiweb.anki",
+      "iconPath" : "/Applications/Anki.app/Contents/Resources/anki.icns",
+      "name" : "Anki"
     }
   ],
   "focusDown" : "ctrl+j",
@@ -44,7 +49,7 @@
   ],
   "pipScreenCornerOffset" : 15,
   "restartAppOnWakeUp" : false,
-  "restoreHiddenAppsOnSwitch" : false,
+  "restoreHiddenAppsOnSwitch" : true,
   "runScriptAfterWorkspaceChange" : "",
   "runScriptOnLaunch" : "",
   "runScriptOnProfileChange" : "sketchybar --reload",
@@ -71,6 +76,7 @@
   "switchToRecentWorkspace" : "ctrl+tab",
   "switchWorkspaceOnCursorScreen" : false,
   "switchWorkspaceWhenPipCloses" : true,
+  "toggleTheFocusedAppFloating" : "ctrl+shift+f",
   "workspaceSwitcherCurrentDisplayWorkspaces" : true,
   "workspaceSwitcherShowScreenshots" : true,
   "workspaceSwitcherSortByLastActivation" : false,

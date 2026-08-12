@@ -15,3 +15,4 @@ I want to share some preferences so that we can be more aligned when working tog
 
 ## Questions Are Read-Only
 - **A question is a request for an answer, not changes.** If a question is asked, just answer the question, do not make any file changes.
+    - If the answer is actionable, suggest the solution to the user clearly.
