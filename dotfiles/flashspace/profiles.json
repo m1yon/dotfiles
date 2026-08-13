@@ -16,6 +16,16 @@
               "bundleIdentifier" : "com.roblox.RobloxPlayer",
               "iconPath" : "/Applications/Roblox.app/Contents/Resources/AppIcon.icns",
               "name" : "Roblox"
+            },
+            {
+              "bundleIdentifier" : "com.granola.app",
+              "iconPath" : "/Applications/Granola.app/Contents/Resources/icon.icns",
+              "name" : "Granola"
+            },
+            {
+              "bundleIdentifier" : "com.apple.finder",
+              "iconPath" : "/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns",
+              "name" : "Finder"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+1",

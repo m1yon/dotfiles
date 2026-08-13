@@ -8,6 +8,9 @@ I want to share some preferences so that we can be more aligned when working tog
 - Keep things simple. Channel "yagni" energy unless told otherwise.
 - Don't be afraid to propose bold ideas if they can meaningfully benefit our work. I don't want you to be a yes man, I want you to be a collaborative partner.
 
+## Codex Preferences
+- When creating a new thread in codex, do not create it in a new worktree or branch unless explicitly asked.
+
 ## Common Failure Cases
 - If AWS SSO permissions are required, you can run one of the following commands to refresh them:
     - **Dev:** `aws sso login --profile paradis_dev`
@@ -16,3 +19,11 @@ I want to share some preferences so that we can be more aligned when working tog
 ## Questions Are Read-Only
 - **A question is a request for an answer, not changes.** If a question is asked, just answer the question, do not make any file changes.
     - If the answer is actionable, suggest the solution to the user clearly.
+
+## Proactive Codebase Exploration
+- Proactively delegate broad, read-heavy codebase exploration to the built-in `explorer` subagent, even when the user does not explicitly request subagents.
+- Use an explorer when the request requires understanding an unfamiliar area, tracing execution across modules, finding existing patterns, or gathering context from more than a few files.
+- Do not delegate needle searches involving a known file, symbol, or a clearly bounded set of 2-3 files; search those directly.
+- Use the minimum number of explorers needed: normally one, or up to three in parallel when the search areas are independent.
+- Give each explorer a bounded focus, the desired thoroughness, and an explicit description of the evidence it should return.
+- Do not duplicate delegated exploration. Continue with non-overlapping work, wait for the result, and synthesize the findings for the user.

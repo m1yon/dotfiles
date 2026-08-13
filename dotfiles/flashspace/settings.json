@@ -6,7 +6,7 @@
   "centerCursorOnFocusChange" : true,
   "centerCursorOnWorkspaceChange" : true,
   "changeWorkspaceOnAppAssign" : true,
-  "checkForUpdatesAutomatically" : false,
+  "checkForUpdatesAutomatically" : true,
   "cornerHiddenApps" : [
 
   ],
@@ -30,6 +30,11 @@
       "bundleIdentifier" : "net.ankiweb.anki",
       "iconPath" : "/Applications/Anki.app/Contents/Resources/anki.icns",
       "name" : "Anki"
+    },
+    {
+      "bundleIdentifier" : "com.granola.app",
+      "iconPath" : "/Applications/Granola.app/Contents/Resources/icon.icns",
+      "name" : "Granola"
     }
   ],
   "focusDown" : "ctrl+j",
