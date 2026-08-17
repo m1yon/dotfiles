@@ -1,1 +1,1 @@
-/nix/store/766md61ydxipbzmwgq9qgg3s8xrbwblv-home-manager-files/.config/opencode/AGENTS.md
+/nix/store/kxr96dkwq0aqb7h3npadp4m5rlvjpsrp-home-manager-files/.config/opencode/AGENTS.md
