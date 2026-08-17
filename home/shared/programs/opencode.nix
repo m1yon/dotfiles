@@ -40,6 +40,11 @@ in
   '';
 
   home.file = {
-    ".config/opencode/".source = outOfStore "${dotfiles}/opencode";
+    ".config/opencode/AGENTS.md".source = outOfStore "${dotfiles}/agents/AGENTS.md";
+    ".config/opencode/dcp.jsonc".source = outOfStore "${dotfiles}/opencode/dcp.jsonc";
+    ".config/opencode/ntfy-notify.sh".source = outOfStore "${dotfiles}/opencode/ntfy-notify.sh";
+    ".config/opencode/opencode-notifier.json".source =
+      outOfStore "${dotfiles}/opencode/opencode-notifier.json";
+    ".config/opencode/opencode.json".source = outOfStore "${dotfiles}/opencode/opencode.json";
   };
 }

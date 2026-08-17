@@ -17,7 +17,7 @@ in
 
   home.file = {
     ".codex/AGENTS.md" = {
-      source = outOfStore "${dotfiles}/codex/AGENTS.md";
+      source = outOfStore "${dotfiles}/agents/AGENTS.md";
       force = true;
     };
   };
