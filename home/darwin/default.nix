@@ -13,7 +13,7 @@ let
     alpha-blending = "linear-corrected";
     bold-color = "bright";
     faint-opacity = 1;
-    auto-update = "off";
+    auto-update = "download";
   };
 
   ghosttyKeybinds = [
@@ -32,8 +32,8 @@ let
     + "\n";
 
   codexDefaults = {
-    SUEnableAutomaticChecks = false;
-    SUAutomaticallyUpdate = false;
+    SUEnableAutomaticChecks = true;
+    SUAutomaticallyUpdate = true;
   };
 in
 {
@@ -57,6 +57,12 @@ in
     force = true;
     text = ghosttyConfig;
   };
+
+  # Let self-updating casks use their signed in-app updater instead of having
+  # Homebrew replace their app bundles from the terminal that launched a rebuild.
+  home.file.".homebrew/brew.env".text = ''
+    HOMEBREW_NO_UPGRADE_AUTO_UPDATES_CASKS=1
+  '';
 
   targets.darwin.defaults."com.openai.codex" = codexDefaults;
 
