@@ -1,0 +1,14 @@
+# Herdr configuration
+# Reference: https://herdr.dev/docs/configuration/
+
+onboarding = false
+
+[theme]
+name = "catppuccin"
+
+[terminal]
+shell_mode = "auto"
+new_cwd = "follow"
+
+[update]
+channel = "stable"

@@ -40,6 +40,7 @@ in
   imports = [
     ./codex.nix
     ./flashspace.nix
+    ./herdr.nix
     ./packages.nix
     ./shell.nix
   ];
