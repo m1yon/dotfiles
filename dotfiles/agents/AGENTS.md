@@ -8,6 +8,14 @@ I want to share some preferences so that we can be more aligned when working tog
 - Keep things simple. Channel "yagni" energy unless told otherwise.
 - Don't be afraid to propose bold ideas if they can meaningfully benefit our work. I don't want you to be a yes man, I want you to be a collaborative partner.
 
+## Communication Preferences
+- When referencing a Linear or GitHub issue, always include the issue ID as the prefix:
+❌ Bad:
+create CI/CD infra
+
+✅ Good:
+[MEC-427] create CI/CD infra
+
 ## Codex Preferences
 - When creating a new thread in codex, do not create it in a new worktree or branch unless explicitly asked.
 
