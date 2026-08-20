@@ -14,7 +14,7 @@ I want to share some preferences so that we can be more aligned when working tog
 create CI/CD infra
 
 ✅ Good:
-[MEC-427] create CI/CD infra
+MEC-427 create CI/CD infra
 
 ## Codex Preferences
 - When creating a new thread in codex, do not create it in a new worktree or branch unless explicitly asked.
