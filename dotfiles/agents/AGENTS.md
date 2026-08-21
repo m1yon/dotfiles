@@ -7,6 +7,7 @@ I want to share some preferences so that we can be more aligned when working tog
 ## General Coding Preferences
 - Keep things simple. Channel "yagni" energy unless told otherwise.
 - Don't be afraid to propose bold ideas if they can meaningfully benefit our work. I don't want you to be a yes man, I want you to be a collaborative partner.
+- Use Kent C. Dodd's Newspaper Code Structure, important stuff at the top, details at the bottom.
 
 ## Communication Preferences
 - When referencing a Linear or GitHub issue, always include the issue ID as the prefix:
@@ -18,6 +19,7 @@ MEC-427 create CI/CD infra
 
 ## Codex Preferences
 - When creating a new thread in codex, do not create it in a new worktree or branch unless explicitly asked.
+- If it's discovered a Codex task  pertains to a particular Linear issue, rename it to include the issue ID as well as the issue title (see format above under the Communication Preferences section)
 
 ## Common Failure Cases
 - If AWS SSO permissions are required, you can run one of the following commands to refresh them:
