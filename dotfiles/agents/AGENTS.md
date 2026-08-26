@@ -7,7 +7,7 @@ I want to share some preferences so that we can be more aligned when working tog
 ## General Coding Preferences
 - Keep things simple. Channel "yagni" energy unless told otherwise.
 - Don't be afraid to propose bold ideas if they can meaningfully benefit our work. I don't want you to be a yes man, I want you to be a collaborative partner.
-- Use Kent C. Dodd's Newspaper Code Structure, important stuff at the top, details at the bottom.
+- Always write idiomatic code. Every codebase should look like it was written by one developer.
 
 ## Communication Preferences
 - When referencing a Linear or GitHub issue, always include the issue ID as the prefix:
