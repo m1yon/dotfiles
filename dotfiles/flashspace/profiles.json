@@ -18,11 +18,6 @@
               "name" : "Roblox"
             },
             {
-              "bundleIdentifier" : "com.granola.app",
-              "iconPath" : "/Applications/Granola.app/Contents/Resources/icon.icns",
-              "name" : "Granola"
-            },
-            {
               "bundleIdentifier" : "com.apple.finder",
               "iconPath" : "/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns",
               "name" : "Finder"
@@ -39,7 +34,6 @@
         {
           "apps" : [
             {
-              "autoOpen" : true,
               "bundleIdentifier" : "com.openai.codex",
               "iconPath" : "/Applications/ChatGPT.app/Contents/Resources/electron.icns",
               "name" : "ChatGPT"
@@ -140,15 +134,14 @@
         {
           "apps" : [
             {
-              "autoOpen" : true,
-              "bundleIdentifier" : "com.linear",
-              "name" : "Linear"
-            },
-            {
-              "autoOpen" : true,
               "bundleIdentifier" : "com.todoist.mac.Todoist",
               "iconPath" : "/Applications/Todoist.app/Contents/Resources/icon.icns",
               "name" : "Todoist"
+            },
+            {
+              "bundleIdentifier" : "com.linear",
+              "iconPath" : "/Applications/Linear.app/Contents/Resources/icon.icns",
+              "name" : "Linear"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+8",
@@ -173,6 +166,11 @@
               "bundleIdentifier" : "com.microsoft.teams2",
               "iconPath" : "/Applications/Microsoft Teams.app/Contents/Resources/AppIcon.icns",
               "name" : "Microsoft Teams"
+            },
+            {
+              "bundleIdentifier" : "com.granola.app",
+              "iconPath" : "/Applications/Granola.app/Contents/Resources/icon.icns",
+              "name" : "Granola"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+9",
