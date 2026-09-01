@@ -54,6 +54,11 @@
               "bundleIdentifier" : "com.mitchellh.ghostty",
               "iconPath" : "/Applications/Ghostty.app/Contents/Resources/Ghostty.icns",
               "name" : "Ghostty"
+            },
+            {
+              "bundleIdentifier" : "dev.zed.Zed",
+              "iconPath" : "/Applications/Zed.app/Contents/Resources/Zed.icns",
+              "name" : "Zed"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+3",

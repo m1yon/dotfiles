@@ -20,6 +20,7 @@ MEC-427 create CI/CD infra
 ## Codex Preferences
 - When creating a new thread in codex, do not create it in a new worktree or branch unless explicitly asked.
 - If it's discovered a Codex task  pertains to a particular Linear issue, rename it to include the issue ID as well as the issue title (see format above under the Communication Preferences section)
+- When discovering deferred tools through ALL_TOOLS, return candidate names only. Never serialize multiple full tool descriptions. Load only the exact tools needed, and do not repeat discovery for tools already used in the task.
 
 ## Common Failure Cases
 - If AWS SSO permissions are required, you can run one of the following commands to refresh them:
