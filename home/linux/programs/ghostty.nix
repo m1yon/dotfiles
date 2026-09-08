@@ -11,7 +11,7 @@
       unfocused-split-opacity = 1;
       alpha-blending = "linear-corrected";
       bold-color = "bright";
-      faint-opacity = 1;
+      faint-opacity = 0.5;
       gtk-single-instance = true;
     };
   };
