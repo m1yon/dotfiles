@@ -60,6 +60,7 @@
       "spotify"
       "superhuman"
       "superwhisper"
+      "t3-code"
       "todoist-app"
       "bruno"
     ];
