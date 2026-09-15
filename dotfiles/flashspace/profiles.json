@@ -37,6 +37,11 @@
               "bundleIdentifier" : "com.openai.codex",
               "iconPath" : "/Applications/ChatGPT.app/Contents/Resources/electron.icns",
               "name" : "ChatGPT"
+            },
+            {
+              "bundleIdentifier" : "com.t3tools.t3code",
+              "iconPath" : "/Applications/T3 Code (Alpha).app/Contents/Resources/icon.icns",
+              "name" : "T3 Code (Alpha)"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+2",

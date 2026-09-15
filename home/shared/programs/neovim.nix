@@ -51,7 +51,7 @@ in
       yaml-language-server
       tailwindcss-language-server
       vscode-langservers-extracted
-      unstablePkgs.typescript-go
+      unstablePkgs.typescript
       taplo
       nixd
       golangci-lint
