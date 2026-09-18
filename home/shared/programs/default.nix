@@ -6,6 +6,7 @@
     ./btm.nix
     ./bun.nix
     ./coderabbit.nix
+    ./codex.nix
     ./difftastic.nix
     ./direnv.nix
     ./docker.nix

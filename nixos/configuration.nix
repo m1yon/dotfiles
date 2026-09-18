@@ -10,6 +10,7 @@
     ./bluetooth.nix
     ./users.nix
     ./ssh.nix
+    ./codex.nix
     ./development.nix
     ./docker.nix
     ./kvm.nix
