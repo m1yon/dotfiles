@@ -32,6 +32,13 @@
     };
   };
 
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+    # Keep authentication with the existing OpenSSH server and authorized keys.
+    extraSetFlags = [ "--ssh=false" ];
+  };
+
   environment.systemPackages = with pkgs; [
     impala
   ];

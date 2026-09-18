@@ -97,6 +97,50 @@ Then rebuild the platform-specific system configuration:
 task rebuild
 ```
 
+## Remote access with Tailscale
+
+NixOS runs `tailscaled` on nixbook. nix-darwin installs the standalone Tailscale
+Mac app and adds the system SSH alias `nixbook-tailnet`. The alias resolves
+`nixbook` through Tailscale's MagicDNS and uses the existing OpenSSH server and
+SSH keys. The SOPS-managed `nixbook` LAN alias remains available.
+
+After syncing these changes to both checkouts, run `task rebuild` in each
+computer's dotfiles checkout. Complete enrollment once per computer:
+
+1. On nixbook, run `sudo tailscale up` and open the login URL. Sign in to your
+   personal Tailscale account. Check `tailscale status` and `tailscale ip -4`.
+2. On the MacBook, open Tailscale from Applications, approve its macOS system
+   extension/VPN prompts, and sign in to the same account. Leave it connected.
+3. In the [Tailscale admin console](https://login.tailscale.com/admin/machines),
+   confirm both devices are connected and the Linux device is named `nixbook`.
+   In [DNS settings](https://login.tailscale.com/admin/dns), confirm MagicDNS is
+   enabled. An existing custom access policy must allow the Mac to reach
+   nixbook on TCP port 22.
+4. From a Mac terminal, run:
+
+   ```sh
+   /Applications/Tailscale.app/Contents/MacOS/Tailscale ping nixbook
+   ssh nixbook-tailnet 'hostname; uname -s'
+   ```
+
+   Expect `nixbook` and `Linux`. For a first-time SSH host-key prompt, compare
+   the fingerprint with `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` on
+   nixbook. Repeat the connection from a phone hotspot to verify access away
+   from the home network.
+
+`ssh -G nixbook-tailnet` should report `hostname nixbook` and `user michael`.
+If MagicDNS does not resolve, use the `100.x.y.z` address from `tailscale ip -4`
+on nixbook with `ssh -o HostName=100.x.y.z nixbook-tailnet` while diagnosing DNS.
+Enrollment credentials stay on the devices, outside Git.
+
+The Linux service starts at boot and retains its login across reboots. Keep
+nixbook plugged in and online. Check its key-expiry date in the admin console
+before travel; an expired device key requires reauthentication.
+
+References: [macOS setup](https://tailscale.com/docs/install/mac),
+[MagicDNS](https://tailscale.com/docs/features/magicdns), and
+[OpenSSH over Tailscale](https://tailscale.com/docs/reference/ssh-over-tailscale).
+
 ## Codex on nixbook from the Mac app
 
 Both hosts install Codex CLI from the pinned `llm-agents` input. On Linux,
@@ -118,22 +162,20 @@ After applying the configuration with `task rebuild` on nixbook:
    may need enabling in your ChatGPT account or workspace. Credentials and
    conversations stay in `/home/michael/.codex`; they are not managed by Git.
 
-2. Make sure the Mac has a concrete `Host nixbook` SSH alias pointing to the
-   laptop's reachable address, with `User michael` and your Mac's SSH key.
-   SSH configuration is SOPS-managed in this repository, so edit the encrypted
-   `secrets/ssh_config` source when adding the alias. The Linux SSH server
-   already authorizes the Mac's key.
+2. Complete the Tailscale setup above and verify `ssh nixbook-tailnet` from the
+   Mac. The Linux SSH server already authorizes the Mac's key. For LAN-only
+   access, the existing SOPS-managed `nixbook` alias can also be used.
 
 3. From the Mac, verify the remote login environment:
 
    ```sh
-   ssh nixbook 'zsh -lc "command -v codex && printenv CODEX_SSH_SKIP_APP_SERVER_BOOT && codex login status && systemctl --user is-active codex-app-server"'
+   ssh nixbook-tailnet 'zsh -lc "command -v codex && printenv CODEX_SSH_SKIP_APP_SERVER_BOOT && codex login status && systemctl --user is-active codex-app-server"'
    ```
 
    Expect a Codex path, `true`, a successful login status, and `active`.
 
 4. In the Mac app, open **Settings > Connections > SSH**, add or enable
-   `nixbook`, and select a repository directory on Linux. Start the task in
+   `nixbook-tailnet`, and select a repository directory on Linux. Start the task in
    that remote project. Its agent, tools, and saved conversation run on Linux.
 
 Keep nixbook powered and online. Closing its lid while plugged in does not

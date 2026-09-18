@@ -28,18 +28,20 @@ For configuration changes, start with `hosts/macbook/default.nix`, `darwin/`, an
 
 ## nixbook
 
-From the MacBook, the documented connection is `ssh nixbook` as `michael`. The Mac's SSH configuration must supply the reachable address and key. Linux OpenSSH accepts keys, disables root and password login, and authorizes the Mac's key.
+From the MacBook, use `ssh nixbook-tailnet` as `michael` for access through Tailscale. `darwin/programs/tailscale.nix` declares the Mac app and a system SSH alias targeting the MagicDNS name `nixbook`. `nixos/networking.nix` enables the Linux daemon. Both hosts need a rebuild and enrollment in the same tailnet before this connection works; configuration alone does not establish connectivity. Read "Remote access with Tailscale" in `README.md` for enrollment and verification.
 
-Inspect connection settings with `ssh -G nixbook`. Successful configuration expansion alone does not prove connectivity. A bounded, read-only check is:
+The existing SOPS-managed `ssh nixbook` alias is the LAN connection. Linux OpenSSH accepts keys, disables root and password login, and authorizes the Mac's key. Tailscale supplies network connectivity; its separate SSH authentication feature is disabled.
+
+Inspect connection settings with `ssh -G nixbook-tailnet`. Successful configuration expansion alone does not prove connectivity. A bounded, read-only check is:
 
 ```sh
-ssh -o BatchMode=yes -o ConnectTimeout=10 nixbook 'uname -s; hostname; id -un'
+ssh -o BatchMode=yes -o ConnectTimeout=10 nixbook-tailnet 'uname -s; hostname; id -un'
 ```
 
 Use a login shell when remote commands need the Nix/Home Manager environment:
 
 ```sh
-ssh nixbook 'zsh -lc "cd /home/michael/GitHub/dotfiles && git status --short"'
+ssh nixbook-tailnet 'zsh -lc "cd /home/michael/GitHub/dotfiles && git status --short"'
 ```
 
 For configuration changes, start with `hosts/nixbook/default.nix`, `nixos/`, and `home/linux/`. Inspect user services with `systemctl --user`; inspect system services with `systemctl`.
