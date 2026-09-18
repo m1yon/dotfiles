@@ -1,0 +1,5 @@
+interface:
+  display_name: "Fleet"
+  short_description: "Work with Michael's MacBook and nixbook"
+policy:
+  allow_implicit_invocation: true
