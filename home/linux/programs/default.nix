@@ -18,7 +18,6 @@
     ./slack.nix
     ./spotify.nix
     ./todoist.nix
-    ./vibetyper.nix
     ./vicinae.nix
     ./waybar.nix
     ./webapps.nix
