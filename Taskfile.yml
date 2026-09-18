@@ -32,7 +32,10 @@ tasks:
             ;;
           Linux)
             nixos-rebuild switch --flake path:{{.FLAKE_DIR}}#nixbook --sudo
-            "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
+            # Starting uwsm-app from a TTY leaves its daemon with a pre-login PATH.
+            if systemctl --user is-active --quiet graphical-session.target; then
+              "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
+            fi
             ;;
           *)
             echo "Unsupported OS: $(uname -s)" >&2
@@ -52,7 +55,10 @@ tasks:
             ;;
           Linux)
             nix run home-manager -- switch --flake {{.FLAKE_DIR}}#michael@nixbook
-            "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
+            # Starting uwsm-app from a TTY leaves its daemon with a pre-login PATH.
+            if systemctl --user is-active --quiet graphical-session.target; then
+              "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
+            fi
             ;;
           *)
             echo "Unsupported OS: $(uname -s)" >&2
