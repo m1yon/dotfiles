@@ -24,7 +24,7 @@ ADDR=$(hyprctl clients -j | jq -r \
 )
 
 if [[ -n "$ADDR" ]]; then
-  hyprctl dispatch focuswindow "address:${ADDR}"
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:${ADDR}\" })"
 else
   launch-webapp "$URL"
 fi

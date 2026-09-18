@@ -37,11 +37,15 @@ let
     };
   };
 
-  # Generate hyprland bind line for a webapp
+  # JSON string quoting also produces Lua string literals for these values.
+  luaString = builtins.toJSON;
+  launchCommand = app: ''launch-or-focus-webapp "${app.name}" "${app.url}"'';
+
+  # Web-app binds use Lua's "SUPER + SHIFT + K" notation.
   mkBind =
     app:
     if app ? bind then
-      "bind = ${app.bind}, exec, launch-or-focus-webapp \"${app.name}\" \"${app.url}\""
+      "hl.bind(${luaString app.bind}, hl.dsp.exec_cmd(${luaString (launchCommand app)}))"
     else
       null;
 
@@ -53,28 +57,30 @@ let
     app:
     let
       hasRules = app ? workspace || (app ? group && app.group);
-      workspaceLine = if app ? workspace then "  workspace = ${app.workspace}\n" else "";
-      groupLine = if app ? group && app.group then "  group = set\n" else "";
-      suppressLine = if app ? autostart && app.autostart then "  no_initial_focus = true\n" else "";
-      block = "windowrule {\n  name = webapp-${sanitizeName app.name}\n${workspaceLine}${groupLine}${suppressLine}  match:class = ${chromeClassOf app.url}\n}";
+      workspaceLine = if app ? workspace then "  workspace = ${luaString app.workspace},\n" else "";
+      groupLine = if app ? group && app.group then "  group = \"set\",\n" else "";
+      suppressLine = if app ? autostart && app.autostart then "  no_initial_focus = true,\n" else "";
+      block = "hl.window_rule({\n  name = ${luaString "webapp-${sanitizeName app.name}"},\n${workspaceLine}${groupLine}${suppressLine}  match = { class = ${luaString (chromeClassOf app.url)} },\n})";
     in
     if hasRules then [ block ] else [ ];
 
-  # Generate exec-once for autostart apps (silent when workspace is set)
+  # Launch once per session, without switching to the app's workspace.
   mkAutostart =
     app:
     if app ? autostart && app.autostart then
       let
-        prefix = if app ? workspace then "[workspace ${app.workspace} silent] " else "";
+        rules = if app ? workspace then ", { workspace = ${luaString "${app.workspace} silent"} }" else "";
       in
-      "exec-once = ${prefix}launch-or-focus-webapp \"${app.name}\" \"${app.url}\""
+      "  hl.exec_cmd(${luaString (launchCommand app)}${rules})"
     else
       null;
 
   binds = builtins.filter (x: x != null) (map mkBind webapps);
   windowRules = pkgs.lib.concatMap mkWindowRules webapps;
   autostarts = builtins.filter (x: x != null) (map mkAutostart webapps);
-  hyprConf = builtins.concatStringsSep "\n" (binds ++ windowRules ++ autostarts);
+  hyprConf = builtins.concatStringsSep "\n" (
+    binds ++ windowRules ++ [ "hl.on(\"hyprland.start\", function()" ] ++ autostarts ++ [ "end)" ]
+  );
 
   # Favicon fetch script
   iconDir = "${config.home.homeDirectory}/.local/share/applications/icons";
@@ -96,8 +102,8 @@ in
 {
   xdg.desktopEntries = builtins.listToAttrs (map mkDesktopEntry webapps);
 
-  home.file.".config/hypr/hyprland.conf".text =
-    builtins.readFile ../../../dotfiles/hyprland/hyprland.conf + "\n" + hyprConf + "\n";
+  home.file.".config/hypr/hyprland.lua".text =
+    builtins.readFile ../../../dotfiles/hyprland/hyprland.lua + "\n" + hyprConf + "\n";
 
   home.activation.fetchWebappIcons = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "${iconDir}"

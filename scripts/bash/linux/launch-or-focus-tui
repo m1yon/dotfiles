@@ -18,7 +18,7 @@ TITLE="tui:${TUI_CMD}"
 ADDR=$(hyprctl clients -j | jq -r ".[] | select(.title == \"${TITLE}\") | .address" | head -n1)
 
 if [[ -n "$ADDR" ]]; then
-  hyprctl dispatch focuswindow "address:${ADDR}"
+  hyprctl dispatch "hl.dsp.focus({ window = \"address:${ADDR}\" })"
 else
   ghostty +new-window --title="${TITLE}" -e "${TUI_CMD}"
 fi
