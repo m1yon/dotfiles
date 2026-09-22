@@ -9,7 +9,9 @@ Use the Anki MCP for all interactions with Anki. If it is unavailable, explain t
 
 Always use the deck named `All`. Scope searches and reviews to that deck and add new cards there. Keep existing cards in `All`; do not create topic decks or subdecks.
 
-Before drafting or revising cards, invoke $formulating-knowledge. It governs card formulation; this skill supplies Anki workflow and Michael's preferences. A request to draft cards stays a draft. A request to add or update cards authorizes the corresponding MCP writes.
+Before drafting or revising cards, invoke $formulating-knowledge. It governs card formulation; this skill supplies Anki workflow and Michael's preferences. When creating cards from user-provided source material, follow [creating_cards_flow.md](creating_cards_flow.md) for review rounds and approval before adding to Anki. A request to draft cards stays a draft. Outside that creation flow, a request to add or update cards authorizes the corresponding MCP writes.
+
+When Michael says he doesn't like a card, first present exactly three distinct alternatives, numbered 1–3, with the proposed card text for each. Wait for him to choose before making any changes in Anki. For an existing Anki card, his choice authorizes updating the card with that alternative; apply it without asking for another confirmation. For a draft in the creation flow, his choice approves that version for the final batch.
 
 Before adding or editing cards, inspect representative existing notes in `All` through the MCP. Match the formatting of comparable cards, including note type, field layout, HTML, emphasis, code formatting, and cloze syntax. Inspect the note type's fields, templates, and styling as needed. Reuse those conventions without changing shared templates or CSS merely to format new content. If no comparable cards exist, use the simplest suitable existing note type.
 
