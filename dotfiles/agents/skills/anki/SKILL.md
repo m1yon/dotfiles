@@ -5,20 +5,42 @@ description: Work with Michael's Anki cards through the Anki MCP. Use when creat
 
 # Anki
 
-Use the Anki MCP for all interactions with Anki. If it is unavailable, explain the blocker before attempting app operations.
+Use the Anki MCP for all Anki operations. If it is unavailable, explain the blocker. Scope searches, reviews, and writes to the deck `All`; keep cards there without creating topic decks or subdecks.
 
-Always use the deck named `All`. Scope searches and reviews to that deck and add new cards there. Keep existing cards in `All`; do not create topic decks or subdecks.
+Invoke $formulating-knowledge before drafting or revising cards. Use its formulation principles through the rules below; this skill defines Michael's interaction and approval flow.
 
-Before drafting or revising cards, invoke $formulating-knowledge. It governs card formulation; this skill supplies Anki workflow and Michael's preferences. When creating cards from user-provided source material, follow [creating_cards_flow.md](creating_cards_flow.md). Each round tests Michael's understanding of one concept, reviews cards for it, and adds the approved cards to Anki before moving on. A request to draft cards stays a draft. Outside that creation flow, a request to add or update cards authorizes the corresponding MCP writes.
+## Choose the flow
 
-When Michael says he doesn't like a card, first present exactly three distinct alternatives labeled A, B, and C with the proposed card text for each. In the creation flow, preserve the card's number across revisions and continue card numbering across rounds. Wait for him to choose before making any changes in Anki. For an existing Anki card, his choice authorizes updating the card with that alternative; apply it without asking for another confirmation. For a draft in the creation flow, his choice approves that version for the current round.
+For user-provided source material, follow [creating_cards_flow.md](creating_cards_flow.md), including for draft-only requests. Each round checks understanding of one concept, reviews its cards, and adds approved cards before advancing. Draft-only requests follow the same review flow without Anki writes. Outside this flow, a request to add or update cards authorizes the corresponding writes.
 
-Before adding or editing cards, inspect representative existing notes in `All` through the MCP. Match the formatting of comparable cards, including note type, field layout, HTML, emphasis, code formatting, and cloze syntax. Inspect the note type's fields, templates, and styling as needed. Reuse those conventions without changing shared templates or CSS merely to format new content. If no comparable cards exist, use the simplest suitable existing note type.
+When Michael dislikes a card, present exactly three distinct alternatives labeled A, B, and C with complete proposed text. Wait for his choice before writing. His choice authorizes updating an existing card without another confirmation; for a creation draft, it approves that version within the round.
 
-Michael already knows the review flow. End understanding checks with the question and suggestion messages with the final card option or image. Omit response-format examples, instructions to reply or choose, and closing approval prompts. Wait for his response without announcing that wait. Ask a focused clarification only when his response leaves a choice unresolved.
+Michael knows the review flow. End understanding checks with the question and suggestions with the final option or image. Omit reply examples, instructions to choose, closing approval prompts, and announcements that you are waiting. Clarify only unresolved choices.
 
-Use examples only when they help clarify the concept; omit them when the card is clear on its own. Keep each card grounded in its subject and use the simplest fitting example. Michael is familiar with programming and gaming, so examples from those domains can help when the connection is natural and useful. Use those examples and terms only when they improve understanding, rather than as a default theme for cards.
+## Formulate and inspect
 
-Use images when they clarify the tested relationship, support a useful association, or enable image occlusion under $formulating-knowledge. Invoke $imagegen and use the image generation tool to create one suitable image per card when a visual is useful. Generate alternatives only if Michael requests them. Inspect images for factual accuracy, legibility, and whether they reveal the answer when placed on the front. In creation rounds, offer one image preview beneath the card's text options as described in [creating_cards_flow.md](creating_cards_flow.md). Add the selected image through the Anki MCP using the existing note format, and retain its source or generation provenance with the final card.
+Start from the learning objective and overall explanation, with prerequisites before dependent details. Select useful recall targets from the source and discussion. If confusion emerges, explain the gap and check understanding before finalizing affected cards. A missed answer alone does not establish a misconception or a badly formulated card.
 
-After writes, read back the affected notes through the MCP to verify their content and formatting, and confirm their cards are in `All`. Report what changed.
+- Give each card one independently gradable recall target. Include enough subject context to answer without the round heading or neighboring cards, and remove wording that does not help retrieval.
+- Split unordered collections into meaningful questions and required sequences into overlapping short segments. Preserve any relationship the learner needs to recall.
+- Use cloze for an unambiguous missing phrase and targeted contrasts for confusable concepts. Add reverse retrieval only when useful; accept equivalent answers.
+- Connect new facts to established knowledge. Use simple examples, personal associations, or vivid mnemonics when they help, especially for stubborn associations. Michael knows programming and gaming; use those domains only when the connection fits. Use supplied personal details and label invented examples as hypothetical.
+- Preserve source qualifications, units, and exceptions. Flag unsupported or conflicting claims and keep affected cards provisional. Retain provenance and dates or versions for changing claims separately from the tested answer. Put optional explanations and grading tolerances in notes.
+
+Before presenting cards, inspect each prompt with the answer and neighboring cards hidden. Check for fair grading, missing context, answer leaks, overloaded targets, and relationships lost through splitting. Repair failures first. When revising existing items, map originals to replacements and briefly explain the change; keep unresolved gaps separate.
+
+## Match existing notes
+
+Before adding or editing, inspect representative notes in `All`. Match comparable note types, fields, HTML, emphasis, code formatting, and cloze syntax. Inspect templates and styling as needed; reuse them without changing shared templates or CSS merely to format content. If no comparable cards exist, use the simplest suitable existing note type. Match formatting while correcting formulation defects.
+
+## Choose useful images
+
+Consider an image for each card, even when the text is clear. Use one when it conveys a relationship, makes an example concrete, supports recall, or enables image occlusion. Omit decorative, redundant, or distracting images. Invoke $imagegen and use the image generation tool to create one suitable image per card; generate alternatives only on request.
+
+Recommend the front when the image supplies evidence or context the learner must interpret. Mask individual regions when recalling visual components. Recommend the back when the image explains or reinforces the answer. Inspect factual accuracy, legibility, and answer leakage in the proposed placement, including labels and captions.
+
+Use the [image approval flow](creating_cards_flow.md#image-approval) for new and existing cards. Store approved media through the MCP in the existing note format, with its source or generation provenance separate from the tested answer.
+
+## Verify writes
+
+Read back affected notes through the MCP. Verify content, formatting, retained sources, and the `All` deck. For images, verify stored media, note references, approved placement, and any occlusion. Report what changed.
