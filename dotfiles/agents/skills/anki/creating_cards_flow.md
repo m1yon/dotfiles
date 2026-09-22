@@ -36,9 +36,11 @@ Draft cards for the concept Michael has just demonstrated, following all applica
 
 Inspect each card on its own, with its answer hidden, using the checks in $formulating-knowledge. Repair unclear prompts and overloaded recall targets before showing the cards.
 
-Present one card idea at a time using the template below. For every proposed card, offer exactly three distinct front/back options for the same recall target. Vary the wording or approach while keeping each option valid under $formulating-knowledge. Mark one option as recommended based on clarity and ease of recall. Show the complete proposed text for all three, then wait for Michael to choose or request changes before presenting another card idea.
+Present all card ideas and their options for the current round together in one message using the template below. For every proposed card, offer exactly three distinct front/back options for the same recall target. Vary the wording or approach while keeping each option valid under $formulating-knowledge. Mark one option per idea as recommended based on clarity and ease of recall. Show the complete proposed text for every option, then wait so Michael can choose for the whole round in one reply.
 
-Give each card idea a stable ID and track its options, selected version, and whether it is pending, approved, or removed. Choosing an option approves only that version. The recommendation is not a default selection; silence does not approve it. If approval does not identify an option, ask which one Michael wants.
+Number card ideas with plain integers starting at 1, continuing across the entire source-material session without resetting between rounds. For example, if round one has cards 1–3, round two starts with card 4. Keep a card's number through revisions and give each new idea the next unused number. Label each card's three options A, B, and C. Track the exact versions and approval status for each card and option.
+
+Accept selections such as "1B, 2A, 3C", one option per card. A letter alone is sufficient when only one card is under discussion. Selections refer to the latest displayed version of that option. Unmentioned cards stay pending. The recommendation is not a default selection; silence does not approve it. If a response leaves the choice ambiguous, such as giving only a card number or selecting two alternatives for the same card, clarify only that choice and retain the unambiguous selections.
 
 Work with Michael on requested changes within the current round. When he dislikes a card, use the three-alternative workflow in [SKILL.md](SKILL.md). Use the same concise template for revised options and mark one recommendation. Keep other approvals intact unless those cards also change. If the discussion reveals a remaining misunderstanding, return to a focused understanding check before finalizing affected cards. Continue until every card idea in the round has an approved version or Michael has chosen to remove it.
 
@@ -46,29 +48,37 @@ Keep the current round's cards as drafts until the whole round is approved. Then
 
 ### Round display template
 
-Render this template as Markdown in the conversation, replacing placeholders. Number card ideas across the whole set as C01, C02, and so on; keep those IDs through revisions. Options 1–3 are alternative versions of one card, not three cards to add. Mark the strongest option as recommended wherever it appears.
+Render this template as Markdown in the conversation, replacing placeholders and including a block for every card idea in the round. Put the card number in its heading and label its options A, B, and C. Each block contains alternatives for one card, not three cards to add. Mark the recommended option with ⭐ immediately after its letter, without a "Recommended" text label. The example begins with card 1; use the next unused card numbers in subsequent rounds.
 
 ```markdown
 ### Round {round}: {concept}
 
-C01 · {card idea}
+#### 1. {First card idea}
 
 | Option | Front | Back |
 | --- | --- | --- |
-| 1 | {Exact question.} | {Exact answer.} |
-| 2 · Recommended | {Alternative question.} | {Alternative answer.} |
-| 3 | {Alternative question.} | {Alternative answer.} |
+| A | {Exact question.} | {Exact answer.} |
+| B ⭐ | {Alternative question.} | {Alternative answer.} |
+| C | {Alternative question.} | {Alternative answer.} |
 
-Choose 1, 2, or 3, or tell me what to change.
+#### 2. {Second card idea}
+
+| Option | Front | Back |
+| --- | --- | --- |
+| A ⭐ | {Exact question.} | {Exact answer.} |
+| B | {Alternative question.} | {Alternative answer.} |
+| C | {Alternative question.} | {Alternative answer.} |
+
+Choose one option per card, e.g. "1B, 2A", or tell me what to change.
 ```
 
-Keep concept labels outside the card content. Omit repeated workflow reminders, approval totals, and recommendation rationales unless Michael asks. If code, images, or longer content would make the table hard to read, use three numbered blocks with compact Front and Back labels instead. Include any notes or media needed to approve an option, but keep them outside its prompt and answer.
+Keep concept labels outside the card content. Omit repeated workflow reminders, approval totals, and recommendation rationales unless Michael asks. If code, images, or longer content would make the table hard to read, use three blocks labeled A, B, and C with compact Front and Back labels instead. Include any notes or media needed to approve an option, but keep them outside its prompt and answer.
 
 Hide source references and citations in all review rounds, including revisions and alternatives. Retain them with each draft and include them in the final Anki card, separate from the tested answer and using the existing note format.
 
 For cloze cards, replace Front and Back with **Prompt** and **Reveal**. Show the review prompt with the deletion as `[…]`, then the full text with the revealed answer in bold. Preview each distinct generated card when a note has multiple cloze numbers, so Michael can approve what he will actually review. Show proposed images inline.
 
-On revision turns, show only the current card idea and its three options. Mark it as `C01 · {card idea} · Revised`. Accept natural-language selections and feedback without requiring the example reply syntax.
+On revision turns, show all changed or unresolved ideas together with three options each. Mark changed idea headings as `{card number}. {card idea} · Revised`. Keep the card number and A/B/C labels, but require a new selection if the previously approved text changes. Preserve approvals for unchanged selected versions. Accept natural-language selections and feedback without requiring the example reply syntax.
 
 ## Add the round and move on
 
