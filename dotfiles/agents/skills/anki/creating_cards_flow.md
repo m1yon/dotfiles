@@ -10,11 +10,15 @@ Give a brief overview with prerequisites first, then begin the first round. Draf
 
 ## Test understanding
 
-Ask one focused, open-ended question that requires explanation, a relevant distinction, or application. Keep the expected answer and proposed cards out of the question, then wait for Michael's answer.
+Identify the essential idea and reasoning the source requires. Ask one focused, open-ended question that lets Michael explain the concept in his own words through an application or relevant distinction. Aim to establish understanding in that answer. Keep the expected answer and proposed cards out of the question, then wait.
 
-Assess his answer against the source, accepting equivalent wording. Understanding is demonstrated when he explains the central idea accurately and reasons through an application or relevant distinction without a material misconception. One answer can establish both. Ask a follow-up only for missing evidence; a claim of understanding or repetition of an answer just supplied is insufficient.
+Assess what he actually says against the source. Be blunt and specific about incorrect reasoning, contradictions, and missing essential relationships. Never give an incorrect or incomplete explanation the benefit of the doubt, supply missing reasoning on his behalf, or call it correct to be encouraging. Accept accurate paraphrases; require conceptual accuracy rather than matching terminology. If his meaning is uncertain, ask a targeted follow-up instead of assuming he understands.
 
-If his answer reveals a gap, explain that point and ask a fresh question that checks whether he can use it. Once he meets the criterion, briefly name what his answer demonstrated and proceed to cards.
+Understanding is demonstrated only when he explains the central idea accurately in his own words and reasons through an application or relevant distinction without a material gap or misconception. Confidence, a correct conclusion with faulty reasoning, and repetition of a supplied answer do not meet the criterion. One strong answer is sufficient; once it meets the criterion, briefly name what it demonstrated and proceed to cards. Ask further questions only to resolve specific missing evidence.
+
+If an answer falls short, state exactly what is wrong or unproven and ask one differently framed question about that gap. After a few differently framed attempts still show misunderstanding, stop probing and switch to teacher mode. Teach sooner if he asks for help or lacks a prerequisite.
+
+In teacher mode, explain the concept from the missing prerequisite or mistaken assumption, using a simple worked example or contrast. Address why his earlier reasoning failed. Then ask a fresh question that requires him to explain the concept in his own words and use it in a new example or distinction. Keep the answer out of that question and wait for his response. Agreement or an echo of the lesson is insufficient. If the gap remains, adapt the explanation and reassess. Keep the concept pending until his own explanation meets the same criterion; teaching it does not authorize moving on.
 
 Use this display, omitting the total if unknown:
 
@@ -36,7 +40,7 @@ Number ideas from 1 across the entire session. Preserve numbers through revision
 
 ## Display the round
 
-Show all ideas and complete option text together in one message. Put a star immediately after the recommended letter, as below, without a "Recommended" label. Consider images under [Choose useful images](SKILL.md#choose-useful-images), and include the conditional image block beneath that card's options.
+Show all ideas and complete option text together in one message. Put a star immediately after the recommended letter, as below, without a "Recommended" label. Include the image block only when an image meets the criteria in [Choose useful images](SKILL.md#choose-useful-images); otherwise omit it.
 
 ```markdown
 ### Round {round}: {concept}
@@ -63,7 +67,7 @@ Keep source references and citations out of review displays, including revisions
 
 ## Image approval
 
-Preview one proposed image per card beneath its text options, labeled with the proposed front or back placement and a short description of its role. Use a real preview path or URL. For occlusion, show the masked front and answer reveal so Michael can approve the recall task. If the image cannot be obtained or displayed, identify the missing preview and keep media approval pending.
+When an image is offered, preview it beneath the card's text options, labeled with the proposed front or back placement and a short description of its role. Cards without an offered image need only text approval. Use a real preview path or URL. For occlusion, show the masked front and answer reveal so Michael can approve the recall task. If an offered image cannot be obtained or displayed, identify the missing preview and keep media approval pending.
 
 Track text approval separately from approval of the image and its placement:
 
@@ -80,7 +84,7 @@ Michael prefers one selection per line, such as `8. A`. Accept any unambiguous w
 
 For requested changes, show all changed or unresolved ideas together with three options each and one recommendation. Mark changed headings as `{card number}. {Card idea} · Revised`. Preserve numbering and approvals for unchanged versions; changed text requires a new selection. Follow [SKILL.md](SKILL.md) when Michael dislikes a card and the image approval rules above for media changes.
 
-If discussion reveals a misunderstanding, return to a focused understanding check before finalizing affected cards. Keep the round as drafts until every retained idea has approved text and any offered image has an approved placement or an explicit decision to omit it. Michael may remove ideas from the round.
+If discussion reveals a misunderstanding, return to [Test understanding](#test-understanding) before finalizing affected cards. Keep the round as drafts until every retained idea has approved text and any offered image has an approved placement or an explicit decision to omit it. Michael may remove ideas from the round.
 
 ## Add the round and move on
 

@@ -19,7 +19,7 @@ Michael knows the review flow. End understanding checks with the question and su
 
 ## Formulate and inspect
 
-Start from the learning objective and overall explanation, with prerequisites before dependent details. Select useful recall targets from the source and discussion. If confusion emerges, explain the gap and check understanding before finalizing affected cards. A missed answer alone does not establish a misconception or a badly formulated card.
+Start from the learning objective and overall explanation, with prerequisites before dependent details. Select useful recall targets from the source and discussion. Whenever checking understanding, use [Test understanding](creating_cards_flow.md#test-understanding), including its teaching and reassessment loop. Keep affected cards provisional until Michael demonstrates understanding. A missed answer calls for diagnosis; evaluate his reasoning before deciding whether the problem is understanding, recall, or card formulation.
 
 - Give each card one independently gradable recall target. Include enough subject context to answer without the round heading or neighboring cards, and remove wording that does not help retrieval.
 - Split unordered collections into meaningful questions and required sequences into overlapping short segments. Preserve any relationship the learner needs to recall.
@@ -35,7 +35,7 @@ Before adding or editing, inspect representative notes in `All`. Match comparabl
 
 ## Choose useful images
 
-Consider an image for each card, even when the text is clear. Use one when it conveys a relationship, makes an example concrete, supports recall, or enables image occlusion. Omit decorative, redundant, or distracting images. Invoke $imagegen and use the image generation tool to create one suitable image per card; generate alternatives only on request.
+Generate an image only when it materially improves the recall task. Otherwise, present text-only options. When an image is useful, invoke $imagegen and use the image generation tool to create one image for that card. Generate alternatives only on request.
 
 Recommend the front when the image supplies evidence or context the learner must interpret. Mask individual regions when recalling visual components. Recommend the back when the image explains or reinforces the answer. Inspect factual accuracy, legibility, and answer leakage in the proposed placement, including labels and captions.
 
