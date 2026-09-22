@@ -26,8 +26,6 @@ Render this as Markdown, replacing the placeholders. Omit the total round count 
 Understanding check
 
 {One focused question that requires explanation or application.}
-
-Explain your reasoning in your own words.
 ```
 
 ## Draft and review the round's cards
@@ -38,9 +36,22 @@ Inspect each card on its own, with its answer hidden, using the checks in $formu
 
 Present all card ideas and their options for the current round together in one message using the template below. For every proposed card, offer exactly three distinct front/back options for the same recall target. Vary the wording or approach while keeping each option valid under $formulating-knowledge. Mark one option per idea as recommended based on clarity and ease of recall. Show the complete proposed text for every option, then wait so Michael can choose for the whole round in one reply.
 
+For each card, consider whether an image would help the learner understand, remember, or apply the idea. Evaluate the value of showing a concrete example, comparison, relationship, or demonstration, even when the text is already clear. If a visual would provide a useful recall cue or make an abstract explanation concrete, generate one suitable image using $imagegen and the image generation tool as described in [SKILL.md](SKILL.md). Omit images only when they would be decorative, redundant, or distracting.
+
+Show the image preview directly below that card's three text options, before the next card. Label it Image and add a short caption stating what it depicts and where it belongs on the card. If an image cannot be obtained or displayed, identify the missing preview and keep its approval pending.
+
 Number card ideas with plain integers starting at 1, continuing across the entire source-material session without resetting between rounds. For example, if round one has cards 1–3, round two starts with card 4. Keep a card's number through revisions and give each new idea the next unused number. Label each card's three options A, B, and C. Track the exact versions and approval status for each card and option.
 
-Accept selections such as "1B, 2A, 3C", one option per card. A letter alone is sufficient when only one card is under discussion. Selections refer to the latest displayed version of that option. Unmentioned cards stay pending. The recommendation is not a default selection; silence does not approve it. If a response leaves the choice ambiguous, such as giving only a card number or selecting two alternatives for the same card, clarify only that choice and retain the unambiguous selections.
+Michael prefers one selection per line, with the card number followed by a period and the option letter:
+
+```text
+8. A
+9. B
+```
+
+This example is internal guidance for interpreting replies; omit it from review messages. Also accept other unambiguous formats. A letter alone is sufficient when only one card is under discussion. Selections refer to the latest displayed version of that option. Unmentioned cards stay pending. The recommendation is not a default selection; silence does not approve it. If a response leaves the choice ambiguous, such as giving only a card number or selecting two alternatives for the same card, clarify only that choice and retain the unambiguous selections.
+
+Track text and image approval independently. For example, `8. A, with image` approves text A and the displayed image for card 8. When an image is offered, wait for approval of the image or an explicit request for no image; text approval alone does not approve an image. Verify that the chosen text and image work together, and show any necessary revision for approval.
 
 Work with Michael on requested changes within the current round. When he dislikes a card, use the three-alternative workflow in [SKILL.md](SKILL.md). Use the same concise template for revised options and mark one recommendation. Keep other approvals intact unless those cards also change. If the discussion reveals a remaining misunderstanding, return to a focused understanding check before finalizing affected cards. Continue until every card idea in the round has an approved version or Michael has chosen to remove it.
 
@@ -61,6 +72,9 @@ Render this template as Markdown in the conversation, replacing placeholders and
 | B ⭐ | {Alternative question.} | {Alternative answer.} |
 | C | {Alternative question.} | {Alternative answer.} |
 
+**Image** · {Short description; front or back.}
+![{Alt text}]({preview path or URL})
+
 #### 2. {Second card idea}
 
 | Option | Front | Back |
@@ -68,13 +82,13 @@ Render this template as Markdown in the conversation, replacing placeholders and
 | A ⭐ | {Exact question.} | {Exact answer.} |
 | B | {Alternative question.} | {Alternative answer.} |
 | C | {Alternative question.} | {Alternative answer.} |
-
-Choose one option per card, e.g. "1B, 2A", or tell me what to change.
 ```
+
+The image block is conditional for each card. Use real preview paths or URLs in the rendered message. End the display after the last card's options or image, following the presentation guidance in [SKILL.md](SKILL.md).
 
 Keep concept labels outside the card content. Omit repeated workflow reminders, approval totals, and recommendation rationales unless Michael asks. If code, images, or longer content would make the table hard to read, use three blocks labeled A, B, and C with compact Front and Back labels instead. Include any notes or media needed to approve an option, but keep them outside its prompt and answer.
 
-Hide source references and citations in all review rounds, including revisions and alternatives. Retain them with each draft and include them in the final Anki card, separate from the tested answer and using the existing note format.
+Hide source references and citations in all review rounds, including revisions and alternatives. Retain them with each draft, including image sources or generation provenance, and include them in the final Anki card, separate from the tested answer and using the existing note format.
 
 For cloze cards, replace Front and Back with **Prompt** and **Reveal**. Show the review prompt with the deletion as `[…]`, then the full text with the revealed answer in bold. Preview each distinct generated card when a note has multiple cloze numbers, so Michael can approve what he will actually review. Show proposed images inline.
 
@@ -84,6 +98,6 @@ On revision turns, show all changed or unresolved ideas together with three opti
 
 Once Michael has demonstrated understanding and every retained card in the current round is approved, with no content or media pending, add that round's approved versions to the `All` deck through the Anki MCP. Completion of the round's approvals authorizes these writes without another confirmation. If Michael explicitly requested drafts only, deliver the approved drafts for that round and start the next concept without writing to Anki.
 
-Read back the affected notes and verify their content, retained sources, formatting, and deck as required by [SKILL.md](SKILL.md). If only part of the round succeeds, track what was added before retrying so cards are not duplicated. Resolve or report a write or verification blocker before moving on; keep the round pending until it is resolved or Michael redirects the work.
+Read back the affected notes and verify their content, retained sources, formatting, and deck as required by [SKILL.md](SKILL.md). For selected images, verify that the media is stored in Anki and the note references it in the approved location. If only part of the round succeeds, track what was added before retrying so cards are not duplicated. Resolve or report a write or verification blocker before moving on; keep the round pending until it is resolved or Michael redirects the work.
 
 After verification, briefly report how many cards were added for this concept and start the next round with its understanding question. If Michael removed every card, acknowledge that there is nothing to add and move on. After the last round, report the total added and any concepts Michael chose to leave unfinished.
