@@ -173,14 +173,14 @@
               "name" : "Discord"
             },
             {
-              "bundleIdentifier" : "com.microsoft.teams2",
-              "iconPath" : "/Applications/Microsoft Teams.app/Contents/Resources/AppIcon.icns",
-              "name" : "Microsoft Teams"
-            },
-            {
               "bundleIdentifier" : "com.granola.app",
               "iconPath" : "/Applications/Granola.app/Contents/Resources/icon.icns",
               "name" : "Granola"
+            },
+            {
+              "bundleIdentifier" : "com.microsoft.teams2",
+              "iconPath" : "/Applications/Microsoft Teams.app/Contents/Resources/AppIcon.icns",
+              "name" : "Microsoft Teams"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+9",
