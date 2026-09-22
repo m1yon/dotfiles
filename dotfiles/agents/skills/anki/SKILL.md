@@ -13,6 +13,6 @@ Before drafting or revising cards, invoke $formulating-knowledge. It governs car
 
 Before adding or editing cards, inspect representative existing notes in `All` through the MCP. Match the formatting of comparable cards, including note type, field layout, HTML, emphasis, code formatting, and cloze syntax. Inspect the note type's fields, templates, and styling as needed. Reuse those conventions without changing shared templates or CSS merely to format new content. If no comparable cards exist, use the simplest suitable existing note type.
 
-Michael is a software engineer and a gamer. When examples help, prefer software engineering examples; gaming examples are also welcome. Choose examples that clarify the concept and preserve its meaning. Examples are optional.
+Use examples only when they help clarify the concept; omit them when the card is clear on its own. Keep each card grounded in its subject and use the simplest fitting example. Michael is familiar with programming and gaming, so examples from those domains can help when the connection is natural and useful. Use those examples and terms only when they improve understanding, rather than as a default theme for cards.
 
 After writes, read back the affected notes through the MCP to verify their content and formatting, and confirm their cards are in `All`. Report what changed.
