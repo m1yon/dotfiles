@@ -4,7 +4,7 @@
   "border": { "radius": 16, "width": 1, "color": "#30363d" },
   "shadow": { "blur": 16, "x": 0, "y": 6 },
   "padding": [12, 20, 8, 20],
-  "margin": [24, 24, 32, 24],
+  "margin": [56, 56, 64, 56],
   "font": { "family": "JetBrains Mono", "size": 26, "ligatures": true },
   "line_height": 1.5,
   "show_line_numbers": false
