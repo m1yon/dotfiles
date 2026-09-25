@@ -32,11 +32,17 @@ Before presenting cards, inspect each prompt with the answer and neighboring car
 
 ## Match existing notes
 
-Before adding or editing, inspect representative notes in `All`. Match comparable note types, fields, HTML, emphasis, code formatting, and cloze syntax. Inspect templates and styling as needed; reuse them without changing shared templates or CSS merely to format content. If no comparable cards exist, use the simplest suitable existing note type. Match formatting while correcting formulation defects.
+Before adding or editing, inspect representative notes in `All`. Match comparable note types, fields, HTML, emphasis, and cloze syntax. Inspect templates and styling as needed; reuse them without changing shared templates or CSS merely to format content. If no comparable cards exist, use the simplest suitable existing note type. Match formatting while correcting formulation defects.
+
+## Include code examples
+
+Whenever placing code in a card, read [using_code_examples.md](using_code_examples.md). Render the code with the Freeze CLI (`freeze`), upload the image through the Anki MCP, and embed it exactly where the code belongs. This applies to code on either side and in supplemental fields, including when editing existing cards.
 
 ## Choose useful images
 
-Generate an image only when it materially improves the recall task. Otherwise, present text-only options. When an image is useful, invoke $imagegen and use the image generation tool to create one image for that card. Generate alternatives only on request.
+These rules apply to optional illustrations. Code images follow [Include code examples](#include-code-examples).
+
+Generate an illustration only when it materially improves the recall task. Otherwise, present options without an illustration. When an illustration is useful, invoke $imagegen and use the image generation tool to create one image for that card. Generate alternatives only on request.
 
 Recommend the front when the image supplies evidence or context the learner must interpret. Mask individual regions when recalling visual components. Recommend the back when the image explains or reinforces the answer. Inspect factual accuracy, legibility, and answer leakage in the proposed placement, including labels and captions.
 
