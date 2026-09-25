@@ -11,6 +11,7 @@
     ./direnv.nix
     ./docker.nix
     ./eza.nix
+    ./freeze.nix
     ./fzf.nix
     ./git.nix
     ./go-task.nix
