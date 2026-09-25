@@ -11,7 +11,7 @@ Invoke $formulating-knowledge before drafting or revising cards. Use its formula
 
 ## Choose the flow
 
-For user-provided source material, follow [creating_cards_flow.md](creating_cards_flow.md), including for draft-only requests. Each round checks understanding of one concept, reviews its cards, and adds approved cards before advancing. Draft-only requests follow the same review flow without Anki writes. Outside this flow, a request to add or update cards authorizes the corresponding writes.
+For user-provided source material, follow [creating_cards_flow.md](creating_cards_flow.md), including for draft-only requests. Start with its learning-goal step. Each round checks understanding of one concept, reviews its cards, and adds approved cards before advancing. Draft-only requests follow the same review flow without Anki writes. Outside this flow, a request to add or update cards authorizes the corresponding writes.
 
 When Michael dislikes a card, present exactly three distinct alternatives labeled A, B, and C with complete proposed text. Wait for his choice before writing. His choice authorizes updating an existing card without another confirmation; for a creation draft, it approves that version within the round.
 
@@ -22,6 +22,7 @@ Michael knows the review flow. End understanding checks with the question and su
 Start from the learning objective and overall explanation, with prerequisites before dependent details. Select useful recall targets from the source and discussion. Whenever checking understanding, use [Test understanding](creating_cards_flow.md#test-understanding), including its teaching and reassessment loop. Keep affected cards provisional until Michael demonstrates understanding. A missed answer calls for diagnosis; evaluate his reasoning before deciding whether the problem is understanding, recall, or card formulation.
 
 - Give each card one independently gradable recall target. Include enough subject context to answer without the round heading or neighboring cards, and remove wording that does not help retrieval.
+- Write every proposed answer in casual, concise language that Michael can naturally say out loud. Prefer everyday words, contractions, and short phrases or sentences. Keep technical terms and qualifications needed for accuracy; put optional explanation in notes. Apply this to every answer option, including cloze reveals.
 - Split unordered collections into meaningful questions and required sequences into overlapping short segments. Preserve any relationship the learner needs to recall.
 - Use cloze for an unambiguous missing phrase and targeted contrasts for confusable concepts. Add reverse retrieval only when useful; accept equivalent answers.
 - Connect new facts to established knowledge. Use simple examples, personal associations, or vivid mnemonics when they help, especially for stubborn associations. Michael knows programming and gaming; use those domains only when the connection fits. Use supplied personal details and label invented examples as hypothetical.

@@ -2,15 +2,23 @@
 
 Work through Michael's source material one concept per round. Establish understanding, review the cards together, then add and verify the approved round before advancing. Draft-only requests use this flow without Anki writes.
 
+## Establish the learning goal
+
+Before selecting concepts or starting a round, establish what Michael wants to learn and what he plans to do with that knowledge. Reuse answers he has already stated in the conversation and ask only for what is missing. When both are missing, ask: "What do you want to learn from this, and what do you want to be able to do with that knowledge?" Wait for his answer before planning rounds or drafting cards.
+
+If the answer names only a topic or remains too vague to guide selection, ask a focused follow-up about what he wants to be able to do. This step is complete when the conversation establishes both the knowledge sought and its intended use. Keep that goal in the conversation and use it throughout the rounds. If Michael changes it, adjust the remaining concepts and drafts to match.
+
 ## Read and organize
 
-Read the source and identify the learning objective, useful concepts, and prerequisites. Ask for missing or inaccessible material before working on affected concepts. Resolve unsupported or ambiguous claims before using them to assess understanding or draft cards.
+Read the source through the learning goal. Select concepts that support the intended use, including prerequisites needed to understand or apply them. Omit material that does not contribute to the goal. Ask for missing or inaccessible material before working on affected concepts. Resolve unsupported or ambiguous claims before using them to assess understanding or draft cards. If the source cannot support part of the goal, explain the gap and clarify the material or scope needed.
 
-Give a brief overview with prerequisites first, then begin the first round. Draft its cards only after Michael demonstrates understanding.
+Give a brief overview connecting the selected concepts to the goal, with prerequisites first. Use these conversational rounds as the lessons, then begin the first round. Draft its cards only after Michael demonstrates understanding.
+
+For example, if Michael shares an article about learning and wants to create better flashcards, select concepts that help him choose recall targets, diagnose weak prompts, and improve cards. Include the underlying learning principles needed to make those decisions. Leave unrelated sections out of the rounds.
 
 ## Test understanding
 
-Identify the essential idea and reasoning the source requires. Ask one focused, open-ended question that lets Michael explain the concept in his own words through an application or relevant distinction. Aim to establish understanding in that answer. Keep the expected answer and proposed cards out of the question, then wait.
+Identify the essential idea and reasoning the source requires for the learning goal. Ask one focused, open-ended question that lets Michael explain the concept in his own words through an application or distinction relevant to his intended use. For the flashcard-creation goal, this could mean diagnosing a flawed card and explaining how to repair it. Use the same goal to choose worked examples when teaching is needed. Aim to establish understanding in that answer. Keep the expected answer and proposed cards out of the question, then wait.
 
 Assess what he actually says against the source. Be blunt and specific about incorrect reasoning, contradictions, and missing essential relationships. Never give an incorrect or incomplete explanation the benefit of the doubt, supply missing reasoning on his behalf, or call it correct to be encouraging. Accept accurate paraphrases; require conceptual accuracy rather than matching terminology. If his meaning is uncertain, ask a targeted follow-up instead of assuming he understands.
 
@@ -32,7 +40,7 @@ Understanding check
 
 ## Draft the round
 
-Apply [Formulate and inspect](SKILL.md#formulate-and-inspect) to the concept Michael just demonstrated. Use the source and discussion to select useful facts and distinctions. Let those recall targets determine the number of cards; keep every card within the current concept.
+Apply [Formulate and inspect](SKILL.md#formulate-and-inspect) to the concept Michael just demonstrated. Select recall targets from the source and discussion that support his intended use or a necessary prerequisite. Match prompts and retrieval direction to how he will use the knowledge. Each target must contribute to the learning goal. Let those targets determine the number of cards; keep every card within the current concept.
 
 For each target, prepare exactly three distinct options labeled A, B, and C. Vary wording or approach while testing the same target. Inspect every option before presenting it, then recommend one for clarity and ease of recall. These are alternatives for one card, not three cards to add.
 
@@ -92,4 +100,4 @@ Once understanding is demonstrated and every retained card is approved with no c
 
 Verify writes as required by [SKILL.md](SKILL.md#verify-writes). If only part of a round succeeds, track completed writes before retrying to avoid duplicates. Resolve or report write and verification blockers; keep the round pending until resolved or Michael redirects the work.
 
-After verification, briefly report how many cards were added and begin the next concept with its understanding question. If Michael removed every card, acknowledge that there is nothing to add and advance. After the last round, report the total added and any concepts Michael chose to leave unfinished.
+After verification, briefly report how many cards were added and begin the next concept with its understanding question. Choose the next round from the goal-relevant concepts, adjusting for prerequisites or gaps revealed in the discussion. Finish when those concepts are covered; full source coverage is not a completion requirement. If Michael removed every card, acknowledge that there is nothing to add and advance. After the last round, report the total added and any concepts Michael chose to leave unfinished.
