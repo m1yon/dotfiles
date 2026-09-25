@@ -15,6 +15,7 @@
     user = username;
     mutableTaps = false;
     taps = {
+      "charmbracelet/homebrew-tap" = inputs.homebrew-charmbracelet;
       "homebrew/homebrew-core" = inputs.homebrew-core;
       "homebrew/homebrew-cask" = inputs.homebrew-cask;
     };
@@ -36,6 +37,7 @@
     };
 
     brews = [
+      "charmbracelet/tap/freeze"
       "herdr"
       "mas"
     ];
