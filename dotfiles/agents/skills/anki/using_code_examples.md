@@ -6,7 +6,7 @@ Render code with [Freeze](https://github.com/charmbracelet/freeze), the `freeze`
 
 The examples below were tested locally with Freeze v0.2.2. Check `freeze --help` if the installed version differs. If Freeze is unavailable, report the blocker and keep the code-bearing card pending; follow the repository's declarative package-management rules.
 
-Write the exact code to a temporary file, then render it. A quoted heredoc preserves shell characters in the snippet without expanding them. These commands render the source without executing it.
+Write the exact code to a temporary file, then render it using Michael's saved Freeze configuration with `--config user`. A quoted heredoc preserves shell characters in the snippet without expanding them. These commands render the source without executing it.
 
 ```bash
 anki_code_dir=$(mktemp -d /tmp/anki-freeze.XXXXXX)
@@ -18,25 +18,21 @@ print(double_even([1, 2, 3, 4]))
 PY
 
 freeze "$anki_code_dir/example.py" \
-  --config base --language python --theme github-dark \
-  --font.size 22 \
-  --padding 20 --margin 0 --window=false \
+  --config user --language python \
   --output "$anki_code_dir/code-example.png"
 ```
 
 For a short snippet, stdin also works. Reuse the temporary directory above and set the language explicitly.
 
 ```bash
-freeze --config base --language javascript --theme github-dark \
-  --font.size 22 \
-  --padding 20 --margin 0 --window=false \
+freeze --config user --language javascript \
   --output "$anki_code_dir/filter-example.png" <<'JS'
 const values = [1, 2, 3, 4];
 const evens = values.filter(n => n % 2 === 0);
 JS
 ```
 
-Specify a `.png` output explicitly. `--config base` selects the built-in base configuration; the other flags give syntax highlighting, readable type, and no window controls. Adjust the theme and spacing when the card needs it.
+Specify a `.png` output explicitly and leave styling to the saved user configuration.
 
 Open the PNG before presenting it. Check exact code, indentation, punctuation, clipping, contrast, and readability at the intended card width. Shorten or reformat long lines in the source while preserving meaning. Preview with an absolute path, for example `![Python code example](/absolute/path/code-example.png)`.
 
