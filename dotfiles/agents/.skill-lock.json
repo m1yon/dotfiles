@@ -719,6 +719,19 @@
       "upstreamSkillPath": "pstack/skills/unslop/SKILL.md",
       "installedAt": "2026-09-30T16:13:29.902Z",
       "updatedAt": "2026-09-30T16:13:29.902Z"
+    },
+    "gh-stack": {
+      "source": "github/gh-stack",
+      "sourceType": "github",
+      "sourceUrl": "https://github.com/github/gh-stack.git",
+      "skillPath": "skills/gh-stack/SKILL.md",
+      "skillFolderHash": "6bfe555e89a6b264e09d5ece7c4040226458c8e5",
+      "installedAt": "2026-08-11T22:29:00Z",
+      "updatedAt": "2026-09-30T17:23:59.681Z",
+      "upstreamSource": "github/gh-stack",
+      "upstreamUrl": "https://github.com/github/gh-stack.git",
+      "upstreamRef": "2bd699a544a09cb5c45a013d03416e0894b0454e",
+      "upstreamSkillPath": "skills/gh-stack/SKILL.md"
     }
   },
   "dismissed": {
