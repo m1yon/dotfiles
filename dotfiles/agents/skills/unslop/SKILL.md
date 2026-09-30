@@ -1,10 +1,15 @@
 ---
 name: unslop
 description: Cut AI tells from any writing. Must always apply.
-disable-model-invocation: true
+metadata:
+  upstream: https://github.com/cursor/plugins/tree/fae2c6ed95821bd85f614a73e4842e13229fa5e5/pstack/skills/unslop
+  codex-port: "true"
 ---
 
 # Unslop
+
+Read [Codex runtime](../setup-pstack/references/codex-runtime.md) before following this workflow.
+
 
 Edit text to remove AI patterns.
 
