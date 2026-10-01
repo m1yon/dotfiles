@@ -41,6 +41,7 @@ in
     ./flashspace.nix
     ./herdr.nix
     ./packages.nix
+    ./sentry.nix
     ./shell.nix
   ];
 
