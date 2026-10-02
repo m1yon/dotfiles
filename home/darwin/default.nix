@@ -74,4 +74,8 @@ in
       echo "Google Chrome is not installed; skipping default browser setup." >&2
     fi
   '';
+
+  home.activation.defaultMail = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.duti}/bin/duti -s com.apple.mail mailto
+  '';
 }

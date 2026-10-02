@@ -128,9 +128,10 @@
         {
           "apps" : [
             {
-              "bundleIdentifier" : "com.superhuman.electron",
-              "iconPath" : "/Applications/Superhuman.app/Contents/Resources/icon.icns",
-              "name" : "Superhuman"
+              "autoOpen" : true,
+              "bundleIdentifier" : "com.apple.mail",
+              "iconPath" : "/System/Applications/Mail.app/Contents/Resources/ApplicationIcon.icns",
+              "name" : "Mail"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+7",
