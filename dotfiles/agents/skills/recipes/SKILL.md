@@ -1,11 +1,19 @@
 ---
 name: recipes
-description: Add or edit recipes in Michael's Recipes Pages collection using the live template and keep its directory in sync. Use only when explicitly invoked as $recipes or asked to use the recipes skill.
+description: Add or edit recipes in Michael's Recipes Pages collection using the live template, keep its directory in sync, and add requested recipe ingredients to a Walmart pickup cart through Chrome. Use only when explicitly invoked as $recipes or asked to use the recipes skill.
 ---
 
 # Recipes
 
-Add and edit recipe Pages in Michael's collection. Keep recipes concise and readable while cooking.
+Add and edit recipe Pages in Michael's collection. Keep recipes concise and readable while cooking. When requested, add recipe ingredients to a Walmart pickup cart and stop before checkout.
+
+## Choose the flow
+
+- For recipe additions or edits, follow the Page workflow below and keep the directory in sync.
+- For a recipe shopping request, follow [Walmart pickup cart](references/walmart-cart.md). Read the requested recipes without changing their Pages or index.
+- For a combined request, finish and verify the recipe and index changes first, then build the cart from the saved recipes.
+
+Shopping requires a request to add ingredients to the cart. Merely adding or editing a recipe does not start shopping. This skill remains explicitly invoked.
 
 ## Collection and template
 
@@ -46,16 +54,16 @@ Refresh the index and list the collection's child Pages, following pagination an
 Keep the directory concise and native to Pages:
 
 - Group recipes under populated category headings, such as Mains and Sauces. Keep existing useful groups and add others only when needed.
-- Use one native table per category with columns Recipe, Total time, and Ingredients. List each recipe once, alphabetically within its category. The first cell is its current title linked to its canonical Page URL. Give this column most of the table width.
-- Show approximate total time, including prep and any waiting time. Preserve qualifiers such as "about" or "estimated". Use "Not specified" when timing is missing. Read saved recipe content rather than copying truncated listing previews.
+- Use one native table per category with columns Recipe, Prep time, Cook time, and Ingredients. List each recipe once, alphabetically within its category. The first cell is its current title linked to its canonical Page URL. Give this column most of the table width. Do not add a total time column to the index.
+- Read prep time and cook time separately from the saved recipe content rather than copying truncated listing previews. Preserve estimates, ranges, and settings such as high or low. Do not fold prep, resting, chilling, or other waiting time into the cook time. Use "Not specified" in either time cell when that value is missing.
 - Count required ingredient entries from the recipe's Ingredients sections. Prepared sauces and spice blends each count as one listed item. Alternative choices count as one entry. Exclude optional extras and items mentioned only in notes. Keep a brief explanation of this counting convention above the category tables.
 - Keep the template link in the separate Add a recipe section. Preserve unrelated notes and instructions on the index.
 
-Add missing rows and refresh titles, groups, timing, and ingredient counts after changes. Remove duplicate rows and links confirmed to be obsolete. If access or listings are incomplete, preserve unverified entries and report the gap instead of assuming those recipes disappeared. Update index blocks with fresh edit guards using the Pages write-page workflow.
+Add missing rows and refresh titles, groups, prep time, cook time, and ingredient counts after changes. Remove duplicate rows and links confirmed to be obsolete. If access or listings are incomplete, preserve unverified entries and report the gap instead of assuming those recipes disappeared. Update index blocks with fresh edit guards using the Pages write-page workflow.
 
 Read back the index and compare its recipe links by Page ID with the complete recipe listing. Confirm every accessible recipe appears exactly once, its summary agrees with the saved recipe, and the template remains separate. If the recipe saved but index synchronization failed, report those outcomes separately.
 
-## Finish
+## Finish recipe additions and edits
 
 Inspect write receipts and read back the saved recipe. For a new recipe, confirm its parent in the collection's child listing. Check that the requested changes agree across ingredients, servings, and method. Inspect the rendered layout when available and report any verification gap.
 

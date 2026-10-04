@@ -1,5 +1,5 @@
 interface:
   display_name: "Recipes"
-  short_description: "Add and edit recipes and keep your index current"
+  short_description: "Manage recipes and fill Walmart pickup carts"
 policy:
   allow_implicit_invocation: false
