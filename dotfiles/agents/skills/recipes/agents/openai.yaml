@@ -1,0 +1,5 @@
+interface:
+  display_name: "Recipes"
+  short_description: "Add and edit recipes and keep your index current"
+policy:
+  allow_implicit_invocation: false
