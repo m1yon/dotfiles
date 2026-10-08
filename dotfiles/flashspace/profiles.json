@@ -126,21 +126,13 @@
           "symbolIconName" : "cylinder.fill"
         },
         {
-          "apps" : [
-            {
-              "autoOpen" : true,
-              "bundleIdentifier" : "com.apple.mail",
-              "iconPath" : "/System/Applications/Mail.app/Contents/Resources/ApplicationIcon.icns",
-              "name" : "Mail"
-            }
-          ],
+          "apps" : [],
           "assignAppShortcut" : "ctrl+shift+7",
           "display" : "BenQ RD280UG",
           "id" : "00000000-0000-4000-8000-000000000007",
-          "name" : "Email",
-          "openAppsOnActivation" : true,
+          "name" : "Spare",
           "shortcut" : "ctrl+7",
-          "symbolIconName" : "envelope.fill"
+          "symbolIconName" : "square.dashed"
         },
         {
           "apps" : [

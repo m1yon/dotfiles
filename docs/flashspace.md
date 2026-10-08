@@ -15,7 +15,7 @@ startup are managed declaratively.
 | 4 | Notes | Note | Obsidian (opens on activation) |
 | 5 | Spreadsheets | Table cells | Microsoft Excel |
 | 6 | Database | Database cylinder | DataGrip |
-| 7 | Email | Envelope | Mail (opens on activation) |
+| 7 | Spare | Dashed square | None |
 | 8 | Planning | Checklist | Linear, Todoist |
 | 9 | Communication | Conversation bubbles | Teams, Slack, Discord |
 | 0 | Calendar | Calendar | Calendar (opens on activation) |
