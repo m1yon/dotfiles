@@ -101,6 +101,7 @@ class BootstrapTest(unittest.TestCase):
         self.env = dict(os.environ, PATH=str(self.bin) + os.pathsep + os.environ['PATH'],
                         AGENT_BOOTSTRAP_TARGET_HOME=str(self.home),
                         AGENT_BOOTSTRAP_FIXTURES=str(self.fixtures))
+        self.env.pop('AGENT_BOOTSTRAP_WORKSPACE', None)
         self.write_fixtures()
 
     def tearDown(self):
@@ -337,7 +338,8 @@ class BootstrapTest(unittest.TestCase):
         end = b'<!-- agent-bootstrap:end -->\n'
         for content in (end + marker, marker + b'x\n', marker + marker + end + end,
                         marker + end + marker + end, marker + b'forged\n' + end,
-                        b'user' + marker + end, b'<!-- agent-bootstrap:unknown -->\n'):
+                        b'user' + marker + end, b'<!-- agent-bootstrap:unknown -->\n',
+                        b'<!-- agent-bootstrap-workspace-prototype:start -->\n'):
             with self.subTest(content=content):
                 path = self.home / '.codex/AGENTS.md'
                 path.parent.mkdir(exist_ok=True)
@@ -382,34 +384,46 @@ class BootstrapTest(unittest.TestCase):
                 self.assertEqual(before, self.snapshot())
 
     def test_interrupted_publication_recovers_from_adjacent_releases(self):
-        for first_install, stop_after in itertools.product((False, True), range(1, 5)):
-            with self.subTest(first_install=first_install, stop_after=stop_after):
-                case_home = self.root / ('interrupted-' + str(first_install) + '-' + str(stop_after))
-                case_home.mkdir()
-                self.home = case_home
-                self.env['AGENT_BOOTSTRAP_TARGET_HOME'] = str(case_home)
-                self.write_fixtures()
-                if not first_install:
-                    self.run_bootstrap()
-                self.write_fixtures(extra='replacement', version='1.1.0',
-                                    policy=POLICY.replace(b'@high', b'@medium'))
-                source = SCRIPT.read_text()
-                source = source.replace('def atomic_file(path, content):',
-                    'replacements = 0\n\ndef interrupted_replace(source, target):\n'
-                    '    global replacements\n    os.replace(source, target)\n'
-                    '    replacements += 1\n    if replacements == ' + str(stop_after)
-                    + ':\n        os._exit(73)\n\ndef atomic_file(path, content):')
-                source = source.replace('os.replace(temporary, path)', 'interrupted_replace(temporary, path)')
-                interrupted = self.root / ('interrupted-' + str(stop_after) + '.sh')
-                interrupted.write_text(source)
-                self.assertEqual(self.run_bootstrap(success=False, script=interrupted).returncode, 73)
-                self.run_bootstrap()
-                self.run_bootstrap()
-                current = self.state() / 'current'
-                self.assertTrue((current / 'pstack/skills/replacement/SKILL.md').is_file())
-                self.assertFalse((current / 'pstack/skills/retired').exists())
-                self.assertEqual((self.home / '.codex/pstack-models.md').read_bytes(), (current / 'pstack-models.md').read_bytes())
-                self.assertIn((current / 'policy-block.md').read_bytes(), (self.home / '.codex/AGENTS.md').read_bytes())
+        for workspace, first_install in itertools.product((False, True), repeat=2):
+            for stop_after in range(1, 6 if workspace else 5):
+                with self.subTest(workspace=workspace, first_install=first_install, stop_after=stop_after):
+                    self.check_interrupted_publication(workspace, first_install, stop_after)
+
+    def check_interrupted_publication(self, workspace, first_install, stop_after):
+        case_home = self.root / ('interrupted-' + str(workspace) + '-' + str(first_install) + '-' + str(stop_after))
+        case_home.mkdir()
+        self.home = case_home
+        self.env['AGENT_BOOTSTRAP_TARGET_HOME'] = str(case_home)
+        if workspace:
+            self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(case_home)
+        else:
+            self.env.pop('AGENT_BOOTSTRAP_WORKSPACE', None)
+        self.write_fixtures()
+        if not first_install:
+            self.run_bootstrap()
+        self.write_fixtures(extra='replacement', version='1.1.0',
+                            policy=POLICY.replace(b'@high', b'@medium'))
+        source = SCRIPT.read_text()
+        source = source.replace('def atomic_file(path, content):',
+            'replacements = 0\n\ndef interrupted_replace(source, target):\n'
+            '    global replacements\n    os.replace(source, target)\n'
+            '    replacements += 1\n    if replacements == ' + str(stop_after)
+            + ':\n        os._exit(73)\n\ndef atomic_file(path, content):')
+        source = source.replace('os.replace(temporary, path)', 'interrupted_replace(temporary, path)')
+        source = source.replace('# Shared agent instructions', '# Updated shared agent instructions')
+        interrupted = self.root / ('interrupted-' + str(stop_after) + '.sh')
+        interrupted.write_text(source)
+        self.assertEqual(self.run_bootstrap(success=False, script=interrupted).returncode, 73)
+        self.write_fixtures(extra='recovered', version='1.2.0')
+        self.run_bootstrap()
+        self.run_bootstrap()
+        current = self.state() / 'current'
+        self.assertTrue((current / 'pstack/skills/recovered/SKILL.md').is_file())
+        self.assertFalse((current / 'pstack/skills/retired').exists())
+        self.assertEqual((self.home / '.codex/pstack-models.md').read_bytes(), (current / 'pstack-models.md').read_bytes())
+        self.assertIn((current / 'policy-block.md').read_bytes(), (self.home / '.codex/AGENTS.md').read_bytes())
+        if workspace:
+            self.assertEqual((self.home / 'AGENTS.md').read_bytes(), (current / 'workspace-instructions.md').read_bytes())
 
     def test_lifetime_lock_serializes_download_and_publish(self):
         (self.fixtures / 'delay').write_text('0.15')
@@ -422,6 +436,217 @@ class BootstrapTest(unittest.TestCase):
         self.assertEqual(requests, ['dotfiles', 'pstack', 'dotfiles', 'pstack'])
         self.assertEqual(len(list((self.state() / 'releases').iterdir())), 1)
         self.assertEqual((self.home / '.codex/AGENTS.md').read_bytes().count(b'<!-- agent-bootstrap:start -->'), 1)
+
+    def test_workspace_is_opt_in_and_omission_preserves_existing_pointer(self):
+        workspace = self.root / 'workspace'
+        workspace.mkdir()
+        agents = workspace / 'AGENTS.md'
+        agents.write_bytes(b'Workspace instructions\n')
+        (self.home / 'AGENTS.md').symlink_to(agents)
+        (self.home / 'AGENTS.override.md').write_bytes(b'Current directory override\n')
+        self.run_bootstrap()
+        self.assertEqual(agents.read_bytes(), b'Workspace instructions\n')
+        self.assertTrue((self.home / 'AGENTS.md').is_symlink())
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(workspace)
+        self.run_bootstrap()
+        installed = agents.read_bytes()
+        self.env.pop('AGENT_BOOTSTRAP_WORKSPACE')
+        self.write_fixtures(extra='replacement', version='1.1.0')
+        self.run_bootstrap()
+        self.assertEqual(agents.read_bytes(), installed)
+        other = self.root / 'other-workspace'
+        other.mkdir()
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(other)
+        self.run_bootstrap()
+        self.assertEqual(agents.read_bytes(), installed)
+        self.assertTrue((other / 'AGENTS.md').is_file())
+
+    def test_workspace_pointer_index_and_upgrade_preserve_user_bytes(self):
+        self.home = self.root / 'configured home "with quotes"'
+        self.home.mkdir()
+        self.env['AGENT_BOOTSTRAP_TARGET_HOME'] = str(self.home)
+        transient = self.root / 'transient-codex'
+        self.env['CODEX_HOME'] = str(transient)
+        workspace = self.root / 'workspace'
+        workspace.mkdir()
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(workspace)
+        (workspace / 'AGENTS.override.md').write_bytes(b'')
+        child = workspace / 'application'
+        child.mkdir()
+        child_agents = child / 'AGENTS.md'
+        child_agents.write_bytes(b'Application instructions\r\n')
+        agents = workspace / 'AGENTS.md'
+        prefix, suffix = b'User prefix\r\nno final newline', b'\nUser suffix\xff'
+        agents.write_bytes(prefix)
+        agents.chmod(0o640)
+        files = package()
+        metadata = (b'---\r\nname: "architect"\r\ndescription: >-\r\n'
+                    b'  Plan an interface.\r\n  Keep the complete description.\r\n'
+                    b'user-invocable: false\r\n---\r\n')
+        files['plugins/pstack/skills/architect/SKILL.md'] = metadata + b'Private full skill body\n'
+        self.write_fixtures(files=files)
+        result = self.run_bootstrap()
+        self.assertIn(str(agents), result.stdout)
+        current = self.state() / 'current'
+        pointer = (current / 'workspace-instructions.md').read_bytes()
+        self.assertIn(json.dumps(str(current)).encode(), pointer)
+        for text in (b'policy-block.md', b'pstack-models.md', b'skills-index.md', b'full SKILL.md',
+                     b'native skill catalog', b'authoritative override sheet', b'child repository',
+                     b'retained files are missing'):
+            self.assertIn(text, pointer)
+        index = (current / 'skills-index.md').read_bytes()
+        self.assertIn(metadata, index)
+        self.assertNotIn(b'Private full skill body', index)
+        for name in ('architect', 'poteto-mode', 'reflect', 'retired'):
+            self.assertIn(('## pstack:' + name + '\n').encode(), index)
+            self.assertIn(('pstack/skills/' + name + '/SKILL.md').encode(), index)
+        receipt = json.loads((current / 'receipt.json').read_text())
+        for name in ('skills-index.md', 'workspace-instructions.md'):
+            self.assertEqual(receipt['files'][name]['sha256'], hashlib.sha256((current / name).read_bytes()).hexdigest())
+        first = agents.read_bytes()
+        self.run_bootstrap()
+        self.assertEqual(agents.read_bytes(), first)
+        agents.write_bytes(first + suffix)
+        self.write_fixtures(extra='replacement', version='1.1.0')
+        self.env['CODEX_HOME'] = str(self.root / 'another-transient-codex')
+        self.run_bootstrap()
+        self.assertEqual(agents.read_bytes(), prefix + b'\n' + pointer + suffix)
+        self.assertEqual(agents.stat().st_mode & 0o777, 0o640)
+        self.assertEqual(child_agents.read_bytes(), b'Application instructions\r\n')
+        self.assertFalse(transient.exists())
+
+    def test_legacy_release_upgrades_without_workspace_ownership(self):
+        self.run_bootstrap()
+        current = self.state() / 'current'
+        directory = current.resolve()
+        receipt_path = directory / 'receipt.json'
+        receipt = json.loads(receipt_path.read_text())
+        for name in ('workspace-instructions.md', 'skills-index.md'):
+            (directory / name).unlink()
+            del receipt['files'][name]
+        receipt.pop('state')
+        receipt['format'] = 1
+        identity = hashlib.sha256(('\n'.join(['1', receipt['dotfiles_archive_sha256'],
+                                             receipt['pstack_archive_sha256'], receipt['script_sha256']])).encode()).hexdigest()
+        receipt['identity'] = identity
+        receipt_path.write_text(json.dumps(receipt))
+        directory.rename(directory.with_name(identity))
+        current.unlink()
+        current.symlink_to('releases/' + identity)
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(self.home)
+        agents = self.home / 'AGENTS.md'
+        agents.write_bytes(b'<!-- agent-bootstrap:workspace:start -->\nForged legacy ownership\n'
+                           b'<!-- agent-bootstrap:workspace:end -->\n')
+        before = self.snapshot()
+        self.run_bootstrap(success=False)
+        self.assertEqual(before, self.snapshot())
+        agents.unlink()
+        self.run_bootstrap()
+        self.assertEqual(agents.read_bytes(), (current / 'workspace-instructions.md').read_bytes())
+        self.assertTrue(directory.with_name(identity).is_dir())
+
+    def test_invalid_workspace_paths_fail_without_publishing(self):
+        self.run_bootstrap()
+        before = self.snapshot()
+        workspace = self.root / 'workspace'
+        workspace.mkdir()
+        linked = self.root / 'linked-workspace'
+        linked.symlink_to(workspace)
+        ordinary = self.root / 'ordinary-file'
+        ordinary.write_bytes(b'file')
+        paths = ('', '.', str(self.root / 'missing'), str(ordinary), str(linked),
+                 str(linked / 'child'), str(self.home / '.codex'), str(self.home / '.agents/skills'),
+                 str(self.state()), str(self.state() / 'releases'),
+                 str(self.home / '.codex/../.codex'), '/' + str(self.home / '.codex'))
+        for path in paths:
+            with self.subTest(path=path):
+                self.env['AGENT_BOOTSTRAP_WORKSPACE'] = path
+                self.run_bootstrap(success=False)
+                self.assertEqual(before, self.snapshot())
+                self.assertFalse((workspace / 'AGENTS.md').exists())
+
+    def test_workspace_ownership_masking_and_retained_output_conflicts(self):
+        workspace = self.root / 'workspace'
+        workspace.mkdir()
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(workspace)
+        self.run_bootstrap()
+        agents = workspace / 'AGENTS.md'
+        original = agents.read_bytes()
+        before = self.snapshot()
+        for content in (original.replace(b'substantive work', b'edited work'),
+                        original + b'<!-- agent-bootstrap:unknown -->\n',
+                        original + b'<!-- agent-bootstrap-future:unknown -->\n',
+                        b'<!-- agent-bootstrap-workspace-prototype:start -->\nprototype\n'
+                        b'<!-- agent-bootstrap-workspace-prototype:end -->\n',
+                        (self.state() / 'current/policy-block.md').read_bytes()):
+            with self.subTest(content=content[:80]):
+                agents.write_bytes(content)
+                self.run_bootstrap(success=False)
+                self.assertEqual(agents.read_bytes(), content)
+                self.assertEqual(before, self.snapshot())
+        agents.write_bytes(original)
+        override = workspace / 'AGENTS.override.md'
+        override.write_bytes(b'Masking instructions\n')
+        self.assertIn('masked', self.run_bootstrap(success=False).stderr)
+        override.unlink()
+        agents.unlink()
+        agents.symlink_to(self.home / '.codex/AGENTS.md')
+        self.run_bootstrap(success=False)
+        self.assertTrue(agents.is_symlink())
+        agents.unlink()
+        agents.mkdir()
+        self.run_bootstrap(success=False)
+        agents.rmdir()
+        agents.write_bytes(original)
+        for name in ('workspace-instructions.md', 'skills-index.md'):
+            path = self.state() / 'current' / name
+            saved = path.read_bytes()
+            path.write_bytes(saved + b'edited\n')
+            self.run_bootstrap(success=False)
+            self.assertEqual(agents.read_bytes(), original)
+            path.write_bytes(saved)
+        self.assertEqual(before, self.snapshot())
+
+    def test_workspace_lock_serializes_different_homes_and_refuses_foreign_owner(self):
+        workspace = self.root / 'workspace'
+        workspace.mkdir()
+        agents = workspace / 'AGENTS.md'
+        agents.write_bytes(b'Preserve user instructions\n')
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(workspace)
+        second_home = self.root / 'second-home'
+        second_home.mkdir()
+        second_env = dict(self.env, AGENT_BOOTSTRAP_TARGET_HOME=str(second_home))
+        delayed = self.root / 'delayed-publish.sh'
+        source = SCRIPT.read_text().replace('instructions = preflight(paths, release)',
+            'instructions = preflight(paths, release)\n            import time\n            time.sleep(0.5)')
+        delayed.write_text(source)
+        processes = [subprocess.Popen(['sh', str(delayed)], env=env, cwd=self.home,
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                     for env in (self.env, second_env)]
+        errors = []
+        for process in processes:
+            _, error = process.communicate(timeout=20)
+            errors.append(error)
+        self.assertEqual(sorted(process.returncode for process in processes), [0, 1], errors)
+        winner = 0 if processes[0].returncode == 0 else 1
+        homes = (self.home, second_home)
+        winner_state = homes[winner] / '.local/share/agent-bootstrap/current'
+        self.assertEqual(agents.read_bytes(), b'Preserve user instructions\n'
+                         + (winner_state / 'workspace-instructions.md').read_bytes())
+        self.assertFalse((homes[1 - winner] / '.local/share/agent-bootstrap/current').exists())
+        self.assertFalse((homes[1 - winner] / '.codex/AGENTS.md').exists())
+
+    def test_unsupported_workspace_lock_fails_before_outputs(self):
+        workspace = self.root / 'workspace'
+        workspace.mkdir()
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(workspace)
+        unsupported = self.root / 'unsupported-lock.sh'
+        unsupported.write_text(SCRIPT.read_text().replace('fcntl.flock(descriptor, fcntl.LOCK_EX)',
+                                                        "raise OSError('directory locking unsupported')"))
+        self.assertIn('directory locking unsupported', self.run_bootstrap(success=False, script=unsupported).stderr)
+        self.assertFalse((self.state() / 'current').exists())
+        self.assertFalse((workspace / 'AGENTS.md').exists())
+        self.assertFalse((self.home / '.codex/AGENTS.md').exists())
 
 
 if __name__ == '__main__':
