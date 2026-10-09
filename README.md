@@ -156,9 +156,9 @@ tasks, setup's global instructions disappeared with transient `CODEX_HOME`, whil
 the retained HOME release persisted. Installed skills were absent from the native
 catalog, and the executor's default `skills.list` returned no skills. Neither a
 saved Start skill nor account custom instructions activated the retained policy.
-Keep Start skill for service startup. A workspace prototype did load its retained
-policy and model sheet automatically. The production pointer and metadata index
-still require validation in a fresh task after publication.
+Keep Start skill for service startup. A fresh ordinary task read the production
+pointer's retained policy, model sheet, and index. It selected the `how` workflow
+and spawned its explainer.
 
 Success prints the downloaded commit IDs, pstack version, skill count, and release
 path. With the workspace option, it also prints the instruction destination and
