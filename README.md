@@ -97,6 +97,77 @@ Then rebuild the platform-specific system configuration:
 task rebuild
 ```
 
+### Install shared Codex instructions and pstack in Cloud
+
+Add this block to the Cloud environment's Install script:
+
+```sh
+(
+	set -eu
+	pstack_bootstrap_file=$(mktemp)
+	trap 'rm -f "$pstack_bootstrap_file"' EXIT
+	curl --fail --silent --show-error --location \
+		--connect-timeout 15 --max-time 90 \
+		https://raw.githubusercontent.com/m1yon/dotfiles/master/scripts/bash/shared/agent-bootstrap.sh \
+		-o "$pstack_bootstrap_file"
+	bash "$pstack_bootstrap_file"
+)
+```
+
+The subshell preserves the Install script's existing cleanup trap. The bootstrap
+requires `curl` and Python 3.9 or later. For restricted networks, allow
+`raw.githubusercontent.com` and `codeload.github.com` alongside the environment's
+existing allowed domains.
+
+Each install fetches dotfiles `master` and upstream pstack `main`. It installs the
+full pstack package under `~/.local/share/agent-bootstrap/releases/` and links
+`~/.agents/skills/pstack` to the current release's skills. It adds one managed block
+to `$CODEX_HOME/AGENTS.md` and generates `$CODEX_HOME/pstack-models.md`. When
+`CODEX_HOME` is unset, both files live under `~/.codex`. The block contains the
+shared policy, its model rows, and upstream standing routing. The sheet derives
+every role from `dotfiles/agents/AGENTS.md` and sets `panel vendors: any` for the
+configured Codex panels. Upstream hooks are preserved as files and never executed.
+The retained plugin manifest gives skills their `pstack:` catalog prefix.
+
+Add this pointer to the environment's existing Start skill so it loads the central
+policy at task start:
+
+```text
+Read $CODEX_HOME/AGENTS.md, or ~/.codex/AGENTS.md when CODEX_HOME is unset, and follow its shared policy, model overrides, and pstack routing.
+```
+
+Success prints the downloaded commit IDs, pstack version, skill count, and active
+release path. Each release's `receipt.json` records those values, archive digests,
+the executing script digest, the source skill names, and the installed file
+inventory. Catalog identifiers combine the plugin manifest's name with each source
+skill name. Releases remain available after upgrades.
+
+Download and validation failures leave active instructions, models, and skills
+unchanged. Each published file and the suite pointer changes atomically, but the
+files and pointer are separate replacements. If setup stops during publication,
+rerun it to finish. The bootstrap recognizes complete generated outputs from any
+retained, validated release and refuses manually edited generated outputs.
+Existing user text outside the managed block and unrelated skills remain intact.
+Symlinked parents, Nix-managed instruction files, unowned model sheets, and
+overlapping catalog identifiers in `~/.agents/skills` or `$CODEX_HOME/skills` are
+conflicts. A personal `architect` skill can coexist with `pstack:architect`.
+Use the Nix configuration for the existing Mac and Linux installations.
+
+Publish the prepared Cloud environment, then start a fresh task. Confirm that it
+automatically discovers `pstack:poteto-mode`, `pstack:architect`, and
+`pstack:reflect` and loads the global policy's model rows and standing routing.
+Older runtimes may expose the same skills without the prefix. Existing tasks keep
+their own state. Seeing the files in setup alone does not verify skill discovery.
+
+Run the isolated behavior tests from this repository:
+
+```sh
+python3 scripts/bash/shared/tests/test_agent_bootstrap.py
+```
+
+The tests use `AGENT_BOOTSTRAP_TARGET_HOME` to select disposable homes and a private
+`curl` transport stub. The bootstrap does not assign `HOME` or `CODEX_HOME`.
+
 ## Remote access with Tailscale
 
 NixOS runs `tailscaled` on nixbook. nix-darwin installs the standalone Tailscale
