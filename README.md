@@ -195,6 +195,25 @@ environments. Saving the Start field alone does not prove that the host delivers
 or follows it before the first answer. The workspace pointer and retained-file
 validation provide the remaining loading instructions and installation checks.
 
+For an existing Cloud environment, open its Edit setup conversation and run the
+updated shared bootstrap block there before publishing. Saving the Start field
+or changing the Install script URL did not refresh the prepared files in the
+`dream - dev` pilot: fresh tasks still reported the old receipt revision and a
+missing startup file. Running the block in setup installed the published source
+and verified every indexed path. Publishing captures that prepared filesystem;
+it is not evidence that the configured installation commands ran. Verify the
+receipt and startup file again in a fresh task before assessing startup delivery.
+See the [Cloud environment lifecycle](https://learn.chatgpt.com/docs/environments/cloud-environments).
+
+The refreshed pilot still answered the first pstack-availability question from
+the visible catalog without checking readiness or reading retained instructions.
+A subsequent explicit workspace-read request confirmed the new receipt and
+readable startup file. The local session probe proves the loader's behavior when
+delivered, but the production Start field has not produced a successful first-turn
+trace. Hold the remaining environment rollout until that delivery requirement is
+verified. The host's initial instruction delivery and native skill discovery are
+outside this repository.
+
 The bootstrap's catalog identifier checks and readable skill symlink verify its
 own installation. They do not establish the host's native discovery ordering,
 symlink support, directory traversal, or refresh behavior. No discovery layout
