@@ -16,6 +16,7 @@ import unittest
 SCRIPT = Path(__file__).resolve().parents[1] / 'agent-bootstrap.sh'
 REPOSITORY = SCRIPT.parents[3]
 POLICY = (REPOSITORY / 'dotfiles/agents/AGENTS.md').read_bytes()
+STARTUP = (REPOSITORY / 'dotfiles/agents/cloud-startup/SKILL.md').read_bytes()
 ROLES = [
     'feature, refactoring', 'bug-fix', 'perf-issue', 'hillclimb', 'judgment and prose',
     'strongest judgment', 'how explorer', 'how explainer', 'why investigators',
@@ -24,6 +25,16 @@ ROLES = [
     'interrogate reviewers',
 ]
 PANELS = {'arena runners', 'arena cross-judge pool', 'architect runners', 'interrogate reviewers'}
+CODEX_MAPPING = (
+    b'# Codex tool mapping for pstack\n\n'
+    b'| pstack / Claude action | Codex equivalent |\n'
+    b'|------------------------|------------------|\n'
+    b'| Read a file | `shell` (`cat`, `head`, `tail`) |\n'
+    b'| Invoke a skill (the `Skill` tool, `/command`) | Skills load natively. Follow the instructions presented. |\n'
+    b'| Dispatch a subagent (the `Agent`/`Task` tool) | `spawn_agent` |\n\n'
+    b'Read [external guidance](https://example.com/docs) and [example path](example/project.md).\n'
+    b'The native model sheet is at `$CODEX_HOME/pstack-models.md`.\n'
+)
 TRANSPORT = '''import os
 from pathlib import Path
 import shutil
@@ -69,7 +80,7 @@ def package(extra='retired', version='1.0.0'):
         'hooks/session-start-context.md': b'User instructions take precedence. Invoke `pstack:poteto-mode`.\n'
             b'Use `pstack:architect` and `pstack:reflect` when requested.\n',
         'hooks/session-start.sh': b'#!/bin/sh\ntouch SHOULD_NEVER_RUN\n',
-        'skills/poteto-mode/references/codex-tools.md': b'Codex tool mapping\n',
+        'skills/poteto-mode/references/codex-tools.md': CODEX_MAPPING,
         'skills/poteto-mode/playbooks/feature.md': b'Feature playbook\n',
         'skills/poteto-mode/scripts/check-playbooks.mjs': b'console.log("fixture")\n',
         'skills/poteto-mode/references/licenses/LICENSE': b'License dependency\n',
@@ -107,9 +118,12 @@ class BootstrapTest(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def write_fixtures(self, extra='retired', version='1.0.0', policy=POLICY, files=None, malicious=None, commit=None):
-        archive(self.fixtures / 'dotfiles.tgz', 'dotfiles-master',
-                {'dotfiles/agents/AGENTS.md': policy}, 'a' * 40)
+    def write_fixtures(self, extra='retired', version='1.0.0', policy=POLICY, files=None, malicious=None,
+                       commit=None, startup=STARTUP):
+        shared = {'dotfiles/agents/AGENTS.md': policy}
+        if startup is not None:
+            shared['dotfiles/agents/cloud-startup/SKILL.md'] = startup
+        archive(self.fixtures / 'dotfiles.tgz', 'dotfiles-master', shared, 'a' * 40)
         archive(self.fixtures / 'pstack.tgz', 'pstack-claude-main', files or package(extra, version),
                 commit or ('b' if version == '1.0.0' else 'c') * 40, malicious)
 
@@ -135,6 +149,29 @@ class BootstrapTest(unittest.TestCase):
         result['release'] = {str(path.relative_to(current)): hashlib.sha256(path.read_bytes()).hexdigest()
                              for path in current.rglob('*') if path.is_file()}
         return result
+
+    def indexed_skills(self, release):
+        entries = re.findall(r'^## (pstack:[a-z0-9-]+)\n\nResource: (.+)$',
+                             (release / 'skills-index.md').read_text(), re.M)
+        resources = {name: release / json.loads(resource) for name, resource in entries}
+        self.assertEqual(len(resources), len(entries))
+        for name, path in resources.items():
+            self.assertTrue(path.resolve().is_relative_to(release.resolve()), name)
+            self.assertTrue(path.is_file(), name)
+        return resources
+
+    def refresh_receipt_files(self, directory):
+        receipt_path = directory / 'receipt.json'
+        receipt = json.loads(receipt_path.read_text())
+        receipt['files'] = {
+            path.relative_to(directory).as_posix(): {
+                'sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                'mode': path.stat().st_mode & 0o777,
+            }
+            for path in directory.rglob('*') if path.is_file() and path != receipt_path
+        }
+        receipt_path.write_text(json.dumps(receipt))
+        return receipt
 
     def test_install_repeat_upgrade_and_preservation(self):
         codex = self.home / '.codex'
@@ -184,6 +221,71 @@ class BootstrapTest(unittest.TestCase):
         self.assertEqual(receipt['script_sha256'], hashlib.sha256(SCRIPT.read_bytes()).hexdigest())
         self.assertFalse(list(self.state().glob('.prepare-*')))
 
+    def test_startup_source_is_retained_from_the_same_archive_and_receipt(self):
+        self.run_bootstrap()
+        current = self.state() / 'current'
+        self.assertEqual((current / 'agent-startup/SKILL.md').read_bytes(), STARTUP)
+        fetched = STARTUP + b'\nArchive-specific startup instruction.\n'
+        self.write_fixtures(startup=fetched)
+        self.run_bootstrap()
+        skill = current / 'agent-startup/SKILL.md'
+        self.assertEqual(skill.read_bytes(), fetched)
+        self.assertEqual(skill.stat().st_mode & 0o777, 0o644)
+        receipt = json.loads((current / 'receipt.json').read_text())
+        self.assertEqual(receipt['dotfiles_commit'], 'a' * 40)
+        self.assertEqual(receipt['dotfiles_archive_sha256'],
+                         hashlib.sha256((self.fixtures / 'dotfiles.tgz').read_bytes()).hexdigest())
+        self.assertEqual(receipt['files']['agent-startup/SKILL.md'],
+                         {'sha256': hashlib.sha256(fetched).hexdigest(), 'mode': 0o644})
+        before = self.snapshot()
+        self.run_bootstrap()
+        self.assertEqual(before, self.snapshot())
+        self.assertEqual(len(list((self.state() / 'releases').iterdir())), 2)
+        self.assertEqual([path.name for path in (self.home / '.agents/skills').iterdir()], ['pstack'])
+        self.assertFalse((self.home / '.codex/skills').exists())
+
+    def test_missing_empty_and_invalid_startup_sources_leave_outputs_unchanged(self):
+        sources = {
+            'missing': None,
+            'empty': b'',
+            'whitespace': b' \n\t',
+            'no-frontmatter': b'Startup without metadata\n',
+            'unclosed-frontmatter': b'---\nname: agent-startup\ndescription: Startup\n',
+            'missing-description': b'---\nname: agent-startup\n---\nStartup\n',
+            'empty-description': b'---\nname: agent-startup\ndescription:\n---\nStartup\n',
+            'invalid-name': b'---\nname: [agent-startup]\ndescription: Startup\n---\nStartup\n',
+            'wrong-name': b'---\nname: another-skill\ndescription: Startup\n---\nStartup\n',
+            'duplicate-name': b'---\nname: agent-startup\nname: agent-startup\ndescription: Startup\n---\n',
+        }
+        codex = self.home / '.codex'
+        codex.mkdir()
+        global_agents = codex / 'AGENTS.md'
+        global_agents.write_bytes(b'Keep global instructions\n')
+        workspace_agents = self.home / 'AGENTS.md'
+        workspace_agents.write_bytes(b'Keep workspace instructions\n')
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(self.home)
+        for label, startup in sources.items():
+            with self.subTest(first_install=label):
+                self.write_fixtures(startup=startup)
+                self.run_bootstrap(success=False)
+                self.assertEqual(global_agents.read_bytes(), b'Keep global instructions\n')
+                self.assertEqual(workspace_agents.read_bytes(), b'Keep workspace instructions\n')
+                self.assertFalse((codex / 'pstack-models.md').exists())
+                self.assertFalse((self.home / '.agents/skills/pstack').exists())
+                self.assertFalse((self.state() / 'current').exists())
+                self.assertEqual(list((self.state() / 'releases').iterdir()), [])
+        self.write_fixtures()
+        self.run_bootstrap()
+        before = self.snapshot()
+        workspace_before = workspace_agents.read_bytes()
+        for label, startup in sources.items():
+            with self.subTest(upgrade=label):
+                self.write_fixtures(startup=startup)
+                self.run_bootstrap(success=False)
+                self.assertEqual(before, self.snapshot())
+                self.assertEqual(workspace_agents.read_bytes(), workspace_before)
+                self.assertEqual(len(list((self.state() / 'releases').iterdir())), 1)
+
     def test_network_and_invalid_archive_leave_active_state_unchanged(self):
         self.run_bootstrap()
         before = self.snapshot()
@@ -217,7 +319,8 @@ class BootstrapTest(unittest.TestCase):
         member.type = tarfile.SYMTYPE
         member.linkname = '../agents/AGENTS.md'
         archive(self.fixtures / 'dotfiles.tgz', 'dotfiles-master',
-                {'dotfiles/agents/AGENTS.md': POLICY}, 'a' * 40, (member, None))
+                {'dotfiles/agents/AGENTS.md': POLICY, 'dotfiles/agents/cloud-startup/SKILL.md': STARTUP},
+                'a' * 40, (member, None))
         self.run_bootstrap()
         self.assertFalse((self.state() / 'current/dotfiles/opencode/AGENTS.md').exists())
 
@@ -319,7 +422,8 @@ class BootstrapTest(unittest.TestCase):
     def test_edited_generated_outputs_and_retained_release_refused(self):
         self.run_bootstrap()
         for relative in ('.codex/AGENTS.md', '.codex/pstack-models.md',
-                         '.local/share/agent-bootstrap/current/pstack/models.json'):
+                         '.local/share/agent-bootstrap/current/pstack/models.json',
+                         '.local/share/agent-bootstrap/current/agent-startup/SKILL.md'):
             with self.subTest(relative=relative):
                 path = self.home / relative
                 original = path.read_bytes()
@@ -382,6 +486,95 @@ class BootstrapTest(unittest.TestCase):
                 self.write_fixtures(policy=policy, files=files)
                 self.run_bootstrap(success=False)
                 self.assertEqual(before, self.snapshot())
+
+    def test_incomplete_required_dependencies_leave_active_release_unchanged(self):
+        self.run_bootstrap()
+        before = self.snapshot()
+        required = (
+            '.codex-plugin/plugin.json', '.claude-plugin/plugin.json', 'models.json', 'hooks/session-start-context.md',
+            'skills/poteto-mode/SKILL.md', 'skills/poteto-mode/references/codex-tools.md',
+            'skills/poteto-mode/playbooks/feature.md', 'skills/poteto-mode/scripts/check-playbooks.mjs',
+            'skills/architect/SKILL.md', 'skills/reflect/SKILL.md',
+        )
+        for name, content in itertools.product(required, (None, b'', b' \r\n\t')):
+            with self.subTest(name=name, content=content):
+                files = package()
+                path = 'plugins/pstack/' + name
+                if content is None:
+                    del files[path]
+                else:
+                    files[path] = content
+                self.write_fixtures(files=files)
+                result = self.run_bootstrap(success=False)
+                self.assertIn('missing or empty pstack dependency: ' + name, result.stderr)
+                self.assertEqual(before, self.snapshot())
+
+    def test_codex_mapping_adapts_invocation_and_preserves_other_guidance(self):
+        for ending in (b'\n', b'\r\n'):
+            with self.subTest(ending=ending):
+                original = CODEX_MAPPING.replace(b'\n', ending)
+                files = package()
+                mapping_name = 'plugins/pstack/skills/poteto-mode/references/codex-tools.md'
+                files[mapping_name] = original
+                self.write_fixtures(files=files)
+                self.run_bootstrap()
+                current = self.state() / 'current'
+                resources = self.indexed_skills(current)
+                mapping = resources['pstack:poteto-mode'].parent / 'references/codex-tools.md'
+                adapted = mapping.read_bytes()
+                upstream, fallback = adapted.split(b'\n## Retained release fallback\n\n', 1)
+                invocation = rb'(?m)^\| Invoke a skill[^\r\n]+(?=\r?$)'
+                self.assertEqual(re.sub(invocation, b'', upstream), re.sub(invocation, b'', original))
+                self.assertIn(b'Read its full SKILL.md through the filesystem.', upstream)
+                root = (mapping.resolve().parent / '../../../..').resolve()
+                self.assertEqual(root, current.resolve())
+                for name in ('policy-block.md', 'pstack-models.md', 'skills-index.md', 'routing.md'):
+                    self.assertIn(('`' + name + '`').encode(), fallback)
+                    self.assertTrue((root / name).read_bytes())
+                self.assertIn(b'authoritative for every pstack role', fallback)
+                before = self.snapshot()
+                self.run_bootstrap()
+                self.assertEqual(before, self.snapshot())
+        for mapping in (b'Mapping without a skill invocation row\n', CODEX_MAPPING + CODEX_MAPPING):
+            with self.subTest(mapping=mapping):
+                files = package()
+                files[mapping_name] = mapping
+                self.write_fixtures(files=files)
+                self.assertIn('expected one skill invocation row', self.run_bootstrap(success=False).stderr)
+                self.assertEqual(before, self.snapshot())
+
+    def test_rehashed_index_must_match_retained_skill_inventory(self):
+        self.run_bootstrap()
+        current = (self.state() / 'current').resolve()
+        index_path = current / 'skills-index.md'
+        original_index = index_path.read_bytes()
+        receipt_path = current / 'receipt.json'
+        original_receipt = receipt_path.read_bytes()
+        skill = self.indexed_skills(current)['pstack:architect']
+        original_skill = skill.read_bytes()
+        cases = {
+            'wrong-name': original_index.replace(b'## pstack:architect\n', b'## pstack:missing\n'),
+            'wrong-path': original_index.replace(b'pstack/skills/architect/SKILL.md', b'pstack/skills/missing/SKILL.md'),
+            'absolute-path': original_index.replace(b'pstack/skills/architect/SKILL.md', b'/tmp/outside/SKILL.md'),
+            'parent-path': original_index.replace(b'pstack/skills/architect/SKILL.md', b'../../outside/SKILL.md'),
+            'missing-entry': original_index.replace(original_index[original_index.index(b'## pstack:architect\n'):
+                                                                  original_index.index(b'## pstack:poteto-mode\n')], b''),
+            'duplicate-entry': original_index + original_index[original_index.index(b'## pstack:architect\n'):],
+            'stale-metadata': original_index,
+        }
+        for case, changed in cases.items():
+            with self.subTest(case=case):
+                index_path.write_bytes(changed)
+                if case == 'stale-metadata':
+                    skill.write_bytes(original_skill.replace(b'Fixture skill', b'Updated workflow description'))
+                self.refresh_receipt_files(current)
+                before = self.snapshot()
+                self.assertIn('invalid retained workspace instructions or index', self.run_bootstrap(success=False).stderr)
+                self.assertEqual(before, self.snapshot())
+                index_path.write_bytes(original_index)
+                skill.write_bytes(original_skill)
+                receipt_path.write_bytes(original_receipt)
+        self.run_bootstrap()
 
     def test_interrupted_publication_recovers_from_adjacent_releases(self):
         for workspace, first_install in itertools.product((False, True), repeat=2):
@@ -447,6 +640,11 @@ class BootstrapTest(unittest.TestCase):
         self.run_bootstrap()
         self.assertEqual(agents.read_bytes(), b'Workspace instructions\n')
         self.assertTrue((self.home / 'AGENTS.md').is_symlink())
+        current = self.state() / 'current'
+        workspace_contract = (current / 'workspace-instructions.md').read_bytes().splitlines(keepends=True)[1:-1]
+        self.assertIn(b''.join(workspace_contract), (self.home / '.codex/AGENTS.md').read_bytes())
+        resources = self.indexed_skills(current)
+        self.assertEqual(sorted(resources), ['pstack:architect', 'pstack:poteto-mode', 'pstack:reflect', 'pstack:retired'])
         self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(workspace)
         self.run_bootstrap()
         installed = agents.read_bytes()
@@ -492,14 +690,19 @@ class BootstrapTest(unittest.TestCase):
         self.assertIn(json.dumps(str(current)).encode(), pointer)
         for text in (b'policy-block.md', b'pstack-models.md', b'skills-index.md', b'full SKILL.md',
                      b'native skill catalog', b'authoritative override sheet', b'child repository',
-                     b'retained files are missing'):
+                     b'retained files are missing', b'routing.md',
+                     b'pstack/skills/poteto-mode/SKILL.md', b'pstack/skills/poteto-mode/references/codex-tools.md',
+                     b'first substantive workspace answer', b'any answer about installed-skill availability',
+                     b'local environment without managed setup, read the files directly',
+                     b'at most 3 readiness checks', b'at most 120 seconds total', b'Limit each wait to 30 seconds',
+                     b'Unrelated requests do not wait', b'leave access unverified'):
             self.assertIn(text, pointer)
         index = (current / 'skills-index.md').read_bytes()
         self.assertIn(metadata, index)
         self.assertNotIn(b'Private full skill body', index)
-        for name in ('architect', 'poteto-mode', 'reflect', 'retired'):
-            self.assertIn(('## pstack:' + name + '\n').encode(), index)
-            self.assertIn(('pstack/skills/' + name + '/SKILL.md').encode(), index)
+        resources = self.indexed_skills(current)
+        self.assertEqual(sorted(resources), ['pstack:architect', 'pstack:poteto-mode', 'pstack:reflect', 'pstack:retired'])
+        self.assertEqual(resources['pstack:architect'].read_bytes(), metadata + b'Private full skill body\n')
         receipt = json.loads((current / 'receipt.json').read_text())
         for name in ('skills-index.md', 'workspace-instructions.md'):
             self.assertEqual(receipt['files'][name]['sha256'], hashlib.sha256((current / name).read_bytes()).hexdigest())
@@ -515,13 +718,77 @@ class BootstrapTest(unittest.TestCase):
         self.assertEqual(child_agents.read_bytes(), b'Application instructions\r\n')
         self.assertFalse(transient.exists())
 
+    def test_existing_format_two_release_upgrades_and_preserves_managed_blocks(self):
+        self.env['AGENT_BOOTSTRAP_WORKSPACE'] = str(self.home)
+        self.run_bootstrap()
+        current = self.state() / 'current'
+        directory = current.resolve()
+        previous_workspace = (
+            '<!-- agent-bootstrap:workspace:start -->\n'
+            '# Shared agent instructions\n\n'
+            'The retained installation root is the absolute path encoded by this JSON string:\n\n'
+            + json.dumps(str(current)) + '\n\n'
+            'At the start of substantive work, read policy-block.md, pstack-models.md, and skills-index.md from that root.\n'
+            'Apply the retained policy, standing workflow routing, and model overrides.\n'
+            'If the retained files are missing, report that the installation is unavailable when the task needs pstack.\n'
+            'Use skills-index.md to select relevant workflows, then read their full SKILL.md files before following them.\n'
+            'Read pstack/skills/poteto-mode/SKILL.md for the standing routing.\n'
+            'Use these manual file reads even when the native skill catalog omits pstack or is empty.\n'
+            'Resolve skill resource paths and relative references within this same release.\n'
+            'The retained pstack-models.md is the authoritative override sheet for every pstack role,\n'
+            'including when a skill refers to a missing or transient CODEX_HOME model sheet.\n'
+            'Before project work in a child repository, read its applicable AGENTS.md and AGENTS.override.md instructions.\n'
+            'Follow user instructions and applicable repository instructions.\n'
+            '<!-- agent-bootstrap:workspace:end -->\n'
+        ).encode()
+        previous_policy = (
+            b'<!-- agent-bootstrap:start -->\n' + POLICY + b'\n'
+            b'Resolve pstack skill references using the available catalog identifier; '
+            b'if this runtime exposes bare names, use the name without the pstack: prefix.\n'
+            + package()['plugins/pstack/hooks/session-start-context.md'] + b'\n'
+            b'<!-- agent-bootstrap:end -->\n'
+        )
+        (directory / 'workspace-instructions.md').write_bytes(previous_workspace)
+        (directory / 'policy-block.md').write_bytes(previous_policy)
+        (directory / 'pstack/skills/poteto-mode/references/codex-tools.md').write_bytes(CODEX_MAPPING)
+        (directory / 'agent-startup/SKILL.md').unlink()
+        (directory / 'agent-startup').rmdir()
+        receipt = self.refresh_receipt_files(directory)
+        receipt['script_sha256'] = hashlib.sha256(b'previous bootstrap version').hexdigest()
+        receipt['identity'] = hashlib.sha256(('\n'.join([
+            '2', receipt['dotfiles_archive_sha256'], receipt['pstack_archive_sha256'], receipt['script_sha256'],
+            receipt['state'], hashlib.sha256(previous_workspace).hexdigest(),
+        ])).encode()).hexdigest()
+        (directory / 'receipt.json').write_text(json.dumps(receipt))
+        retained = directory.with_name(receipt['identity'])
+        directory.rename(retained)
+        current.unlink()
+        current.symlink_to('releases/' + receipt['identity'])
+        global_agents = self.home / '.codex/AGENTS.md'
+        workspace_agents = self.home / 'AGENTS.md'
+        prefix, suffix = b'Keep user prefix\n', b'Keep user suffix\xff\n'
+        global_agents.write_bytes(prefix + previous_policy + suffix)
+        workspace_agents.write_bytes(prefix + previous_workspace + suffix)
+        self.run_bootstrap()
+        self.assertNotEqual(current.resolve(), retained)
+        self.assertEqual((retained / 'policy-block.md').read_bytes(), previous_policy)
+        self.assertEqual((retained / 'workspace-instructions.md').read_bytes(), previous_workspace)
+        self.assertFalse((retained / 'agent-startup/SKILL.md').exists())
+        self.assertEqual((current / 'agent-startup/SKILL.md').read_bytes(), STARTUP)
+        self.assertEqual(global_agents.read_bytes(), prefix + (current / 'policy-block.md').read_bytes() + suffix)
+        self.assertEqual(workspace_agents.read_bytes(), prefix + (current / 'workspace-instructions.md').read_bytes() + suffix)
+        before = self.snapshot()
+        self.run_bootstrap()
+        self.assertEqual(before, self.snapshot())
+        self.assertEqual(workspace_agents.read_bytes(), prefix + (current / 'workspace-instructions.md').read_bytes() + suffix)
+
     def test_legacy_release_upgrades_without_workspace_ownership(self):
         self.run_bootstrap()
         current = self.state() / 'current'
         directory = current.resolve()
         receipt_path = directory / 'receipt.json'
         receipt = json.loads(receipt_path.read_text())
-        for name in ('workspace-instructions.md', 'skills-index.md'):
+        for name in ('workspace-instructions.md', 'skills-index.md', 'agent-startup/SKILL.md'):
             (directory / name).unlink()
             del receipt['files'][name]
         receipt.pop('state')
@@ -573,7 +840,7 @@ class BootstrapTest(unittest.TestCase):
         agents = workspace / 'AGENTS.md'
         original = agents.read_bytes()
         before = self.snapshot()
-        for content in (original.replace(b'substantive work', b'edited work'),
+        for content in (original.replace(b'first substantive workspace answer', b'edited workspace answer'),
                         original + b'<!-- agent-bootstrap:unknown -->\n',
                         original + b'<!-- agent-bootstrap-future:unknown -->\n',
                         b'<!-- agent-bootstrap-workspace-prototype:start -->\nprototype\n'

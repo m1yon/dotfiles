@@ -38,6 +38,12 @@ MAX_EXPANDED = 200 * 1024 * 1024
 MAX_MEMBERS = 30000
 DOTFILES_URL = 'https://codeload.github.com/m1yon/dotfiles/tar.gz/refs/heads/master'
 PSTACK_URL = 'https://codeload.github.com/michael-denyer/pstack-claude/tar.gz/refs/heads/main'
+PSTACK_REQUIRED = (
+    '.codex-plugin/plugin.json', '.claude-plugin/plugin.json', 'models.json', 'hooks/session-start-context.md',
+    'skills/poteto-mode/SKILL.md', 'skills/poteto-mode/references/codex-tools.md',
+    'skills/poteto-mode/playbooks/feature.md', 'skills/poteto-mode/scripts/check-playbooks.mjs',
+    'skills/architect/SKILL.md', 'skills/reflect/SKILL.md',
+)
 
 
 @dataclass(frozen=True)
@@ -176,23 +182,60 @@ def skills_index(package, namespace):
     return index
 
 
-def workspace_instructions(state):
-    return WORKSPACE_START + (
+def retained_instructions(state):
+    return (
         '# Shared agent instructions\n\n'
         'The retained installation root is the absolute path encoded by this JSON string:\n\n'
         + json.dumps(str(state / 'current')) + '\n\n'
-        'At the start of substantive work, read policy-block.md, pstack-models.md, and skills-index.md from that root.\n'
-        'Apply the retained policy, standing workflow routing, and model overrides.\n'
-        'If the retained files are missing, report that the installation is unavailable when the task needs pstack.\n'
-        'Use skills-index.md to select relevant workflows, then read their full SKILL.md files before following them.\n'
-        'Read pstack/skills/poteto-mode/SKILL.md for the standing routing.\n'
-        'Use these manual file reads even when the native skill catalog omits pstack or is empty.\n'
-        'Resolve skill resource paths and relative references within this same release.\n'
+        'Before the first substantive workspace answer, or any answer about installed-skill availability,\n'
+        'check setup readiness when the selected environment is managed and has a setup lifecycle.\n'
+        'Use only that selected environment\'s readiness tools. In a local environment without managed setup, read the files directly.\n'
+        'If setup is still running, make at most 3 readiness checks and spend at most 120 seconds total.\n'
+        'Limit each wait to 30 seconds.\n'
+        'Progress updates are allowed while checking. Unrelated requests do not wait for workspace setup.\n'
+        'If setup failed, remains incomplete, or cannot be checked, report the actual limitation and leave access unverified.\n'
+        'When ready, resolve the installation root once to its physical retained release directory.\n'
+        'Read policy-block.md, pstack-models.md, skills-index.md, and routing.md from that directory.\n'
+        'Also read pstack/skills/poteto-mode/SKILL.md and pstack/skills/poteto-mode/references/codex-tools.md in full.\n'
+        'Apply the retained policy, standing workflow routing, and model overrides before answering.\n'
+        'If retained files are missing or unreadable, report the specific file or access failure and leave access unverified.\n'
+        'Use skills-index.md to select relevant workflows, then read their full SKILL.md files on demand.\n'
+        'Use these filesystem reads even when the native skill catalog omits pstack or is empty.\n'
+        'An absent native catalog does not establish that retained skills are unavailable.\n'
+        'Resolve indexed resource paths from the physical retained release directory.\n'
+        'Resolve each skill\'s relative references from its directory in that same release.\n'
         'The retained pstack-models.md is the authoritative override sheet for every pstack role,\n'
-        'including when a skill refers to a missing or transient CODEX_HOME model sheet.\n'
-        'Before project work in a child repository, read its applicable AGENTS.md and AGENTS.override.md instructions.\n'
+        'and takes precedence over a missing, different, or transient CODEX_HOME model sheet.\n'
+        'Before answers or project work about a child repository, read its applicable AGENTS.md and AGENTS.override.md instructions.\n'
         'Follow user instructions and applicable repository instructions.\n'
-    ).encode('utf-8') + WORKSPACE_END
+    ).encode('utf-8')
+
+
+def workspace_instructions(state):
+    return WORKSPACE_START + retained_instructions(state) + WORKSPACE_END
+
+
+def adapt_codex_mapping(path):
+    source = path.read_bytes()
+    adapted, count = re.subn(
+        rb'(?m)^\| Invoke a skill \(the `Skill` tool, `/command`\) \|[^\r\n]*\|(?=\r?$)',
+        b'| Invoke a skill (the `Skill` tool, `/command`) | Read its full SKILL.md through the filesystem. '
+        b'Use the retained skills-index.md when the native catalog omits it. See Retained release fallback below. |', source)
+    if count != 1:
+        fail('expected one skill invocation row in pstack Codex mapping')
+    return adapted + (
+        '\n## Retained release fallback\n\n'
+        'Resolve this file to its physical path. The retained release root is `../../../..` from its directory.\n'
+        'Read `policy-block.md`, `pstack-models.md`, `skills-index.md`, and `routing.md` relative to that root.\n'
+        'Read `pstack/skills/poteto-mode/SKILL.md` in full for standing routing.\n'
+        'For a skill invocation, select its `pstack:name` entry in `skills-index.md`.\n'
+        'Read the full `SKILL.md` at the entry\'s resource path, relative to the same physical release root.\n'
+        'Resolve that skill\'s relative references from its directory in the same retained release.\n'
+        'Use this fallback even when the native skill catalog is absent, empty, or omits the requested skill.\n'
+        'If a required file cannot be read, report that concrete access failure rather than inferring absence from the catalog.\n'
+        'The retained `pstack-models.md` is authoritative for every pstack role.\n'
+        'It overrides model-sheet paths named elsewhere in this file or in a skill, including a transient `CODEX_HOME` sheet.\n'
+    ).encode('utf-8')
 
 
 def catalog_name(path):
@@ -307,27 +350,35 @@ def read_release(directory):
         if (identity != receipt['identity']
                 or managed_region(workspace, WORKSPACE_START, WORKSPACE_END) != (0, len(workspace))
                 or not Path(receipt['state']).is_absolute()
-                or not (directory / 'skills-index.md').read_bytes()):
+                or (directory / 'skills-index.md').read_bytes() != skills_index(directory / 'pstack', manifest['name'])):
             fail('invalid retained workspace instructions or index: ' + str(directory))
     return Release(directory, directory.name, tuple(receipt['skills']), manifest['name'], policy, sheet, workspace, receipt)
 
 
 def build_release(staging, script, state):
-    shared = download(DOTFILES_URL, staging / 'dotfiles.tgz', 'dotfiles-', ['dotfiles/agents/AGENTS.md'])
+    shared = download(DOTFILES_URL, staging / 'dotfiles.tgz', 'dotfiles-',
+                      ['dotfiles/agents/AGENTS.md', 'dotfiles/agents/cloud-startup/SKILL.md'])
+    startup = shared.root / 'dotfiles/agents/cloud-startup/SKILL.md'
+    if not startup.is_file() or not startup.read_bytes().strip():
+        fail('missing or empty startup dependency: dotfiles/agents/cloud-startup/SKILL.md')
+    if skill_name(startup) != 'agent-startup':
+        fail('invalid startup skill name: ' + str(startup))
     upstream = download(PSTACK_URL, staging / 'pstack.tgz', 'pstack-claude-', ['plugins/pstack', 'LICENSE'])
     directory = staging / 'release'
     directory.mkdir()
+    (directory / 'agent-startup').mkdir()
+    shutil.copyfile(startup, directory / 'agent-startup/SKILL.md')
+    (directory / 'agent-startup/SKILL.md').chmod(0o644)
     shutil.copytree(upstream.root / 'plugins/pstack', directory / 'pstack')
     if (upstream.root / 'LICENSE').is_file():
         shutil.copy2(upstream.root / 'LICENSE', directory / 'LICENSE')
     package = directory / 'pstack'
-    required = ['.codex-plugin/plugin.json', '.claude-plugin/plugin.json', 'models.json', 'hooks/session-start-context.md',
-                'skills/poteto-mode/SKILL.md', 'skills/poteto-mode/references/codex-tools.md',
-                'skills/poteto-mode/playbooks/feature.md', 'skills/poteto-mode/scripts/check-playbooks.mjs',
-                'skills/architect/SKILL.md', 'skills/reflect/SKILL.md']
-    for name in required:
-        if not (package / name).is_file():
-            fail('missing pstack dependency: ' + name)
+    for name in PSTACK_REQUIRED:
+        path = package / name
+        if not path.is_file() or not path.read_bytes().strip():
+            fail('missing or empty pstack dependency: ' + name)
+    mapping = package / 'skills/poteto-mode/references/codex-tools.md'
+    mapping.write_bytes(adapt_codex_mapping(mapping))
     manifest = pstack_manifest(package)
     names = sorted(skill_name(path) for path in (package / 'skills').rglob('SKILL.md'))
     if len(names) != len(set(names)) or not names:
@@ -345,7 +396,8 @@ def build_release(staging, script, state):
         fail('routing references undiscovered pstack skills')
     resolution = ('Resolve pstack skill references using the available catalog identifier; '
                   'if this runtime exposes bare names, use the name without the pstack: prefix.\n')
-    block = START + policy + b'\n' + resolution.encode('utf-8') + routing.encode('utf-8') + b'\n' + END
+    block = (START + policy + b'\n' + resolution.encode('utf-8') + routing.encode('utf-8')
+             + b'\n' + retained_instructions(state) + END)
     workspace = workspace_instructions(state)
     script_digest = digest(script.read_bytes())
     identity = digest(('\n'.join([str(FORMAT), shared.archive_digest, upstream.archive_digest,

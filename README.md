@@ -132,15 +132,24 @@ The plugin manifest defines the `pstack:` prefix for catalogs that load it.
 `AGENT_BOOTSTRAP_WORKSPACE` enables one additional managed block in the named
 directory's `AGENTS.md`. It must name an existing absolute directory with no
 symlink ancestors, outside the bootstrap state, skill roots, and `CODEX_HOME`.
-The block points to the absolute retained installation path. At the start of
-substantive work, it directs the agent to read `policy-block.md`,
-`pstack-models.md`, and `skills-index.md` from the current release. The index
+The block points to the absolute retained installation path. Before the first
+workspace-related answer, including questions about installed skills, it directs
+the agent to check the selected environment's readiness and load the retained
+bootstrap. It reads `policy-block.md`, `pstack-models.md`, `skills-index.md`,
+`routing.md`, the full `poteto-mode/SKILL.md`, and its Codex mapping from one
+resolved retained release. The index
 contains each installed skill's qualified name, relative resource path, and
 complete YAML frontmatter. The agent uses those descriptions to select workflows,
 then reads the relevant full `SKILL.md` files and their relative references.
 The retained model sheet remains authoritative when runtime `CODEX_HOME` changes.
-Before working in a child repository, the agent must read that repository's
-applicable instructions.
+Before answering about or working in a child repository, the agent must read that
+repository's applicable instructions. An empty native catalog does not establish
+that pstack is unavailable. The agent reads indexed workflow files directly when
+native discovery omits them. It loads other full skill bodies only when needed.
+If the environment is starting, the loading contract permits brief progress
+messages and bounds readiness checks to three attempts or 120 seconds total.
+Startup failure, timeout, unknown readiness, or unreadable required files leave
+access unverified. Unrelated requests do not wait for the environment.
 
 Without `AGENT_BOOTSTRAP_WORKSPACE`, the bootstrap neither inspects CWD for an
 instruction destination nor writes workspace instructions. Omitting the option on
@@ -151,20 +160,56 @@ foreign, prototype, or unknown bootstrap blocks. It preserves user bytes outside
 the managed block and preserves the existing file mode. It does not modify
 selected child repositories.
 
-Cloud activation requires this workspace pointer. In the tested fresh Cloud
-tasks, setup's global instructions disappeared with transient `CODEX_HOME`, while
+Earlier fresh Cloud observations showed setup's global instructions disappearing
+with transient `CODEX_HOME`, while
 the retained HOME release persisted. Installed skills were absent from the native
 catalog, and the executor's default `skills.list` returned no skills. Neither a
 saved Start skill nor account custom instructions activated the retained policy.
-Keep Start skill for service startup. A fresh ordinary task read the production
+The saved environment Start skill is distinct from the host's initially visible
+`cloud-environment-runtime` skill. A fresh ordinary task read the production
 pointer's retained policy, model sheet, and index. It selected the `how` workflow
-and spawned its explainer.
+and spawned its explainer. These observations did not prove loading before a
+skill-availability answer sent while the environment was starting.
+
+The Cloud environment's editable Start skill is the entry point for shared
+startup loading. Its textbox accepts skill text. Use the small loader in
+[`start-skill.md`](dotfiles/agents/cloud-startup/start-skill.md) as its shared
+prefix. It checks readiness, reads the workspace pointer, and follows
+`agent-startup/SKILL.md` from the physical retained release before answering.
+Keep any existing environment-specific startup instructions after that prefix.
+Replace the shared prefix when updating it, rather than appending it again.
+
+The maintained full startup skill is
+[`cloud-startup/SKILL.md`](dotfiles/agents/cloud-startup/SKILL.md). The installer
+downloads it with the shared policy from the same dotfiles snapshot and retains
+it as `agent-startup/SKILL.md`. Its contents and checksum are part of the release
+receipt. Changes to this file take effect on fresh environment setup without
+copying the full skill into every environment's textbox. The loader uses local
+files; it does not need startup network access to fetch the skill. The internal
+Codex `cloud-environment-runtime` skill requires no changes.
+
+Publish the source and installer, run fresh setup, and verify the retained startup
+file before enabling a loader that references it. Configure one environment and
+verify a fresh skill-availability answer before updating the remaining
+environments. Saving the Start field alone does not prove that the host delivers
+or follows it before the first answer. The workspace pointer and retained-file
+validation provide the remaining loading instructions and installation checks.
+
+The bootstrap's catalog identifier checks and readable skill symlink verify its
+own installation. They do not establish the host's native discovery ordering,
+symlink support, directory traversal, or refresh behavior. No discovery layout
+change is justified by an empty catalog alone. The generated retained Codex
+mapping documents the index fallback while preserving upstream tool guidance.
 
 Success prints the downloaded commit IDs, pstack version, skill count, and release
 path. With the workspace option, it also prints the instruction destination and
 managed block digest. Each release's `receipt.json` records source revisions,
 archive digests, the executing script digest, source skill names, and the file
-inventory. New releases retain the exact workspace pointer and index. The release
+inventory. Validation checks required readable startup files and regenerates the
+index from the retained package before success. Missing, duplicated, or altered
+index entries fail even when their receipt checksums have been updated. The
+expected skill set comes from the package and index, without a fixed skill count.
+New releases retain the exact workspace pointer and index. The release
 identity includes the pointer digest to bind its absolute installation path.
 Legacy format 1 releases remain valid for global instruction and model ownership.
 Releases remain available after upgrades.
@@ -185,22 +230,58 @@ with `pstack:architect`. Use the Nix configuration for the existing Mac and Linu
 installations.
 
 Publish the prepared Cloud environment, then start a fresh ordinary task. Verify
-that its first substantive actions read the retained policy, model sheet, and
-index without a pstack cue in the prompt. Confirm that it selects and reads a
+that its first workspace answer follows readiness and reads the retained policy,
+model sheet, index, routing, poteto instructions, and Codex mapping. Ask
+"Do you have access to the pstack skills?" while setup is starting. Confirm access
+without a corrective user message when verification succeeds. Repeat with the
+environment ready and an empty native catalog. Confirm that it selects and reads a
 relevant workflow even when the native catalog is empty, and follows applicable
 child repository instructions. Existing tasks keep their own state. Files visible
-during setup alone do not prove startup loading or workflow selection.
+during setup alone do not prove startup loading or workflow selection. Also check
+an explicit workflow, conflicting retained/transient models, startup failure,
+missing required files, and unrelated requests. Record the first response,
+readiness events, delivered instructions, and file/tool reads.
 
 Run the isolated behavior tests from this repository:
 
 ```sh
 python3 scripts/bash/shared/tests/test_agent_bootstrap.py
+python3 scripts/bash/shared/tests/test_pstack_session_probe.py
 ```
 
 The tests use `AGENT_BOOTSTRAP_TARGET_HOME` to select disposable homes and a private
 `curl` transport stub. This option selects the retained home and its `.codex`
 directory regardless of runtime `CODEX_HOME`. The bootstrap does not assign
 `HOME` or `CODEX_HOME`.
+
+The live session probe uses `codex exec` with a disposable client directory and
+an isolated readiness server. It links existing CLI authentication without reading
+credentials. It checks native catalog omission, readiness, successful file reads,
+and their order before the first substantive answer. Its grading tests reject
+early answers, incomplete reads, timed-out processes, and model dispatch inferred
+only from skill text. This probe simulates instruction delivery and readiness;
+it does not replace a fresh production Cloud trace. Its availability and progress
+checks are language heuristics. Inspect the actual first answer alongside its
+readiness and file-read evidence even when the automatic grade passes.
+
+Pass the maintained Start skill loader. For example:
+
+```sh
+python3 scripts/bash/shared/tests/pstack_session_probe.py \
+	--case starting \
+	--startup-skill dotfiles/agents/cloud-startup/start-skill.md \
+	--output .audit/pstack-starting
+```
+
+Use `--retained-release /absolute/path/to/release` to check an actual retained
+package for the `starting` or `ready` cases. Other cases use a small skill package
+to exercise full-file selection, conflicting model sheets, failure, missing files,
+never-ready setup, and unrelated requests. The `baseline` case also requires the
+original startup skill and either `--bootstrap` pointing to the original script
+or `--baseline-ref` naming its Git revision. Without either option it uses `HEAD`.
+The output directory contains prompt inputs, tool events, readiness events,
+responses, and a behavioral grade. The probe returns failure for an incomplete
+CLI turn or a failed grade, including the expected original-baseline failure.
 
 ## Remote access with Tailscale
 
