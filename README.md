@@ -160,59 +160,60 @@ foreign, prototype, or unknown bootstrap blocks. It preserves user bytes outside
 the managed block and preserves the existing file mode. It does not modify
 selected child repositories.
 
-Earlier fresh Cloud observations showed setup's global instructions disappearing
-with transient `CODEX_HOME`, while
-the retained HOME release persisted. Installed skills were absent from the native
-catalog, and the executor's default `skills.list` returned no skills. Neither a
-saved Start skill nor account custom instructions activated the retained policy.
-The saved environment Start skill is distinct from the host's initially visible
-`cloud-environment-runtime` skill. A fresh ordinary task read the production
-pointer's retained policy, model sheet, and index. It selected the `how` workflow
-and spawned its explainer. These observations did not prove loading before a
-skill-availability answer sent while the environment was starting.
+Cloud loads plugin skill metadata before attaching the selected environment's
+executor. The environment's saved Start skill was absent from that initial
+catalog in fresh trials, so saving the textbox alone did not start loading.
+`environment_status` reported a running machine without making filesystem tools
+available. The supported `wait_for_environment` call attached the executor and
+made the retained files readable.
 
-The Cloud environment's editable Start skill is the entry point for shared
-startup loading. Its textbox accepts skill text. Use the small loader in
-[`start-skill.md`](dotfiles/agents/cloud-startup/start-skill.md) as its shared
-prefix. It checks readiness, reads the workspace pointer, and follows
-`agent-startup/SKILL.md` from the physical retained release before answering.
-Keep any existing environment-specific startup instructions after that prefix.
-Replace the shared prefix when updating it, rather than appending it again.
+The repo-owned loader in
+[`start-skill.md`](dotfiles/agents/cloud-startup/start-skill.md) supplies this
+attachment step. Package it as a personal Cloud plugin so its metadata is
+available before the first workspace or installed-skill answer:
+
+```sh
+python3 dotfiles/agents/cloud-startup/package.py
+```
+
+Upload the generated `.audit/cloud-loader-plugin/cloud-agent-bootstrap-0.1.1.zip`
+through Plugins > Add > Upload plugin archive, then install it. For an existing
+plugin, use More actions > Upload new version. The package contains only a
+portable manifest and the canonical loader copied byte for byte. It adds no
+apps, MCP servers, or hooks. The installed
+[personal Cloud plugin](https://chatgpt.com/plugins/Plugin_6b056d343a64819184a62243dfaedd38)
+is the early entry point. Other accounts need to install their own copy.
+
+Use the same loader as the shared prefix in each environment's editable Start
+skill textbox. Keep existing environment-specific instructions after the prefix.
+Replace the shared prefix when updating it. The loader attaches the selected
+executor, reads the workspace pointer, and follows `agent-startup/SKILL.md` from
+the physical retained release before answering. It reuses readiness and executor
+attachment already established by its caller.
 
 The maintained full startup skill is
 [`cloud-startup/SKILL.md`](dotfiles/agents/cloud-startup/SKILL.md). The installer
 downloads it with the shared policy from the same dotfiles snapshot and retains
 it as `agent-startup/SKILL.md`. Its contents and checksum are part of the release
-receipt. Changes to this file take effect on fresh environment setup without
-copying the full skill into every environment's textbox. The loader uses local
-files; it does not need startup network access to fetch the skill. The internal
-Codex `cloud-environment-runtime` skill requires no changes.
+receipt. Changes take effect when fresh setup runs and the prepared filesystem
+is published. The loader reads local retained files. The internal Codex
+`cloud-environment-runtime` skill requires no changes.
 
-Publish the source and installer, run fresh setup, and verify the retained startup
-file before enabling a loader that references it. Configure one environment and
-verify a fresh skill-availability answer before updating the remaining
-environments. Saving the Start field alone does not prove that the host delivers
-or follows it before the first answer. The workspace pointer and retained-file
-validation provide the remaining loading instructions and installation checks.
+For an existing environment, open its Edit setup conversation and run the
+updated shared bootstrap block before publishing. Saving the Start field or
+changing the Install script URL does not refresh prepared files. Verify the
+receipt, startup file, and all indexed paths in setup, publish, then verify them
+again in a fresh task. Publishing captures the prepared filesystem; it does not
+prove the configured installation commands ran. See the
+[Cloud environment lifecycle](https://learn.chatgpt.com/docs/environments/cloud-environments).
 
-For an existing Cloud environment, open its Edit setup conversation and run the
-updated shared bootstrap block there before publishing. Saving the Start field
-or changing the Install script URL did not refresh the prepared files in the
-`dream - dev` pilot: fresh tasks still reported the old receipt revision and a
-missing startup file. Running the block in setup installed the published source
-and verified every indexed path. Publishing captures that prepared filesystem;
-it is not evidence that the configured installation commands ran. Verify the
-receipt and startup file again in a fresh task before assessing startup delivery.
-See the [Cloud environment lifecycle](https://learn.chatgpt.com/docs/environments/cloud-environments).
-
-The refreshed pilot still answered the first pstack-availability question from
-the visible catalog without checking readiness or reading retained instructions.
-A subsequent explicit workspace-read request confirmed the new receipt and
-readable startup file. The local session probe proves the loader's behavior when
-delivered, but the production Start field has not produced a successful first-turn
-trace. Hold the remaining environment rollout until that delivery requirement is
-verified. The host's initial instruction delivery and native skill discovery are
-outside this repository.
+The `dream - dev` pilot passed three independent fresh chats asking only
+“Do you have access to the pstack skills?” Each read the retained startup and six
+required files before affirming verified access. A fresh workspace question also
+loaded startup before answering. These tests used the installed loader plugin
+and the published retained source. The local session probe separately tests
+loader behavior under controlled readiness; it does not establish Cloud metadata
+delivery.
 
 The bootstrap's catalog identifier checks and readable skill symlink verify its
 own installation. They do not establish the host's native discovery ordering,
