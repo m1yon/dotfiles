@@ -77,6 +77,7 @@
           };
         in
         {
+          gh = unstablePkgs.gh;
           yazi = unstablePkgs.yazi;
           jetbrains = prev.jetbrains // {
             datagrip = unstablePkgs.jetbrains.datagrip;

@@ -42,6 +42,11 @@
               "bundleIdentifier" : "com.t3tools.t3code",
               "iconPath" : "/Applications/T3 Code (Alpha).app/Contents/Resources/icon.icns",
               "name" : "T3 Code (Alpha)"
+            },
+            {
+              "bundleIdentifier" : "com.anthropic.claudefordesktop",
+              "iconPath" : "/Applications/Claude.app/Contents/Resources/electron.icns",
+              "name" : "Claude"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+2",
@@ -126,7 +131,9 @@
           "symbolIconName" : "cylinder.fill"
         },
         {
-          "apps" : [],
+          "apps" : [
+
+          ],
           "assignAppShortcut" : "ctrl+shift+7",
           "display" : "BenQ RD280UG",
           "id" : "00000000-0000-4000-8000-000000000007",
