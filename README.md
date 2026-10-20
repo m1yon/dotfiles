@@ -184,12 +184,14 @@ apps, MCP servers, or hooks. The installed
 [personal Cloud plugin](https://chatgpt.com/plugins/Plugin_6b056d343a64819184a62243dfaedd38)
 is the early entry point. Other accounts need to install their own copy.
 
-Use the same loader as the shared prefix in each environment's editable Start
-skill textbox. Keep existing environment-specific instructions after the prefix.
-Replace the shared prefix when updating it. The loader attaches the selected
-executor, reads the workspace pointer, and follows `agent-startup/SKILL.md` from
-the physical retained release before answering. It reuses readiness and executor
-attachment already established by its caller.
+Keep only environment-specific instructions in each environment's editable Start
+skill textbox. Leave it empty when none are needed. The installed plugin supplies
+the shared loader; do not duplicate it in the Start field. To update the packaged
+loader, rebuild the archive and upload a new plugin version. A Git commit alone
+does not update the installed plugin. The loader attaches the selected executor,
+reads the workspace pointer, and follows `agent-startup/SKILL.md` from the physical
+retained release before answering. It reuses readiness and executor attachment
+already established by its caller.
 
 The maintained full startup skill is
 [`cloud-startup/SKILL.md`](dotfiles/agents/cloud-startup/SKILL.md). The installer
