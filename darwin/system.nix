@@ -156,7 +156,7 @@ in
     echo "setting macOS appearance..." >&2
     user=${lib.escapeShellArg username}
     uid="$(id -u -- "$user")"
-    if ! launchctl asuser "$uid" sudo --user="$user" -- osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'; then
+    if ! launchctl asuser "$uid" sudo --user="$user" -- osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to false'; then
       echo "Unable to refresh the live macOS appearance state; defaults were still written." >&2
     fi
 
@@ -214,7 +214,6 @@ in
 
     NSGlobalDomain = {
       AppleShowAllExtensions = false;
-      AppleInterfaceStyle = "Dark";
       AppleInterfaceStyleSwitchesAutomatically = false;
       NSDocumentSaveNewDocumentsToCloud = false;
     };
