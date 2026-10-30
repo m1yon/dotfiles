@@ -41,6 +41,7 @@
     ];
     casks = [
       "anki"
+      "claude-code"
       "cleanshot"
       "codex-app"
       "discord"
