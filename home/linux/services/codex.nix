@@ -10,6 +10,8 @@ let
   codex = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.codex;
 in
 {
+  home.packages = [ codex ];
+
   # The desktop SSH client checks this in the remote login shell before
   # launching its own server. systemd owns the default Codex socket instead.
   home.sessionVariables.CODEX_SSH_SKIP_APP_SERVER_BOOT = "true";

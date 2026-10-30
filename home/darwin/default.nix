@@ -39,6 +39,7 @@ in
 {
   imports = [
     ./claude-code.nix
+    ./codex.nix
     ./flashspace.nix
     ./herdr.nix
     ./packages.nix
