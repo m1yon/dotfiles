@@ -8,24 +8,26 @@
 
 ## pstack model configuration
 
-Use these model and reasoning effort overrides for pstack roles. Pass each `@<level>` suffix as `spawn_agent`'s `reasoning_effort`. Values without a suffix use `default effort`. The aliases `inherit-parent` and `auto` omit the model override. Panel entries each count as one agent; the arena cross-judge pool supplies one model choice. On Codex, the model sheet lives in `$CODEX_HOME/pstack-models.md`, or `~/.codex/pstack-models.md` when `CODEX_HOME` is unset. A native plugin reads its session hook setting there. The shared bootstrap installs standing routing in global `AGENTS.md` for skills-only environments.
+Use these model and reasoning effort overrides for pstack roles. Values without a suffix use `default effort`. The aliases `inherit-parent` and `auto` omit the model override. Panel entries each count as one agent; the arena cross-judge pool supplies one model choice. On Codex, the model sheet lives in `$CODEX_HOME/pstack-models.md`, or `~/.codex/pstack-models.md` when `CODEX_HOME` is unset. A native plugin reads its session hook setting there.
 
-feature, refactoring: gpt-6.1-sol @high
-bug-fix: gpt-6-astra @xhigh
-perf-issue: gpt-6-astra @xhigh
-hillclimb: gpt-6-astra @xhigh
-judgment and prose: gpt-6.1-sol @medium
-strongest judgment: gpt-6-astra @xhigh
-how explorer: gpt-6.1-sol @medium
-how explainer: gpt-6.1-sol @medium
-why investigators: gpt-6.1-sol @high
-why synthesizer: gpt-6.1-sol @high
-reflect tooling: gpt-6.1-sol @low
-reflect judgment, divergent, synthesizer: gpt-6.1-sol @high
-arena runners: gpt-6.1-sol @high, gpt-6-astra @high, gpt-6-luna @high
-arena cross-judge pool: gpt-6.1-sol @xhigh, gpt-6-astra @xhigh, gpt-6-luna @xhigh
-swarm workers: gpt-6.1-sol @medium
-architect runners: gpt-6.1-sol @xhigh, gpt-6-astra @xhigh, gpt-6-luna @xhigh
-interrogate reviewers: gpt-6.1-sol @xhigh, gpt-6-astra @xhigh, gpt-6-luna @xhigh
+These rows mix Claude and GPT models, and every session runs in T3 Code. Start an entry from the session's own provider with the native tool: in Claude sessions, `Agent` with the bare name (`opus`, `fable`, `sonnet`, `haiku`) and the `@level` as its effort; in Codex sessions, `spawn_agent` with the `gpt-*` name and the `@level` as `reasoning_effort`. Start an entry from the other provider with T3's `delegate_task`: provider `claudeAgent` with model `claude-opus-5-5`, `claude-fable-5-1`, `claude-sonnet-5-5`, or `claude-haiku-5-5` and option `effort`; or provider `codex` with the `gpt-*` model and option `reasoningEffort`. A panel still runs one subagent per entry, whichever tool starts it.
 
-default effort: medium
+feature, refactoring: sonnet @xhigh
+bug-fix: opus @xhigh
+perf-issue: opus @xhigh
+hillclimb: opus @xhigh
+judgment and prose: opus @xhigh
+strongest judgment: opus @max
+how explorer: opus @medium
+how explainer: opus @high
+why investigators: opus @medium
+why synthesizer: opus @xhigh
+reflect tooling: sonnet @high
+reflect judgment, divergent, synthesizer: opus @xhigh
+arena runners: opus @xhigh, sonnet @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
+arena cross-judge pool: opus @max, gpt-6-astra @max
+swarm workers: gpt-6.1-sol @xhigh
+architect runners: opus @xhigh, fable @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
+interrogate reviewers: opus @xhigh, fable @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
+
+default effort: session
