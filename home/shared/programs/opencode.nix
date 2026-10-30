@@ -46,5 +46,7 @@ in
     ".config/opencode/opencode-notifier.json".source =
       outOfStore "${dotfiles}/opencode/opencode-notifier.json";
     ".config/opencode/opencode.json".source = outOfStore "${dotfiles}/opencode/opencode.json";
+    # herdr installs its opencode integration here and rewrites it on update.
+    ".config/opencode/plugins".source = outOfStore "${dotfiles}/opencode/plugins";
   };
 }

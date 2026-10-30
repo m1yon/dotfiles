@@ -9,3 +9,4 @@ tmp
 dotfiles/opencode/opencode-notifier-state.json
 dotfiles/codex/config.toml
 .repos
+dotfiles/agents/skills/synced/
