@@ -38,6 +38,7 @@ let
 in
 {
   imports = [
+    ./claude-code.nix
     ./flashspace.nix
     ./herdr.nix
     ./packages.nix
