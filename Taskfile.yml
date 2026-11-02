@@ -31,10 +31,19 @@ tasks:
             fi
             ;;
           Linux)
-            nixos-rebuild switch --flake path:{{.FLAKE_DIR}}#nixbook --sudo
+            # T3 Code's bubblewrap sandbox sets no_new_privs, which breaks sudo and
+            # would trap the relaunched app, so start both from the user manager.
+            switch_prefix=""
+            restart_prefix=""
+            if grep -q '^NoNewPrivs:[[:space:]]*1$' /proc/self/status; then
+              switch_prefix="systemd-run --user --pty --wait --collect --quiet"
+              # restart-app backgrounds the app and exits, so the unit must not kill it.
+              restart_prefix="systemd-run --user --wait --collect --quiet --property=KillMode=process"
+            fi
+            $switch_prefix nixos-rebuild switch --flake path:{{.FLAKE_DIR}}#nixbook --sudo
             # Starting uwsm-app from a TTY leaves its daemon with a pre-login PATH.
             if systemctl --user is-active --quiet graphical-session.target; then
-              "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
+              $restart_prefix "{{.FLAKE_DIR}}/scripts/bash/linux/restart-app" vicinae server
             fi
             ;;
           *)
