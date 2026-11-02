@@ -21,6 +21,11 @@
               "bundleIdentifier" : "com.apple.finder",
               "iconPath" : "/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns",
               "name" : "Finder"
+            },
+            {
+              "bundleIdentifier" : "com.microsoft.Excel",
+              "iconPath" : "/Applications/Microsoft Excel.app/Contents/Resources/Excel_macOS.icns",
+              "name" : "Microsoft Excel"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+1",
@@ -99,11 +104,6 @@
         {
           "apps" : [
             {
-              "bundleIdentifier" : "com.microsoft.Excel",
-              "iconPath" : "/Applications/Microsoft Excel.app/Contents/Resources/Excel_macOS.icns",
-              "name" : "Microsoft Excel"
-            },
-            {
               "bundleIdentifier" : "com.microsoft.Word",
               "iconPath" : "/Applications/Microsoft Word.app/Contents/Resources/Word_macOS.icns",
               "name" : "Microsoft Word"
@@ -132,7 +132,11 @@
         },
         {
           "apps" : [
-
+            {
+              "bundleIdentifier" : "com.apple.mail",
+              "iconPath" : "/System/Applications/Mail.app/Contents/Resources/ApplicationIcon.icns",
+              "name" : "Mail"
+            }
           ],
           "assignAppShortcut" : "ctrl+shift+7",
           "display" : "BenQ RD280UG",

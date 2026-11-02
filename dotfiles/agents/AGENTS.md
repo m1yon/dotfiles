@@ -30,5 +30,7 @@ arena cross-judge pool: opus @max, gpt-6-astra @max
 swarm workers: gpt-6.1-sol @xhigh
 architect runners: opus @xhigh, fable @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
 interrogate reviewers: opus @xhigh, fable @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
+thermos reviewers: gpt-6.1-sol @xhigh
+no-comments reviewer: gpt-6.1-sol @medium
 
 default effort: session
