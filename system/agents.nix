@@ -9,16 +9,26 @@ let
   # auto-update off for third-party marketplaces unless it's set here.
   pstackUrl = "https://github.com/michael-denyer/pstack-claude.git";
 
-  claudeManagedSettings = (pkgs.formats.json { }).generate "claude-managed-settings.json" {
-    extraKnownMarketplaces.pstack-claude = {
-      source = {
-        source = "git";
-        url = pstackUrl;
+  claudeManagedSettings = (pkgs.formats.json { }).generate "claude-managed-settings.json" (
+    {
+      extraKnownMarketplaces.pstack-claude = {
+        source = {
+          source = "git";
+          url = pstackUrl;
+        };
+        autoUpdate = true;
       };
-      autoUpdate = true;
-    };
-    enabledPlugins."pstack@pstack-claude" = true;
-  };
+      enabledPlugins."pstack@pstack-claude" = true;
+    }
+    // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      permissions.defaultMode = "bypassPermissions";
+      env = {
+        _ZO_DOCTOR = "0";
+        GH_PROMPT_DISABLED = "true";
+        GH_PAGER = "less";
+      };
+    }
+  );
 
   codexSystemConfig = (pkgs.formats.toml { }).generate "codex-config.toml" {
     features.hooks = true;

@@ -13,6 +13,7 @@
     ./localsend.nix
     ./obsidian.nix
     ./onlyoffice.nix
+    ./t3code.nix
     ./playerctl.nix
     ./screenshot.nix
     ./slack.nix

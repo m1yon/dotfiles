@@ -1,5 +1,6 @@
 {
   imports = [
+    ./agent-clis.nix
     ./agents.nix
     ./atuin.nix
     ./awscli.nix
@@ -26,7 +27,6 @@
     ./sops.nix
     ./ssh.nix
     ./starship.nix
-    ./t3code.nix
     ./tealdeer.nix
     ./yazi.nix
     ./zoxide.nix

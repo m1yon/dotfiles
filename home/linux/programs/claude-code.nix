@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  inputs,
   nixConfigDir,
   ...
 }:
@@ -57,34 +56,19 @@ let
   '';
 in
 {
-  imports = [
-    inputs.nix-wrapper-modules.homeModules.claude-code
-  ];
-
-  wrappers.claude-code = {
-    enable = true;
-    package = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code;
-    addFlag = [
-      "--dangerously-skip-permissions"
+  # The native Claude Code install resolves these from PATH.
+  home.packages =
+    (with pkgs; [
+      typescript-language-server
+      gopls
+      nodejs
+      uv
+      ffmpeg
+    ])
+    ++ [
+      ccstatusline
+      voicemode
     ];
-    env._ZO_DOCTOR = "0";
-    env.CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC = "";
-    env.DISABLE_TELEMETRY = "";
-    env.GH_PROMPT_DISABLED = "true";
-    env.GH_PAGER = "less";
-    runtimePkgs =
-      (with pkgs; [
-        typescript-language-server
-        gopls
-        nodejs
-        uv
-        ffmpeg
-      ])
-      ++ [
-        ccstatusline
-        voicemode
-      ];
-  };
 
   sops.templates."mcp.json" = {
     path = "${config.home.homeDirectory}/.mcp.json";
