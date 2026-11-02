@@ -104,7 +104,6 @@ in
 
   home.file = {
     ".claude/settings.json".source = outOfStore "${dotfiles}/claude/settings.json";
-    ".claude/rules".source = outOfStore "${dotfiles}/claude/rules";
     ".claude/statusline-command.sh".source = outOfStore "${dotfiles}/claude/statusline-command.sh";
     ".claude/statusline-wrapper.sh".source = outOfStore "${dotfiles}/claude/statusline-wrapper.sh";
     ".claude/claude-notifications-go/config.json".source =

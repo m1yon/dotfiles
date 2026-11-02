@@ -5,6 +5,7 @@
 
 ## Rules
 - NEVER commit PHI or HIPAA data to git.
+- Use the `pstack:unslop` skill for any prose you write, including every reply to the user. Invoke it before your first reply in a session, and again if it is no longer in context.
 
 ## pstack model configuration
 

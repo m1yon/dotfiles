@@ -10,6 +10,15 @@
   - Allowed: `bun install` inside `scripts/bun/`.
   - Forbidden: `bun add -g`, `npm install -g`, or any other global package installation.
 
+## Agent configuration
+
+- Claude Code and Codex share one global instruction file: `dotfiles/agents/AGENTS.md`. Its `## pstack model configuration` section is the pstack model sheet for both harnesses and for the Codex Cloud bootstrap, so keep that heading and the row format.
+- Put Claude-only rules in `dotfiles/claude/CLAUDE.md`, below its imports.
+- Put Codex-only rules in a `developer_instructions` key on the Codex config in `system/agents.nix`. Codex has no include syntax, and its `AGENTS.override.md` replaces the shared file instead of adding to it.
+- Refer to pstack skills by name in the shared file instead of importing or inlining them, so both harnesses read the version they have installed.
+- Edit model rows in the repo. Do not run `/setup-pstack`: it overwrites the sheet, which links to the shared file.
+- Both harnesses install pstack from its git marketplace and update it on their own, so don't pin a version.
+
 ## Verification
 
 - Use the relevant Nix eval or check as the primary verification for Nix configuration changes.

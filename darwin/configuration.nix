@@ -4,5 +4,6 @@
     ./system.nix
     ./homebrew.nix
     ./programs
+    ../system/agents.nix
   ];
 }
