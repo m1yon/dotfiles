@@ -39,8 +39,10 @@
     ];
   };
 
-  programs.uwsm.waylandCompositors.hyprland.binPath =
-    lib.mkForce "/run/current-system/sw/bin/start-hyprland";
+  programs.uwsm.waylandCompositors.hyprland = {
+    prettyName = "Hyprland";
+    binPath = "/run/current-system/sw/bin/start-hyprland";
+  };
 
   programs.uwsm.enable = true;
 
@@ -52,9 +54,7 @@
 
   programs.thunar = {
     enable = true;
-    plugins = with pkgs.xfce; [
-      thunar-archive-plugin
-    ];
+    plugins = [ pkgs.thunar-archive-plugin ];
   };
 
   environment.sessionVariables.TERMINAL = "ghostty";

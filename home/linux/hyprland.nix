@@ -20,6 +20,9 @@ in
 
   wayland.windowManager.hyprland.enable = true;
   wayland.windowManager.hyprland.systemd.enable = false;
+  # The "lua" default would make Home Manager write ~/.config/hypr/hyprland.lua,
+  # which webapps.nix already owns through home.file.
+  wayland.windowManager.hyprland.configType = "hyprlang";
   wayland.windowManager.hyprland.package =
     if useSystemHyprland then null else hyprlandPackages.hyprland;
   wayland.windowManager.hyprland.portalPackage =

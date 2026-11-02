@@ -105,7 +105,7 @@ install_nix_darwin() {
   fi
 
   printf 'Installing nix-darwin configuration: %s\n' "$flake"
-  sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake "$flake"
+  sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch --flake "$flake"
 }
 
 run_rebuild_task() {

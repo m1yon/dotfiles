@@ -27,7 +27,7 @@ tasks:
             if darwin_rebuild="$(command -v darwin-rebuild 2>/dev/null)"; then
               sudo "$darwin_rebuild" switch --flake path:{{.FLAKE_DIR}}#macbook
             else
-              sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/nix-darwin-25.11#darwin-rebuild -- switch --flake path:{{.FLAKE_DIR}}#macbook
+              sudo nix --extra-experimental-features 'nix-command flakes' run github:nix-darwin/nix-darwin/nix-darwin-26.05#darwin-rebuild -- switch --flake path:{{.FLAKE_DIR}}#macbook
             fi
             ;;
           Linux)
