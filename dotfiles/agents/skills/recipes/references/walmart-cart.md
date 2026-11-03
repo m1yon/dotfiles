@@ -4,13 +4,13 @@ Use this workflow when the user asks to add ingredients for specific recipes to 
 
 ## Build the ingredient list
 
-Read each requested recipe Page with the Pages tools. Resolve titles against the collection and ask only when the recipe target is ambiguous. Use the requested servings or the recipe's saved yield. Read quantities and preparation details from the recipe itself, not the directory's ingredient count. Do not edit recipe Pages or use ingredient checklist state as pantry inventory.
+Read each requested recipe note from the vault, using [Vault locations](../SKILL.md#vault-locations) to find it. Resolve titles against the recipe listing and ask only when the recipe target is ambiguous. Use the requested servings or the recipe's saved yield. Read quantities and preparation details from the recipe itself, not the index's ingredient count. Do not edit recipe notes or use ingredient checklist state as pantry inventory.
 
 Combine compatible ingredients across recipes, converting units when supported. Retain distinctions that affect the dish, such as salted versus unsalted butter or fresh versus dried garlic. Pick one supported alternative. Include optional ingredients and sides only when requested.
 
-For a homemade component such as Cajun Garlic Butter Sauce, read its linked recipe and scale its ingredients to the amount needed. If the recipe calls for a purchased sauce, buy that product instead. If the intended homemade or purchased version is unclear and changes the groceries, ask. Do not add both a prepared component and its ingredients. Keep the directory's ingredient counting convention unchanged.
+For a homemade component such as Cajun Garlic Butter Sauce, read its linked recipe and scale its ingredients to the amount needed. If the recipe calls for a purchased sauce, buy that product instead. If the intended homemade or purchased version is unclear and changes the groceries, ask. Do not add both a prepared component and its ingredients. Keep the index's ingredient counting convention unchanged.
 
-Track each ingredient's required amount, evidence of supplies at home, usable amount already in the cart, remaining amount to buy, and selected product/package quantity. Keep this shopping list in the active task. Do not store home addresses or purchase history in the skill, dotfiles, or recipe Pages.
+Track each ingredient's required amount, evidence of supplies at home, usable amount already in the cart, remaining amount to buy, and selected product/package quantity. Keep this shopping list in the active task. Do not store home addresses or purchase history in the skill, dotfiles, or recipe notes.
 
 ## Open Walmart in Chrome
 

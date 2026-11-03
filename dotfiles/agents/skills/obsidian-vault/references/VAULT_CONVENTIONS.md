@@ -11,8 +11,8 @@
 - `1 - Rough Notes/`: scratch notes, inbox items, temporary TODOs, and unfinished work.
 - `2 - Source Material/`: notes derived from external material. Subfolders are `Articles/`, `Books/`, `Courses/`, `Docs/`, `Emails/`, `Meetings/`, `Podcasts/`, and `Videos/`.
 - `3 - Tags/`: empty tag stub notes named in lowercase kebab case, such as `effect-ts.md`, `pear-suite.md`, and `mental-health.md`.
-- `4 - Indexes/`: reserved for explicit index/map notes. It is currently empty, so do not create index notes by default.
-- `5 - Templates/`: Obsidian templates. Current templates are `Main Note.md`, `Meeting Note.md`, and `IFS Defender.md`.
+- `4 - Indexes/`: reserved for explicit index/map notes. It currently holds `Recipes.md`. Do not create index notes by default.
+- `5 - Templates/`: Obsidian templates. Current templates are `Main Note.md`, `Meeting Note.md`, `IFS Defender.md`, and `Recipe Template.md`.
 - `6 - Full Notes/`: default destination for durable notes. Obsidian is configured to create new files here by default.
 - Vault root: legacy loose notes plus images, PDFs, videos, canvases, and other attachments. Avoid adding new Markdown notes at the root unless the user asks.
 
@@ -31,6 +31,7 @@
 - For durable notes, use CLI `template="Main Note"`.
 - For meetings, use CLI `template="Meeting Note"`.
 - For IFS defender notes, use CLI `template="IFS Defender"`.
+- For recipes, use the `recipes` skill, which uses CLI `template="Recipe Template"`.
 - Read template files only when editing the templates themselves or when falling back to direct file creation.
 - Fill template variables such as `{{date}}` and `{{time}}` with the current timestamp only when creating files directly.
 - If the user wants template changes, edit the template file itself rather than duplicating template text in this skill.
