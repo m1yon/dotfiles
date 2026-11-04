@@ -4,5 +4,6 @@
     ./codex.nix
     ./onedrive.nix
     ./opencode-web.nix
+    ./remote-desktop.nix
   ];
 }
