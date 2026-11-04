@@ -9,13 +9,11 @@
   },
   {
     "name": "Teams",
-    "url": "https://teams.microsoft.com",
-    "autostart": true
+    "url": "https://teams.microsoft.com"
   },
   {
     "name": "Superhuman",
-    "url": "https://mail.superhuman.com",
-    "autostart": true
+    "url": "https://mail.superhuman.com"
   },
   {
     "name": "Google Calendar",
