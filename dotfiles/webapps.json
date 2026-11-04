@@ -1,31 +1,24 @@
 [
   {
     "name": "OpenCode",
-    "url": "https://control.meca-ai.com",
-    "workspace": "2"
+    "url": "https://control.meca-ai.com"
   },
   {
     "name": "Linear",
-    "url": "https://linear.app",
-    "workspace": "8",
-    "group": true
+    "url": "https://linear.app"
   },
   {
     "name": "Teams",
     "url": "https://teams.microsoft.com",
-    "workspace": "9",
-    "group": true,
     "autostart": true
   },
   {
     "name": "Superhuman",
     "url": "https://mail.superhuman.com",
-    "workspace": "7",
     "autostart": true
   },
   {
     "name": "Google Calendar",
-    "url": "https://calendar.google.com",
-    "workspace": "10"
+    "url": "https://calendar.google.com"
   }
 ]

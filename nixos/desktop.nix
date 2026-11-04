@@ -1,9 +1,4 @@
-{
-  lib,
-  pkgs,
-  inputs,
-  ...
-}:
+{ pkgs, ... }:
 
 {
   time.timeZone = "America/Denver";
@@ -21,58 +16,23 @@
     LC_TIME = "en_US.UTF-8";
   };
 
-  programs.hyprland = {
+  services.displayManager.gdm = {
     enable = true;
-    withUWSM = true;
-    xwayland.enable = true;
-    package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-    portalPackage =
-      inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+    autoSuspend = false;
   };
+  services.desktopManager.gnome.enable = true;
 
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-    config.common.default = [
-      "hyprland"
-      "gtk"
-    ];
-  };
-
-  programs.uwsm.waylandCompositors.hyprland = {
-    prettyName = "Hyprland";
-    binPath = "/run/current-system/sw/bin/start-hyprland";
-  };
-
-  programs.uwsm.enable = true;
-
-  programs.zsh.loginShellInit = lib.mkAfter ''
-    if uwsm check may-start; then
-      exec uwsm start -eD Hyprland hyprland-uwsm.desktop
-    fi
-  '';
-
-  programs.thunar = {
-    enable = true;
-    plugins = [ pkgs.thunar-archive-plugin ];
-  };
+  # The Nix config owns these settings, and both would prompt on first login.
+  services.gnome.gnome-initial-setup.enable = false;
+  environment.gnome.excludePackages = [ pkgs.gnome-tour ];
 
   environment.sessionVariables.TERMINAL = "ghostty";
-  programs.xfconf.enable = true;
-  programs.dconf.enable = true;
-  services.gvfs.enable = true;
-  services.tumbler.enable = true;
-
-  services.gnome.gnome-keyring.enable = true;
-  programs.seahorse.enable = true;
 
   environment.systemPackages = with pkgs; [
     git
     psmisc
     jq
     unzip
-    file-roller
-    brightnessctl
   ];
 
   fonts.packages = with pkgs; [

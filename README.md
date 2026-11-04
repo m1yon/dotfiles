@@ -27,7 +27,7 @@ NixOS, nix-darwin, Home Manager, and app dotfiles for Michael's machines.
 │   ├── configuration.nix     # Aggregate import list for Linux system modules
 │   ├── boot.nix              # Bootloader, kernel, and boot-time settings
 │   ├── networking.nix        # Hostname, wireless, and network tooling
-│   ├── desktop.nix           # Hyprland, portals, fonts, and desktop services
+│   ├── desktop.nix           # GNOME, fonts, and login screen
 │   ├── users.nix             # Linux user account and shell setup
 │   └── ...
 ├── darwin/                   # Reusable macOS system modules for nix-darwin hosts
@@ -51,7 +51,7 @@ NixOS, nix-darwin, Home Manager, and app dotfiles for Michael's machines.
 │   │       └── ...
 │   ├── linux/                # Linux-only Home Manager profile
 │   │   ├── default.nix       # Aggregate import list for Linux user modules
-│   │   ├── hyprland.nix      # Hyprland and pointer cursor Home Manager settings
+│   │   ├── gnome.nix         # GNOME closed-lid session settings
 │   │   ├── packages.nix      # Linux home directory and session variables
 │   │   ├── shell.nix         # Linux-specific shell aliases
 │   │   ├── programs/         # Linux-only app and desktop program modules
@@ -68,7 +68,6 @@ NixOS, nix-darwin, Home Manager, and app dotfiles for Michael's machines.
 │   ├── claude/               # Claude Code config, statusline, and rules
 │   ├── opencode/             # OpenCode config and integrations
 │   ├── nvim/                 # Neovim configuration
-│   ├── waybar/               # Waybar configuration for Linux desktop
 │   ├── yazi/                 # Yazi file manager configuration
 │   └── ...
 ├── scripts/                  # Repo-managed scripts exposed on the Home Manager PATH

@@ -62,6 +62,6 @@ in
     icon = "${icon}";
     terminal = false;
     categories = [ "Development" ];
-    settings.StartupWMClass = "t3-code-desktop";
+    settings.StartupWMClass = "com.t3tools.T3Code";
   };
 }

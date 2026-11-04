@@ -15,7 +15,6 @@
     ./docker.nix
     ./kvm.nix
     ./localsend.nix
-    ./power.nix
     ./memory.nix
     ../system/agents.nix
   ];

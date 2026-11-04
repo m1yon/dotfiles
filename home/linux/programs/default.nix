@@ -9,18 +9,13 @@
     ./ghostty.nix
     ./gpg-agent.nix
     ./gtk.nix
-    ./hidpi.nix
     ./localsend.nix
     ./obsidian.nix
     ./onlyoffice.nix
     ./t3code.nix
-    ./playerctl.nix
-    ./screenshot.nix
     ./slack.nix
     ./spotify.nix
     ./todoist.nix
-    ./vicinae.nix
-    ./waybar.nix
     ./webapps.nix
   ];
 }

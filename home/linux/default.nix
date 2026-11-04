@@ -1,6 +1,6 @@
 {
   imports = [
-    ./hyprland.nix
+    ./gnome.nix
     ./packages.nix
     ./programs
     ./services
