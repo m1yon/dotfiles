@@ -24,15 +24,8 @@
     llm-agents = {
       url = "github:numtide/llm-agents.nix";
     };
-    hyprland = {
-      url = "github:hyprwm/Hyprland";
-    };
     nix-wrapper-modules = {
       url = "github:BirdeeHub/nix-wrapper-modules";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    rose-pine-hyprcursor = {
-      url = "github:ndom91/rose-pine-hyprcursor";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     sops-nix = {
