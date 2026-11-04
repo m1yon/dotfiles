@@ -22,7 +22,7 @@ let
     ];
     text = ''
       mkdir -p "${tlsDir}"
-      if [ ! -f "${tlsKey}" ]; then
+      if [ ! -s "${tlsKey}" ] || [ ! -s "${tlsCert}" ]; then
         openssl req -new -newkey rsa:4096 -days 3650 -nodes -x509 \
           -subj /CN=${hostname} -out "${tlsCert}" -keyout "${tlsKey}"
       fi
