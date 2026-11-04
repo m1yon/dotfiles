@@ -59,10 +59,14 @@ in
 
   # GNOME's module installs the unit, so this replaces only its ExecStart. Settings and
   # Connections keep the stock package and do not rebuild.
+  #
+  # Windows App for macOS disconnects with error 0x200d on H.264 from this AMD encoder. Naming a
+  # VA-API driver that does not exist makes the daemon fall back to its software codec.
   xdg.configFile."systemd/user/gnome-remote-desktop.service.d/override.conf".text = ''
     [Service]
     ExecStart=
     ExecStart=${remoteDesktop}/libexec/gnome-remote-desktop-daemon
+    Environment=LIBVA_DRIVER_NAME=none
   '';
 
   systemd.user.services.gnome-remote-desktop-credentials = {
