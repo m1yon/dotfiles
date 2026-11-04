@@ -13,7 +13,6 @@
     ./codex.nix
     ./development.nix
     ./docker.nix
-    ./kvm.nix
     ./localsend.nix
     ./memory.nix
     ../system/agents.nix
