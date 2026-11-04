@@ -13,15 +13,21 @@ let
     runtimeInputs = [
       pkgs.systemd
       pkgs.coreutils
+      pkgs.gnugrep
     ];
     bashOptions = [
       "nounset"
       "pipefail"
     ];
     text = ''
-      login1() {
-        busctl --system get-property org.freedesktop.login1 /org/freedesktop/login1 \
-          org.freedesktop.login1.Manager "$1" | cut -d' ' -f2
+      lid_closed() {
+        [ "$(busctl --system get-property org.freedesktop.login1 /org/freedesktop/login1 \
+          org.freedesktop.login1.Manager LidClosed)" = "b true" ]
+      }
+      # Not logind's Docked, which counts only enabled connectors. PowerSaveMode 3
+      # disables them all, so Docked never sees a monitor plugged in while it is set.
+      external_display() {
+        grep -qsx connected /sys/class/drm/card*-{DP,HDMI}-*/status
       }
       set_panel() {
         busctl --user set-property org.gnome.Mutter.DisplayConfig /org/gnome/Mutter/DisplayConfig \
@@ -29,7 +35,7 @@ let
       }
       was_off=false
       while sleep 5; do
-        if [ "$(login1 LidClosed)" = true ] && [ "$(login1 Docked)" = false ]; then
+        if lid_closed && ! external_display; then
           set_panel 3
           was_off=true
         elif [ "$was_off" = true ]; then
