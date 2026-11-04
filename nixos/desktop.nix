@@ -18,7 +18,6 @@
 
   services.displayManager.gdm = {
     enable = true;
-    # Nobody sits at the login screen of a closed-lid server, so it must not suspend.
     autoSuspend = false;
   };
   services.desktopManager.gnome.enable = true;

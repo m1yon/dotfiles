@@ -22,7 +22,6 @@ let
   # Sanitize name for use as a filename (lowercase, no spaces)
   sanitizeName = name: builtins.replaceStrings [ " " ] [ "-" ] (pkgs.lib.toLower name);
 
-  # An absolute path, so launching does not depend on the session PATH.
   launchCommand = app: ''${nixConfigDir}/scripts/bash/linux/launch-webapp "${app.url}"'';
 
   # Generate a desktop entry for a webapp

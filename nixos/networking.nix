@@ -39,7 +39,6 @@
     extraSetFlags = [ "--ssh=false" ];
   };
 
-  # RDP is only reachable over Tailscale.
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3389 ];
 
   environment.systemPackages = with pkgs; [
