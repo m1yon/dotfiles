@@ -4,18 +4,11 @@
     ./browsers.nix
     ./claude-code.nix
     ./claude-devtools.nix
-    ./datagrip.nix
-    ./discord.nix
     ./ghostty.nix
     ./gpg-agent.nix
     ./gtk.nix
-    ./localsend.nix
     ./obsidian.nix
-    ./onlyoffice.nix
     ./t3code.nix
-    ./slack.nix
-    ./spotify.nix
-    ./todoist.nix
     ./webapps.nix
   ];
 }
