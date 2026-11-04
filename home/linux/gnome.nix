@@ -50,7 +50,10 @@ in
     # blank raises the shield even with locking off. This session has to stay reachable.
     "org/gnome/desktop/screensaver".lock-enabled = false;
     "org/gnome/desktop/session".idle-delay = lib.hm.gvariant.mkUint32 0;
-    "org/gnome/settings-daemon/plugins/power".sleep-inactive-ac-type = "nothing";
+    "org/gnome/settings-daemon/plugins/power" = {
+      sleep-inactive-ac-type = "nothing";
+      sleep-inactive-battery-type = "nothing";
+    };
   };
 
   systemd.user.services.panel-off-when-lid-closed = {
