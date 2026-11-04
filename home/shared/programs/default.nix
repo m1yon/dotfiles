@@ -6,7 +6,6 @@
     ./awscli.nix
     ./btm.nix
     ./bun.nix
-    ./coderabbit.nix
     ./difftastic.nix
     ./direnv.nix
     ./docker.nix

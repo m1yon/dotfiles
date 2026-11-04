@@ -3,7 +3,6 @@
     ./agent-browser.nix
     ./browsers.nix
     ./claude-code.nix
-    ./claude-devtools.nix
     ./datagrip.nix
     ./discord.nix
     ./ghostty.nix
