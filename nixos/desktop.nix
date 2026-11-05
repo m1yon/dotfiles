@@ -26,6 +26,11 @@
   services.gnome.gnome-initial-setup.enable = false;
   environment.gnome.excludePackages = [ pkgs.gnome-tour ];
 
+  # This machine is a remote worker, so it skips the screen reader, speech, and file indexing that GNOME enables by default.
+  services.orca.enable = false;
+  services.speechd.enable = false;
+  services.gnome.localsearch.enable = false;
+
   environment.sessionVariables.TERMINAL = "ghostty";
 
   environment.systemPackages = with pkgs; [
