@@ -417,3 +417,57 @@ The service enables Code Mode and uses the desktop app's
 `CODEX_SSH_SKIP_APP_SERVER_BOOT=true` integration to avoid a second server.
 Recheck that integration after major app/CLI updates. Upstream setup details:
 [Codex SSH connections](https://learn.chatgpt.com/docs/remote-connections#connect-to-an-ssh-host).
+
+## Orchestrator service on nixbook
+
+`orchestrator.service` is a Home Manager user unit in
+`home/linux/services/orchestrator.nix`. It runs the private repo
+`m1yon/orchestrator`. NixOS lingering starts it at boot. It restarts on failure
+every 30 seconds and stops retrying after 15 starts in 15 minutes.
+
+The code is a detached worktree of `~/GitHub/orchestrator` at
+`~/.local/share/orchestrator/current`, and the unit skips its start until that
+worktree exists. A private flake input would break `nix eval` of this public
+flake on any machine without GitHub credentials, so Nix never fetches the repo.
+Run this after the first rebuild, and again when `origin/main` has new commits:
+
+```sh
+orchestrator-deploy
+```
+
+It fetches, moves the worktree to `origin/main`, runs `bun install
+--frozen-lockfile`, and restarts the unit. It leaves the working copy in
+`~/GitHub/orchestrator` alone. The service runs the pinned Bun in the worktree's
+`node_modules/.bin`, not the system Bun. If a deploy brings a new state schema,
+the unit fails at start. Stop it, delete `state.db*` in
+`~/.local/state/orchestrator/`, and deploy again.
+
+State, the plan log and the alert files live in `~/.local/state/orchestrator/`.
+The health endpoint binds only the Tailscale address, and its port is open on
+`tailscale0` only:
+
+```sh
+systemctl --user status orchestrator
+curl "http://$(tailscale ip -4):18900/health"
+journalctl --user -u orchestrator -f
+```
+
+Settings, in the same module:
+
+- `services.orchestrator.mode` is `dry-run` or `live`, and defaults to
+  `dry-run`. A dry run appends its plans to `plan.jsonl` and writes nothing.
+- `services.orchestrator.githubToken` is `gh` or `sops`. `gh` runs `gh auth
+  token` at start, which needs the unlocked login keyring. For a read-only
+  token, add `orchestrator_github_token` to `secrets/github.yaml` with `task
+  sops-edit -- github.yaml`, then set this option to `sops`.
+- To add a heartbeat, put `ORCH_HEARTBEAT_URL=<url>` in the `orchestrator-env`
+  template. Store the URL in sops first when it embeds a secret.
+
+The `orchestrator-env` sops template reaches the unit as an `EnvironmentFile`, so
+no secret lands in the unit file, `ps` or the Nix store. `secrets/todoist.yaml`
+holds `todoist_api_token`, which the template and the `td` shell export share.
+`td` is `@doist/todoist-cli` 5.10.0 on Node 24, built by
+`home/shared/pkgs/todoist-cli` on both hosts. To change its version, regenerate
+`package-lock.json` with `npm install --package-lock-only --ignore-scripts` on
+the new package.json minus `devDependencies` and `scripts`, then update
+`npmDepsHash`.
