@@ -43,18 +43,6 @@ let
     };
   };
 
-  mkAutostart = app: {
-    name = "autostart/${sanitizeName app.name}.desktop";
-    value.text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=${app.name}
-      Exec=${launchCommand app}
-    '';
-  };
-
-  autostartApps = builtins.filter (app: app.autostart or false) webapps;
-
   # Favicon fetch script
   iconDir = "${config.home.homeDirectory}/.local/share/applications/icons";
   fetchCommands = builtins.concatStringsSep "\n" (
@@ -74,8 +62,6 @@ let
 in
 {
   xdg.desktopEntries = builtins.listToAttrs (map mkDesktopEntry webapps);
-
-  xdg.configFile = builtins.listToAttrs (map mkAutostart autostartApps);
 
   home.activation.fetchWebappIcons = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     mkdir -p "${iconDir}"

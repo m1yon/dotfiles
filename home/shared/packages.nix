@@ -10,6 +10,7 @@
     pkgs.gnumake
     pkgs.just
     pkgs.lsof
+    pkgs.nodejs
     pkgs.openssl
     pkgs.pkg-config
     pkgs.ripgrep

@@ -27,10 +27,13 @@
 
 ## Rebuild permissions
 
-- Do not run:
-  - `task rebuild`
+- After verification succeeds without warnings, run `task rebuild` on nixbook from the checkout that holds the change. Do not ask Michael first.
+- An agent on nixbook has no terminal for the sudo prompt:
+  1. Call T3 Code's `request_secret` with `delivery: "file"`.
+  2. Run `SUDO_PASSWORD_FILE=<file> task rebuild`.
+  3. Delete the file.
+- If `task rebuild` needs a terminal, such as on the Mac, ask Michael to run it.
+- Do not run any other rebuild, switch, or apply command, including:
   - `darwin-rebuild switch`
   - `nixos-rebuild switch`
   - `home-manager switch`
-  - Any other rebuild, switch, or apply command
-- After verification succeeds without warnings, ask Michael to run the appropriate `task rebuild` command.
