@@ -21,8 +21,6 @@
     ./linear.nix
     ./neovim.nix
     ./nixfmt.nix
-    ./ntfy.nix
-    ./opencode.nix
     ./sftp.nix
     ./sops.nix
     ./ssh.nix
