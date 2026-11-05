@@ -35,7 +35,13 @@ tasks:
             # switch from the user manager.
             switch_prefix=""
             if grep -q '^NoNewPrivs:[[:space:]]*1$' /proc/self/status; then
-              switch_prefix="systemd-run --user --pty --wait --collect --quiet"
+              rebuild_scripts="{{.FLAKE_DIR}}/scripts/rebuild"
+              run_args="--user --wait --collect --quiet --property=ExecStopPost=$rebuild_scripts/ensure-t3code"
+              if [ -n "${SUDO_PASSWORD_FILE:-}" ]; then
+                switch_prefix="systemd-run $run_args --pipe --setenv=SUDO_PASSWORD_FILE --setenv=SUDO_ASKPASS=$rebuild_scripts/sudo-askpass --setenv=NIX_SUDOOPTS=-A"
+              else
+                switch_prefix="systemd-run $run_args --pty"
+              fi
             fi
             $switch_prefix nixos-rebuild switch --flake path:{{.FLAKE_DIR}}#nixbook --sudo
             ;;
