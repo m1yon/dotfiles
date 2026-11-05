@@ -5,4 +5,6 @@
     ./orchestrator.nix
     ./remote-desktop.nix
   ];
+
+  services.orchestrator.mode = "live";
 }
