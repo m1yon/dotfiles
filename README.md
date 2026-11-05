@@ -479,7 +479,8 @@ journalctl --user -u orchestrator -f
 Settings, in the same module:
 
 - `services.orchestrator.mode` is `dry-run` or `live`, and defaults to
-  `dry-run`. A dry run appends its plans to `plan.jsonl` and writes nothing.
+  `dry-run`. A dry run appends its plans to `plan.jsonl` and writes nothing. The
+  Nixbook sets `live` in `home/linux/services/default.nix`.
 - `services.orchestrator.githubToken` is `gh` or `sops`. `gh` runs `gh auth
   token` at start, which needs the unlocked login keyring. For a read-only
   token, add `orchestrator_github_token` to `secrets/github.yaml` with `task
