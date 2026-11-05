@@ -12,7 +12,6 @@
     ./codex.nix
     ./development.nix
     ./docker.nix
-    ./localsend.nix
     ./memory.nix
     ../system/agents.nix
   ];
