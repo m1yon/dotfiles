@@ -25,6 +25,7 @@
     ./ssh.nix
     ./starship.nix
     ./tealdeer.nix
+    ./todoist-cli.nix
     ./yazi.nix
     ./zoxide.nix
   ];

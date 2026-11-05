@@ -416,3 +416,87 @@ The service enables Code Mode and uses the desktop app's
 `CODEX_SSH_SKIP_APP_SERVER_BOOT=true` integration to avoid a second server.
 Recheck that integration after major app/CLI updates. Upstream setup details:
 [Codex SSH connections](https://learn.chatgpt.com/docs/remote-connections#connect-to-an-ssh-host).
+
+## Orchestrator service on nixbook
+
+`orchestrator.service` is a Home Manager user unit in
+`home/linux/services/orchestrator.nix`. It runs the private repo
+`m1yon/orchestrator`. NixOS lingering starts it at boot. It restarts on failure
+every 30 seconds. After 15 starts in 15 minutes systemd stops retrying, and
+`orchestrator-notify-failure.service` sends one ntfy message to the topic the
+service's own alerts use, `https://ntfy.sh/opencode-michael-lyon`. The removed
+OpenCode notifier published to that same topic. The message says the
+orchestrator gave up starting and to run `journalctl --user -u orchestrator`.
+The service's own alerts cannot report a process that never starts, so this
+message does.
+
+Each deployed commit of `~/GitHub/orchestrator` gets its own detached worktree
+in `~/.local/share/orchestrator/releases/<sha>`. The symlink
+`~/.local/share/orchestrator/current` points at the release the unit runs. A
+private flake input would break `nix eval` of this public flake on any machine
+without GitHub credentials, so Nix never fetches the repo. After this merges, an
+agent on nixbook runs `task rebuild` as `AGENTS.md` describes, then runs this.
+Run it again when `origin/main` has new commits:
+
+```sh
+orchestrator-deploy
+```
+
+It fetches, builds the release for `origin/main` with `bun install
+--frozen-lockfile` and the pinned Bun's `--version`, repoints `current` with
+one rename, and restarts the unit. A step that fails exits 1 and names the
+step. A failure before the restart leaves `current` and the running unit as
+they were, and a failed restart puts `current` back. A build that stopped half
+way is discarded on the next run. Running it again is safe, including at the
+same commit. It keeps the two newest releases. It never moves the working
+copy in `~/GitHub/orchestrator`. The service runs the pinned Bun in the
+release's `node_modules/.bin`, not the system Bun.
+
+The first rebuild starts the unit before any release exists. Each start fails
+with `no deployed release ... Run orchestrator-deploy` in the journal, and the
+unit retries every 30 seconds. The 15th and last try runs 7 minutes after the
+first, and the ntfy message follows 30 seconds later. Run `orchestrator-deploy`
+right after the rebuild. It clears the failed state and restarts the unit, so no
+message goes out.
+
+If a deploy brings a new state schema, the unit stays running and every run
+fails. The journal shows `State file is schema N, and this build reads only
+schema M`, `/health` returns 503, and after three failed runs the service
+sends its own ntfy alert. Stop the unit, delete `state.db*` in
+`~/.local/state/orchestrator/`, and run `orchestrator-deploy`. It restarts the
+unit, which records a new baseline.
+
+State, the plan log and the alert files live in `~/.local/state/orchestrator/`.
+The health endpoint binds only the Tailscale address, and its port is open on
+`tailscale0` only:
+
+```sh
+systemctl --user status orchestrator
+curl "http://$(tailscale ip -4):18900/health"
+journalctl --user -u orchestrator -f
+```
+
+Settings, in the same module:
+
+- `services.orchestrator.mode` is `dry-run` or `live`, and defaults to
+  `dry-run`. A dry run appends its plans to `plan.jsonl` and writes nothing.
+- `services.orchestrator.githubToken` is `gh` or `sops`. `gh` runs `gh auth
+  token` at start, which needs the unlocked login keyring. For a read-only
+  token, add `orchestrator_github_token` to `secrets/github.yaml` with `task
+  sops-edit -- github.yaml`, then set this option to `sops`.
+- To add a heartbeat, put `ORCH_HEARTBEAT_URL=<url>` in the `orchestrator-env`
+  template. Store the URL in sops first when it embeds a secret.
+
+The `orchestrator-env` sops template reaches the unit as an `EnvironmentFile`, so
+no secret lands in the unit file, `ps` or the Nix store. `secrets/todoist.yaml`
+holds `todoist_api_token`, which the template and the `td` shell export share.
+`secrets/ntfy.yaml` holds `ntfy_auth_token`, the full `Bearer ...` header value.
+Only this module declares it, and only the template reads it. There is no shell
+export.
+`td` is `@doist/todoist-cli` 5.10.0 on Node 24, built by
+`home/shared/pkgs/todoist-cli` on both hosts. Michael runs
+`task rebuild` on the Mac to get `td`, because the Mac needs a terminal for
+sudo. To change its version, regenerate
+`package-lock.json` with `npm install --package-lock-only --ignore-scripts` on
+the new package.json minus `devDependencies` and `scripts`, then update
+`npmDepsHash`.
