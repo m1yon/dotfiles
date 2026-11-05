@@ -489,7 +489,9 @@ Settings, in the same module:
 
 The `orchestrator-env` sops template reaches the unit as an `EnvironmentFile`, so
 no secret lands in the unit file, `ps` or the Nix store. `secrets/todoist.yaml`
-holds `todoist_api_token`, which the template and the `td` shell export share.
+holds `todoist_api_token`, which the template and `td` share. `td` is a wrapper
+that reads the secret file when `TODOIST_API_TOKEN` is unset, because agent
+shells never read `.zshrc`. No shell exports the token.
 `secrets/ntfy.yaml` holds `ntfy_auth_token`, the full `Bearer ...` header value.
 Only this module declares it, and only the template reads it. There is no shell
 export.
