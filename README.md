@@ -423,24 +423,46 @@ Recheck that integration after major app/CLI updates. Upstream setup details:
 `orchestrator.service` is a Home Manager user unit in
 `home/linux/services/orchestrator.nix`. It runs the private repo
 `m1yon/orchestrator`. NixOS lingering starts it at boot. It restarts on failure
-every 30 seconds and stops retrying after 15 starts in 15 minutes.
+every 30 seconds. After 15 starts in 15 minutes systemd stops retrying, and
+`orchestrator-notify-failure.service` sends one ntfy message to the topic the
+service's own alerts use. The message says the orchestrator gave up starting and
+to run `journalctl --user -u orchestrator`. The service's own alerts cannot
+report a process that never starts, so this message does.
 
-The code is a detached worktree of `~/GitHub/orchestrator` at
-`~/.local/share/orchestrator/current`, and the unit skips its start until that
-worktree exists. A private flake input would break `nix eval` of this public
-flake on any machine without GitHub credentials, so Nix never fetches the repo.
-Run this after the first rebuild, and again when `origin/main` has new commits:
+Each deployed commit of `~/GitHub/orchestrator` gets its own detached worktree
+in `~/.local/share/orchestrator/releases/<sha>`. The symlink
+`~/.local/share/orchestrator/current` points at the release the unit runs. A
+private flake input would break `nix eval` of this public flake on any machine
+without GitHub credentials, so Nix never fetches the repo. Run this after the
+first rebuild, and again when `origin/main` has new commits:
 
 ```sh
 orchestrator-deploy
 ```
 
-It fetches, moves the worktree to `origin/main`, runs `bun install
---frozen-lockfile`, and restarts the unit. It leaves the working copy in
-`~/GitHub/orchestrator` alone. The service runs the pinned Bun in the worktree's
-`node_modules/.bin`, not the system Bun. If a deploy brings a new state schema,
-the unit fails at start. Stop it, delete `state.db*` in
-`~/.local/state/orchestrator/`, and deploy again.
+It fetches, builds the release for `origin/main` with `bun install
+--frozen-lockfile` and the pinned Bun's `--version`, repoints `current` with
+one rename, and restarts the unit. A step that fails exits 1 and names the
+step. A failure before the restart leaves `current` and the running unit as
+they were, and a failed restart puts `current` back. A build that stopped half
+way is discarded on the next run. Running it again is safe, including at the
+same commit. It keeps the two newest releases. It never moves the working
+copy in `~/GitHub/orchestrator`. The service runs the pinned Bun in the
+release's `node_modules/.bin`, not the system Bun.
+
+The first rebuild starts the unit before any release exists. Each start fails
+with `no deployed release ... Run orchestrator-deploy` in the journal, and the
+unit retries every 30 seconds. The 15th and last try runs 7 minutes after the
+first, and the ntfy message follows 30 seconds later. Run `orchestrator-deploy`
+right after the rebuild. It clears the failed state and restarts the unit, so no
+message goes out.
+
+If a deploy brings a new state schema, the unit stays running and every run
+fails. The journal shows `State file is schema N, and this build reads only
+schema M`, `/health` returns 503, and after three failed runs the service
+sends its own ntfy alert. Stop the unit, delete `state.db*` in
+`~/.local/state/orchestrator/`, and run `orchestrator-deploy`. It restarts the
+unit, which records a new baseline.
 
 State, the plan log and the alert files live in `~/.local/state/orchestrator/`.
 The health endpoint binds only the Tailscale address, and its port is open on
