@@ -66,7 +66,6 @@ NixOS, nix-darwin, Home Manager, and app dotfiles for Michael's machines.
 │       └── shell.nix         # macOS-specific shell aliases
 ├── dotfiles/                 # Raw app config linked into $HOME by Home Manager
 │   ├── claude/               # Claude Code config, statusline, and rules
-│   ├── opencode/             # OpenCode config and integrations
 │   ├── nvim/                 # Neovim configuration
 │   ├── yazi/                 # Yazi file manager configuration
 │   └── ...

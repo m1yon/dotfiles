@@ -6,7 +6,6 @@
     ./awscli.nix
     ./btm.nix
     ./bun.nix
-    ./coderabbit.nix
     ./difftastic.nix
     ./direnv.nix
     ./docker.nix
@@ -21,8 +20,6 @@
     ./linear.nix
     ./neovim.nix
     ./nixfmt.nix
-    ./ntfy.nix
-    ./opencode.nix
     ./sftp.nix
     ./sops.nix
     ./ssh.nix
