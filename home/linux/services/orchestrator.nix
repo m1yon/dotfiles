@@ -180,10 +180,15 @@ in
   config = {
     home.packages = [ deploy ];
 
-    sops.secrets = lib.mkIf (!tokenFromGh) {
-      orchestrator_github_token.sopsFile = ../../../secrets/github.yaml;
+    # Only orchestrator-env reads this. The value includes the "Bearer " prefix,
+    # so it goes into the Authorization header as it is.
+    sops.secrets.ntfy_auth_token.sopsFile = ../../../secrets/ntfy.yaml;
+
+    sops.secrets.orchestrator_github_token = lib.mkIf (!tokenFromGh) {
+      sopsFile = ../../../secrets/github.yaml;
     };
 
+    # The topic is the one the removed OpenCode ntfy-notify.sh published to.
     sops.templates."orchestrator-env".content = ''
       ORCH_TODOIST_TOKEN=${config.sops.placeholder.todoist_api_token}
       ORCH_NTFY_URL=https://ntfy.sh/opencode-michael-lyon

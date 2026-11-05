@@ -424,16 +424,19 @@ Recheck that integration after major app/CLI updates. Upstream setup details:
 `m1yon/orchestrator`. NixOS lingering starts it at boot. It restarts on failure
 every 30 seconds. After 15 starts in 15 minutes systemd stops retrying, and
 `orchestrator-notify-failure.service` sends one ntfy message to the topic the
-service's own alerts use. The message says the orchestrator gave up starting and
-to run `journalctl --user -u orchestrator`. The service's own alerts cannot
-report a process that never starts, so this message does.
+service's own alerts use, `https://ntfy.sh/opencode-michael-lyon`. The removed
+OpenCode notifier published to that same topic. The message says the
+orchestrator gave up starting and to run `journalctl --user -u orchestrator`.
+The service's own alerts cannot report a process that never starts, so this
+message does.
 
 Each deployed commit of `~/GitHub/orchestrator` gets its own detached worktree
 in `~/.local/share/orchestrator/releases/<sha>`. The symlink
 `~/.local/share/orchestrator/current` points at the release the unit runs. A
 private flake input would break `nix eval` of this public flake on any machine
-without GitHub credentials, so Nix never fetches the repo. Run this after the
-first rebuild, and again when `origin/main` has new commits:
+without GitHub credentials, so Nix never fetches the repo. After this merges, an
+agent on nixbook runs `task rebuild` as `AGENTS.md` describes, then runs this.
+Run it again when `origin/main` has new commits:
 
 ```sh
 orchestrator-deploy
@@ -487,8 +490,13 @@ Settings, in the same module:
 The `orchestrator-env` sops template reaches the unit as an `EnvironmentFile`, so
 no secret lands in the unit file, `ps` or the Nix store. `secrets/todoist.yaml`
 holds `todoist_api_token`, which the template and the `td` shell export share.
+`secrets/ntfy.yaml` holds `ntfy_auth_token`, the full `Bearer ...` header value.
+Only this module declares it, and only the template reads it. There is no shell
+export.
 `td` is `@doist/todoist-cli` 5.10.0 on Node 24, built by
-`home/shared/pkgs/todoist-cli` on both hosts. To change its version, regenerate
+`home/shared/pkgs/todoist-cli` on both hosts. Michael runs
+`task rebuild` on the Mac to get `td`, because the Mac needs a terminal for
+sudo. To change its version, regenerate
 `package-lock.json` with `npm install --package-lock-only --ignore-scripts` on
 the new package.json minus `devDependencies` and `scripts`, then update
 `npmDepsHash`.
