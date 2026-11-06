@@ -8,4 +8,7 @@ node_modules
 tmp
 dotfiles/codex/config.toml
 .repos
+# Claude Code wrote these through the old whole-folder ~/.claude/skills link.
+# Remove both lines once both hosts have rebuilt, by 2026-12-31.
 dotfiles/agents/skills/synced/
+dotfiles/agents/skills/.trash/
