@@ -200,6 +200,11 @@
                 ) outputs
               )
             );
+            agent-guard = pkgs.runCommand "agent-guard-test" { nativeBuildInputs = [ pkgs.jq ]; } ''
+              ${pkgs.bash}/bin/bash ${./system/agent-guard-test.sh} \
+                ${pkgs.callPackage ./system/agent-guard.nix { }}/bin/agent-guard
+              touch $out
+            '';
           };
         in
         tests // { all = pkgs.linkFarmFromDrvs "all-checks" (builtins.attrValues tests); }
