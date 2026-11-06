@@ -6,7 +6,7 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 
 | Rule | Enforced by |
 | --- | --- |
-| Verify Nix changes with an eval or check, and treat every warning as a failure. | These docs only. |
+| Verify every change with `task check`. Any evaluation warning fails it. | `task check` builds `checks.<system>.all` with `--option abort-on-warn true`. That evaluates both hosts and both Home Manager outputs and runs every flake check. CI runs `task check` on every PR. |
 | Only `task rebuild` switches a system. | These docs only. |
 | Install packages and set macOS defaults through Nix, never by hand. | These docs only. |
 | Files that tools write at runtime stay out of the repo. | `~/.claude/skills` holds one link per skill (`home/shared/programs/agents.nix`), so Claude Code's own folders stay in `$HOME`. The global git ignores (`home/shared/programs/git.nix`) cover `.DS_Store` and `.claude/settings.local.json`. |
@@ -35,13 +35,11 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 
 ## Verification
 
-- Use the relevant Nix eval or check as the primary verification for Nix configuration changes.
-- Treat warnings as verification failures: fix them and rerun the eval or check until it completes without warnings.
 - Agents may stage newly added, imported Nix files when flake evaluation requires it; do not stage unrelated changes.
 
 ## Rebuild permissions
 
-- After verification succeeds without warnings, run `task rebuild` on nixbook from the checkout that holds the change. Do not ask Michael first.
+- After `task check` passes, run `task rebuild` on nixbook from the checkout that holds the change. Do not ask Michael first.
 - An agent on nixbook has no terminal for the sudo prompt:
   1. Call T3 Code's `request_secret` with `delivery: "file"`.
   2. Run `SUDO_PASSWORD_FILE=<file> task rebuild`.
