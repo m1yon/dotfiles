@@ -9,6 +9,7 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 | Verify Nix changes with an eval or check, and treat every warning as a failure. | These docs only. |
 | Only `task rebuild` switches a system. | These docs only. |
 | Install packages and set macOS defaults through Nix, never by hand. | These docs only. |
+| Files that tools write at runtime stay out of the repo. | `~/.claude/skills` holds one link per skill (`home/shared/programs/agents.nix`), so Claude Code's own folders stay in `$HOME`. The global git ignores (`home/shared/programs/git.nix`) cover `.DS_Store` and `.claude/settings.local.json`. |
 | Tools with their own updater are bootstrapped by Nix and never pinned. | These docs only. |
 | The shared instruction file keeps its `## pstack model configuration` heading and row format. | These docs only. |
 
@@ -30,6 +31,7 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 - Put Codex-only rules in a `developer_instructions` key on the Codex config in `system/agents.nix`. Codex has no include syntax, and its `AGENTS.override.md` replaces the shared file instead of adding to it.
 - Refer to pstack skills by name in the shared file instead of importing or inlining them, so both harnesses read the version they have installed.
 - Edit model rows in the repo. Do not run `/setup-pstack`: it overwrites the sheet, which links to the shared file.
+- A skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`. Codex sees a new skill at once. Claude Code sees it after the next `task rebuild`, which adds its link.
 
 ## Verification
 
