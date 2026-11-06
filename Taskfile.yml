@@ -16,6 +16,11 @@ tasks:
       - install-bun-scripts
     cmd: bun run build
 
+  check:
+    desc: Evaluate both hosts and both Home Manager outputs and run this system's checks, failing on any warning
+    dir: "{{.FLAKE_DIR}}"
+    cmd: nix build --no-link --option abort-on-warn true ".#checks.$(nix eval --impure --raw --expr builtins.currentSystem).all"
+
   rebuild:
     desc: Rebuild system configuration and switch
     deps:
