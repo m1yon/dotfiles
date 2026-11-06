@@ -17,9 +17,16 @@ Todoist is the only task tracker, and it is private. Use the `td` CLI, and write
 - Before you add a subtask, check that the parent is open: `td task view id:<id> --json --full` must show `"checked": false`. A subtask added under a closed parent silently becomes a top-level task. If the parent is closed, treat it as no task named, so make a new top-level task and use that.
 - Work that must still happen after the last PR and needs no PR: split the task as above, and add that work as one more subtask, so the parent stays open.
 - Open every PR with this one command, so the link is always the real URL: `url=$(gh pr create <args>) && td comment add id:<id> --content "PR: $url"`. `<id>` is that PR's own task. When the work is split, it is the subtask. Never type a PR URL by hand.
-- Out-of-scope work, whether you noticed it or were told about it: `td task add "<title>" --project Inbox --labels from-agent`, before you finish. Do not do that work.
-- No task was named: before your first commit, make a new top-level task and use that id as the task above. In a repo in the `Meca-Therapies` GitHub org: `td task add "<title>" --project MECA --section "In Progress" --json`. In any other repo: `td task add "<title>" --project "Side Projects" --json`. A session that changes no code creates nothing.
-- Ask Michael before you create any project.
+- A command that opens PRs another way, such as `gh stack submit`, skips that link. Right after it, link each PR it opened: `url=$(gh pr view <branch> --json url -q .url) && td comment add id:<id> --content "PR: $url"`.
+- Projects follow efforts, not repos, and one effort can span several repos. Before you create any task, run `td project list --json`. Put each new task in its effort's project, the first of these that fits:
+  1. The project of the task you work on, when the new task is part of the same effort. `td task view id:<id> --json` shows its `projectId`.
+  2. Another existing project under `MECA` or `Side Projects` that the work clearly belongs to. `td project list --json` lists them.
+  3. `MECA` for work in a `Meca-Therapies` repo, or `Side Projects` for work anywhere else. The org is the owner in `git remote get-url origin`.
+
+  Pass it to `--project` as its name or as `id:<project id>`.
+- Out-of-scope work, whether you noticed it or were told about it: before you finish, file it in its effort's project with `td task add "<title>" --project <project> --section Todo --labels from-agent --description "<repos, what is wrong, where, and how you know>"`. Leave out `--section` in a project with no Todo section. Use `--project Inbox` only when you cannot tell which effort or which org the work belongs to. Do not do that work.
+- No task was named: before your first commit, make a new top-level task in its effort's project and use that id as the task above: `td task add "<title>" --project <project> --section "In Progress" --json`. Leave out `--section` in a project with no In Progress section. A session that changes no code creates nothing.
+- Ask Michael before you create any project. When an effort deserves a project of its own, say so in its task's description.
 - Never complete a task that has a PR, and never complete a parent. Merging does that.
 - Never put member names, IDs or other member data in a task.
 
