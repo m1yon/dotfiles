@@ -7,7 +7,7 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 | Rule | Enforced by |
 | --- | --- |
 | Verify every change with `task check`. Any evaluation warning fails it. | `task check` builds `checks.<system>.all` with `--option abort-on-warn true`. That evaluates both hosts and both Home Manager outputs and runs every flake check. CI runs `task check` on every PR. |
-| Only `task rebuild` switches a system. | These docs only. |
+| Only `task rebuild` switches a system. | The `agent-guard` PreToolUse hook (`system/agent-guard.sh`) in the Claude Code managed settings and the Codex `requirements.toml` blocks other switch commands. `checks.agent-guard` tests it. |
 | Install packages and set macOS defaults through Nix, never by hand. | These docs only. |
 | Files that tools write at runtime stay out of the repo. | `~/.claude/skills` holds one link per skill (`home/shared/programs/agents.nix`), so Claude Code's own folders stay in `$HOME`. The global git ignores (`home/shared/programs/git.nix`) cover `.DS_Store` and `.claude/settings.local.json`. |
 | Tools with their own updater are bootstrapped by Nix and never pinned. | These docs only. |
@@ -45,7 +45,3 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
   2. Run `SUDO_PASSWORD_FILE=<file> task rebuild`.
   3. Delete the file.
 - If `task rebuild` needs a terminal, such as on the Mac, ask Michael to run it.
-- Do not run any other rebuild, switch, or apply command, including:
-  - `darwin-rebuild switch`
-  - `nixos-rebuild switch`
-  - `home-manager switch`
