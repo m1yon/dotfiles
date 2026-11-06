@@ -20,6 +20,8 @@
       ".ignore/"
       ".worktrees/"
       ".claude/worktrees/"
+      ".claude/settings.local.json"
+      ".DS_Store"
       ".~lock.*#"
     ];
 
