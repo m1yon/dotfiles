@@ -1,6 +1,6 @@
 ---
 name: to-tickets
-description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published as Todoist subtasks of one parent task with td.
+description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published as Todoist tasks with td, one task for a single ticket or subtasks of one parent for several.
 disable-model-invocation: true
 ---
 
@@ -59,7 +59,9 @@ Iterate until the user approves the breakdown.
 
 ### 5. Publish the tickets to Todoist
 
-Every ticket becomes a subtask of one parent task.
+One ticket is one PR, so it adds no subtask, as the Work tracking rule says. With an open source task, that task is the ticket: run `td task view id:<id> --json --full`, check that it shows `"checked": false`, then add the label with `td task update id:<id> --labels <its current labels>,ready-for-agent`, because `--labels` replaces the whole list. Change nothing else on it. With no open source task, create the ticket as one top-level task: `td task add "<ticket title>" --project <project> --labels ready-for-agent --json --stdin < <body file>`, adding `--section Todo` when that project has a Todo section. Leave off the label when the user says the ticket is not for agents. Then stop.
+
+Two or more tickets become subtasks of one parent task.
 
 1. **Parent.** If the source was an existing task, it is the parent. Check that it is open: `td task view id:<id> --json --full` must show `"checked": false`. If it is closed, or there was no source task, create the parent: `td task add "<feature title>" --project <project> --json`. Use the project the Work tracking rule names for this repo, and add `--section Todo` when that project has a Todo section. Never create a project.
 2. **Tickets, blockers first.** Add each ticket in dependency order, so its blockers already have ids. Write the body to a file, then run `td task add "<ticket title>" --parent id:<parent id> --labels ready-for-agent --json --stdin < <body file>`. Leave off `--labels ready-for-agent` when the user says the tickets are not for agents.
