@@ -180,5 +180,29 @@
           ./home/darwin
         ];
       };
+
+      checks = nixpkgs.lib.genAttrs [ hosts.nixbook.system hosts.macbook.system ] (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          outputs = {
+            nixbook = inputs.self.nixosConfigurations.nixbook.config.system.build.toplevel;
+            macbook = inputs.self.darwinConfigurations.macbook.system;
+            home-nixbook = inputs.self.homeConfigurations."michael@nixbook".activationPackage;
+            home-macbook = inputs.self.homeConfigurations."michael@macbook".activationPackage;
+          };
+          tests = {
+            # Writing each output's derivation path evaluates it without building it.
+            evaluate = pkgs.writeText "evaluated-outputs" (
+              nixpkgs.lib.concatLines (
+                nixpkgs.lib.mapAttrsToList (
+                  name: drv: "${name} ${builtins.unsafeDiscardStringContext drv.drvPath}"
+                ) outputs
+              )
+            );
+          };
+        in
+        tests // { all = pkgs.linkFarmFromDrvs "all-checks" (builtins.attrValues tests); }
+      );
     };
 }
