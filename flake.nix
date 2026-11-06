@@ -197,6 +197,11 @@
           home-macbook =
             evaluated "home-macbook"
               inputs.self.homeConfigurations."michael@macbook".activationPackage;
+          agent-guard = pkgs.runCommand "agent-guard-test" { nativeBuildInputs = [ pkgs.jq ]; } ''
+            ${pkgs.bash}/bin/bash ${./system/agent-guard-test.sh} \
+              ${pkgs.callPackage ./system/agent-guard.nix { }}/bin/agent-guard
+            touch $out
+          '';
         }
       );
     };

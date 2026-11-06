@@ -19,8 +19,10 @@ tasks:
   check:
     desc: Evaluate both hosts and both Home Manager outputs, then build this system's checks, failing on any warning
     dir: "{{.FLAKE_DIR}}"
-    # --all-systems evaluates the other host's checks instead of warning that it skipped them.
-    cmd: nix flake check --option abort-on-warn true --all-systems --no-build
+    cmds:
+      # --all-systems evaluates the other host's checks instead of warning that it skipped them.
+      - nix flake check --option abort-on-warn true --all-systems --no-build
+      - nix build --no-link ".#checks.$(nix eval --impure --raw --expr builtins.currentSystem).agent-guard"
 
   rebuild:
     desc: Rebuild system configuration and switch
