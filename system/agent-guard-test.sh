@@ -41,6 +41,30 @@ allow	nix run nixpkgs#hello
 allow	home-manager --help
 allow	git commit -m "docs: say when to run darwin-rebuild switch"
 allow	grep -rn "nixos-rebuild switch" AGENTS.md
+# Imperative installs of tools the repo later had to declare in Nix, and the
+# examples AGENTS.md forbids by name.
+block	brew install --cask linearmouse
+block	brew tap charmbracelet/tap
+block	brew upgrade
+block	npm install -g @anthropic-ai/claude-code
+block	npm i -g ccstatusline
+block	bun add -g ccstatusline
+block	pnpm add --global typescript
+block	yarn global add typescript
+block	nix profile install nixpkgs#jq
+block	nix --extra-experimental-features 'nix-command flakes' profile add nixpkgs#jq
+block	nix-env -iA nixpkgs.jq
+block	defaults write com.apple.dock autohide -bool true
+# Project-local installs and read-only queries.
+allow	brew list --cask
+allow	brew info --cask linearmouse
+allow	npm install
+allow	npm ls -g
+allow	bun install --frozen-lockfile
+allow	bun add -d typescript
+allow	nix profile list
+allow	nix-env -q
+allow	defaults read com.apple.dock autohide
 EOF
 
 # Codex can pass the command as an argument vector.
