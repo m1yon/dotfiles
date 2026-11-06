@@ -16,7 +16,7 @@ startup are managed declaratively.
 | 5 | Spreadsheets | Table cells | Microsoft Excel |
 | 6 | Database | Database cylinder | DataGrip |
 | 7 | Spare | Dashed square | None |
-| 8 | Planning | Checklist | Linear, Todoist |
+| 8 | Planning | Checklist | Todoist |
 | 9 | Communication | Conversation bubbles | Teams, Slack, Discord |
 | 0 | Calendar | Calendar | Calendar (opens on activation) |
 

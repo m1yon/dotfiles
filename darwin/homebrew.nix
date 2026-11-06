@@ -49,7 +49,6 @@
       "ghostty"
       "google-chrome"
       "grammarly-desktop"
-      "linear"
       "linearmouse"
       "microsoft-excel"
       "microsoft-teams"

@@ -150,11 +150,6 @@
               "bundleIdentifier" : "com.todoist.mac.Todoist",
               "iconPath" : "/Applications/Todoist.app/Contents/Resources/icon.icns",
               "name" : "Todoist"
-            },
-            {
-              "bundleIdentifier" : "com.linear",
-              "iconPath" : "/Applications/Linear.app/Contents/Resources/icon.icns",
-              "name" : "Linear"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+8",
