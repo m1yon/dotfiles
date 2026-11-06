@@ -17,7 +17,6 @@
     ./lazycommit.nix
     ./lazydocker.nix
     ./lazygit.nix
-    ./linear.nix
     ./neovim.nix
     ./nixfmt.nix
     ./sftp.nix
