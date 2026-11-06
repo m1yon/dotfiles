@@ -21,13 +21,12 @@
 
 ## Verification
 
-- Use the relevant Nix eval or check as the primary verification for Nix configuration changes.
-- Treat warnings as verification failures: fix them and rerun the eval or check until it completes without warnings.
+- Verify every change with `task check`. It evaluates both hosts and both Home Manager outputs, and any evaluation warning fails it. CI runs the same command on every PR.
 - Agents may stage newly added, imported Nix files when flake evaluation requires it; do not stage unrelated changes.
 
 ## Rebuild permissions
 
-- After verification succeeds without warnings, run `task rebuild` on nixbook from the checkout that holds the change. Do not ask Michael first.
+- After `task check` passes, run `task rebuild` on nixbook from the checkout that holds the change. Do not ask Michael first.
 - An agent on nixbook has no terminal for the sudo prompt:
   1. Call T3 Code's `request_secret` with `delivery: "file"`.
   2. Run `SUDO_PASSWORD_FILE=<file> task rebuild`.

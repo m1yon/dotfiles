@@ -180,5 +180,24 @@
           ./home/darwin
         ];
       };
+
+      checks = nixpkgs.lib.genAttrs [ hosts.nixbook.system hosts.macbook.system ] (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          # nix flake check evaluates nixosConfigurations only, so force the other outputs.
+          evaluated =
+            name: drv: pkgs.writeText "${name}-drv-path" (builtins.unsafeDiscardStringContext drv.drvPath);
+        in
+        {
+          macbook = evaluated "macbook" inputs.self.darwinConfigurations.macbook.system;
+          home-nixbook =
+            evaluated "home-nixbook"
+              inputs.self.homeConfigurations."michael@nixbook".activationPackage;
+          home-macbook =
+            evaluated "home-macbook"
+              inputs.self.homeConfigurations."michael@macbook".activationPackage;
+        }
+      );
     };
 }

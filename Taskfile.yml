@@ -16,6 +16,12 @@ tasks:
       - install-bun-scripts
     cmd: bun run build
 
+  check:
+    desc: Evaluate both hosts and both Home Manager outputs, then build this system's checks, failing on any warning
+    dir: "{{.FLAKE_DIR}}"
+    # --all-systems evaluates the other host's checks instead of warning that it skipped them.
+    cmd: nix flake check --option abort-on-warn true --all-systems --no-build
+
   rebuild:
     desc: Rebuild system configuration and switch
     deps:
