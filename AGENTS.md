@@ -7,7 +7,7 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 | Rule | Enforced by |
 | --- | --- |
 | Verify every change with `task check`. Any evaluation warning fails it. | `task check` builds `checks.<system>.all` with `--option abort-on-warn true`. That evaluates both hosts and both Home Manager outputs and runs every flake check. CI runs `task check` on every PR. |
-| Install packages and set macOS defaults through Nix, never by hand. | These docs only. |
+| Install packages and set macOS defaults through Nix, never by hand. | The `agent-guard` PreToolUse hook (`system/agent-guard.sh`) in the Claude Code managed settings and the Codex `requirements.toml` blocks brew changes, global npm, pnpm, yarn and bun installs, `nix profile`, `nix-env` and `defaults write`. `checks.agent-guard` tests it. GUIs, app installers and vendor CLIs are covered by these docs only. |
 | Files that tools write at runtime stay out of the repo. | `~/.claude/skills` holds one link per skill (`home/shared/programs/agents.nix`), so Claude Code's own folders stay in `$HOME`. The global git ignores (`home/shared/programs/git.nix`) cover `.DS_Store` and `.claude/settings.local.json`. |
 | Tools with their own updater are bootstrapped by Nix and never pinned. | These docs only. |
 | The shared instruction file keeps its `## pstack model configuration` heading and row format. | These docs only. |
@@ -15,12 +15,9 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 ## Declarative system management
 
 - Manage system packages, apps, casks, services, settings, defaults, and behavior through the Nix flake or modules.
-- Never install global or system packages imperatively with `brew`, `nix profile`, global language package managers, app installers, or manual downloads.
-- Homebrew is allowed only as a nix-darwin/nix-homebrew backend declared in the flake; do not mutate packages with the `brew` CLI.
-- Unless explicitly asked, do not change system or app settings through GUIs, `defaults write`, vendor CLIs, or files outside the Nix-managed configuration.
-- Project-local dependency commands may update a project's normal dependency state and lockfiles.
-  - Allowed: `bun install` inside `scripts/bun/`.
-  - Forbidden: `bun add -g`, `npm install -g`, or any other global package installation.
+- Homebrew is allowed only as the nix-darwin/nix-homebrew backend declared in `darwin/homebrew.nix`.
+- Unless explicitly asked, do not change system or app settings through GUIs, vendor CLIs, or files outside the Nix-managed configuration.
+- Project-local dependency commands, such as `bun install` inside `scripts/bun/`, may update a project's dependencies and lockfiles.
 - T3 Code, Claude Code, Codex and pstack update themselves. Nix only installs them the first time, in `home/linux/programs/t3code.nix`, `home/shared/programs/agent-clis.nix` and `system/agents.nix`. Do not package them in Nix or pin their versions.
 
 ## Agent configuration

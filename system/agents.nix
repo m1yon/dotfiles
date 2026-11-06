@@ -9,8 +9,21 @@ let
   # auto-update off for third-party marketplaces unless it's set here.
   pstackUrl = "https://github.com/michael-denyer/pstack-claude.git";
 
+  agentGuard = "${pkgs.callPackage ./agent-guard.nix { }}/bin/agent-guard";
+
   claudeManagedSettings = (pkgs.formats.json { }).generate "claude-managed-settings.json" (
     {
+      hooks.PreToolUse = [
+        {
+          matcher = "Bash";
+          hooks = [
+            {
+              type = "command";
+              command = agentGuard;
+            }
+          ];
+        }
+      ];
       extraKnownMarketplaces.pstack-claude = {
         source = {
           source = "git";
@@ -39,6 +52,25 @@ let
     plugins."pstack@pstack-claude".enabled = true;
   };
 
+  # Codex runs hooks from requirements.toml as managed, without asking to trust them.
+  codexRequirements = (pkgs.formats.toml { }).generate "codex-requirements.toml" {
+    hooks = {
+      managed_dir = builtins.dirOf agentGuard;
+      PreToolUse = [
+        {
+          matcher = "^Bash$";
+          hooks = [
+            {
+              type = "command";
+              command = agentGuard;
+              timeout = 10;
+            }
+          ];
+        }
+      ];
+    };
+  };
+
   claudeManagedDir = "/Library/Application Support/ClaudeCode/managed-settings.d";
 in
 {
@@ -47,6 +79,7 @@ in
   # A new top-level /etc entry here also needs a link in the flake's appimageRunOverlay.
   environment.etc = {
     "codex/config.toml".source = codexSystemConfig;
+    "codex/requirements.toml".source = codexRequirements;
     "claude-code/managed-settings.d/dotfiles.json" = lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       source = claudeManagedSettings;
     };
