@@ -1,5 +1,4 @@
 {
-  gnused,
   jq,
   shfmt,
   writeShellApplication,
@@ -8,7 +7,6 @@
 writeShellApplication {
   name = "agent-guard";
   runtimeInputs = [
-    gnused
     jq
     shfmt
   ];

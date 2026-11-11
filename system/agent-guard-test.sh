@@ -128,6 +128,32 @@ block	ssh nixbook 't3 service install'
 block	ssh nixbook 'bash -lc "pkill -f monitor"'
 block	ssh nixbook 'bash -s' <<< 'pkill -f monitor'
 block	ssh nixbook <<< 't3 up'
+block	timeout 60 bash -c 'echo start; brew install jq'
+block	timeout 60 bash -c 'echo start; pkill -f monitor'
+block	find . -name x -exec sh -c 'true; brew install jq' \;
+block	su michael -c 'cd /tmp; npm install -g typescript'
+block	su michael -c 'cd /tmp; pkill -f monitor'
+block	nix develop -c bash -c 'true; brew install jq'
+block	echo "$(timeout 5 bash -c 'x; brew install jq')"
+block	bash -ceuo pipefail 'pkill -f monitor'
+block	bash -ceuo pipefail 'echo starting; brew install jq'
+block	bash -oc pipefail 'pkill -f monitor'
+block	trap 'pkill -f monitor' EXIT; sleep 1
+block	trap 'echo cleanup; brew install jq' EXIT; true
+block	trap -- 'killall node' EXIT
+block	npm install --global=true typescript
+block	npm install --location=global typescript
+block	npm install --location global typescript
+block	defaults -currentHost write com.apple.dock autohide -bool true
+block	defaults -host nixbook write com.apple.dock autohide -bool true
+allow	git commit -m "guard; brew install jq"
+allow	grep -F 'safe|npm install -g typescript' AGENTS.md
+allow	echo 'a; defaults write com.apple.dock autohide -bool true'
+allow	gh pr create --title x --body "Block brew install; declare it in Nix."
+allow	tee notes.txt <<< 'x; brew install jq'
+allow	trap -p EXIT
+allow	npm install --location=project typescript
+allow	defaults -currentHost read com.apple.dock autohide
 allow	brew list --cask
 allow	brew info --cask linearmouse
 allow	npm install
@@ -211,6 +237,16 @@ run_case block "$(bash_event $'ssh nixbook \'bash -euo pipefail -s\' <<\'EOF\'\n
 run_case block "$(bash_event $'ssh nixbook <<\'EOF\'\nsystemctl --user status t3code\nt3 up\nEOF')"
 run_case allow "$(bash_event $'ssh nixbook \'bash -s\' <<\'EOF\'\nsystemctl --user status t3code\nEOF')"
 run_case allow "$(bash_event $'ssh nixbook \'cat > /tmp/notes\' <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case block "$(bash_event $'ssh nixbook \'bash -seuo pipefail -- arg\' <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case block "$(bash_event $'ssh nixbook \'sh -s\' <<\'EOF\'\ntrap \'echo cleanup; brew install jq\' EXIT\nEOF')"
+run_case allow "$(bash_event $'cat <<\'EOF\'\nbrew install jq\nEOF')"
+run_case allow "$(bash_event $'git commit -m "$(cat <<\'EOF\'\nfix: guard; brew install jq\nEOF\n)"')"
+run_case block "$(bash_event $'git commit -m "$(cat <<\'EOF\'\nfix\nEOF\n)"; pkill -f monitor')"
+
+# The package rules still read every heredoc the text splitter read, so nothing it
+# blocked is allowed. The kill and T3 rules leave heredocs to the parser.
+run_case block "$(bash_event $'python3 - <<\'EOF\'\nbrew install jq\nEOF')"
+run_case allow "$(bash_event $'python3 - <<\'EOF\'\npkill -f monitor\nEOF')"
 
 long_heredoc="$(
   printf 'cat <<EOF\n'
@@ -239,11 +275,14 @@ run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","bash 
 run_case block '{"tool_name":"Bash","tool_input":{"command":["ssh","nixbook","pkill -f monitor"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["env","-S","pkill -f monitor"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["env","bash","-c","pkill -f monitor"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["timeout","60","bash","-c","pkill -f monitor"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["timeout","60","sh","-c","brew install jq"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","git status"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","cat <<EOF\npkill -f monitor\nEOF"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["echo","-c","pkill -f monitor"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["command","-v","pkill"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["git","commit","-m","fix: guard; pkill -f monitor"]}}'
+run_case allow '{"tool_name":"Bash","tool_input":{"command":["git","commit","-m","fix: guard; brew install jq"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["grep","-E","pkill|killall","system/agent-guard.sh"]}}'
 run_case allow '{"tool_name":"apply_patch","tool_input":{}}'
 

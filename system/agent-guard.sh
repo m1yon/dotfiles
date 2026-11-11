@@ -1,18 +1,29 @@
 # PreToolUse hook for Claude Code and Codex. It reads the hook event on stdin and
 # exits 2 to block a Bash call; both harnesses show stderr to the agent.
 #
-# shfmt parses the command into a syntax tree. Every simple command in it, however
-# deeply nested, becomes an argv of literal words: quotes removed, backslash escapes
-# resolved, and each expansion replaced by expansion_word. The rules read that argv.
-# Text that reaches a shell is a script and gets the same check: a shell's -c argument
-# or stdin, ssh's remote command, and env -S's string. Every other heredoc is data.
-# Input shfmt cannot parse, such as zsh-only syntax, falls back to splitting the text.
+# A script is blocked when either of two checks blocks it.
+# 1. shfmt parses it into a syntax tree. Every simple command in it, however deeply
+#    nested, becomes an argv of literal words: quotes removed, backslash escapes resolved,
+#    and each expansion replaced by expansion_word. The rules read that argv. Text that
+#    reaches a shell is a script and gets both checks: a shell's -c argument or stdin,
+#    ssh's remote command, env -S's string and a trap's action.
+# 2. The text is split on shell operators with quotes ignored. That catches a command after
+#    a separator in a script run by a program the parser does not model, such as timeout,
+#    su or find -exec. The arguments, heredocs and here-strings of data_commands are
+#    blanked first, so a commit message can mention brew install. The package and defaults
+#    rules also read every other heredoc, and skip wrappers and options the way this hook
+#    did before it had a parser, so the parser allows nothing that hook blocked.
+# Input shfmt cannot parse, such as zsh-only syntax, gets check 2 with nothing blanked.
 
-# Codex can pass an argument vector, such as ["bash", "-lc", "<script>"].
-command="$(jq -r '
+data_commands='git gh grep egrep fgrep rg echo printf cat tee td'
+
+# Codex can pass an argument vector, such as ["bash", "-lc", "<script>"]. A vector that
+# ends in -c and a script is read as that script, whatever runs it, unless it is a data
+# command's -c.
+command="$(jq -r --arg data "$data_commands" '
   .tool_input.command // ""
   | if type != "array" then .
-    elif length >= 3 and (.[0] | tostring | split("/")[-1] | IN("bash", "sh", "zsh", "dash")) and (.[-2] | test("^-l?c$")) then .[-1]
+    elif length >= 3 and (.[-2] | test("^-l?c$")) and (.[0] | tostring | split("/")[-1] | IN($data | split(" ")[]) | not) then .[-1]
     else map(tostring | @sh) | join(" ")
     end')"
 
@@ -46,6 +57,39 @@ simple_commands_program='
     elif any(.Word.Parts[]; .Type != "Lit" or (.Value | contains("\\"))) then [.Hdoc.Parts[]?.Value] | join("")
     else .Hdoc.Parts // [] | quoted("$`\\\\") end;
   def record($stdin): (length | tostring), $stdin, .[];
+  def region($kind): [.Pos.Offset, .End.Offset, $kind];
+  def data_command: .Cmd.Type? == "CallExpr" and (.Cmd.Args[0] | if . then word | split("/")[-1] | IN($data | split(" ")[]) else false end);
+  # The byte ranges check 2 blanks, given the kinds of region to blank. Regions nest, and
+  # the innermost one decides each byte.
+  def blanked($kinds; $regions):
+    def close($to):
+      until((.open | length) == 0 or .open[-1][0] > $to;
+        .open[-1] as [$end, $blank]
+        | (if $blank then .out += [[.at, $end]] else . end)
+        | .at = $end | .open |= .[:-1]);
+    reduce ($regions[] | select(.[2] | IN("k", $kinds[]))) as [$start, $end, $kind] ({open: [], at: 0, out: []};
+      close($start)
+      | (if (.open | length) > 0 and .open[-1][1] then .out += [[.at, $start]] else . end)
+      | .at = $start
+      | .open += [[$end, $kind != "k"]])
+    | close(infinite) | .out | map(select(.[0] < .[1]) | join(" ")) | join("\n");
+  # d is data, h a heredoc or here-string on any other command, and k a command
+  # substitution, which runs even inside data.
+  (
+    [
+      (.. | objects | select(.Type? | IN("CmdSubst", "ProcSubst")) | region("k")),
+      (
+        .. | objects | select(has("Cmd"))
+        | data_command as $data_command
+        | (if $data_command then .Cmd.Args[1:][] | region("d") else empty end),
+          ((.Redirs // [])[] | select(.Op | IN(71, 72, 73)) | if .Op == 73 then .Word else .Hdoc end | values
+            | region(if $data_command then "d" else "h" end))
+      )
+    ]
+    | sort_by(.[0], -.[1], .[2] == "k")
+  ) as $regions
+  | blanked(["d"]; $regions),
+  blanked(["d", "h"]; $regions),
   (
     .. | objects | select(.Cmd?.Type? == "CallExpr")
     | [(.Redirs // [])[] | select(.Op | IN(71, 72, 73)) | stdin] as $stdin
@@ -120,7 +164,7 @@ option_takes_next_word() {
 # A shell runs the first word after its options as a script when -c is set, alone or in
 # a bundle such as -lc. Otherwise it runs its stdin, unless a script file follows without -s.
 check_shell() {
-  local i=0 has_c=0 has_s=0
+  local i=0 has_c=0 has_s=0 takes_value
   while ((i < ${#args[@]})); do
     case "${args[i]}" in
       --)
@@ -129,11 +173,13 @@ check_shell() {
         ;;
       --rcfile | --init-file) ((i += 1)) ;;
       --*) ;;
-      # -o and -O take the next word, also at the end of a bundle such as -euo.
-      [-+]*[oO]) ((i += 1)) ;;
-      -*c*) has_c=1 ;;
-      -*s*) has_s=1 ;;
-      -* | +*) ;;
+      -* | +*)
+        if [[ ${args[i]} == -*c* ]]; then has_c=1; fi
+        if [[ ${args[i]} == -*s* ]]; then has_s=1; fi
+        # Each o or O in a bundle such as -ceuo takes one of the next words.
+        takes_value="${args[i]//[!oO]/}"
+        i=$((i + ${#takes_value}))
+        ;;
       *) break ;;
     esac
     ((i += 1))
@@ -201,6 +247,28 @@ check_simple_command() {
     ssh)
       check_ssh
       ;;
+    trap)
+      if [[ ${args[0]-} == -* ]]; then args=("${args[@]:1}"); fi
+      check_script "${args[0]-}" "$stdin"
+      ;;
+    pkill | killall)
+      block "$kill_message"
+      ;;
+    t3)
+      case "${args[0]:-} ${args[1]:-}" in
+        "up "* | "service install" | "service uninstall") block "$t3_service_message" ;;
+      esac
+      ;;
+    *)
+      check_package_rules "$name"
+      ;;
+  esac
+}
+
+# Reads the command name in $1 and its arguments in args.
+check_package_rules() {
+  local verb
+  case "$1" in
     nix)
       if has_word profile && has_word install add upgrade remove rollback; then block "$install_message"; fi
       ;;
@@ -215,7 +283,8 @@ check_simple_command() {
       esac
       ;;
     npm | pnpm | bun)
-      if has_word -g --global && has_word install i add update up upgrade uninstall un remove rm link ln; then
+      if { has_word -g --global --global=true --location=global || [[ " ${args[*]} " == *" --location global "* ]]; } &&
+        has_word install i add update up upgrade uninstall un remove rm link ln; then
         block "$install_message"
       fi
       ;;
@@ -224,15 +293,12 @@ check_simple_command() {
       ;;
     defaults)
       case "${args[0]:-}" in
-        write | delete) block "$defaults_message" ;;
+        -currentHost) verb="${args[1]:-}" ;;
+        -host) verb="${args[2]:-}" ;;
+        *) verb="${args[0]:-}" ;;
       esac
-      ;;
-    pkill | killall)
-      block "$kill_message"
-      ;;
-    t3)
-      case "${args[0]:-} ${args[1]:-}" in
-        "up "* | "service install" | "service uninstall") block "$t3_service_message" ;;
+      case "$verb" in
+        write | delete) block "$defaults_message" ;;
       esac
       ;;
   esac
@@ -257,43 +323,110 @@ if creates_task && carries_label from-agent && ! carries_label approved; then
   block "$follow_up_message"
 fi
 
+# Sets the array named $1 to the pieces of $2 between shell operators, cut even inside
+# quotes. read takes one pass over the text, where a pattern substitution takes time
+# quadratic in the number of operators.
 split_command_text_ignoring_quotes() {
-  sed -E 's/&&|\|\||[;|&()`]|\$\(/\n/g' <<<"$1"
+  local IFS=$';|&()`\n'
+  read -r -d '' -a "$1" <<<"$2" || true
 }
 
+# The splitter's reading of a command: every wrapper name, option and assignment before
+# the name is skipped, with no option taking a value.
+check_package_rules_like_splitter() {
+  local i=0
+  local -a words=("$@") args
+  while ((i < ${#words[@]})); do
+    case "${words[i]}" in
+      sudo | doas | env | command | exec | nohup | time | -* | [A-Za-z_]*=*) ((i += 1)) ;;
+      *) break ;;
+    esac
+  done
+  ((i < ${#words[@]})) || return 0
+  args=("${words[@]:i+1}")
+  check_package_rules "${words[i]##*/}"
+}
+
+# $1 is read by the package rules and $2 by every rule.
 check_script_ignoring_quotes() {
   local segment
-  local -a words
-  while IFS= read -r segment; do
-    read -ra words <<<"$segment"
+  local -a segments words
+  split_command_text_ignoring_quotes segments "$1"
+  for segment in "${segments[@]}"; do
+    read_words "$segment"
+    check_package_rules_like_splitter "${words[@]//[\"\'\\]/}"
+  done
+  split_command_text_ignoring_quotes segments "$2"
+  for segment in "${segments[@]}"; do
+    read_words "$segment"
     check_simple_command '' "${words[@]//[\"\'\\]/}"
-  done < <(split_command_text_ignoring_quotes "$1")
+  done
+}
+
+# Sets words to the words of $1. A piece that ends in $ was cut at $(, so that $ is
+# dropped. ${1%\$} would take time quadratic in the length of $1.
+read_words() {
+  if [[ ${1: -1} == '$' ]]; then
+    read -ra words <<<"${1:0:-1}"
+  else
+    read -ra words <<<"$1"
+  fi
+}
+
+# Sets the variable named $1 to $2 with each byte range in $3 replaced by spaces. It reads
+# $2 once as a stream, since bash copies a whole string to take any part of it. shfmt
+# counts offsets in bytes, hence LC_ALL=C.
+blank() {
+  local LC_ALL=C start end at=0 piece
+  local -a pieces=()
+  {
+    while read -r start end && [[ -n $start ]]; do
+      if ((start > at)); then
+        read -r -N "$((start - at))" piece <&3
+        pieces+=("$piece")
+      fi
+      read -r -N "$((end - start))" piece <&3
+      printf -v piece '%*s' "$((end - start))" ''
+      pieces+=("$piece")
+      at=$end
+    done <<<"$3"
+    IFS= read -r -d '' piece <&3 || true
+    pieces+=("$piece")
+  } 3<<<"$2"
+  printf -v "$1" '%s' "${pieces[@]}"
 }
 
 check_script() {
-  local json count stdin word i complete=0
+  local json data_ranges='' heredoc_ranges='' count stdin word i complete=0 data_blanked heredocs_blanked
   local -a words
-  if ! json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
-    check_script_ignoring_quotes "$1"
-    return 0
+  if json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
+    {
+      IFS= read -r -d '' data_ranges || true
+      IFS= read -r -d '' heredoc_ranges || true
+      while IFS= read -r -d '' count; do
+        if [[ $count == end ]]; then
+          complete=1
+          break
+        fi
+        IFS= read -r -d '' stdin || break
+        words=()
+        for ((i = 0; i < count; i += 1)); do
+          IFS= read -r -d '' word || break 2
+          words+=("$word")
+        done
+        # A command without a heredoc of its own reads the stdin of the script it is in.
+        check_simple_command "${stdin:-${2-}}" "${words[@]}"
+      done
+    } < <(jq --raw-output0 --arg expansion "$expansion_word" --arg data "$data_commands" "$simple_commands_program" <<<"$json")
   fi
 
-  while IFS= read -r -d '' count; do
-    if [[ $count == end ]]; then
-      complete=1
-      break
-    fi
-    IFS= read -r -d '' stdin || break
-    words=()
-    for ((i = 0; i < count; i += 1)); do
-      IFS= read -r -d '' word || break 2
-      words+=("$word")
-    done
-    # A command without a heredoc of its own reads the stdin of the script it is in.
-    check_simple_command "${stdin:-${2-}}" "${words[@]}"
-  done < <(jq --raw-output0 --arg expansion "$expansion_word" "$simple_commands_program" <<<"$json")
-
-  ((complete)) || check_script_ignoring_quotes "$1"
+  if ((complete)); then
+    blank data_blanked "$1" "$data_ranges"
+    blank heredocs_blanked "$1" "$heredoc_ranges"
+    check_script_ignoring_quotes "$data_blanked" "$heredocs_blanked"
+  else
+    check_script_ignoring_quotes "$1" "$1"
+  fi
 }
 
 check_script "$command"
