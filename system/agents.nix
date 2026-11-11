@@ -76,7 +76,6 @@ in
 {
   # The apps keep rewriting ~/.claude/settings.json and ~/.codex/config.toml, so
   # the repo's declarations live in the system layers each harness also reads.
-  # A new top-level /etc entry here also needs a link in the flake's appimageRunOverlay.
   environment.etc = {
     "codex/config.toml".source = codexSystemConfig;
     "codex/requirements.toml".source = codexRequirements;
