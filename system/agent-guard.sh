@@ -151,7 +151,7 @@ check_shell() {
         ((i += 1))
         break
         ;;
-      --rcfile | --init-file) ((i += 1)) ;;
+      --rcfile | --init-file | --emulate) ((i += 1)) ;;
       --*) ;;
       -* | +*)
         if [[ ${args[i]} == -*c* ]]; then has_c=1; fi
@@ -174,10 +174,18 @@ check_shell() {
 # ssh joins the words after the destination into a script for the remote shell, which
 # runs ssh's stdin when there are none.
 check_ssh() {
-  local i=0 destination=0
+  local i=0 destination=0 value
   while ((i < ${#args[@]})); do
     case "${args[i]}" in
-      -*) if option_takes_next_word ssh "${args[i]}" "${args[i + 1]-}"; then ((i += 1)); fi ;;
+      -*)
+        value=''
+        if [[ ${args[i]} == -o ]]; then value="${args[i + 1]-}"; elif [[ ${args[i]} == -o?* ]]; then value="${args[i]#-o}"; fi
+        if [[ ${value,,} == remotecommand* ]]; then
+          value="${value:13}"
+          check_script "${value#"${value%%[![:space:]=]*}"}" "$stdin"
+        fi
+        if option_takes_next_word ssh "${args[i]}" "${args[i + 1]-}"; then ((i += 1)); fi
+        ;;
       *)
         if ((destination)); then break; fi
         destination=1

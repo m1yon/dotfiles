@@ -66,6 +66,11 @@ block	t3 service install
 block	~/.local/bin/t3 service uninstall
 block	t3 "up"
 block	t3 'service' 'install'
+block	zsh --emulate sh -c 'pkill -f monitor'
+block	zsh --emulate sh -o errexit -c 't3 up --lan --yes'
+block	ssh -o 'RemoteCommand=pkill -f monitor' nixbook
+block	ssh -oRemoteCommand='t3 service install' nixbook
+block	ssh -o 'RemoteCommand killall gnome-shell' nixbook
 block	t3 --log-level debug up --lan --yes
 block	t3 --log-level=debug service install
 block	t3 service --log-level debug uninstall
@@ -176,6 +181,8 @@ allow	git commit -m "fix: stop using pkill"
 allow	t3 status
 allow	t3 service status
 allow	t3 --log-level debug status
+allow	ssh -o 'RemoteCommand=systemctl --user status t3code' nixbook
+allow	ssh -o BatchMode=yes nixbook 'systemctl --user status t3code'
 allow	t3 thread start --title up
 allow	t3 thread list
 allow	git commit -m "fix: guard commands; pkill -f monitor"
