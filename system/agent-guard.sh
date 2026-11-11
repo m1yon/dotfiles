@@ -86,6 +86,25 @@ check_simple_command() {
   esac
 }
 
+follow_up_message='Michael approves every follow-up card before it reaches Todoist. Suggest it first, with AskUserQuestion in Claude Code or one plain sentence in Codex. After he picks "Create card", rerun the command with --labels from-agent,approved. See "Work tracking" in the shared AGENTS.md.'
+
+creates_task() {
+  local quote="[\"']?" re
+  re="(^|[^[:alnum:]_-])td${quote}[[:space:]]+${quote}(add|task${quote}[[:space:]]+${quote}(add|quickadd|qa))([^[:alnum:]_-]|\$)"
+  [[ $command =~ $re ]]
+}
+
+carries_label() {
+  local label="$1" quote="[\"']?" sep='[[:space:]]*,[[:space:]]*' flag quick_add
+  flag="--labels${quote}[=[:space:]]+${quote}([^[:space:],\"']+$sep)*$label([^[:alnum:]_-]|\$)"
+  quick_add="(^|[^[:alnum:]_-])@$label([^[:alnum:]_-]|\$)"
+  [[ $command =~ $flag || $command =~ $quick_add ]]
+}
+
+if creates_task && carries_label from-agent && ! carries_label approved; then
+  block "$follow_up_message"
+fi
+
 split_command_text_ignoring_quotes() {
   sed -E 's/&&|\|\||[;|&()`]|\$\(/\n/g' <<<"$1"
 }
