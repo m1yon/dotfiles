@@ -1,16 +1,15 @@
 # PreToolUse hook for Claude Code and Codex. It reads the hook event on stdin and
 # exits 2 to block a Bash call; both harnesses show stderr to the agent.
-#
 
 data_commands='git gh grep egrep fgrep rg echo printf cat tee td'
 
 # Codex can pass an argument vector, such as ["bash", "-lc", "<script>"].
 command="$(jq -r --arg data "$data_commands" '
+  def shell_c_script:
+    if length >= 3 and (.[-2] | test("^-l?c$")) and (.[0] | tostring | split("/")[-1] | IN($data | split(" ")[]) | not)
+    then .[-1] else empty end;
   .tool_input.command // ""
-  | if type != "array" then .
-    elif length >= 3 and (.[-2] | test("^-l?c$")) and (.[0] | tostring | split("/")[-1] | IN($data | split(" ")[]) | not) then .[-1]
-    else map(tostring | @sh) | join(" ")
-    end')"
+  | if type != "array" then . else first(shell_c_script, (map(tostring | @sh) | join(" "))) end')"
 
 expansion_word='__EXPANSION__'
 
@@ -50,27 +49,27 @@ simple_commands_program='
         .open[-1] as [$end, $blank]
         | (if $blank then .out += [[.at, $end]] else . end)
         | .at = $end | .open |= .[:-1]);
-    reduce ($regions[] | select(.[2] | IN("k", $kinds[]))) as [$start, $end, $kind] ({open: [], at: 0, out: []};
+    reduce ($regions[] | select(.[2] | IN("keep", $kinds[]))) as [$start, $end, $kind] ({open: [], at: 0, out: []};
       close($start)
       | (if (.open | length) > 0 and .open[-1][1] then .out += [[.at, $start]] else . end)
       | .at = $start
-      | .open += [[$end, $kind != "k"]])
+      | .open += [[$end, $kind != "keep"]])
     | close(infinite) | .out | map(select(.[0] < .[1]) | join(" ")) | join("\n");
   (
     [
-      (.. | objects | select(.Type? | IN("CmdSubst", "ProcSubst")) | region("k")),
+      (.. | objects | select(.Type? | IN("CmdSubst", "ProcSubst")) | region("keep")),
       (
         .. | objects | select(has("Cmd"))
         | data_command as $data_command
-        | (if $data_command then .Cmd.Args[1:][] | region("d") else empty end),
+        | (if $data_command then .Cmd.Args[1:][] | region("data") else empty end),
           ((.Redirs // [])[] | select(.Op | IN(71, 72, 73)) | if .Op == 73 then .Word else .Hdoc end | values
-            | region(if $data_command then "d" else "h" end))
+            | region(if $data_command then "data" else "heredoc" end))
       )
     ]
-    | sort_by(.[0], -.[1], .[2] == "k")
+    | sort_by(.[0], -.[1], .[2] == "keep")
   ) as $regions
-  | blanked(["d"]; $regions),
-  blanked(["d", "h"]; $regions),
+  | blanked(["data"]; $regions),
+  blanked(["data", "heredoc"]; $regions),
   (
     .. | objects | select(.Cmd?.Type? == "CallExpr")
     | [(.Redirs // [])[] | select(.Op | IN(71, 72, 73)) | stdin] as $stdin
@@ -311,7 +310,7 @@ split_command_text_ignoring_quotes() {
   read -r -d '' -a "$1" <<<"$2" || true
 }
 
-check_package_rules_like_splitter() {
+check_package_rules_skipping_wrappers_and_options() {
   local i=0
   local -a words=("$@") args
   while ((i < ${#words[@]})); do
@@ -326,14 +325,14 @@ check_package_rules_like_splitter() {
 }
 
 check_script_ignoring_quotes() {
-  local segment
+  local text_with_heredocs="$1" text_without_heredocs="$2" segment
   local -a segments words
-  split_command_text_ignoring_quotes segments "$1"
+  split_command_text_ignoring_quotes segments "$text_with_heredocs"
   for segment in "${segments[@]}"; do
     read_words "$segment"
-    check_package_rules_like_splitter "${words[@]//[\"\'\\]/}"
+    check_package_rules_skipping_wrappers_and_options "${words[@]//[\"\'\\]/}"
   done
-  split_command_text_ignoring_quotes segments "$2"
+  split_command_text_ignoring_quotes segments "$text_without_heredocs"
   for segment in "${segments[@]}"; do
     read_words "$segment"
     check_simple_command '' "${words[@]//[\"\'\\]/}"
@@ -374,7 +373,7 @@ blank() {
 }
 
 check_script() {
-  local json data_ranges='' heredoc_ranges='' count stdin word i complete=0 data_blanked heredocs_blanked
+  local json data_ranges='' heredoc_ranges='' count stdin word i complete=0 text_with_heredocs text_without_heredocs
   local -a words
   if json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
     {
@@ -398,9 +397,9 @@ check_script() {
   fi
 
   if ((complete)); then
-    blank data_blanked "$1" "$data_ranges"
-    blank heredocs_blanked "$1" "$heredoc_ranges"
-    check_script_ignoring_quotes "$data_blanked" "$heredocs_blanked"
+    blank text_with_heredocs "$1" "$data_ranges"
+    blank text_without_heredocs "$1" "$heredoc_ranges"
+    check_script_ignoring_quotes "$text_with_heredocs" "$text_without_heredocs"
   else
     check_script_ignoring_quotes "$1" "$1"
   fi
