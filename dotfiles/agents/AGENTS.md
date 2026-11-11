@@ -24,7 +24,15 @@ Todoist is the only task tracker, and it is private. Use the `td` CLI, and write
   3. `MECA` for work in a `Meca-Therapies` repo, or `Side Projects` for work anywhere else. The org is the owner in `git remote get-url origin`.
 
   Pass it to `--project` as its name or as `id:<project id>`.
-- Out-of-scope work, whether you noticed it or were told about it: before you finish, file it in its effort's project with `td task add "<title>" --project <project> --section Todo --labels from-agent --description "<repos, what is wrong, where, and how you know>"`. Leave out `--section` in a project with no Todo section. Use `--project Inbox` only when you cannot tell which effort or which org the work belongs to. Do not do that work.
+- Out-of-scope work, whether you noticed it or were told about it: do not do it, and never file it on your own. Michael's Todoist holds only work he chose.
+- When Michael asks you to file something, that is his approval. Otherwise, suggest a card as soon as you notice the work, and only when you would defend it as worth his time:
+  - In Claude Code, call `AskUserQuestion` with one question per card, such as `I suggest a card: <title>. Create it?`. Use the header `Card` and the options `Create card` and `Skip`, and put the card's project and description in the `Create card` preview. Ask about at most four cards in one call, most important first.
+  - In Codex, or wherever you have no question tool, ask the same question in one plain sentence.
+  - When Michael has said he is stepping away, hold your suggestions and ask once when you finish.
+  - A subagent or delegated child does not ask. It returns its suggestions in its report, and the agent that started it asks.
+- File an approved card in its effort's project with `td task add "<title>" --project <project> --section Todo --labels from-agent,approved --description "<repos, what is wrong, where, and how you know>"`. Leave out `--section` in a project with no Todo section. Use `--project Inbox` only when you cannot tell which effort or which org the work belongs to. The agent-guard hook blocks a `from-agent` task without `approved`.
+- List each card Michael skipped, and each one you did not ask about, in the PR description under `Noticed, not filed`.
+- These rules override any skill that tells you to file an issue, a ticket, or a tracked issue.
 - No task was named: before your first commit, make a new top-level task in its effort's project and use that id as the task above: `td task add "<title>" --project <project> --section "In Progress" --json`. Leave out `--section` in a project with no In Progress section. A session that changes no code creates nothing.
 - Ask Michael before you create any project. When an effort deserves a project of its own, say so in its task's description.
 - Never complete a task that has a PR, and never complete a parent. Merging does that.
