@@ -34,6 +34,14 @@ block	nix-env -iA nixpkgs.jq
 block	defaults write com.apple.dock autohide -bool true
 block	cd scripts/bun && sudo -E npm install -g ccstatusline
 block	git pull; HOMEBREW_NO_AUTO_UPDATE=1 /opt/homebrew/bin/brew install jq
+block	pkill -f "monitor" >/dev/null 2>&1; true
+block	pkill node
+block	sleep 1 && sudo pkill -f vite
+block	killall -9 chrome
+block	t3 up
+block	t3 up --lan --yes
+block	t3 service install
+block	~/.local/bin/t3 service uninstall
 allow	brew list --cask
 allow	brew info --cask linearmouse
 allow	npm install
@@ -45,6 +53,12 @@ allow	nix-env -q
 allow	defaults read com.apple.dock autohide
 allow	git commit -m "docs: say why brew install is blocked"
 allow	grep -rn "npm install -g" AGENTS.md
+allow	pgrep -af monitor
+allow	kill "$!"
+allow	git commit -m "fix: stop using pkill"
+allow	t3 status
+allow	t3 service status
+allow	t3 thread list
 EOF
 
 # Codex can pass the command as an argument vector.

@@ -8,6 +8,8 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 | --- | --- |
 | Verify every change with `task check`. Any evaluation warning fails it. | `task check` builds `checks.<system>.all` with `--option abort-on-warn true`. That evaluates both hosts and both Home Manager outputs and runs every flake check. CI runs `task check` on every PR. |
 | Install packages and set macOS defaults through Nix, never by hand. | The `agent-guard` PreToolUse hook (`system/agent-guard.sh`) in the Claude Code managed settings and the Codex `requirements.toml` blocks brew changes, global npm, pnpm, yarn and bun installs, `nix profile`, `nix-env` and `defaults write`. `checks.agent-guard` tests it. GUIs, app installers and vendor CLIs are covered by these docs only. |
+| Stop a process by its PID, never by a name pattern. | The `agent-guard` hook blocks `pkill` and `killall`, because a pattern also matches processes the agent did not start. `checks.agent-guard` tests it. |
+| Nix owns T3 Code's background service, `t3code.service`. | The `agent-guard` hook blocks `t3 up`, `t3 service install` and `t3 service uninstall`, which replace or remove that unit. `checks.agent-guard` tests it. |
 | Files that tools write at runtime stay out of the repo. | `~/.claude/skills` holds one link per skill (`home/shared/programs/agents.nix`), so Claude Code's own folders stay in `$HOME`. The global git ignores (`home/shared/programs/git.nix`) cover `.DS_Store` and `.claude/settings.local.json`. |
 | Tools with their own updater are bootstrapped by Nix and never pinned. | These docs only. |
 | The shared instruction file keeps its `## pstack model configuration` heading and row format. | These docs only. |

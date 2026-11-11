@@ -18,6 +18,10 @@ block() {
 install_message='Packages are declared in the dotfiles repo, never installed by hand. Add CLI tools to home/shared/packages.nix, or to home/linux/packages.nix or home/darwin/packages.nix for one host, and macOS apps as casks in darwin/homebrew.nix. Then run `task check`. See "Declarative system management" in the dotfiles AGENTS.md.'
 # shellcheck disable=SC2016
 defaults_message='macOS defaults are declared under system.defaults in darwin/system.nix of the dotfiles repo. Edit that file, then run `task check`.'
+# shellcheck disable=SC2016
+kill_message='pkill and killall match every process whose name or command line fits, including ones you did not start. `pkill -f monitor` once ended the nixbook'"'"'s GNOME session by killing gnome-session-ctl --monitor. Kill by PID instead: `kill $!` right after you start a job, or find the PID with `pgrep -af <pattern>` and run `kill <pid>`.'
+# shellcheck disable=SC2016
+t3_service_message='Nix owns T3 Code'"'"'s background service, t3code.service, in home/linux/programs/t3code.nix of the dotfiles repo. `t3 up` and `t3 service install` or `uninstall` replace or remove that unit. Change the module, then run `task check`.'
 
 has_word() {
   local word wanted
@@ -81,6 +85,14 @@ check_simple_command() {
     defaults)
       case "${args[0]:-}" in
         write | delete) block "$defaults_message" ;;
+      esac
+      ;;
+    pkill | killall)
+      block "$kill_message"
+      ;;
+    t3)
+      case "${args[0]:-} ${args[1]:-}" in
+        "up "* | "service install" | "service uninstall") block "$t3_service_message" ;;
       esac
       ;;
   esac
