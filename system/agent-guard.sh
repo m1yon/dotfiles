@@ -18,8 +18,7 @@ command="$(jq -r '
 
 expansion_word='__EXPANSION__'
 
-# Each simple command becomes its word count, its stdin, then its words. Its stdin is the
-# text of its heredocs and here-strings, which shfmt numbers 71 (<<), 72 (<<-) and 73 (<<<).
+# shfmt numbers heredocs and here-strings 71 (<<), 72 (<<-) and 73 (<<<).
 # shellcheck disable=SC2016 # These are jq variables, not shell expansions.
 simple_commands_program='
   def unescape($chars): gsub("\\\\(?<c>[" + $chars + "])"; .c);
@@ -46,12 +45,13 @@ simple_commands_program='
     if .Op == 73 then .Word | word
     elif any(.Word.Parts[]; .Type != "Lit" or (.Value | contains("\\"))) then [.Hdoc.Parts[]?.Value] | join("")
     else .Hdoc.Parts // [] | quoted("$`\\\\") end;
+  def record($stdin): (length | tostring), $stdin, .[];
   (
     .. | objects | select(.Cmd?.Type? == "CallExpr")
     | [(.Redirs // [])[] | select(.Op | IN(71, 72, 73)) | stdin] as $stdin
     | [(.Cmd.Args // [])[] | word]
     | select(length > 0)
-    | (length | tostring), ($stdin | join("\n")), .[]
+    | record($stdin | join("\n"))
   ),
   "end"'
 
@@ -251,7 +251,6 @@ check_script_ignoring_quotes() {
   done < <(split_command_text_ignoring_quotes "$1")
 }
 
-# Usage: check_script <script> [<stdin of the process that runs it>]
 check_script() {
   local json count stdin word i complete=0
   local -a words
