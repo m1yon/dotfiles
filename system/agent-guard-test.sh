@@ -243,8 +243,6 @@ run_case allow "$(bash_event $'cat <<\'EOF\'\nbrew install jq\nEOF')"
 run_case allow "$(bash_event $'git commit -m "$(cat <<\'EOF\'\nfix: guard; brew install jq\nEOF\n)"')"
 run_case block "$(bash_event $'git commit -m "$(cat <<\'EOF\'\nfix\nEOF\n)"; pkill -f monitor')"
 
-# The package rules still read every heredoc the text splitter read, so nothing it
-# blocked is allowed. The kill and T3 rules leave heredocs to the parser.
 run_case block "$(bash_event $'python3 - <<\'EOF\'\nbrew install jq\nEOF')"
 run_case allow "$(bash_event $'python3 - <<\'EOF\'\npkill -f monitor\nEOF')"
 

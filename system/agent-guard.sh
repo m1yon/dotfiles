@@ -1,25 +1,10 @@
 # PreToolUse hook for Claude Code and Codex. It reads the hook event on stdin and
 # exits 2 to block a Bash call; both harnesses show stderr to the agent.
 #
-# A script is blocked when either of two checks blocks it.
-# 1. shfmt parses it into a syntax tree. Every simple command in it, however deeply
-#    nested, becomes an argv of literal words: quotes removed, backslash escapes resolved,
-#    and each expansion replaced by expansion_word. The rules read that argv. Text that
-#    reaches a shell is a script and gets both checks: a shell's -c argument or stdin,
-#    ssh's remote command, env -S's string and a trap's action.
-# 2. The text is split on shell operators with quotes ignored. That catches a command after
-#    a separator in a script run by a program the parser does not model, such as timeout,
-#    su or find -exec. The arguments, heredocs and here-strings of data_commands are
-#    blanked first, so a commit message can mention brew install. The package and defaults
-#    rules also read every other heredoc, and skip wrappers and options the way this hook
-#    did before it had a parser, so the parser allows nothing that hook blocked.
-# Input shfmt cannot parse, such as zsh-only syntax, gets check 2 with nothing blanked.
 
 data_commands='git gh grep egrep fgrep rg echo printf cat tee td'
 
-# Codex can pass an argument vector, such as ["bash", "-lc", "<script>"]. A vector that
-# ends in -c and a script is read as that script, whatever runs it, unless it is a data
-# command's -c.
+# Codex can pass an argument vector, such as ["bash", "-lc", "<script>"].
 command="$(jq -r --arg data "$data_commands" '
   .tool_input.command // ""
   | if type != "array" then .
@@ -59,8 +44,6 @@ simple_commands_program='
   def record($stdin): (length | tostring), $stdin, .[];
   def region($kind): [.Pos.Offset, .End.Offset, $kind];
   def data_command: .Cmd.Type? == "CallExpr" and (.Cmd.Args[0] | if . then word | split("/")[-1] | IN($data | split(" ")[]) else false end);
-  # The byte ranges check 2 blanks, given the kinds of region to blank. Regions nest, and
-  # the innermost one decides each byte.
   def blanked($kinds; $regions):
     def close($to):
       until((.open | length) == 0 or .open[-1][0] > $to;
@@ -73,8 +56,6 @@ simple_commands_program='
       | .at = $start
       | .open += [[$end, $kind != "k"]])
     | close(infinite) | .out | map(select(.[0] < .[1]) | join(" ")) | join("\n");
-  # d is data, h a heredoc or here-string on any other command, and k a command
-  # substitution, which runs even inside data.
   (
     [
       (.. | objects | select(.Type? | IN("CmdSubst", "ProcSubst")) | region("k")),
@@ -265,7 +246,6 @@ check_simple_command() {
   esac
 }
 
-# Reads the command name in $1 and its arguments in args.
 check_package_rules() {
   local verb
   case "$1" in
@@ -331,8 +311,6 @@ split_command_text_ignoring_quotes() {
   read -r -d '' -a "$1" <<<"$2" || true
 }
 
-# The splitter's reading of a command: every wrapper name, option and assignment before
-# the name is skipped, with no option taking a value.
 check_package_rules_like_splitter() {
   local i=0
   local -a words=("$@") args
@@ -347,7 +325,6 @@ check_package_rules_like_splitter() {
   check_package_rules "${words[i]##*/}"
 }
 
-# $1 is read by the package rules and $2 by every rule.
 check_script_ignoring_quotes() {
   local segment
   local -a segments words
