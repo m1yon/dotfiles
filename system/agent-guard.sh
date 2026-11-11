@@ -4,35 +4,56 @@
 # shfmt parses the command into a syntax tree. Every simple command in it, however
 # deeply nested, becomes an argv of literal words: quotes removed, backslash escapes
 # resolved, and each expansion replaced by expansion_word. The rules read that argv.
+# Text that reaches a shell is a script and gets the same check: a shell's -c argument
+# or stdin, ssh's remote command, and env -S's string. Every other heredoc is data.
 # Input shfmt cannot parse, such as zsh-only syntax, falls back to splitting the text.
 
 # Codex can pass an argument vector, such as ["bash", "-lc", "<script>"].
 command="$(jq -r '
   .tool_input.command // ""
   | if type != "array" then .
-    elif length >= 3 and (.[-2] | test("^-l?c$")) then .[-1]
+    elif length >= 3 and (.[0] | tostring | split("/")[-1] | IN("bash", "sh", "zsh", "dash")) and (.[-2] | test("^-l?c$")) then .[-1]
     else map(tostring | @sh) | join(" ")
     end')"
 
 expansion_word='__EXPANSION__'
 
+# Each simple command becomes its word count, its stdin, then its words. Its stdin is the
+# text of its heredocs and here-strings, which shfmt numbers 71 (<<), 72 (<<-) and 73 (<<<).
 # shellcheck disable=SC2016 # These are jq variables, not shell expansions.
 simple_commands_program='
+  def unescape($chars): gsub("\\\\(?<c>[" + $chars + "])"; .c);
+  def quoted($chars): [.[] | if .Type == "Lit" then .Value | unescape($chars) else $expansion end] | join("");
+  def number($base): reduce (ascii_downcase | explode[] | if . > 96 then . - 87 else . - 48 end) as $digit (0; . * $base + $digit);
+  def ansi_c:
+    gsub("\\\\(?<e>[0-7]{1,3}|x[0-9A-Fa-f]{1,2}|u[0-9A-Fa-f]{1,4}|U[0-9A-Fa-f]{1,8}|c[\\s\\S]?|[\\s\\S])";
+      .e
+      | if test("^[0-7]") then [number(8)] | implode
+        elif test("^[xuU].") then [.[1:] | number(16)] | implode
+        elif startswith("c") then $expansion
+        elif test("^[\\\\\"?\\x27]$") then .
+        else {n: 10, t: 9, r: 13, a: 7, b: 8, e: 27, E: 27, f: 12, v: 11}[.] as $code
+          | if $code then [$code] | implode else "\\" + . end
+        end)
+    | sub("\\x00[\\s\\S]*"; "");
   def part:
-    if .Type == "Lit" then .Value | gsub("\\\\(?<c>[\\s\\S])"; .c)
-    elif .Type == "SglQuoted" then
-      if .Dollar and (.Value | contains("\\")) then $expansion else .Value end
-    elif .Type == "DblQuoted" then
-      [.Parts[] | if .Type == "Lit" then .Value | gsub("\\\\(?<c>[$`\"\\\\])"; .c) else $expansion end] | join("")
+    if .Type == "Lit" then .Value | unescape("\\s\\S")
+    elif .Type == "SglQuoted" then if .Dollar then .Value | ansi_c else .Value end
+    elif .Type == "DblQuoted" then .Parts | quoted("$`\"\\\\")
     else $expansion end;
   def word: [.Parts[] | part] | join("");
+  def stdin:
+    if .Op == 73 then .Word | word
+    elif any(.Word.Parts[]; .Type != "Lit" or (.Value | contains("\\"))) then [.Hdoc.Parts[]?.Value] | join("")
+    else .Hdoc.Parts // [] | quoted("$`\\\\") end;
   (
-    .. | objects | select(.Type? == "CallExpr")
-    | [(.Args // [])[] | word]
+    .. | objects | select(.Cmd?.Type? == "CallExpr")
+    | [(.Redirs // [])[] | select(.Op | IN(71, 72, 73)) | stdin] as $stdin
+    | [(.Cmd.Args // [])[] | word]
     | select(length > 0)
-    | (length | tostring), "\u0000", (.[] | ., "\u0000")
+    | (length | tostring), ($stdin | join("\n")), .[]
   ),
-  "end", "\u0000"'
+  "end"'
 
 block() {
   printf 'agent-guard blocked this command. %s\n' "$1" >&2
@@ -67,22 +88,28 @@ has_word_like() {
   return 1
 }
 
+# Returns 0 when the option takes the next word as its value. env -S splits its value
+# into a command line and runs it, so that value is checked as a script.
 option_takes_next_word() {
-  local wrapper="$1" option="$2" flag i
+  local wrapper="$1" option="$2" next="$3" flag value i
   case "$wrapper:$option" in
     sudo:--user | sudo:--group | sudo:--host | sudo:--prompt | sudo:--chdir | sudo:--chroot | sudo:--role | sudo:--type | sudo:--command-timeout | sudo:--other-user | sudo:--close-from)
       return 0
       ;;
     env:--unset | env:--chdir) return 0 ;;
+    env:--split-string) option=-S ;;
+    env:--split-string=*) option="-S${option#*=}" ;;
     *:--*) return 1 ;;
   esac
   option="${option#-}"
   for ((i = 0; i < ${#option}; i += 1)); do
     flag="${option:i:1}"
     case "$wrapper:$flag" in
-      sudo:[ughpCDRrtTU] | doas:[uC] | env:[uC])
+      sudo:[ughpCDRrtTU] | doas:[uC] | env:[uCS] | exec:a | time:[fo] | ssh:[BbcDEeFIiJLlmOoPpQRSWw])
         # In a bundle such as -uroot the rest of the word is the value.
-        if ((i == ${#option} - 1)); then return 0; fi
+        value="${option:i+1}"
+        if [[ $wrapper:$flag == env:S ]]; then check_script "${value:-$next}" "$stdin"; fi
+        if [[ -z $value ]]; then return 0; fi
         return 1
         ;;
     esac
@@ -90,41 +117,72 @@ option_takes_next_word() {
   return 1
 }
 
-# A shell run with -c, alone or in a bundle such as -lc, takes the first word after
-# its options as a script.
-check_shell_c_script() {
-  local i=0 has_c=0
+# A shell runs the first word after its options as a script when -c is set, alone or in
+# a bundle such as -lc. Otherwise it runs its stdin, unless a script file follows without -s.
+check_shell() {
+  local i=0 has_c=0 has_s=0
   while ((i < ${#args[@]})); do
     case "${args[i]}" in
       --)
         ((i += 1))
         break
         ;;
-      --rcfile | --init-file | -o | +o | -O | +O) ((i += 1)) ;;
+      --rcfile | --init-file) ((i += 1)) ;;
       --*) ;;
+      # -o and -O take the next word, also at the end of a bundle such as -euo.
+      [-+]*[oO]) ((i += 1)) ;;
       -*c*) has_c=1 ;;
+      -*s*) has_s=1 ;;
       -* | +*) ;;
       *) break ;;
     esac
     ((i += 1))
   done
-  if ((has_c)); then check_script "${args[i]-}"; fi
+  if ((has_c)); then
+    check_script "${args[i]-}" "$stdin"
+  elif ((has_s || i == ${#args[@]})); then
+    check_script "$stdin"
+  fi
+}
+
+# ssh joins the words after the destination into a script for the remote shell, which
+# runs ssh's stdin when there are none.
+check_ssh() {
+  local i=0 destination=0
+  while ((i < ${#args[@]})); do
+    case "${args[i]}" in
+      -*) if option_takes_next_word ssh "${args[i]}" "${args[i + 1]-}"; then ((i += 1)); fi ;;
+      *)
+        if ((destination)); then break; fi
+        destination=1
+        ;;
+    esac
+    ((i += 1))
+  done
+  if ((i < ${#args[@]})); then
+    check_script "${args[*]:i}" "$stdin"
+  else
+    check_script "$stdin"
+  fi
 }
 
 check_simple_command() {
-  local -a words=("$@")
+  local stdin="$1" wrapper='' i=0
+  local -a words=("${@:2}") args
 
-  local wrapper='' i=0
   while ((i < ${#words[@]})); do
     case "${words[i]}" in
       -*)
-        if option_takes_next_word "$wrapper" "${words[i]}"; then ((i += 1)); fi
+        # command -v and sudo -l only look the command up.
+        case "$wrapper:${words[i]}" in
+          command:-*[vV]* | sudo:-l* | sudo:--list) return 0 ;;
+        esac
+        if option_takes_next_word "$wrapper" "${words[i]}" "${words[i + 1]-}"; then ((i += 1)); fi
         ;;
       [A-Za-z_]*=*) ;;
       *)
         case "${words[i]##*/}" in
-          sudo | doas | env) wrapper="${words[i]##*/}" ;;
-          command | exec | nohup | time) wrapper='' ;;
+          sudo | doas | env | command | exec | nohup | time) wrapper="${words[i]##*/}" ;;
           *) break ;;
         esac
         ;;
@@ -138,7 +196,10 @@ check_simple_command() {
 
   case "$name" in
     bash | sh | zsh | dash)
-      check_shell_c_script
+      check_shell
+      ;;
+    ssh)
+      check_ssh
       ;;
     nix)
       if has_word profile && has_word install add upgrade remove rollback; then block "$install_message"; fi
@@ -186,12 +247,13 @@ check_script_ignoring_quotes() {
   local -a words
   while IFS= read -r segment; do
     read -ra words <<<"$segment"
-    check_simple_command "${words[@]//[\"\'\\]/}"
+    check_simple_command '' "${words[@]//[\"\'\\]/}"
   done < <(split_command_text_ignoring_quotes "$1")
 }
 
+# Usage: check_script <script> [<stdin of the process that runs it>]
 check_script() {
-  local json count word i complete=0
+  local json count stdin word i complete=0
   local -a words
   if ! json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
     check_script_ignoring_quotes "$1"
@@ -203,16 +265,17 @@ check_script() {
       complete=1
       break
     fi
+    IFS= read -r -d '' stdin || break
     words=()
     for ((i = 0; i < count; i += 1)); do
       IFS= read -r -d '' word || break 2
       words+=("$word")
     done
-    check_simple_command "${words[@]}"
-  done < <(jq -j --arg expansion "$expansion_word" "$simple_commands_program" <<<"$json")
+    # A command without a heredoc of its own reads the stdin of the script it is in.
+    check_simple_command "${stdin:-${2-}}" "${words[@]}"
+  done < <(jq --raw-output0 --arg expansion "$expansion_word" "$simple_commands_program" <<<"$json")
 
   ((complete)) || check_script_ignoring_quotes "$1"
 }
 
-args=()
 check_script "$command"

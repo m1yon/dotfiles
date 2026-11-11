@@ -82,6 +82,34 @@ block	for pid in 1 2; do pkill -f "$pid"; done
 block	true && pkill -f x || echo failed
 block	echo ok | pkill -f x
 block	pkill -f "$name"
+block	bash <<< 'pkill -f monitor'
+block	sudo bash <<< "t3 service install"
+block	bash -euo pipefail -c 'pkill -f monitor'
+block	bash -c $'pkill -f monitor\n'
+block	bash -c $'brew install jq\n'
+block	sh -c $'cd scripts/bun\npnpm add -g typescript'
+block	bash -c $'pk\x69ll -f monitor'
+block	bash -c $'pk\151ll -f monitor'
+block	bash -c $'pk\u0069ll -f monitor'
+block	bash -c $'echo \'hi\'; pkill -f monitor'
+block	bash -c $'\cA; killall node'
+block	env -S 'pkill -f monitor'
+block	env -S 'brew install jq'
+block	env -S'pkill -f monitor'
+block	env -iS 'pkill -f monitor'
+block	env --split-string='pkill -f monitor'
+block	env --split-string 'sh -c "killall node"'
+block	exec -a worker pkill -f monitor
+block	/usr/bin/time -f %e pkill -f monitor
+block	command pkill -f monitor
+block	ssh nixbook 'pkill -f monitor'
+block	ssh nixbook pkill -f monitor
+block	ssh -p 22 -o ConnectTimeout=5 nixbook 'sudo pkill -f monitor'
+block	ssh nixbook -t 'sleep 1; killall node'
+block	ssh nixbook 't3 service install'
+block	ssh nixbook 'bash -lc "pkill -f monitor"'
+block	ssh nixbook 'bash -s' <<< 'pkill -f monitor'
+block	ssh nixbook <<< 't3 up'
 allow	brew list --cask
 allow	brew info --cask linearmouse
 allow	npm install
@@ -117,6 +145,19 @@ allow	bash -c 'echo pkill'
 allow	bash -c "echo $HOME"
 allow	bash -lc 'git status'
 allow	bash script.sh -c 'pkill -f x'
+allow	bash -c $'echo pkill -f monitor\n'
+allow	echo $'a\0b' "c; pkill -f monitor"
+allow	IFS= read -r -d $'\0' line
+allow	cat <<< 'pkill -f monitor'
+allow	jq -R . <<< 'pkill -f monitor'
+allow	command -v pkill
+allow	command -V killall
+allow	sudo -l pkill -f monitor
+allow	env -S 'git status'
+allow	ssh nixbook 'systemctl --user status t3code'
+allow	ssh nixbook 'echo "pkill -f monitor"'
+allow	ssh -l pkill nixbook 'git status'
+allow	ssh nixbook 'cat > /tmp/notes' <<< 'pkill -f monitor'
 EOF
 
 run_case allow "$(bash_event $'cat <<\'EOF\'\npkill -f x\nEOF')"
@@ -129,6 +170,29 @@ run_case block "$(bash_event $'echo hi\nsudo -u michael pkill -f monitor')"
 run_case block "$(bash_event $'bash -c \'\npkill -f monitor\n\'')"
 run_case block "$(bash_event $'echo "$(pkill -f x)"')"
 run_case block "$(bash_event $'echo "line one\n$(pkill -f x)"')"
+
+# A heredoc is a script when a shell reads it, local or over ssh, and data otherwise.
+run_case block "$(bash_event $'bash <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case block "$(bash_event $'bash <<EOF\nkillall node\nEOF')"
+run_case block "$(bash_event $'bash <<-EOF\n\tt3 service uninstall\n\tEOF')"
+run_case block "$(bash_event $'bash <<EOF\necho \\$(pkill -f monitor)\nEOF')"
+run_case block "$(bash_event $'sh -s -- arg <<\'EOF\'\nbrew install jq\nEOF')"
+run_case block "$(bash_event $'sudo bash <<\'EOF\'\nnpm install -g typescript\nEOF')"
+run_case block "$(bash_event $'zsh <<\'EOF\'\ndefaults write com.apple.dock autohide -bool true\nEOF')"
+run_case block "$(bash_event $'bash -c \'bash -s\' <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case block "$(bash_event $'bash <<\'OUTER\'\nbash <<\'EOF\'\npkill -f monitor\nEOF\nOUTER')"
+run_case allow "$(bash_event $'bash <<\'EOF\'\ngit status\necho "a\\"b; pkill -f monitor"\nEOF')"
+run_case allow "$(bash_event $'bash script.sh <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case allow "$(bash_event $'bash -c \'cat > notes.txt\' <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case allow "$(bash_event $'tee notes.txt <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case allow "$(bash_event $'python3 - <<\'EOF\'\nprint("pkill -f monitor")\nEOF')"
+run_case allow "$(bash_event $'gh pr create --title x --body-file - <<\'EOF\'\nBlock `pkill -f monitor`; use `kill <pid>`.\nEOF')"
+run_case block "$(bash_event $'ssh nixbook \'bash -s\' <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case block "$(bash_event $'ssh nixbook \'sudo bash -s\' <<\'EOF\'\nkillall gnome-shell\nEOF')"
+run_case block "$(bash_event $'ssh nixbook \'bash -euo pipefail -s\' <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case block "$(bash_event $'ssh nixbook <<\'EOF\'\nsystemctl --user status t3code\nt3 up\nEOF')"
+run_case allow "$(bash_event $'ssh nixbook \'bash -s\' <<\'EOF\'\nsystemctl --user status t3code\nEOF')"
+run_case allow "$(bash_event $'ssh nixbook \'cat > /tmp/notes\' <<\'EOF\'\npkill -f monitor\nEOF')"
 
 long_heredoc="$(
   printf 'cat <<EOF\n'
@@ -150,7 +214,15 @@ run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-c","-l","p
 run_case block '{"tool_name":"Bash","tool_input":{"command":["pkill","-f","monitor"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["sudo","-u","michael","pkill","-f","monitor"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["t3","service","install"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["/bin/zsh","-lc","pkill -f monitor"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","bash <<EOF\npkill -f monitor\nEOF"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["ssh","nixbook","pkill -f monitor"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["env","-S","pkill -f monitor"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["env","bash","-c","pkill -f monitor"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","git status"]}}'
+run_case allow '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","cat <<EOF\npkill -f monitor\nEOF"]}}'
+run_case allow '{"tool_name":"Bash","tool_input":{"command":["echo","-c","pkill -f monitor"]}}'
+run_case allow '{"tool_name":"Bash","tool_input":{"command":["command","-v","pkill"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["git","commit","-m","fix: guard; pkill -f monitor"]}}'
 run_case allow '{"tool_name":"Bash","tool_input":{"command":["grep","-E","pkill|killall","system/agent-guard.sh"]}}'
 run_case allow '{"tool_name":"apply_patch","tool_input":{}}'
