@@ -174,15 +174,17 @@ check_shell() {
 # ssh joins the words after the destination into a script for the remote shell, which
 # runs ssh's stdin when there are none.
 check_ssh() {
-  local i=0 destination=0 value remote_command='' prints_config=0
+  local i=0 destination=0 value prints_config=0 remote_command
+  local -a remote_commands=()
   while ((i < ${#args[@]})); do
     case "${args[i]}" in
       -*)
         value=''
         if [[ ${args[i]} == -o ]]; then value="${args[i + 1]-}"; elif [[ ${args[i]} == -o?* ]]; then value="${args[i]#-o}"; fi
-        if [[ ${value,,} == remotecommand* ]]; then
+        # Words split with quotes ignored cut an -o value apart, so only parsed words count.
+        if ((words_are_parsed)) && [[ ${value,,} == remotecommand* ]]; then
           value="${value:13}"
-          remote_command="${value#"${value%%[![:space:]=]*}"}"
+          remote_commands+=("${value#"${value%%[![:space:]=]*}"}")
         fi
         # ssh -G prints its configuration and runs nothing.
         if [[ ${args[i]} =~ ^-[46AaCfGgKkMNnqsTtVvXxYy]*G ]]; then prints_config=1; fi
@@ -196,7 +198,9 @@ check_ssh() {
     ((i += 1))
   done
   if ((prints_config)); then return 0; fi
-  if [[ -n $remote_command ]]; then check_script "$remote_command" "$stdin"; fi
+  for remote_command in "${remote_commands[@]}"; do
+    check_script "$remote_command" "$stdin"
+  done
   if ((i < ${#args[@]})); then
     check_script "${args[*]:i}" "$stdin"
   else
@@ -346,7 +350,7 @@ check_package_rules_skipping_wrappers_and_options() {
 }
 
 check_script_ignoring_quotes() {
-  local text_with_heredocs="$1" text_without_heredocs="$2" segment
+  local text_with_heredocs="$1" text_without_heredocs="$2" segment words_are_parsed=0
   local -a segments words
   split_command_text_ignoring_quotes segments "$text_with_heredocs"
   for segment in "${segments[@]}"; do
@@ -394,7 +398,7 @@ blank() {
 }
 
 check_script() {
-  local json data_ranges='' heredoc_ranges='' count stdin word i complete=0 text_with_heredocs text_without_heredocs
+  local json data_ranges='' heredoc_ranges='' count stdin word i complete=0 text_with_heredocs text_without_heredocs words_are_parsed=1
   local -a words
   if json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
     {
