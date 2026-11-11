@@ -66,6 +66,11 @@ block	t3 service install
 block	~/.local/bin/t3 service uninstall
 block	t3 "up"
 block	t3 'service' 'install'
+block	t3 --log-level debug up --lan --yes
+block	t3 --log-level=debug service install
+block	t3 service --log-level debug uninstall
+block	env -P /usr/bin:/bin pkill -f monitor
+block	env -P /usr/bin:/bin killall gnome-shell
 block	t3 service "uninstall"
 block	sudo -u michael pkill -f monitor
 block	sudo -Eu michael killall node
@@ -170,6 +175,8 @@ allow	kill "$!"
 allow	git commit -m "fix: stop using pkill"
 allow	t3 status
 allow	t3 service status
+allow	t3 --log-level debug status
+allow	t3 thread start --title up
 allow	t3 thread list
 allow	git commit -m "fix: guard commands; pkill -f monitor"
 allow	git commit -m "docs: guard commands; t3 up --lan"

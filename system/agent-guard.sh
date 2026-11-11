@@ -129,7 +129,7 @@ option_takes_next_word() {
   for ((i = 0; i < ${#option}; i += 1)); do
     flag="${option:i:1}"
     case "$wrapper:$flag" in
-      sudo:[ughpCDRrtTU] | doas:[uC] | env:[uCS] | exec:a | time:[fo] | ssh:[BbcDEeFIiJLlmOoPpQRSWw])
+      sudo:[ughpCDRrtTU] | doas:[uC] | env:[uCPS] | exec:a | time:[fo] | ssh:[BbcDEeFIiJLlmOoPpQRSWw])
         # In a bundle such as -uroot the rest of the word is the value.
         value="${option:i+1}"
         if [[ $wrapper:$flag == env:S ]]; then check_script "${value:-$next}" "$stdin"; fi
@@ -235,7 +235,16 @@ check_simple_command() {
       block "$kill_message"
       ;;
     t3)
-      case "${args[0]:-} ${args[1]:-}" in
+      local -a subcommand=()
+      local j
+      for ((j = 0; j < ${#args[@]}; j += 1)); do
+        case "${args[j]}" in
+          --log-level | --completions | --base-dir) ((j += 1)) ;;
+          -*) ;;
+          *) subcommand+=("${args[j]}") ;;
+        esac
+      done
+      case "${subcommand[0]:-} ${subcommand[1]:-}" in
         "up "* | "service install" | "service uninstall") block "$t3_service_message" ;;
       esac
       ;;
