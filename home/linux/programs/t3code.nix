@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   appImage = "${config.xdg.dataHome}/t3code/T3-Code.AppImage";
@@ -47,8 +52,34 @@ let
         find "$cache" -mindepth 1 -maxdepth 1 ! -name "$current" -exec rm -rf {} +
       fi
 
+      # GNOME's session exports home-manager's sourced flag without the PATH
+      # entries it guards. T3 Code reads PATH from a login shell, which skips
+      # hm-session-vars.sh while the flag is set, so claude goes missing.
+      unset __HM_SESS_VARS_SOURCED
+
       export CHROME_DESKTOP=t3code.desktop
       exec appimage-run "$app" "$@"
+    '';
+  };
+
+  # Chromium moves T3 Code's main process into its own scope, so a copy started
+  # outside this unit (the updater's relaunch, the app grid) outlives it, and a
+  # second copy would quit on the single-instance lock. Wait for the running copy
+  # instead, and Restart=always then starts a supervised one. A copy's bwrap
+  # command line ends with the AppImage path. The t3 CLI's adds --appimage-*.
+  t3code-service = pkgs.writeShellApplication {
+    name = "t3code-service";
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.procps
+      t3code
+    ];
+    text = ''
+      if running="$(pgrep -o -u "$(id -u)" -f -- ${lib.escapeShellArg "^/nix/store/[^ ]*/bin/bwrap .*${lib.escapeRegex appImage}( --no-sandbox)?$"})"; then
+        exec tail --pid="$running" -f /dev/null
+      fi
+
+      exec t3code --no-sandbox
     '';
   };
 in
@@ -63,5 +94,22 @@ in
     terminal = false;
     categories = [ "Development" ];
     settings.StartupWMClass = "com.t3tools.T3Code";
+  };
+
+  systemd.user.services.t3code = {
+    Unit = {
+      Description = "T3 Code";
+      PartOf = [ "graphical-session.target" ];
+      After = [ "graphical-session.target" ];
+      # Agents run `task rebuild` from inside T3 Code, so a switch must not
+      # restart it under them.
+      X-SwitchMethod = "keep-old";
+    };
+    Service = {
+      ExecStart = lib.getExe t3code-service;
+      Restart = "always";
+      RestartSec = 5;
+    };
+    Install.WantedBy = [ "gnome-session.target" ];
   };
 }
