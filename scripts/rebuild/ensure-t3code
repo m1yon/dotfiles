@@ -2,9 +2,4 @@
 # Agent sessions run inside T3 Code, so a switch that stops it would strand them.
 set -euo pipefail
 
-if systemctl --user list-units --state=running --no-legend \
-  'app-*t3code*.scope' 'app-*T3Code*.scope' 't3code-after-rebuild.service' | grep -q .; then
-  exit 0
-fi
-
-exec systemd-run --user --collect --unit=t3code-after-rebuild t3code --no-sandbox
+exec systemctl --user start t3code.service
