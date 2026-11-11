@@ -174,7 +174,7 @@ check_shell() {
 # ssh joins the words after the destination into a script for the remote shell, which
 # runs ssh's stdin when there are none.
 check_ssh() {
-  local i=0 j destination=0 flags value rest prints_config=0 remote_command
+  local i=0 j destination=0 flags value lowered rest prints_config=0 remote_command
   local -a remote_commands=()
   while ((i < ${#args[@]})); do
     case "${args[i]}" in
@@ -190,9 +190,13 @@ check_ssh() {
             [BbcDEeFIiJLlmOPpQRSWw]) break ;;
           esac
         done
-        if [[ ${value,,} == remotecommand* && $remote_command_words != skip ]]; then
-          value="${value:13}"
-          value="${value#"${value%%[![:space:]=]*}"}"
+        # OpenSSH trims and lowercases the keyword, so any -o value that names RemoteCommand
+        # counts, and what follows the keyword is the remote command.
+        lowered="${value,,}"
+        if [[ $lowered == *remotecommand* && $remote_command_words != skip ]]; then
+          lowered="${lowered%%remotecommand*}"
+          value="${value:${#lowered}+13}"
+          value="${value#"${value%%[![:space:]=\"\']*}"}"
           # Splitting with quotes ignored cuts the value apart, so the words after it may belong to it.
           if [[ $remote_command_words == split ]]; then value+=" ${args[*]:rest}"; fi
           remote_commands+=("$value")

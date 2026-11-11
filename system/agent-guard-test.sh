@@ -77,6 +77,9 @@ block	ssh -T -o 'RemoteCommand=pkill -f monitor' nixbook
 block	ssh -To 'RemoteCommand=pkill -f monitor' nixbook
 block	ssh -qTo 'RemoteCommand=t3 up --lan --yes' nixbook
 block	ssh -ToRemoteCommand='killall gnome-shell' nixbook
+block	ssh -o ' RemoteCommand=pkill -f monitor' nixbook
+block	ssh -o 'remotecommand t3 service install' nixbook
+block	ssh -o '"RemoteCommand"="pkill -f monitor"' nixbook
 block	t3 --log-level debug up --lan --yes
 block	t3 --log-level=debug service install
 block	t3 service --log-level debug uninstall
