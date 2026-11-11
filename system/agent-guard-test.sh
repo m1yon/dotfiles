@@ -74,6 +74,9 @@ block	ssh -o 'RemoteCommand killall gnome-shell' nixbook
 block	ssh nixbook pkill -G users monitor
 block	ssh -o 'RemoteCommand=pkill -f monitor' -o 'RemoteCommand=printf safe' nixbook
 block	ssh -T -o 'RemoteCommand=pkill -f monitor' nixbook
+block	ssh -To 'RemoteCommand=pkill -f monitor' nixbook
+block	ssh -qTo 'RemoteCommand=t3 up --lan --yes' nixbook
+block	ssh -ToRemoteCommand='killall gnome-shell' nixbook
 block	t3 --log-level debug up --lan --yes
 block	t3 --log-level=debug service install
 block	t3 service --log-level debug uninstall
@@ -282,6 +285,9 @@ run_case block "$(bash_event 'print -l ${(k)commands}; pkill -f monitor')"
 run_case block "$(bash_event 'print -l ${(k)commands}; t3 "up"')"
 run_case block "$(bash_event 'print -l ${(k)commands}; p\kill -f monitor')"
 run_case allow "$(bash_event 'print -l ${(k)commands}; echo hi')"
+run_case block "$(bash_event "print -l \${(k)commands}; ssh -o 'RemoteCommand=pkill -f monitor' nixbook")"
+run_case block "$(bash_event "print -l \${(k)commands}; ssh -o 'RemoteCommand=t3 up --lan' nixbook")"
+run_case block "$(bash_event "print -l \${(k)commands}; ssh -To 'RemoteCommand=killall gnome-shell' nixbook")"
 
 # Codex can pass the command as an argument vector.
 run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","td task add \"x\" --labels from-agent"]}}'

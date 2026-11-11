@@ -174,17 +174,28 @@ check_shell() {
 # ssh joins the words after the destination into a script for the remote shell, which
 # runs ssh's stdin when there are none.
 check_ssh() {
-  local i=0 destination=0 value prints_config=0 remote_command
+  local i=0 j destination=0 flags value rest prints_config=0 remote_command
   local -a remote_commands=()
   while ((i < ${#args[@]})); do
     case "${args[i]}" in
       -*)
-        value=''
-        if [[ ${args[i]} == -o ]]; then value="${args[i + 1]-}"; elif [[ ${args[i]} == -o?* ]]; then value="${args[i]#-o}"; fi
-        # Words split with quotes ignored cut an -o value apart, so only parsed words count.
-        if ((words_are_parsed)) && [[ ${value,,} == remotecommand* ]]; then
+        flags="${args[i]#-}" value='' rest=$((i + 1))
+        for ((j = 0; j < ${#flags}; j += 1)); do
+          case "${flags:j:1}" in
+            o)
+              value="${flags:j+1}"
+              if [[ -z $value ]]; then value="${args[i + 1]-}" rest=$((i + 2)); fi
+              break
+              ;;
+            [BbcDEeFIiJLlmOPpQRSWw]) break ;;
+          esac
+        done
+        if [[ ${value,,} == remotecommand* && $remote_command_words != skip ]]; then
           value="${value:13}"
-          remote_commands+=("${value#"${value%%[![:space:]=]*}"}")
+          value="${value#"${value%%[![:space:]=]*}"}"
+          # Splitting with quotes ignored cuts the value apart, so the words after it may belong to it.
+          if [[ $remote_command_words == split ]]; then value+=" ${args[*]:rest}"; fi
+          remote_commands+=("$value")
         fi
         # ssh -G prints its configuration and runs nothing.
         if [[ ${args[i]} =~ ^-[46AaCfGgKkMNnqsTtVvXxYy]*G ]]; then prints_config=1; fi
@@ -350,7 +361,7 @@ check_package_rules_skipping_wrappers_and_options() {
 }
 
 check_script_ignoring_quotes() {
-  local text_with_heredocs="$1" text_without_heredocs="$2" segment words_are_parsed=0
+  local text_with_heredocs="$1" text_without_heredocs="$2" segment
   local -a segments words
   split_command_text_ignoring_quotes segments "$text_with_heredocs"
   for segment in "${segments[@]}"; do
@@ -398,7 +409,9 @@ blank() {
 }
 
 check_script() {
-  local json data_ranges='' heredoc_ranges='' count stdin word i complete=0 text_with_heredocs text_without_heredocs words_are_parsed=1
+  # ssh reads RemoteCommand from parsed words, skips it when the splitter repeats a parsed
+  # script, and reads it from split words when the parser failed.
+  local json data_ranges='' heredoc_ranges='' count stdin word i complete=0 text_with_heredocs text_without_heredocs remote_command_words='parsed'
   local -a words
   if json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
     {
@@ -424,8 +437,10 @@ check_script() {
   if ((complete)); then
     blank text_with_heredocs "$1" "$data_ranges"
     blank text_without_heredocs "$1" "$heredoc_ranges"
+    remote_command_words='skip'
     check_script_ignoring_quotes "$text_with_heredocs" "$text_without_heredocs"
   else
+    remote_command_words='split'
     check_script_ignoring_quotes "$1" "$1"
   fi
 }
