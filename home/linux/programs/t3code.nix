@@ -1,115 +1,106 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ lib, pkgs, ... }:
 
 let
-  appImage = "${config.xdg.dataHome}/t3code/T3-Code.AppImage";
-
-  icon = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/pingdotgg/t3code/2359643cffa6ba9ee84d6f2694b935de54a8013e/assets/prod/black-universal-1024.png";
-    hash = "sha256-QD6HRVb/vs7o0bK11hKodDA/rHkSEqJhuzvRtx2D540=";
-  };
-
-  # T3 Code's updater replaces the file named by $APPIMAGE, which appimage-run
-  # sets. The name has no version in it, so updates overwrite this same path.
-  t3code = pkgs.writeShellApplication {
-    name = "t3code";
+  # T3 keeps each version in $T3CODE_HOME/runtime/versions and the one its
+  # launcher runs in runtime/service-state.json, which `t3 service install` would
+  # write along with a unit of its own. T3 installs later versions itself, and the
+  # launcher rolls back a new version that fails to start. Updates can prune old
+  # versions, so when that file is missing or names a version that is gone, this
+  # runs the newest installed one, and installs one only when none is left.
+  t3code-server = pkgs.writeShellApplication {
+    name = "t3code-server";
     runtimeInputs = with pkgs; [
-      appimage-run
       coreutils
       curl
-      findutils
-      gawk
-      procps
+      gnugrep
+      gnused
+      gnutar
+      gzip
+      jq
+      psmisc
     ];
     text = ''
-      app=${appImage}
+      export T3CODE_HOME="''${T3CODE_HOME:-$HOME/.t3}"
+      versions="$T3CODE_HOME/runtime/versions"
+      state="$T3CODE_HOME/runtime/service-state.json"
 
-      if [ ! -x "$app" ]; then
-        feed=https://github.com/pingdotgg/t3code/releases/latest/download
-        manifest="$(curl -fsSL "$feed/latest-linux.yml")"
-        file="$(awk '/^path:/ { print $2 }' <<<"$manifest")"
-        expected="$(awk '/^sha512:/ { print $2 }' <<<"$manifest" | base64 -d | od -An -tx1 | tr -d ' \n')"
+      installed() {
+        [ -x "$versions/$1/t3" ] && [ -e "$versions/$1/.install-complete" ]
+      }
 
-        mkdir -p "$(dirname "$app")"
-        tmp="$(mktemp -p "$(dirname "$app")")"
-        trap 'rm -f "$tmp"' EXIT
-        curl -fsSL -o "$tmp" "$feed/$file"
-        echo "$expected  $tmp" | sha512sum --check --quiet
-        chmod 755 "$tmp"
-        mv "$tmp" "$app"
-        trap - EXIT
+      newest() {
+        local version
+        for version in "$versions"/*/; do
+          version="$(basename "$version")"
+          if installed "$version"; then
+            echo "$version"
+          fi
+        done | sort -V | tail -n 1
+      }
+
+      active="$(jq -r '.activeVersion // empty' "$state" 2>/dev/null || true)"
+      if [ -z "$active" ] || ! installed "$active"; then
+        active="$(newest)"
+        if [ -z "$active" ]; then
+          curl -fsSL https://t3.codes/install.sh | sh
+          active="$(newest)"
+        fi
+        if [ -z "$active" ]; then
+          echo "T3's installer finished, but $versions holds no installed version." >&2
+          exit 1
+        fi
+        jq -n --arg version "$active" '{ protocol: 3, activeVersion: $version }' >"$state.tmp"
+        mv "$state.tmp" "$state"
       fi
 
-      # appimage-run unpacks each version into its own cache directory. Clear
-      # out old versions, but only while no unpacked copy is running.
-      cache="''${XDG_CACHE_HOME:-$HOME/.cache}/appimage-run"
-      if [ -d "$cache" ] && ! pgrep -f "$cache/" >/dev/null; then
-        current="$(sha256sum "$app" | cut -d' ' -f1)"
-        find "$cache" -mindepth 1 -maxdepth 1 ! -name "$current" -exec rm -rf {} +
-      fi
+      # When another server, such as the desktop app, owns this T3 home, the
+      # launcher idles until something restarts it. Wait for that owner to exit.
+      while fuser -s "$T3CODE_HOME/userdata/server-owner.sqlite"; do
+        sleep 5
+      done
 
-      # GNOME's session exports home-manager's sourced flag without the PATH
-      # entries it guards. T3 Code reads PATH from a login shell, which skips
-      # hm-session-vars.sh while the flag is set, so claude goes missing.
-      unset __HM_SESS_VARS_SOURCED
-
-      export CHROME_DESKTOP=t3code.desktop
-      exec appimage-run "$app" "$@"
-    '';
-  };
-
-  # Chromium moves T3 Code's main process into its own scope, so a copy started
-  # outside this unit (the updater's relaunch, the app grid) outlives it, and a
-  # second copy would quit on the single-instance lock. Wait for the running copy
-  # instead, and Restart=always then starts a supervised one. A copy's bwrap
-  # command line ends with the AppImage path. The t3 CLI's adds --appimage-*.
-  t3code-service = pkgs.writeShellApplication {
-    name = "t3code-service";
-    runtimeInputs = [
-      pkgs.coreutils
-      pkgs.procps
-      t3code
-    ];
-    text = ''
-      if running="$(pgrep -o -u "$(id -u)" -f -- ${lib.escapeShellArg "^/nix/store/[^ ]*/bin/bwrap .*${lib.escapeRegex appImage}( --no-sandbox)?$"})"; then
-        exec tail --pid="$running" -f /dev/null
-      fi
-
-      exec t3code --no-sandbox
+      exec "$versions/$active/t3" __service-launcher
     '';
   };
 in
 {
-  home.packages = [ t3code ];
-
-  xdg.desktopEntries.t3code = {
-    name = "T3 Code";
-    comment = "T3 Code desktop build";
-    exec = "t3code --no-sandbox %U";
-    icon = "${icon}";
-    terminal = false;
-    categories = [ "Development" ];
-    settings.StartupWMClass = "com.t3tools.T3Code";
-  };
-
+  # T3's CLI treats a t3code.service with an Environment=T3CODE_HOME line as its
+  # own install for that home, and `t3 update` rewrites it. Leaving the line out
+  # keeps the unit Nix-owned, so the wrapper sets T3CODE_HOME instead.
   systemd.user.services.t3code = {
     Unit = {
-      Description = "T3 Code";
-      PartOf = [ "graphical-session.target" ];
-      After = [ "graphical-session.target" ];
+      Description = "T3 Code server";
       # Agents run `task rebuild` from inside T3 Code, so a switch must not
       # restart it under them.
       X-SwitchMethod = "keep-old";
+      StartLimitIntervalSec = 0;
     };
     Service = {
-      ExecStart = lib.getExe t3code-service;
+      ExecStart = lib.getExe t3code-server;
+      WorkingDirectory = "%h";
+      Environment = [
+        "T3CODE_HOST=0.0.0.0"
+        "T3CODE_PORT=3773"
+      ];
+      # A GNOME login imports these into the user manager. The display goes away
+      # with the session, and the guard flags make the login shell T3 reads PATH
+      # from skip the files that set it.
+      UnsetEnvironment = [
+        "DISPLAY"
+        "WAYLAND_DISPLAY"
+        "XAUTHORITY"
+        "__HM_SESS_VARS_SOURCED"
+        "__HM_ZSH_SESS_VARS_SOURCED"
+        "__NIXOS_SET_ENVIRONMENT_DONE"
+      ];
+      # The launcher stops its server child itself on SIGTERM.
+      KillMode = "mixed";
+      # T3's headless Chrome and tunnels run in this cgroup. When the kernel kills
+      # one of them for memory, the server and its agents keep running.
+      OOMPolicy = "continue";
       Restart = "always";
       RestartSec = 5;
     };
-    Install.WantedBy = [ "gnome-session.target" ];
+    Install.WantedBy = [ "default.target" ];
   };
 }

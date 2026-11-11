@@ -70,35 +70,12 @@
           yazi = unstablePkgs.yazi;
         };
 
-      # T3 Code runs inside appimage-run's bubblewrap sandbox, whose /etc links only a
-      # fixed list of host entries. Add the directories system/agents.nix fills, or
-      # harnesses started by T3 miss their system config. T3's updater relaunches
-      # through binfmt, so the launcher and programs.appimage need the same package.
-      appimageRunOverlay = final: prev: {
-        appimage-run = prev.appimage-run.override {
-          buildFHSEnv =
-            args:
-            final.buildFHSEnv (
-              args
-              // {
-                extraBwrapArgs = (args.extraBwrapArgs or [ ]) ++ [
-                  "--symlink /.host-etc/codex /etc/codex"
-                  "--symlink /.host-etc/claude-code /etc/claude-code"
-                ];
-              }
-            );
-        };
-      };
-
       mkPkgs =
         host:
         import nixpkgs {
           inherit (host) system;
           config.allowUnfree = true;
-          overlays = [
-            unstableOverlay
-            appimageRunOverlay
-          ];
+          overlays = [ unstableOverlay ];
         };
 
       mkSpecialArgs = hostName: host: {
@@ -115,10 +92,7 @@
         specialArgs = mkSpecialArgs "nixbook" hosts.nixbook;
         modules = [
           {
-            nixpkgs.overlays = [
-              unstableOverlay
-              appimageRunOverlay
-            ];
+            nixpkgs.overlays = [ unstableOverlay ];
           }
           ./hosts/nixbook
 
