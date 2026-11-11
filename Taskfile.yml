@@ -36,10 +36,11 @@ tasks:
             fi
             ;;
           Linux)
-            # T3 Code's sandbox sets no_new_privs, which breaks sudo, so run the
+            # Under no_new_privs, which agent sandboxes can set, sudo fails. An
+            # agent also has no terminal for its prompt. Either way, run the
             # switch from the user manager.
             switch_prefix=""
-            if grep -q '^NoNewPrivs:[[:space:]]*1$' /proc/self/status; then
+            if [ -n "${SUDO_PASSWORD_FILE:-}" ] || grep -q '^NoNewPrivs:[[:space:]]*1$' /proc/self/status; then
               rebuild_scripts="{{.FLAKE_DIR}}/scripts/rebuild"
               run_args="--user --wait --collect --quiet --property=ExecStopPost=$rebuild_scripts/ensure-t3code"
               if [ -n "${SUDO_PASSWORD_FILE:-}" ]; then
