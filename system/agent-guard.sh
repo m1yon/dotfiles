@@ -67,8 +67,6 @@ has_word_like() {
   return 1
 }
 
-# Succeeds when $2, an option of the wrapper command $1, takes the next word as its
-# value. The value is not the command to run.
 option_takes_next_word() {
   local wrapper="$1" option="$2" flag i
   case "$wrapper:$option" in
@@ -183,10 +181,7 @@ split_command_text_ignoring_quotes() {
   sed -E 's/&&|\|\||[;|&()`]|\$\(/\n/g' <<<"$1"
 }
 
-# The fallback for text shfmt cannot parse. It splits on every shell operator, even
-# inside quotes, so it can block more than it should. It strips quote characters
-# and backslashes from each word to catch such evasions as t3 "up" and p\kill.
-check_script_by_splitting() {
+check_script_ignoring_quotes() {
   local segment
   local -a words
   while IFS= read -r segment; do
@@ -199,7 +194,7 @@ check_script() {
   local json count word i complete=0
   local -a words
   if ! json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
-    check_script_by_splitting "$1"
+    check_script_ignoring_quotes "$1"
     return 0
   fi
 
@@ -216,8 +211,7 @@ check_script() {
     check_simple_command "${words[@]}"
   done < <(jq -j --arg expansion "$expansion_word" "$simple_commands_program" <<<"$json")
 
-  # An unexpected tree shape or a jq failure must not let a command through.
-  ((complete)) || check_script_by_splitting "$1"
+  ((complete)) || check_script_ignoring_quotes "$1"
 }
 
 args=()

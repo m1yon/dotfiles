@@ -119,7 +119,6 @@ allow	bash -lc 'git status'
 allow	bash script.sh -c 'pkill -f x'
 EOF
 
-# The table holds one command per line, so multiline commands go through jq.
 run_case allow "$(bash_event $'cat <<\'EOF\'\npkill -f x\nEOF')"
 run_case allow "$(bash_event $'cat <<EOF\npkill -f x; killall node\nEOF')"
 run_case allow "$(bash_event $'git commit -F - <<EOF\nfix: stop using t3 up\nEOF')"
@@ -131,7 +130,6 @@ run_case block "$(bash_event $'bash -c \'\npkill -f monitor\n\'')"
 run_case block "$(bash_event $'echo "$(pkill -f x)"')"
 run_case block "$(bash_event $'echo "line one\n$(pkill -f x)"')"
 
-# A 200-line heredoc body is data, whatever it says.
 long_heredoc="$(
   printf 'cat <<EOF\n'
   printf 'pkill -f x; t3 up; brew install jq\n%.0s' {1..200}
