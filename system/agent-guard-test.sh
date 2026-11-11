@@ -71,6 +71,8 @@ block	zsh --emulate sh -o errexit -c 't3 up --lan --yes'
 block	ssh -o 'RemoteCommand=pkill -f monitor' nixbook
 block	ssh -oRemoteCommand='t3 service install' nixbook
 block	ssh -o 'RemoteCommand killall gnome-shell' nixbook
+block	ssh nixbook pkill -G users monitor
+block	ssh -T -o 'RemoteCommand=pkill -f monitor' nixbook
 block	t3 --log-level debug up --lan --yes
 block	t3 --log-level=debug service install
 block	t3 service --log-level debug uninstall
@@ -182,6 +184,9 @@ allow	t3 status
 allow	t3 service status
 allow	t3 --log-level debug status
 allow	ssh -o 'RemoteCommand=systemctl --user status t3code' nixbook
+allow	ssh -G -o 'RemoteCommand=pkill -f monitor' nixbook
+allow	ssh -o 'RemoteCommand=pkill -f monitor' -G nixbook
+allow	ssh -qG nixbook
 allow	ssh -o BatchMode=yes nixbook 'systemctl --user status t3code'
 allow	t3 thread start --title up
 allow	t3 thread list

@@ -174,7 +174,7 @@ check_shell() {
 # ssh joins the words after the destination into a script for the remote shell, which
 # runs ssh's stdin when there are none.
 check_ssh() {
-  local i=0 destination=0 value
+  local i=0 destination=0 value remote_command='' prints_config=0
   while ((i < ${#args[@]})); do
     case "${args[i]}" in
       -*)
@@ -182,8 +182,10 @@ check_ssh() {
         if [[ ${args[i]} == -o ]]; then value="${args[i + 1]-}"; elif [[ ${args[i]} == -o?* ]]; then value="${args[i]#-o}"; fi
         if [[ ${value,,} == remotecommand* ]]; then
           value="${value:13}"
-          check_script "${value#"${value%%[![:space:]=]*}"}" "$stdin"
+          remote_command="${value#"${value%%[![:space:]=]*}"}"
         fi
+        # ssh -G prints its configuration and runs nothing.
+        if [[ ${args[i]} =~ ^-[46AaCfGgKkMNnqsTtVvXxYy]*G ]]; then prints_config=1; fi
         if option_takes_next_word ssh "${args[i]}" "${args[i + 1]-}"; then ((i += 1)); fi
         ;;
       *)
@@ -193,6 +195,8 @@ check_ssh() {
     esac
     ((i += 1))
   done
+  if ((prints_config)); then return 0; fi
+  if [[ -n $remote_command ]]; then check_script "$remote_command" "$stdin"; fi
   if ((i < ${#args[@]})); then
     check_script "${args[*]:i}" "$stdin"
   else
