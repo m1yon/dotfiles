@@ -20,6 +20,24 @@ run_case() {
 while IFS=$'\t' read -r expected command; do
   run_case "$expected" "$(jq -cn --arg c "$command" '{tool_name: "Bash", tool_input: {command: $c}}')"
 done <<'EOF'
+block	td task add "Fix the data race in the msgraphemail tests" --project Inbox --labels from-agent
+block	td task add "Remove the duplicated block" --project "Side Projects" --section Todo --labels from-agent --description "Repo m1yon/dotfiles; home/linux/gnome.nix (elif branch) | see log"
+block	td task add "x" --description "a; b (c) | d" --labels from-agent
+block	cd ~/GitHub/dream && td task add "Upgrade Effect" --labels=from-agent
+block	td task add "x" --labels "pr-review,from-agent"
+block	td add "Check the invoice month @from-agent #Inbox"
+block	td task quickadd "Check the invoice month @from-agent"
+block	td task qa "x @from-agent"
+block	url=$(td task add "x" --labels from-agent)
+allow	td task add "Fix the data race" --project Inbox --labels from-agent,approved
+allow	td task add "x" --labels approved,from-agent
+allow	td add "x @from-agent @approved"
+allow	td task add "Build a local web frontend" --project id:abc --section "In Progress" --json
+allow	td task add "feat(web): run imports in a web session" --parent id:abc
+allow	td task add "x" --labels from-agents
+allow	td task list --label from-agent --json
+allow	td comment add id:abc --content "PR: https://github.com/m1yon/orchestrator/pull/16"
+allow	grep -n "from-agent" dotfiles/agents/AGENTS.md
 block	brew install --cask linearmouse
 block	brew tap charmbracelet/tap
 block	brew upgrade
@@ -48,6 +66,8 @@ allow	grep -rn "npm install -g" AGENTS.md
 EOF
 
 # Codex can pass the command as an argument vector.
+run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","td task add \"x\" --labels from-agent"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["td","task","add","x","--labels","from-agent"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","brew install --cask linearmouse"]}}'
 run_case allow '{"tool_name":"apply_patch","tool_input":{}}'
 
