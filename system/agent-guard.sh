@@ -1,13 +1,38 @@
 # PreToolUse hook for Claude Code and Codex. It reads the hook event on stdin and
 # exits 2 to block a Bash call; both harnesses show stderr to the agent.
+#
+# shfmt parses the command into a syntax tree. Every simple command in it, however
+# deeply nested, becomes an argv of literal words: quotes removed, backslash escapes
+# resolved, and each expansion replaced by expansion_word. The rules read that argv.
+# Input shfmt cannot parse, such as zsh-only syntax, falls back to splitting the text.
 
 # Codex can pass an argument vector, such as ["bash", "-lc", "<script>"].
 command="$(jq -r '
   .tool_input.command // ""
   | if type != "array" then .
     elif length >= 3 and (.[-2] | test("^-l?c$")) then .[-1]
-    else join(" ")
+    else map(tostring | @sh) | join(" ")
     end')"
+
+expansion_word='__EXPANSION__'
+
+# shellcheck disable=SC2016 # These are jq variables, not shell expansions.
+simple_commands_program='
+  def part:
+    if .Type == "Lit" then .Value | gsub("\\\\(?<c>[\\s\\S])"; .c)
+    elif .Type == "SglQuoted" then
+      if .Dollar and (.Value | contains("\\")) then $expansion else .Value end
+    elif .Type == "DblQuoted" then
+      [.Parts[] | if .Type == "Lit" then .Value | gsub("\\\\(?<c>[$`\"\\\\])"; .c) else $expansion end] | join("")
+    else $expansion end;
+  def word: [.Parts[] | part] | join("");
+  (
+    .. | objects | select(.Type? == "CallExpr")
+    | [(.Args // [])[] | word]
+    | select(length > 0)
+    | (length | tostring), "\u0000", (.[] | ., "\u0000")
+  ),
+  "end", "\u0000"'
 
 block() {
   printf 'agent-guard blocked this command. %s\n' "$1" >&2
@@ -42,25 +67,81 @@ has_word_like() {
   return 1
 }
 
-check_simple_command() {
-  local -a words
-  read -ra words <<<"$1"
+# Succeeds when $2, an option of the wrapper command $1, takes the next word as its
+# value. The value is not the command to run.
+option_takes_next_word() {
+  local wrapper="$1" option="$2" flag i
+  case "$wrapper:$option" in
+    sudo:--user | sudo:--group | sudo:--host | sudo:--prompt | sudo:--chdir | sudo:--chroot | sudo:--role | sudo:--type | sudo:--command-timeout | sudo:--other-user | sudo:--close-from)
+      return 0
+      ;;
+    env:--unset | env:--chdir) return 0 ;;
+    *:--*) return 1 ;;
+  esac
+  option="${option#-}"
+  for ((i = 0; i < ${#option}; i += 1)); do
+    flag="${option:i:1}"
+    case "$wrapper:$flag" in
+      sudo:[ughpCDRrtTU] | doas:[uC] | env:[uC])
+        # In a bundle such as -uroot the rest of the word is the value.
+        if ((i == ${#option} - 1)); then return 0; fi
+        return 1
+        ;;
+    esac
+  done
+  return 1
+}
 
-  local i=0
-  while ((i < ${#words[@]})); do
-    case "${words[i]}" in
-      sudo | doas | env | command | exec | nohup | time | -*) ((i += 1)) ;;
-      [A-Za-z_]*=*) ((i += 1)) ;;
+# A shell run with -c, alone or in a bundle such as -lc, takes the first word after
+# its options as a script.
+check_shell_c_script() {
+  local i=0 has_c=0
+  while ((i < ${#args[@]})); do
+    case "${args[i]}" in
+      --)
+        ((i += 1))
+        break
+        ;;
+      --rcfile | --init-file | -o | +o | -O | +O) ((i += 1)) ;;
+      --*) ;;
+      -*c*) has_c=1 ;;
+      -* | +*) ;;
       *) break ;;
     esac
+    ((i += 1))
+  done
+  if ((has_c)); then check_script "${args[i]-}"; fi
+}
+
+check_simple_command() {
+  local -a words=("$@")
+
+  local wrapper='' i=0
+  while ((i < ${#words[@]})); do
+    case "${words[i]}" in
+      -*)
+        if option_takes_next_word "$wrapper" "${words[i]}"; then ((i += 1)); fi
+        ;;
+      [A-Za-z_]*=*) ;;
+      *)
+        case "${words[i]##*/}" in
+          sudo | doas | env) wrapper="${words[i]##*/}" ;;
+          command | exec | nohup | time) wrapper='' ;;
+          *) break ;;
+        esac
+        ;;
+    esac
+    ((i += 1))
   done
   ((i < ${#words[@]})) || return 0
 
   local name="${words[i]##*/}"
-  name="${name//[\"\']/}"
   args=("${words[@]:i+1}")
 
   case "$name" in
+    bash | sh | zsh | dash)
+      check_shell_c_script
+      ;;
     nix)
       if has_word profile && has_word install add upgrade remove rollback; then block "$install_message"; fi
       ;;
@@ -102,7 +183,42 @@ split_command_text_ignoring_quotes() {
   sed -E 's/&&|\|\||[;|&()`]|\$\(/\n/g' <<<"$1"
 }
 
+# The fallback for text shfmt cannot parse. It splits on every shell operator, even
+# inside quotes, so it can block more than it should. It strips quote characters
+# and backslashes from each word to catch such evasions as t3 "up" and p\kill.
+check_script_by_splitting() {
+  local segment
+  local -a words
+  while IFS= read -r segment; do
+    read -ra words <<<"$segment"
+    check_simple_command "${words[@]//[\"\'\\]/}"
+  done < <(split_command_text_ignoring_quotes "$1")
+}
+
+check_script() {
+  local json count word i complete=0
+  local -a words
+  if ! json="$(shfmt -ln bash --to-json <<<"$1" 2>/dev/null)"; then
+    check_script_by_splitting "$1"
+    return 0
+  fi
+
+  while IFS= read -r -d '' count; do
+    if [[ $count == end ]]; then
+      complete=1
+      break
+    fi
+    words=()
+    for ((i = 0; i < count; i += 1)); do
+      IFS= read -r -d '' word || break 2
+      words+=("$word")
+    done
+    check_simple_command "${words[@]}"
+  done < <(jq -j --arg expansion "$expansion_word" "$simple_commands_program" <<<"$json")
+
+  # An unexpected tree shape or a jq failure must not let a command through.
+  ((complete)) || check_script_by_splitting "$1"
+}
+
 args=()
-while IFS= read -r segment; do
-  check_simple_command "$segment"
-done < <(split_command_text_ignoring_quotes "$command")
+check_script "$command"

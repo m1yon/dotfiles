@@ -1,6 +1,7 @@
 {
   gnused,
   jq,
+  shfmt,
   writeShellApplication,
 }:
 
@@ -9,6 +10,7 @@ writeShellApplication {
   runtimeInputs = [
     gnused
     jq
+    shfmt
   ];
   text = builtins.readFile ./agent-guard.sh;
 }
