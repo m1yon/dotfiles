@@ -1,6 +1,6 @@
 # Skills
 
-Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4.
+Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4. The frog also gets 🐸 after its priority.
 
 ## `/inbox`
 
@@ -47,7 +47,7 @@ If Today holds work cards that are three or more days overdue, `/morning-pick` o
 Adds one card from Next to Today, whenever you want one. Use it after you finish your picks, or when you want to start a particular card.
 
 - `/pick-next` with no text suggests up to three cards from Next, each with a one-line reason. Cards with a deadline within two days come first, then p1 cards, then the oldest p2 cards, then p3 cards. If the frog, the card with `@frog`, is still open, it says so before it suggests anything.
-- `/pick-next <text>` finds the card that matches the text and dates it for today. If the card is still in the Inbox, it first asks for the card's priority and project in one question, with a suggestion for each, and files the card. If no card matches, it offers to add one to the Inbox and then picks it the same way. The agents' "Pick it" answer uses this path.
+- `/pick-next <text>` finds the card that matches the text and dates it for today. If the card is still in the Inbox, it first asks for the card's priority and project in one question, with a suggestion for each, and files the card. If no card matches, it offers to add one to the Inbox and then picks it the same way. The "Add it to Today" answer to an agent's menu uses this path.
 - It counts the open cards from Next on Today. Completing a card frees a slot. If five are already open, it asks once whether to swap one out or go to six.
 - It shows the picked card's description and links, so you can start.
 
