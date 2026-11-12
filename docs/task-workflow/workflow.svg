@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas, asks from people, and a Sentry digest card all enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you pick a frog and date five cards or fewer from it for Today. Routines sit outside that limit. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /pick, and /weekly-review help.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas, asks from people, and a Sentry digest card all enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you pick a frog and date five cards or fewer from it for Today. A weekday 9am job drafts that pick, and /pick-next adds another card whenever a slot is free. Routines sit outside that limit. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /morning-pick, /pick-next, and /weekly-review help.">
 <!--
 Hand-drawn diagram for docs/task-workflow/README.md. Edit this file directly.
 Layout grid, viewBox 720 wide:
@@ -144,6 +144,11 @@ Layout grid, viewBox 720 wide:
         <rect class="n" x="230" y="910" width="260" height="46" rx="10"/>
         <text class="t" x="360" y="930" text-anchor="middle">Morning pick · 5 min</text>
         <text class="s" x="360" y="947" text-anchor="middle">Pick a frog, date 5 cards or fewer</text>
+        <rect class="n ai" x="40" y="901" width="170" height="64" rx="10"/>
+        <text class="t" x="125" y="923" text-anchor="middle">Weekday 9am job</text>
+        <text class="s" x="125" y="940" text-anchor="middle">T3 Code scheduled task</text>
+        <text class="s" x="125" y="956" text-anchor="middle">Drafts the pick for you</text>
+        <path class="e ai" d="M210,933 H230" marker-end="url(#aha)"/>
         <path class="e" d="M360,956 V980" marker-end="url(#ah)"/>
         <rect class="n list" x="230" y="980" width="260" height="46" rx="10"/>
         <text class="t" x="360" y="1000" text-anchor="middle">Today</text>
@@ -177,6 +182,7 @@ Layout grid, viewBox 720 wide:
 </g>
         <g class="sk"><rect x="500" y="149" width="58" height="22" rx="11"/><text x="529" y="164" text-anchor="middle">/inbox</text></g>
         <g class="sk"><rect x="528" y="213" width="100" height="22" rx="11"/><text x="578" y="228" text-anchor="middle">/triage-inbox</text></g>
-        <g class="sk"><rect x="500" y="922" width="50" height="22" rx="11"/><text x="525" y="937" text-anchor="middle">/pick</text></g>
+        <g class="sk"><rect x="500" y="922" width="100" height="22" rx="11"/><text x="550" y="937" text-anchor="middle">/morning-pick</text></g>
+        <g class="sk"><rect x="500" y="852" width="84" height="22" rx="11"/><text x="542" y="867" text-anchor="middle">/pick-next</text></g>
         <g class="sk"><rect x="394" y="1171" width="106" height="22" rx="11"/><text x="447" y="1186" text-anchor="middle">/weekly-review</text></g>
 </svg>

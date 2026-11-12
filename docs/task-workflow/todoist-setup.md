@@ -9,7 +9,7 @@
 | `Side Projects` | Area, top level | One-off side project cards |
 | Feature project | Child of an area | The cards for one feature, such as `MECA › Appointment sync` |
 | `Someday` | Top level | Ideas you might do later |
-| `Routines` | Top level | Repeating cards, such as meditating, the budget, and Morning pick |
+| `Routines` | Top level | Repeating cards, such as meditating and the budget |
 
 - A feature gets its own project when it needs several cards or more than a week of work. A job with two or three steps fits on one card with subtasks.
 - Archive a feature project when it ships.
@@ -31,7 +31,7 @@ Dropped cards are deleted, so they have no priority.
 | Label | Meaning | Added by |
 | --- | --- | --- |
 | `@waiting` | An agent or a person holds the work | You, during triage |
-| `@stale` | No activity for 21 days | `/weekly-review`, or `/pick` during a fresh start |
+| `@stale` | No activity for 21 days | `/weekly-review`, or `/morning-pick` during a fresh start |
 
 ## Filters
 
@@ -46,10 +46,10 @@ The morning pick comes from Next. The Friday review works through Review.
 
 | Field | Meaning | Set by |
 | --- | --- | --- |
-| Date | You plan to work on the card today | The morning pick, or you for an urgent p1 card |
+| Date | You plan to work on the card today | `/morning-pick`, `/pick-next`, or you for an urgent p1 card |
 | Deadline | The card is actually due that day | You, during triage or later |
 
-- Only the morning pick and urgent p1 cards put dates on work cards, so an overdue card is always one you picked and didn't finish.
+- Only the two pick skills and urgent p1 cards put dates on work cards, so an overdue card is always one you picked and didn't finish.
 - Routines use repeating dates. See [Routines](#routines).
 - Deadlines need Todoist Pro.
 
@@ -66,6 +66,4 @@ Routines live in the `Routines` project at p4. They never show up in Next, and t
 | `every` | A routine tied to the calendar. Completing an overdue card moves it to its next future date. | `every day` |
 | `every!` | A routine that repeats from when you last did it | `every! week` |
 
-The **Morning pick** card is a routine, due `every workday`. It reminds you to run `/pick`.
-
-The Friday review has no card. A scheduled task starts it. See [AI jobs](ai-jobs.md#weekly-review).
+The morning pick and the Friday review have no cards. Scheduled tasks start them. See [AI jobs](ai-jobs.md).

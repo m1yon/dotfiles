@@ -9,11 +9,11 @@ This section goes in `dotfiles/agents/AGENTS.md`, which Claude Code and Codex sh
 ```markdown
 ## Focus
 Michael's plan for the day is his Today cards in Todoist. Use the `td` CLI.
-- At session start, match the request to a Today or `@waiting` card. If those cards aren't in context, run `td today --json` and `td task list --filter "@waiting" --json`. If nothing matches, ask once: "Not on Today. Inbox it, or start anyway?" Accept either answer, and don't ask again this session.
+- At session start, match the request to a Today or `@waiting` card. If those cards aren't in context, run `td today --json` and `td task list --filter "@waiting" --json`. If nothing matches, ask once: "Not on Today. Pick it, Inbox it, or start anyway?" For "Pick it", run `/pick-next` for that card. Accept any answer, and don't ask again this session.
 - Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
 - When you open a PR for a `@waiting` card, add the PR URL to the card as a comment.
-- When the session's card is done, offer to complete it and name the next Today card. If Today is empty, say so and suggest nothing new.
+- When the session's card is done, offer to complete it and name the next Today card. If Today has no open picks left, say so and mention `/pick-next`. Don't suggest a card yourself.
 ```
 
 ## The session-start hook

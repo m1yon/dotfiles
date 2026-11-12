@@ -10,13 +10,13 @@ An earlier setup let automation create cards, and the list filled with work nobo
 
 ## The morning pick is the only limit
 
-Earlier drafts capped active projects at three, split projects into active and parked, and asked for a short note at every task switch. Each cap added upkeep without helping focus. The switch notes added work at the moment attention is lowest. This design keeps one limit at one decision point a day. Five cards from Next, with a frog first, cap the juggling, and you switch between them freely.
+Earlier drafts capped active projects at three, split projects into active and parked, and asked for a short note at every task switch. Each cap added upkeep without helping focus. The switch notes added work at the moment attention is lowest. This design keeps one limit. At most five open cards from Next sit on Today, with a frog first, and you switch between them freely. Completing a card frees a slot. `/pick-next` fills it, and it names the frog first if the frog is still open, so more work is always a deliberate choice.
 
 Routines sit outside the limit. Meditating or doing the budget repeats on its own schedule and doesn't compete with project work, so counting routines would only shrink the room for the work the limit protects. An earlier draft capped the day at three cards and counted everything on Today, which left it unclear what the number meant.
 
 ## Dates mean planned for today
 
-A date on a work card means you plan to work on it today, and only the morning pick sets one. Real due dates go in the Deadline field. As a result, an overdue card is always one you picked and didn't finish, and the next morning pick settles it. Today doubles as the in-progress list. A card on Today for a second morning is multi-day work you're still on, so there's no separate in-progress state to keep current.
+A date on a work card means you plan to work on it today, and only the two pick skills set one. Real due dates go in the Deadline field. As a result, an overdue card is always one you picked and didn't finish, and the next morning pick settles it. Today doubles as the in-progress list. A card on Today for a second morning is multi-day work you're still on, so there's no separate in-progress state to keep current.
 
 ## Projects only organize
 
@@ -24,7 +24,7 @@ A feature project groups its cards, so Next shows them together. It says nothing
 
 ## Skills come with reminders
 
-A skill helps only if you remember to run it. `/pick` has a recurring Todoist card that shows up in Today and names the skill. `/weekly-review` goes a step further. A T3 Code scheduled task runs it at 9am on Friday, so the drafts are ready when you open its thread. The session-start hook follows the same idea. It loads Today into each agent session, so no agent has to remember to look.
+A skill helps only if you remember to run it. So the two skills tied to a time of day run on their own. T3 Code scheduled tasks start `/morning-pick` at 9am each weekday and `/weekly-review` at 9am on Friday, so the drafts are ready when you open each thread. `/pick-next` is the exception, because you run it the moment you want more work. The session-start hook follows the same idea. It loads Today into each agent session, so no agent has to remember to look.
 
 ## The stale sweep runs inside the weekly review
 

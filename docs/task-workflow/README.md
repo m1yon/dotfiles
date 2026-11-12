@@ -10,7 +10,7 @@ Diamonds are decisions, yellow boxes are Todoist lists, and dashed boxes are sch
 
 ## Two rules hold it together
 
-- **Five cards a day, frog first.** Each morning, pick a frog and date up to five cards from Next. The frog is a p2 card, the important work that never feels urgent, and it goes first. Routines, like meditating, don't count toward the five.
+- **Five open cards, frog first.** Each morning, pick a frog and date up to five cards from Next. The frog is a p2 card, the important work that never feels urgent, and it goes first. Completing a card frees a slot for `/pick-next`. Routines, like meditating, don't count toward the five.
 - **Ideas wait in the Inbox.** A new idea goes to the Inbox, even when an agent could start it in seconds. Triage decides whether it ever starts.
 
 Projects only organize cards, and nothing asks for a note when you switch tasks.
@@ -26,9 +26,9 @@ How-to guides:
 Reference:
 
 - [Todoist setup](todoist-setup.md) lists the projects, priorities, labels, filters, dates, and routines.
-- [AI jobs](ai-jobs.md) describes the two scheduled jobs, Sentry triage and the weekly review.
+- [AI jobs](ai-jobs.md) describes the three scheduled jobs: Sentry triage, the morning pick, and the weekly review.
 - [Agent rules](agent-rules.md) holds the `AGENTS.md` section and the session-start hook.
-- [Skills](skills.md) describes `/inbox`, `/triage-inbox`, `/pick`, and `/weekly-review`.
+- [Skills](skills.md) describes `/inbox`, `/triage-inbox`, `/morning-pick`, `/pick-next`, and `/weekly-review`.
 
 Explanation:
 
@@ -40,7 +40,7 @@ None of this is built yet. The diagram and these pages are the design. Build it 
 
 1. Set up Todoist, so the filters, labels, and the `Routines` project exist.
 2. Add the agent rules and the session-start hook. They're the only pieces that run in every agent session, and agent sessions are where new work starts.
-3. Write `/pick` and `/inbox`.
+3. Write `/morning-pick`, `/pick-next`, and `/inbox`. Then schedule `/morning-pick` in T3 Code.
 4. Write `/triage-inbox` and `/weekly-review` after you've used the daily steps for two weeks. Then schedule `/weekly-review` in T3 Code.
 5. Build the Sentry triage job.
 
