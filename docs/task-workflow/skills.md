@@ -10,7 +10,7 @@ Adds a card to the Inbox without leaving the current work.
 - `/inbox` with no text adds the side work listed at the end of the agent's last reply, one card per item.
 - The skill asks no questions. The agent goes back to the current work.
 
-## `/clarify`
+## `/triage-inbox`
 
 Drafts the daily triage. See [Triage the Inbox](triage.md).
 
@@ -42,7 +42,7 @@ If Today holds cards that are three or more days overdue, `/pick` offers a fresh
 
 Runs the Friday review. See [Run the Friday review](weekly-review.md).
 
-- Runs `/clarify` to empty the Inbox.
+- Runs `/triage-inbox` to empty the Inbox.
 - Shows the `@stale` cards in one table, each with a suggested answer: keep, Someday, or delete.
 - Checks the PR linked on each agent-held `@waiting` card with `gh`. It reports whether the PR merged, is open, or has stalled, and offers to complete the cards whose PR merged.
 - Lists feature projects with no open cards, and offers to archive them.
