@@ -1,0 +1,5 @@
+interface:
+  display_name: "Morning pick"
+  short_description: "Draft the morning pick of up to five Todoist cards"
+policy:
+  allow_implicit_invocation: false

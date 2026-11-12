@@ -8,35 +8,15 @@
 - Use the `pstack:unslop` skill for any prose you write, including every reply to the user. Invoke it before your first reply in a session, and again if it is no longer in context.
 
 ## Work tracking
-Todoist is the only task tracker, and it is private. Use the `td` CLI, and write every task ref as `id:<id>`. Never use Linear.
-- Never mention Todoist, a task id, or a task link in a PR, commit, branch name, or code. The link goes one way, from the task to the PR.
-- Every PR has its own task. Plans, steps and commits never become tasks.
-- Starting a task: `td task move id:<id> --section "In Progress"`. In a project with no sections the move fails, so skip it there. Only move top-level tasks. Never move a subtask. A subtask has the same status as its parent.
-- One PR covers the work: use the task itself. Add no subtasks.
-- More PRs are needed: before your first commit, add one subtask per planned PR with `td task add "<PR title>" --parent id:<id>`. Add them all together. A PR you did not plan gets its subtask before you open it.
-- Before you add a subtask, check that the parent is open: `td task view id:<id> --json --full` must show `"checked": false`. A subtask added under a closed parent silently becomes a top-level task. If the parent is closed, treat it as no task named, so make a new top-level task and use that.
-- Work that must still happen after the last PR and needs no PR: split the task as above, and add that work as one more subtask, so the parent stays open.
-- Open every PR with this one command, so the link is always the real URL: `url=$(gh pr create <args>) && td comment add id:<id> --content "PR: $url"`. `<id>` is that PR's own task. When the work is split, it is the subtask. Never type a PR URL by hand.
-- A command that opens PRs another way, such as `gh stack submit`, skips that link. Right after it, link each PR it opened: `url=$(gh pr view <branch> --json url -q .url) && td comment add id:<id> --content "PR: $url"`.
-- Projects follow efforts, not repos, and one effort can span several repos. Before you create any task, run `td project list --json`. Put each new task in its effort's project, the first of these that fits:
-  1. The project of the task you work on, when the new task is part of the same effort. `td task view id:<id> --json` shows its `projectId`.
-  2. Another existing project under `MECA` or `Side Projects` that the work clearly belongs to. `td project list --json` lists them.
-  3. `MECA` for work in a `Meca-Therapies` repo, or `Side Projects` for work anywhere else. The org is the owner in `git remote get-url origin`.
+Todoist is Michael's only task tracker, and it is private. Use the `td` CLI. Never use Linear.
+- Never mention Todoist, a card, or a card link in a PR, commit, branch name, or code.
+- Never put member names, IDs, or other member data in a card.
 
-  Pass it to `--project` as its name or as `id:<project id>`.
-- Out-of-scope work, whether you noticed it or were told about it: do not do it, and never file it on your own. Michael's Todoist holds only work he chose.
-- When Michael asks you to file something, that is his approval. Otherwise, suggest a card as soon as you notice the work, and only when you would defend it as worth his time:
-  - In Claude Code, call `AskUserQuestion` with one question per card, such as `I suggest a card: <title>. Create it?`. Use the header `Card` and the options `Create card` and `Skip`, and put the card's project and description in the `Create card` preview. Ask about at most four cards in one call, most important first.
-  - In Codex, or wherever you have no question tool, ask the same question in one plain sentence.
-  - When Michael has said he is stepping away, hold your suggestions and ask once when you finish.
-  - A subagent or delegated child does not ask. It returns its suggestions in its report, and the agent that started it asks.
-- File an approved card in its effort's project with `td task add "<title>" --project <project> --section Todo --labels from-agent,approved --description "<repos, what is wrong, where, and how you know>"`. Leave out `--section` in a project with no Todo section. Use `--project Inbox` only when you cannot tell which effort or which org the work belongs to. The agent-guard hook blocks a `from-agent` task without `approved`.
-- List each card Michael skipped, and each one you did not ask about, in the PR description under `Noticed, not filed`.
-- These rules override any skill that tells you to file an issue, a ticket, or a tracked issue.
-- No task was named: before your first commit, make a new top-level task in its effort's project and use that id as the task above: `td task add "<title>" --project <project> --section "In Progress" --json`. Leave out `--section` in a project with no In Progress section. A session that changes no code creates nothing.
-- Ask Michael before you create any project. When an effort deserves a project of its own, say so in its task's description.
-- Never complete a task that has a PR, and never complete a parent. Merging does that.
-- Never put member names, IDs or other member data in a task.
+The rules below apply only to sessions Michael starts. Skip them in a scheduled run or a delegated child session.
+- Michael's plan for the day is his Today cards. At session start, match the request to a Today or `@waiting` card. If those cards aren't in context, run `td today --json` and `td task list --filter "@waiting" --json`. If nothing matches, ask once: "Not on Today. Pick it, Inbox it, or start anyway?" For "Pick it", add the card to the Inbox, then run `/pick-next` for it. Accept any answer, and don't ask again this session.
+- Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
+- List side work you notice at the end of your reply, and ask once whether to Inbox it.
+- When the session's card is done, offer to complete it and name the next Today card. If Today has no open picks left, say so and mention `/pick-next`. Don't suggest a card yourself.
 
 ## pstack model configuration
 
