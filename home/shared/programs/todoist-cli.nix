@@ -45,7 +45,29 @@ in
           exit
         fi
 
-        exec ${lib.getExe (pkgs.callPackage ../pkgs/todoist-cli { })} "$@"
+        td=${lib.getExe (pkgs.callPackage ../pkgs/todoist-cli { })}
+
+        # td's JSON numbers priority backward, 4 for p1, while `--priority` and the
+        # app say p1 to p4. Agents misread the numbers, so JSON output says "p1".
+        case " $* " in
+          *" --json "* | *" --ndjson "*) ;;
+          *) exec "$td" "$@" ;;
+        esac
+        format=()
+        if [[ " $* " == *" --ndjson "* ]]; then format=(--compact-output); fi
+        code=0
+        raw=$("$td" "$@") || code=$?
+        if [ -z "$raw" ]; then exit "$code"; fi
+        if fixed=$(printf '%s\n' "$raw" | jq "''${format[@]}" 'walk(
+          if type == "object" then
+            with_entries(if (.key | IN("priority", "lastPriority")) and (.value | type) == "number"
+              then .value = "p\(5 - .value)" else . end)
+          else . end)' 2>/dev/null); then
+          printf '%s\n' "$fixed"
+        else
+          printf '%s\n' "$raw"
+        fi
+        exit "$code"
       '';
     })
   ];

@@ -11,7 +11,7 @@
 Todoist is Michael's only task tracker, and it is private. Use the `td` CLI. Never use Linear.
 - Never mention Todoist, a card, or a card link in a PR, commit, branch name, or code.
 - Never put member names, IDs, or other member data in a card.
-- Start each card you show Michael with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4, as in `🟠 p2 Fix appointment sync retries`. In `td` JSON, `priority` 4 is p1, 3 is p2, 2 is p3, and 1 is p4.
+- Start each card you show Michael with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4, as in `🟠 p2 Fix appointment sync retries`.
 
 The rules below apply only to sessions Michael starts. Skip them in a scheduled run or a delegated child session.
 - Michael's plan for the day is his Today cards. At session start, match the request to a Today or `@waiting` card. If those cards aren't in context, run `td today --json` and `td task list --filter "@waiting" --json`. If nothing matches, ask once: "Not on Today. Pick it, Inbox it, or start anyway?" For "Pick it", add the card to the Inbox, then run `/pick-next` for it. Accept any answer, and don't ask again this session.

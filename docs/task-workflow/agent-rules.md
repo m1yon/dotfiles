@@ -11,7 +11,7 @@ This section goes in `dotfiles/agents/AGENTS.md`, which Claude Code and Codex sh
 Todoist is Michael's only task tracker, and it is private. Use the `td` CLI. Never use Linear.
 - Never mention Todoist, a card, or a card link in a PR, commit, branch name, or code.
 - Never put member names, IDs, or other member data in a card.
-- Start each card you show Michael with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4, as in `🟠 p2 Fix appointment sync retries`. In `td` JSON, `priority` 4 is p1, 3 is p2, 2 is p3, and 1 is p4.
+- Start each card you show Michael with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4, as in `🟠 p2 Fix appointment sync retries`.
 
 The rules below apply only to sessions Michael starts. Skip them in a scheduled run or a delegated child session.
 - Michael's plan for the day is his Today cards. At session start, match the request to a Today or `@waiting` card. If those cards aren't in context, run `td today --json` and `td task list --filter "@waiting" --json`. If nothing matches, ask once: "Not on Today. Pick it, Inbox it, or start anyway?" For "Pick it", add the card to the Inbox, then run `/pick-next` for it. Accept any answer, and don't ask again this session.
@@ -44,6 +44,10 @@ Waiting:
 ## `td day-order`
 
 `td` 5.10.0 has no command for the order of cards in Today, so the `td` wrapper in `home/shared/programs/todoist-cli.nix` adds one. `td day-order id:a id:b` puts card a, then card b, at the top of Today. It sends the Sync API command `item_update_day_orders`. The API reports success even for an unknown id, so `/morning-pick` reads Today back to check the order.
+
+## `td` JSON priorities
+
+The Todoist API numbers priority backward: 4 is p1 and 1 is p4. `td task update --priority` and the Todoist app use p1 to p4. Agents mixed the two up, so the `td` wrapper rewrites every numeric `priority` and `lastPriority` in `--json` and `--ndjson` output to `"p1"` through `"p4"`. If `jq` can't parse the output, the wrapper prints it unchanged.
 
 ## The agent-guard check
 
