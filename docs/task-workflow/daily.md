@@ -9,7 +9,7 @@ To pick by hand instead, follow these steps:
 1. Open Today. For each card left from yesterday, keep it or clear its date.
 2. Open the Next filter. Look first at cards with a deadline in the next two days.
 3. Choose the frog, a p2 card. `/morning-pick` suggests the oldest p2 card, because fun work keeps pushing that one back.
-4. Date cards for today until Today holds five or fewer open cards from Next, counting the ones you kept. Put the frog first.
+4. Date cards for today until Today holds five or fewer open cards from Next, counting the ones you kept and the ones you planned for today. Put the frog first.
 
 Only open cards from Next count toward the five. Routines don't count.
 
@@ -42,8 +42,8 @@ If you ask an agent for work that isn't on a Today or `@waiting` card, it asks o
 | A picked card isn't done by evening | It shows as overdue the next morning. `/morning-pick` suggests keeping it, which counts toward the five, or clearing its date so it goes back to Next. |
 | The same card carries over three mornings in a row | Split it, hand it off, or drop it. `/morning-pick` flags it. |
 | You miss a routine | Complete it when you get to it. Todoist moves an overdue `every` card to its next future date, so missed days don't stack up. To skip a day, postpone it to tomorrow. |
-| A card has a real due date | Set a Deadline, not a date. `/morning-pick` and `/pick-next` list it first from two days before the deadline. |
-| Something must happen on a given day | Set a Deadline for that day. |
+| A card has a hard deadline | Set a Deadline. `/morning-pick` and `/pick-next` list it first from two days before the deadline. |
+| You plan to do a card on a given day | Give it that date. It stays out of Next until then. That morning it is on Today, and it counts toward the five. |
 | Something happens at a set time | Put it in your calendar, not in Todoist. |
 | An urgent p1 arrives mid-day | Add it to Today. It may take you past five, because the limit covers planned work. |
 | An agent works on a card | It counts toward the five. The agent's work is your work. |

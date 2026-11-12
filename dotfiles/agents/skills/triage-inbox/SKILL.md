@@ -22,6 +22,8 @@ Answer these questions for each card, in order:
 4. **Project?** The feature project the card belongs to, or its area for a one-off. A card with a repeating date (`due.isRecurring`) gets `Routines` at p4. A new routine without a repeating date gets `Routines` at p4 and a suggested due string, such as `every day` or `every! week`. When a group of cards is one new feature with more than a week of work, suggest a new feature project under its area.
 5. **Waiting?** Add `@waiting` only when Michael says a person or a third party holds the card.
 
+A card's date is the day Michael plans to work on it, and its deadline is the day it is due. Keep both as they are, except where an answer below clears them. When Michael gives a row a planned day or a deadline, apply it with `td task update id:<id> --due <YYYY-MM-DD>` or `--deadline <YYYY-MM-DD>`.
+
 Post one table with these columns: row number, card, answer, Do now, and a reason of a few words. Put the Do now rows first. End with: "Reply `apply` to approve every row, or name a row and give its new answer."
 
 ## Apply

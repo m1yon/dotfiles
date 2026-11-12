@@ -34,7 +34,7 @@ Post one message with these parts, in order:
 1. **Carried over.** Each open pick dated before today, with a suggestion to keep it or clear its date. A kept card counts toward the five, and a cleared card goes back to Next. Flag each card that has carried over three mornings in a row, and suggest splitting it, handing it off, or dropping it. A card carries over the third morning when it is overdue now and was kept on each of the two weekdays before today. A keep is an event in `td activity --since <date 7 days ago> --type task --event updated --json` for the card whose `extraData.lastDueDate` and `extraData.dueDate` are both set and whose `dueDate` is the later one. Page with `--cursor` until `nextCursor` is null.
 2. **Next.** The Next cards not on Today, grouped by project, with cards whose deadline is within two days first.
 3. **Frog.** The oldest p2 card by `addedAt`, kept picks included. Michael chooses the frog.
-4. **Today.** Up to five cards, frog first, counting the kept picks. Routines don't count.
+4. **Today.** Up to five cards, frog first, counting the kept picks and the open picks Michael planned for today. Routines don't count.
 
 End with: "Reply `approve`, or name the changes: a different frog, or cards in or out."
 
