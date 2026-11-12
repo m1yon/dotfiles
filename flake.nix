@@ -179,6 +179,11 @@
                 ${pkgs.callPackage ./system/agent-guard.nix { }}/bin/agent-guard
               touch $out
             '';
+            todoist-today = pkgs.runCommand "todoist-today-test" { } ''
+              ${pkgs.bash}/bin/bash ${./system/todoist-today-test.sh} \
+                ${pkgs.callPackage ./system/todoist-today.nix { username = "michael"; }}/bin/todoist-today
+              touch $out
+            '';
           };
         in
         tests // { all = pkgs.linkFarmFromDrvs "all-checks" (builtins.attrValues tests); }

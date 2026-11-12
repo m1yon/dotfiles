@@ -92,6 +92,8 @@ defaults_message='macOS defaults are declared under system.defaults in darwin/sy
 kill_message='pkill and killall match every process whose name or command line fits, including ones you did not start. `pkill -f monitor` once ended the nixbook'"'"'s GNOME session by killing gnome-session-ctl --monitor. Kill by PID instead: `kill $!` right after you start a job, or find the PID with `pgrep -af <pattern>` and run `kill <pid>`.'
 # shellcheck disable=SC2016
 t3_service_message='Nix owns T3 Code'"'"'s background service, t3code.service, in home/linux/programs/t3code.nix of the dotfiles repo. `t3 up` and `t3 service install` or `uninstall` replace or remove that unit. Change the module, then run `task check`.'
+# shellcheck disable=SC2016
+td_message='Agents add Todoist cards only to the Inbox, at p4, with no date. Run `td task add "<title>" --description "<context>"` without --section, --parent, --priority, --due, --deadline, or a --project other than Inbox. Quick add (`td add`, `td task quickadd`) reads a project, a priority and a date out of its text, so use `td task add`. Ask Michael before you change a card'"'"'s priority, date or project. See "Work tracking" in the shared AGENTS.md.'
 
 has_word() {
   local word wanted
@@ -265,6 +267,9 @@ check_simple_command() {
     pkill | killall)
       block "$kill_message"
       ;;
+    td)
+      check_td
+      ;;
     t3)
       local -a subcommand=()
       local j
@@ -323,24 +328,40 @@ check_package_rules() {
   esac
 }
 
-follow_up_message='Michael approves every follow-up card before it reaches Todoist. Suggest it first, with AskUserQuestion in Claude Code or one plain sentence in Codex. After he picks "Create card", rerun the command with --labels from-agent,approved. See "Work tracking" in the shared AGENTS.md.'
-
-creates_task() {
-  local quote="[\"']?" re
-  re="(^|[^[:alnum:]_-])td${quote}[[:space:]]+${quote}(add|task${quote}[[:space:]]+${quote}(add|quickadd|qa))([^[:alnum:]_-]|\$)"
-  [[ $command =~ $re ]]
+check_td() {
+  local i
+  local -a subcommand=()
+  # td's own options can come before or between its two command words. --progress-jsonl
+  # takes a value only when one follows it.
+  for ((i = 0; i < ${#args[@]} && ${#subcommand[@]} < 2; i += 1)); do
+    case "${args[i]}" in
+      --user) ((i += 1)) ;;
+      --progress-jsonl) if [[ ${args[i + 1]-} != -* ]]; then ((i += 1)); fi ;;
+      -*) ;;
+      *) subcommand+=("${args[i]}") ;;
+    esac
+  done
+  case "${subcommand[0]-} ${subcommand[1]-}" in
+    "add "* | "task quickadd" | "task qa") block "$td_message" ;;
+    "task add") ;;
+    *) return 0 ;;
+  esac
+  for (( ; i < ${#args[@]}; i += 1)); do
+    case "${args[i]}" in
+      --section | --section=* | --parent | --parent=* | --priority | --priority=* | --due | --due=* | --deadline | --deadline=*)
+        block "$td_message"
+        ;;
+      --project)
+        if [[ ${args[i + 1]-} != [Ii][Nn][Bb][Oo][Xx] ]]; then block "$td_message"; fi
+        ((i += 1))
+        ;;
+      --project=*)
+        if [[ ${args[i]#*=} != [Ii][Nn][Bb][Oo][Xx] ]]; then block "$td_message"; fi
+        ;;
+      --content | --description | --labels | --assignee | --duration | --order) ((i += 1)) ;;
+    esac
+  done
 }
-
-carries_label() {
-  local label="$1" quote="[\"']?" sep='[[:space:]]*,[[:space:]]*' flag quick_add
-  flag="--labels${quote}[=[:space:]]+${quote}([^[:space:],\"']+$sep)*$label([^[:alnum:]_-]|\$)"
-  quick_add="(^|[^[:alnum:]_-])@$label([^[:alnum:]_-]|\$)"
-  [[ $command =~ $flag || $command =~ $quick_add ]]
-}
-
-if creates_task && carries_label from-agent && ! carries_label approved; then
-  block "$follow_up_message"
-fi
 
 # Sets the array named $1 to the pieces of $2 between shell operators, cut even inside
 # quotes. read takes one pass over the text, where a pattern substitution takes time

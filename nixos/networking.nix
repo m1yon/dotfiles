@@ -2,7 +2,6 @@
   config,
   pkgs,
   hostname,
-  username,
   ...
 }:
 
@@ -45,10 +44,7 @@
     extraSetFlags = [ "--ssh=false" ];
   };
 
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [
-    3389
-    config.home-manager.users.${username}.services.orchestrator.healthPort
-  ];
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3389 ];
 
   environment.systemPackages = with pkgs; [
     impala

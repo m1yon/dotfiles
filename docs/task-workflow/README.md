@@ -36,7 +36,7 @@ Explanation:
 
 ## Build status
 
-None of this is built yet. These pages are the implementation plan, and every part ships together. Build it in this order:
+Steps 1 to 7 are done. Step 8 is next: sort the Inbox with `/triage-inbox`. The build ran in this order:
 
 1. Remove the pieces this design replaces. Turn off the orchestrator service in the Nix config, and keep its repo for later. Delete the `group-tasks-into-projects` skill and its scheduled run.
 2. Export every open Todoist card to a backup file.
@@ -44,7 +44,7 @@ None of this is built yet. These pages are the implementation plan, and every pa
 4. Write `/inbox`, `/triage-inbox`, `/morning-pick`, `/pick-next`, and `/weekly-review`.
 5. Add the `AGENTS.md` section, the session-start hook, and the `agent-guard` check from [Agent rules](agent-rules.md).
 6. Schedule `/morning-pick` and `/weekly-review` in T3 Code. See [AI jobs](ai-jobs.md).
-7. Move every open card outside `Someday` to the Inbox. Then delete every section, and archive every project that [Todoist setup](todoist-setup.md) doesn't list. Deleting a section deletes the cards in it, so check that each section is empty first.
+7. Move every open card outside `Someday` to the Inbox at p4. Then delete every section, and archive every project that [Todoist setup](todoist-setup.md) doesn't list. Deleting a section deletes the cards in it, so check that each section is empty first.
 8. Sort the Inbox with `/triage-inbox`.
 
 ## Edit the diagram

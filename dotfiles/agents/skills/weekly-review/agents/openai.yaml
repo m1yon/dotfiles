@@ -1,0 +1,5 @@
+interface:
+  display_name: "Weekly review"
+  short_description: "Run the Friday Todoist review"
+policy:
+  allow_implicit_invocation: false
