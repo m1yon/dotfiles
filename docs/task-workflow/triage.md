@@ -14,5 +14,3 @@ Answer these questions for each card, in order:
 4. **Where does it live?** Move p1 and p2 cards to their feature project, or to their area if they're one-offs. Move a new routine to `Routines`, with a repeating date. See [Todoist setup](todoist-setup.md#projects).
 
 A card still at p4 hasn't been triaged.
-
-If the Sentry digest card is in the Inbox, read it, add a card for each issue worth fixing, and complete the digest. The Sentry triage job reopens the same card when new issues arrive. See [AI jobs](ai-jobs.md).

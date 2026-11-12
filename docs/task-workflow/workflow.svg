@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas, asks from people, and a Sentry digest card all enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you pick a frog and date five cards or fewer from it for Today. A weekday 9am job drafts that pick, and /pick-next adds another card whenever a slot is free. Routines sit outside that limit. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /morning-pick, /pick-next, and /weekly-review help.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas and asks from people enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you pick a frog and date five cards or fewer from it for Today. A weekday 9am job drafts that pick, and /pick-next adds another card whenever a slot is free. Routines sit outside that limit. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /morning-pick, /pick-next, and /weekly-review help.">
 <!--
 Hand-drawn diagram for docs/task-workflow/README.md. Edit this file directly.
 Layout grid, viewBox 720 wide:
@@ -65,19 +65,15 @@ Layout grid, viewBox 720 wide:
         <text class="bandlbl" x="34" y="826">4 · DO · DAILY</text>
         <text class="bandlbl" x="34" y="1146">5 · REVIEW · WEEKLY</text>
 
-        <rect class="n" x="60" y="44" width="180" height="56" rx="10"/>
-        <text class="t" x="150" y="67" text-anchor="middle">Your ideas</text>
-        <text class="s" x="150" y="86" text-anchor="middle">Quick Add from anywhere</text>
-        <rect class="n" x="270" y="44" width="180" height="56" rx="10"/>
-        <text class="t" x="360" y="67" text-anchor="middle">Asks from people</text>
-        <text class="s" x="360" y="86" text-anchor="middle">Slack, email, meetings</text>
-        <rect class="n ai" x="480" y="44" width="180" height="56" rx="10"/>
-        <text class="t" x="570" y="67" text-anchor="middle">Sentry triage</text>
-        <text class="s" x="570" y="86" text-anchor="middle">AI job · one digest card</text>
+        <rect class="n" x="165" y="44" width="180" height="56" rx="10"/>
+        <text class="t" x="255" y="67" text-anchor="middle">Your ideas</text>
+        <text class="s" x="255" y="86" text-anchor="middle">Quick Add from anywhere</text>
+        <rect class="n" x="375" y="44" width="180" height="56" rx="10"/>
+        <text class="t" x="465" y="67" text-anchor="middle">Asks from people</text>
+        <text class="s" x="465" y="86" text-anchor="middle">Slack, email, meetings</text>
 
-        <path class="e" d="M150,100 C150,122 300,114 300,136" marker-end="url(#ah)"/>
-        <path class="e" d="M360,100 V136" marker-end="url(#ah)"/>
-        <path class="e ai" d="M570,100 C570,122 420,114 420,136" marker-end="url(#aha)"/>
+        <path class="e" d="M255,100 C255,122 320,114 320,136" marker-end="url(#ah)"/>
+        <path class="e" d="M465,100 C465,122 400,114 400,136" marker-end="url(#ah)"/>
 
         <rect class="n list" x="230" y="136" width="260" height="48" rx="10"/>
         <text class="t" x="360" y="157" text-anchor="middle">Inbox</text>

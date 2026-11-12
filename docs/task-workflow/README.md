@@ -26,7 +26,7 @@ How-to guides:
 Reference:
 
 - [Todoist setup](todoist-setup.md) lists the projects, priorities, labels, filters, dates, and routines.
-- [AI jobs](ai-jobs.md) describes the three scheduled jobs: Sentry triage, the morning pick, and the weekly review.
+- [AI jobs](ai-jobs.md) describes the two scheduled jobs, the morning pick and the weekly review.
 - [Agent rules](agent-rules.md) holds the `AGENTS.md` section and the session-start hook.
 - [Skills](skills.md) describes `/inbox`, `/triage-inbox`, `/morning-pick`, `/pick-next`, and `/weekly-review`.
 
@@ -42,7 +42,6 @@ None of this is built yet. The diagram and these pages are the design. Build it 
 2. Add the agent rules and the session-start hook. They're the only pieces that run in every agent session, and agent sessions are where new work starts.
 3. Write `/morning-pick`, `/pick-next`, and `/inbox`. Then schedule `/morning-pick` in T3 Code.
 4. Write `/triage-inbox` and `/weekly-review` after you've used the daily steps for two weeks. Then schedule `/weekly-review` in T3 Code.
-5. Build the Sentry triage job.
 
 ## Edit the diagram
 

@@ -6,7 +6,7 @@ Agents make starting work nearly free, so most new work begins in an agent sessi
 
 ## Agents write only to the Inbox
 
-An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes lands in the Inbox at p4, with no date. Next shows only p1 and p2 cards, and Today shows only dated cards, so nothing an agent creates reaches either one until you triage it. The AI jobs follow the same idea. Each job may change one thing: one digest card, or one label.
+An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes lands in the Inbox at p4, with no date. Next shows only p1 and p2 cards, and Today shows only dated cards, so nothing an agent creates reaches either one until you triage it. The AI jobs follow the same idea. The morning pick changes nothing until you approve, and the weekly review adds one label on its own.
 
 ## The morning pick is the only limit
 
