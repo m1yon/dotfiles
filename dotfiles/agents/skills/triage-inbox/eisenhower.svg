@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" font-family="Inter, Helvetica, Arial, sans-serif">
+  <rect width="1600" height="1000" fill="#fbfaf8"/>
+
+  <text x="60" y="70" font-size="38" font-weight="700" fill="#202020">Inbox triage reference</text>
+  <text x="60" y="105" font-size="20" fill="#666">Eisenhower matrix mapped to Todoist priorities</text>
+
+  <!-- Column headers -->
+  <text x="370" y="165" font-size="22" font-weight="700" fill="#202020" text-anchor="middle">URGENT</text>
+  <text x="370" y="190" font-size="15" fill="#777" text-anchor="middle">due within about a week, or someone is blocked</text>
+  <text x="820" y="165" font-size="22" font-weight="700" fill="#202020" text-anchor="middle">NOT URGENT</text>
+  <text x="820" y="190" font-size="15" fill="#777" text-anchor="middle">no near date, nobody waiting on it</text>
+
+  <!-- Row headers -->
+  <text transform="translate(95,405) rotate(-90)" font-size="22" font-weight="700" fill="#202020" text-anchor="middle">IMPORTANT</text>
+  <text transform="translate(118,405) rotate(-90)" font-size="14" fill="#777" text-anchor="middle">moves MECA, money, health, or family</text>
+  <text transform="translate(95,770) rotate(-90)" font-size="22" font-weight="700" fill="#202020" text-anchor="middle">NOT IMPORTANT</text>
+  <text transform="translate(118,770) rotate(-90)" font-size="14" fill="#777" text-anchor="middle">a miss costs little</text>
+
+  <!-- Q1: p1 -->
+  <rect x="145" y="215" width="440" height="365" rx="16" fill="#fdecea" stroke="#d1453b" stroke-width="3"/>
+  <rect x="170" y="240" width="74" height="42" rx="8" fill="#d1453b"/>
+  <text x="207" y="269" font-size="24" font-weight="700" fill="#fff" text-anchor="middle">p1</text>
+  <text x="262" y="270" font-size="30" font-weight="700" fill="#a8322a">Do it now</text>
+  <text x="172" y="330" font-size="19" fill="#333">Work it today or tomorrow.</text>
+  <text x="172" y="360" font-size="19" fill="#333">Keep this list short. If everything</text>
+  <text x="172" y="388" font-size="19" fill="#333">is p1, nothing is.</text>
+  <text x="172" y="440" font-size="16" font-weight="700" fill="#a8322a">EXAMPLES</text>
+  <text x="172" y="468" font-size="17" fill="#555">• Tax payment due Friday</text>
+  <text x="172" y="496" font-size="17" fill="#555">• Prod bug blocking members</text>
+  <text x="172" y="524" font-size="17" fill="#555">• Teammate blocked on your review</text>
+
+  <!-- Q2: p2 -->
+  <rect x="600" y="215" width="440" height="365" rx="16" fill="#fdf2e3" stroke="#eb8909" stroke-width="3"/>
+  <rect x="625" y="240" width="74" height="42" rx="8" fill="#eb8909"/>
+  <text x="662" y="269" font-size="24" font-weight="700" fill="#fff" text-anchor="middle">p2</text>
+  <text x="717" y="270" font-size="30" font-weight="700" fill="#b36500">Schedule it</text>
+  <text x="627" y="330" font-size="19" fill="#333">The real work lives here. File it</text>
+  <text x="627" y="360" font-size="19" fill="#333">in its project, then pick it for a</text>
+  <text x="627" y="388" font-size="19" fill="#333">day with /pick-next.</text>
+  <text x="627" y="440" font-size="16" font-weight="700" fill="#b36500">EXAMPLES</text>
+  <text x="627" y="468" font-size="17" fill="#555">• Feature work, roster imports</text>
+  <text x="627" y="496" font-size="17" fill="#555">• 401k rollover, insurance</text>
+  <text x="627" y="524" font-size="17" fill="#555">• Tooling that saves time later</text>
+
+  <!-- Q3: p3 -->
+  <rect x="145" y="595" width="440" height="345" rx="16" fill="#e8f0fc" stroke="#246fe0" stroke-width="3"/>
+  <rect x="170" y="620" width="74" height="42" rx="8" fill="#246fe0"/>
+  <text x="207" y="649" font-size="24" font-weight="700" fill="#fff" text-anchor="middle">p3</text>
+  <text x="262" y="650" font-size="30" font-weight="700" fill="#1a54ab">Do it fast</text>
+  <text x="172" y="710" font-size="19" fill="#333">Batch these, timebox them, or</text>
+  <text x="172" y="740" font-size="19" fill="#333">hand them off. Don't let them</text>
+  <text x="172" y="768" font-size="19" fill="#333">crowd out p2 work.</text>
+  <text x="172" y="815" font-size="16" font-weight="700" fill="#1a54ab">EXAMPLES</text>
+  <text x="172" y="843" font-size="17" fill="#555">• RSVP to an event this week</text>
+  <text x="172" y="871" font-size="17" fill="#555">• Return a package before the window</text>
+  <text x="172" y="899" font-size="17" fill="#555">• Someone else's request with a date</text>
+
+  <!-- Q4: delete -->
+  <rect x="600" y="595" width="440" height="345" rx="16" fill="#f0f0f0" stroke="#8a8a8a" stroke-width="3" stroke-dasharray="10 6"/>
+  <rect x="625" y="620" width="96" height="42" rx="8" fill="#8a8a8a"/>
+  <text x="673" y="649" font-size="22" font-weight="700" fill="#fff" text-anchor="middle">Delete</text>
+  <text x="739" y="650" font-size="30" font-weight="700" fill="#555">Drop it</text>
+  <text x="627" y="710" font-size="19" fill="#333">If it still matters later, it will</text>
+  <text x="627" y="740" font-size="19" fill="#333">come back. Maybe one day?</text>
+  <text x="627" y="768" font-size="19" fill="#333">Send it to Someday instead.</text>
+  <text x="627" y="815" font-size="16" font-weight="700" fill="#555">EXAMPLES</text>
+  <text x="627" y="843" font-size="17" fill="#555">• "Look into X" with no reason</text>
+  <text x="627" y="871" font-size="17" fill="#555">• Stale ideas you skip every review</text>
+  <text x="627" y="899" font-size="17" fill="#555">• Things nobody will ask about</text>
+
+  <!-- Flow panel -->
+  <rect x="1085" y="140" width="460" height="800" rx="16" fill="#ffffff" stroke="#ddd" stroke-width="2"/>
+  <text x="1115" y="190" font-size="26" font-weight="700" fill="#202020">Ask in this order</text>
+
+  <g font-size="18" fill="#333">
+    <circle cx="1130" cy="243" r="17" fill="#202020"/><text x="1130" y="249" fill="#fff" font-weight="700" text-anchor="middle">1</text>
+    <text x="1160" y="240" font-weight="700">Is it actionable?</text>
+    <text x="1160" y="266" fill="#666" font-size="16">No: Delete, Someday, or Obsidian</text>
+    <text x="1160" y="288" fill="#666" font-size="16">(reference notes go to Obsidian)</text>
+
+    <circle cx="1130" cy="343" r="17" fill="#202020"/><text x="1130" y="349" fill="#fff" font-weight="700" text-anchor="middle">2</text>
+    <text x="1160" y="340" font-weight="700">Under 2 minutes?</text>
+    <text x="1160" y="366" fill="#666" font-size="16">Do it now. Still give it a priority</text>
+    <text x="1160" y="388" fill="#666" font-size="16">and project in case you don't.</text>
+
+    <circle cx="1130" cy="443" r="17" fill="#202020"/><text x="1130" y="449" fill="#fff" font-weight="700" text-anchor="middle">3</text>
+    <text x="1160" y="440" font-weight="700">Which quadrant?</text>
+    <text x="1160" y="466" fill="#666" font-size="16">p1, p2, p3, or Delete (the matrix)</text>
+
+    <circle cx="1130" cy="521" r="17" fill="#202020"/><text x="1130" y="527" fill="#fff" font-weight="700" text-anchor="middle">4</text>
+    <text x="1160" y="518" font-weight="700">Which project?</text>
+    <text x="1160" y="544" fill="#666" font-size="16">Feature project, or its area for a</text>
+    <text x="1160" y="566" fill="#666" font-size="16">one-off: MECA, Side Projects, Personal</text>
+
+    <circle cx="1130" cy="621" r="17" fill="#202020"/><text x="1130" y="627" fill="#fff" font-weight="700" text-anchor="middle">5</text>
+    <text x="1160" y="618" font-weight="700">Is someone else holding it?</text>
+    <text x="1160" y="644" fill="#666" font-size="16">Add @waiting and clear the date</text>
+  </g>
+
+  <line x1="1115" y1="690" x2="1515" y2="690" stroke="#eee" stroke-width="2"/>
+  <text x="1115" y="728" font-size="20" font-weight="700" fill="#202020">Special cases</text>
+  <g font-size="16" fill="#444">
+    <rect x="1115" y="748" width="40" height="26" rx="6" fill="#bbb"/><text x="1135" y="767" fill="#fff" font-weight="700" text-anchor="middle">p4</text>
+    <text x="1167" y="767">Repeats on a schedule: Routines</text>
+    <rect x="1115" y="790" width="40" height="26" rx="6" fill="#bbb"/><text x="1135" y="809" fill="#fff" font-weight="700" text-anchor="middle">p4</text>
+    <text x="1167" y="809">Not now, maybe later: Someday</text>
+    <text x="1115" y="853">Over a week of related cards: make a</text>
+    <text x="1115" y="875">feature project under its area</text>
+    <text x="1115" y="913" fill="#888">Date = day you plan to work it. Deadline = due.</text>
+  </g>
+</svg>

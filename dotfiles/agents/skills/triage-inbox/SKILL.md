@@ -7,6 +7,10 @@ description: Drafts the triage of Michael's Todoist Inbox in batches of up to 10
 
 Work through the Inbox in batches of up to 10 top-level cards, in the order `td inbox` lists them. For each batch, draft an answer for every card, post the drafts as one table, and write to Todoist only after Michael approves. Apply the batch before you draft the next one. An Inbox of 10 cards or fewer is one batch.
 
+## Show the reference
+
+Once per run, at the top of the first batch's reply, show `eisenhower-triage.png` from this skill's base directory as a Markdown image with its absolute path, such as `![Inbox triage reference](<base directory>/eisenhower-triage.png)`. Don't show it again in later batches. `eisenhower.svg` is its source. After you edit the SVG, rebuild the PNG with `rsvg-convert -z 1.5 eisenhower.svg -o eisenhower-triage.png`.
+
 ## Read
 
 1. `td inbox --json --all --full`. Draft the top-level cards. A subtask moves with its parent.
