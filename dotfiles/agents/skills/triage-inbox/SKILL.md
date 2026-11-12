@@ -28,7 +28,22 @@ Answer these questions for each card, in order:
 
 A card's date is the day Michael plans to work on it, and its deadline is the day it is due. Keep both as they are, except where an answer below clears them. When Michael gives a row a planned day or a deadline, apply it with `td task update id:<id> --due <YYYY-MM-DD>` or `--deadline <YYYY-MM-DD>`.
 
-Post the batch as one table with these columns: row number, card, answer, Do now, and a reason of a few words. Put the Do now rows first. Above the table, write the batch number and how many cards are left after it, such as "Batch 2 of 9, 72 cards after this one". End with: "Reply `apply` to approve every row, or name a row and give its new answer."
+Post the batch as one table with these columns: row number, card, suggestion, and a reason of a few words. The suggestion is the card's answer. For a Do now card, end it with "Do now", such as "🟠 p2, Personal, Do now". Start each suggestion with a dot in its Todoist priority color: 🔴 p1, 🟠 p2, 🔵 p3, ⚪ p4 (Routines and Someday), and ⚫ Delete or Obsidian. Put the Do now rows first. Above the table, write the batch number and how many cards are left after it, such as "Batch 2 of 9, 72 cards after this one". End with: "Reply `apply` to approve every row, or name a row and give its new answer."
+
+Match this format:
+
+```markdown
+Batch 1 of 9, 71 cards after this one.
+
+| # | Card | Suggestion | Reason |
+|---|---|---|---|
+| 1 | renew car registration | 🔴 p1, Personal, Do now | Due Friday, takes a minute online |
+| 2 | create home repo for meca therapies github | 🟠 p2, MECA | Useful for agents, nothing due |
+| 3 | send invoice to MECA | ⚪ p4, Routines | Repeats every 15th |
+| 4 | look into new note app | ⚫ Delete | No reason to act |
+
+Reply `apply` to approve every row, or name a row and give its new answer.
+```
 
 ## Apply
 
