@@ -30,7 +30,7 @@ Dropped cards are deleted, so they have no priority.
 | Label | Meaning | Added by |
 | --- | --- | --- |
 | `@waiting` | An agent or a person holds the work | You, during triage |
-| `@stale` | No activity for 21 days | The stale sweep |
+| `@stale` | No activity for 21 days | `/weekly-review`, or `/pick` during a fresh start |
 
 ## Filters
 
@@ -45,11 +45,12 @@ The morning pick comes from Next. The Friday review works through Review.
 
 Today is Todoist's built-in Today view. A card you don't finish stays dated, so it shows up again at the next morning pick. There, you keep it or clear its date.
 
-## Recurring cards
+## Recurring card
 
 | Card | Due string | Purpose |
 | --- | --- | --- |
 | Morning pick | `every workday` | Reminds you to run `/pick` |
-| Friday review | `every friday` | Reminds you to run `/weekly-review` |
 
-Keep both cards out of the Inbox, so triage never sees them. Leave them at p4, so they never show up in Next. They don't count toward the three-card pick.
+Keep the card out of the Inbox, so triage never sees it. Leave it at p4, so it never shows up in Next. It doesn't count toward the three-card pick.
+
+The Friday review has no card. A scheduled task starts it. See [AI jobs](ai-jobs.md#weekly-review).

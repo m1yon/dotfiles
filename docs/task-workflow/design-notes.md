@@ -18,7 +18,11 @@ A feature project groups its cards, so Next shows them together. It says nothing
 
 ## Skills come with reminders
 
-A skill helps only if you remember to run it. The two skills tied to a time of day, `/pick` and `/weekly-review`, each have a recurring Todoist card. The card shows up in Today and names the skill. The session-start hook follows the same idea. It loads Today into each agent session, so no agent has to remember to look.
+A skill helps only if you remember to run it. `/pick` has a recurring Todoist card that shows up in Today and names the skill. `/weekly-review` goes a step further. A T3 Code scheduled task runs it at 9am on Friday, so the drafts are ready when you open its thread. The session-start hook follows the same idea. It loads Today into each agent session, so no agent has to remember to look.
+
+## The stale sweep runs inside the weekly review
+
+An earlier draft ran the stale sweep as its own Thursday-night job. Its only purpose was to feed the Friday review. Running it as the first step of the review removes a job and a schedule, and the `@stale` labels are minutes old when you see them.
 
 ## Left out on purpose
 

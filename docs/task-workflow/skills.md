@@ -35,16 +35,18 @@ Runs the morning pick. See [Run your day](daily.md).
 If Today holds cards that are three or more days overdue, `/pick` offers a fresh start before the pick. With your approval, it does these steps:
 
 1. Clears the dates on overdue cards. The cards stay in their projects, and the p1 and p2 cards show up in Next again.
-2. Adds `@stale` to cards with no activity for 21 days, by the same rule as the stale sweep.
+2. Adds `@stale` to cards with no activity for 21 days, by the same rule as `/weekly-review`.
 3. Runs the normal pick on an empty Today.
 
 ## `/weekly-review`
 
-Runs the Friday review. See [Run the Friday review](weekly-review.md).
+Runs the Friday review. A T3 Code scheduled task starts it every Friday at 9am. See [AI jobs](ai-jobs.md#weekly-review) and [Run the Friday review](weekly-review.md).
 
-- Runs `/triage-inbox` to empty the Inbox.
+- Adds `@stale` to cards with no activity for 21 days. This is the only change it makes without asking.
+- Runs `/triage-inbox` to draft the Inbox triage.
 - Shows the `@stale` cards in one table, each with a suggested answer: keep, Someday, or delete.
 - Checks the PR linked on each agent-held `@waiting` card with `gh`. It reports whether the PR merged, is open, or has stalled, and offers to complete the cards whose PR merged.
 - Lists feature projects with no open cards, and offers to archive them.
+- Posts all the drafts in one message and waits. It applies the answers you approve in the thread.
 
 The name avoids `/review`, which is already a code review command.

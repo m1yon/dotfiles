@@ -25,8 +25,8 @@ How-to guides:
 
 Reference:
 
-- [Todoist setup](todoist-setup.md) lists the projects, priorities, labels, filters, and recurring cards.
-- [AI jobs](ai-jobs.md) describes the scheduled Sentry triage and stale sweep.
+- [Todoist setup](todoist-setup.md) lists the projects, priorities, labels, filters, and the recurring card.
+- [AI jobs](ai-jobs.md) describes the two scheduled jobs, Sentry triage and the weekly review.
 - [Agent rules](agent-rules.md) holds the `AGENTS.md` section and the session-start hook.
 - [Skills](skills.md) describes `/inbox`, `/triage-inbox`, `/pick`, and `/weekly-review`.
 
@@ -38,11 +38,11 @@ Explanation:
 
 None of this is built yet. The diagram and these pages are the design. Build it in this order:
 
-1. Set up Todoist, so the filters, labels, and recurring cards exist.
+1. Set up Todoist, so the filters, labels, and the recurring card exist.
 2. Add the agent rules and the session-start hook. They're the only pieces that run in every agent session, and agent sessions are where new work starts.
 3. Write `/pick` and `/inbox`.
-4. Write `/triage-inbox` and `/weekly-review` after you've used the daily steps for two weeks.
-5. Build the two AI jobs.
+4. Write `/triage-inbox` and `/weekly-review` after you've used the daily steps for two weeks. Then schedule `/weekly-review` in T3 Code.
+5. Build the Sentry triage job.
 
 ## Edit the diagram
 
