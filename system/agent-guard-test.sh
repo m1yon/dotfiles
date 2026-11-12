@@ -24,24 +24,42 @@ bash_event() {
 while IFS=$'\t' read -r expected command; do
   run_case "$expected" "$(bash_event "$command")"
 done <<'EOF'
-block	td task add "Fix the data race in the msgraphemail tests" --project Inbox --labels from-agent
-block	td task add "Remove the duplicated block" --project "Side Projects" --section Todo --labels from-agent --description "Repo m1yon/dotfiles; home/linux/gnome.nix (elif branch) | see log"
-block	td task add "x" --description "a; b (c) | d" --labels from-agent
-block	cd ~/GitHub/dream && td task add "Upgrade Effect" --labels=from-agent
-block	td task add "x" --labels "pr-review,from-agent"
-block	td add "Check the invoice month @from-agent #Inbox"
-block	td task quickadd "Check the invoice month @from-agent"
-block	td task qa "x @from-agent"
-block	url=$(td task add "x" --labels from-agent)
-allow	td task add "Fix the data race" --project Inbox --labels from-agent,approved
-allow	td task add "x" --labels approved,from-agent
-allow	td add "x @from-agent @approved"
-allow	td task add "Build a local web frontend" --project id:abc --section "In Progress" --json
-allow	td task add "feat(web): run imports in a web session" --parent id:abc
-allow	td task add "x" --labels from-agents
-allow	td task list --label from-agent --json
+block	td task add "Fix the data race in the msgraphemail tests" --project MECA
+block	td task add "Remove the duplicated block" --project "Side Projects" --description "Repo m1yon/dotfiles; home/linux/gnome.nix (elif branch) | see log"
+block	td task add "x" --project=id:abc
+block	td task add "x" --section Todo
+block	td task add "x" --parent id:abc
+block	td task add "x" --priority p1
+block	td task add "x" --priority=p4
+block	td task add "x" --due today
+block	td task add "x" --deadline 2026-12-01
+block	td -q task add "x" --project MECA
+block	td --user id:123 task add "x" --due=tomorrow
+block	td --progress-jsonl /tmp/progress.jsonl task add "x" --project MECA
+block	td --progress-jsonl -q task add "x" --priority p1
+block	td task -q add "x" --due today
+block	td task --quiet add "x" --priority p1
+block	td task --user id:123 add "x" --project MECA
+block	td task --no-spinner qa "x tomorrow p1 #MECA"
+allow	td task -q update id:abc --priority p1
+allow	td --user id:123 task list --project MECA
+block	cd ~/GitHub/dream && td task add "Upgrade Effect" --project MECA
+block	url=$(td task add "x" --due tomorrow)
+block	td add "Check the invoice month #Inbox"
+block	td task quickadd "Check the invoice month"
+block	td task qa "x"
+block	bash -lc 'td task add "x" --project MECA'
+allow	td task add "Fix the data race" --description "Repo m1yon/dotfiles; a (b) | c" --json
+allow	td task add "x" --project Inbox
+allow	td task add "x" --project=inbox
+allow	td task add "Ask whether --project MECA fits"
+allow	td task update id:abc --priority p2 --due today
+allow	td task move id:abc --project MECA
+allow	td task list --project MECA --priority p1 --json
 allow	td comment add id:abc --content "PR: https://github.com/m1yon/orchestrator/pull/16"
-allow	grep -n "from-agent" dotfiles/agents/AGENTS.md
+allow	grep -n "td task add --project MECA" dotfiles/agents/AGENTS.md
+allow	git commit -m "fix: block td add and td task add --due today"
+allow	echo 'td task add "x" --priority p1'
 block	brew install --cask linearmouse
 block	brew tap charmbracelet/tap
 block	brew upgrade
@@ -247,6 +265,8 @@ run_case block "$(bash_event $'echo "line one\n$(pkill -f x)"')"
 
 # A heredoc is a script when a shell reads it, local or over ssh, and data otherwise.
 run_case block "$(bash_event $'bash <<\'EOF\'\npkill -f monitor\nEOF')"
+run_case block "$(bash_event $'bash <<\'EOF\'\ntd task add "x" --priority p1\nEOF')"
+run_case allow "$(bash_event $'td task add "x" --stdin <<\'EOF\'\nDue --due today in #MECA\nEOF')"
 run_case block "$(bash_event $'bash <<EOF\nkillall node\nEOF')"
 run_case block "$(bash_event $'bash <<-EOF\n\tt3 service uninstall\n\tEOF')"
 run_case block "$(bash_event $'bash <<EOF\necho \\$(pkill -f monitor)\nEOF')"
@@ -288,13 +308,15 @@ run_case block "$(bash_event 'print -l ${(k)commands}; pkill -f monitor')"
 run_case block "$(bash_event 'print -l ${(k)commands}; t3 "up"')"
 run_case block "$(bash_event 'print -l ${(k)commands}; p\kill -f monitor')"
 run_case allow "$(bash_event 'print -l ${(k)commands}; echo hi')"
+run_case block "$(bash_event 'print -l ${(k)commands}; td task add "x" --project MECA')"
 run_case block "$(bash_event "print -l \${(k)commands}; ssh -o 'RemoteCommand=pkill -f monitor' nixbook")"
 run_case block "$(bash_event "print -l \${(k)commands}; ssh -o 'RemoteCommand=t3 up --lan' nixbook")"
 run_case block "$(bash_event "print -l \${(k)commands}; ssh -To 'RemoteCommand=killall gnome-shell' nixbook")"
 
 # Codex can pass the command as an argument vector.
-run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","td task add \"x\" --labels from-agent"]}}'
-run_case block '{"tool_name":"Bash","tool_input":{"command":["td","task","add","x","--labels","from-agent"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","td task add \"x\" --project MECA"]}}'
+run_case block '{"tool_name":"Bash","tool_input":{"command":["td","task","add","x","--due","today"]}}'
+run_case allow '{"tool_name":"Bash","tool_input":{"command":["td","task","add","x","--description","a; b"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","brew install --cask linearmouse"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-lc","pkill -f monitor"]}}'
 run_case block '{"tool_name":"Bash","tool_input":{"command":["bash","-c","-l","pkill -f monitor"]}}'

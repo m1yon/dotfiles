@@ -13,7 +13,7 @@ This table pairs each rule with what enforces it. Run `/pstack:correct` when the
 | Files that tools write at runtime stay out of the repo. | `~/.claude/skills` holds one link per skill (`home/shared/programs/agents.nix`), so Claude Code's own folders stay in `$HOME`. The global git ignores (`home/shared/programs/git.nix`) cover `.DS_Store` and `.claude/settings.local.json`. |
 | Tools with their own updater are bootstrapped by Nix and never pinned. | These docs only. |
 | The shared instruction file keeps its `## pstack model configuration` heading and row format. | These docs only. |
-| Agents file a follow-up card only after Michael approves it. | The `agent-guard` hook blocks `td task add`, `td add`, `td task quickadd` and `td task qa` when the command carries the `from-agent` label without `approved`. `checks.agent-guard` tests it. The hook trusts the agent's `approved` label and does not see the Todoist MCP tools. |
+| Agents add Todoist cards only to the Inbox, at p4, with no date. | The `agent-guard` hook blocks `td task add` when it sets `--section`, `--parent`, `--priority`, `--due`, `--deadline`, or a `--project` other than the Inbox. It blocks `td add`, `td task quickadd` and `td task qa` outright, because quick-add text can carry a project, a priority or a date. `checks.agent-guard` tests it. The hook does not see the Todoist MCP tools. |
 
 ## Declarative system management
 
