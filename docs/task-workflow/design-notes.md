@@ -6,7 +6,11 @@ Agents make starting work nearly free, so most new work begins in an agent sessi
 
 ## Agents write only to the Inbox
 
-An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes lands in the Inbox at p4, with no date. Next shows only p1 and p2 cards, and Today shows only dated cards, so nothing an agent creates reaches either one until you triage it. The AI jobs follow the same idea. The morning pick changes nothing until you approve, and the weekly review adds one label on its own.
+An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes lands in the Inbox at p4, with no date. Next shows only p1 to p3 cards, and Today shows only dated cards, so nothing an agent creates reaches either one until you triage it. "Pick it" goes through the Inbox too. The agent adds the card there, and `/pick-next` files and dates it with your answer.
+
+This rule is a block, not a question. The `agent-guard` hook stops any agent command that adds a card outside the Inbox or adds one with a priority or a date. The case for asking instead of blocking is about guardrails on you. An agent never needs to put a new card anywhere else, so a hard block costs nothing.
+
+The AI jobs follow the same idea. The morning pick changes nothing until you approve, and the weekly review adds one label on its own.
 
 ## The morning pick is the only limit
 
@@ -14,9 +18,15 @@ Earlier drafts capped active projects at three, split projects into active and p
 
 Routines sit outside the limit. Meditating or doing the budget repeats on its own schedule and doesn't compete with project work, so counting routines would only shrink the room for the work the limit protects. An earlier draft capped the day at three cards and counted everything on Today, which left it unclear what the number meant.
 
+Agent work sits inside the limit. You start the agent, steer it, and review what it makes, so a card an agent works on is a card you work on. `@waiting` is only for work that a person or a third party holds.
+
 ## Dates mean planned for today
 
 A date on a work card means you plan to work on it today, and only the two pick skills set one. Real due dates go in the Deadline field. As a result, an overdue card is always one you picked and didn't finish, and the next morning pick settles it. Today doubles as the in-progress list. A card on Today for a second morning is multi-day work you're still on, so there's no separate in-progress state to keep current.
+
+## This version tracks no PRs
+
+An earlier setup ran an orchestrator service that watched GitHub. It moved cards between columns, labeled cards whose PRs were ready for review, completed cards when their PRs merged, and created cards for PRs that had none. This version turns the service off and links no PRs to cards. A PR is part of its card's work, so the card stays on Today and keeps its slot until you complete it. An agent reviews your PRs, so a PR rarely waits long. T3 Code already shows each PR and its review, and a second copy in Todoist added upkeep. PR automation can come back later, built on this design.
 
 ## Projects only organize
 
@@ -34,7 +44,8 @@ An earlier draft ran the stale sweep as its own Thursday-night job. Its only pur
 
 - **Hard blocks on work that isn't on Today.** They'd be turned off within a week.
 - **Streaks, or a count of "start anyway" answers.** A count turns slips into guilt, and nothing in the flow uses the number.
-- **A cap on parallel agent sessions.** The five-card pick already limits active work, and delegated p3 cards are meant to run without you.
+- **A cap on parallel agent sessions.** The five-card pick already limits active work, because a card an agent works on counts toward the five.
+- **Agents that start p3 cards on their own.** For now, p3 is a label you read during the pick. Handing p3 cards to agents can come later.
 - **A Doing state or an `@doing` label.** You'd update it at every start and pause, which is the per-switch upkeep this design avoids. Today already shows what's in progress.
 - **Sizing cards, as in the 1-3-5 rule.** Sizing every card is upkeep that doesn't change which cards get picked.
 - **A break timer.** A phone Pomodoro timer handles breaks, outside Todoist.

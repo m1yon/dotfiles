@@ -10,7 +10,7 @@ Diamonds are decisions, yellow boxes are Todoist lists, and dashed boxes are sch
 
 ## Two rules hold it together
 
-- **Five open cards, frog first.** Each morning, pick a frog and date up to five cards from Next. The frog is a p2 card, the important work that never feels urgent, and it goes first. Completing a card frees a slot for `/pick-next`. Routines, like meditating, don't count toward the five.
+- **Five open cards, frog first.** Each morning, pick a frog and date up to five cards from Next. The frog is a p2 card, the important work that never feels urgent, and it goes first. A card counts whether you work on it yourself or through an agent. Completing a card frees a slot for `/pick-next`. Routines, like meditating, don't count toward the five.
 - **Ideas wait in the Inbox.** A new idea goes to the Inbox, even when an agent could start it in seconds. Triage decides whether it ever starts.
 
 Projects only organize cards, and nothing asks for a note when you switch tasks.
@@ -25,23 +25,27 @@ How-to guides:
 
 Reference:
 
-- [Todoist setup](todoist-setup.md) lists the projects, priorities, labels, filters, dates, and routines.
+- [Todoist setup](todoist-setup.md) is the target layout: the projects, priorities, labels, filters, dates, and routines.
 - [AI jobs](ai-jobs.md) describes the two scheduled jobs, the morning pick and the weekly review.
-- [Agent rules](agent-rules.md) holds the `AGENTS.md` section and the session-start hook.
+- [Agent rules](agent-rules.md) holds the `AGENTS.md` section, the session-start hook, and the `agent-guard` check.
 - [Skills](skills.md) describes `/inbox`, `/triage-inbox`, `/morning-pick`, `/pick-next`, and `/weekly-review`.
 
 Explanation:
 
-- [Design notes](design-notes.md) covers why the guardrails ask instead of block, and what was left out on purpose.
+- [Design notes](design-notes.md) covers why the guardrails ask instead of block, why this version tracks no PRs, and what was left out on purpose.
 
 ## Build status
 
-None of this is built yet. The diagram and these pages are the design. Build it in this order:
+None of this is built yet. These pages are the implementation plan, and every part ships together. Build it in this order:
 
-1. Set up Todoist, so the filters, labels, and the `Routines` project exist.
-2. Add the agent rules and the session-start hook. They're the only pieces that run in every agent session, and agent sessions are where new work starts.
-3. Write `/morning-pick`, `/pick-next`, and `/inbox`. Then schedule `/morning-pick` in T3 Code.
-4. Write `/triage-inbox` and `/weekly-review` after you've used the daily steps for two weeks. Then schedule `/weekly-review` in T3 Code.
+1. Remove the pieces this design replaces. Turn off the orchestrator service in the Nix config, and keep its repo for later. Delete the `group-tasks-into-projects` skill and its scheduled run.
+2. Export every open Todoist card to a backup file.
+3. Make Todoist match [Todoist setup](todoist-setup.md). Create what's missing, and delete the labels and filters that the page doesn't list.
+4. Write `/inbox`, `/triage-inbox`, `/morning-pick`, `/pick-next`, and `/weekly-review`.
+5. Add the `AGENTS.md` section, the session-start hook, and the `agent-guard` check from [Agent rules](agent-rules.md).
+6. Schedule `/morning-pick` and `/weekly-review` in T3 Code. See [AI jobs](ai-jobs.md).
+7. Move every open card outside `Someday` to the Inbox. Then delete every section, and archive every project that [Todoist setup](todoist-setup.md) doesn't list. Deleting a section deletes the cards in it, so check that each section is empty first.
+8. Sort the Inbox with `/triage-inbox`.
 
 ## Edit the diagram
 

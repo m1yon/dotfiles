@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas and asks from people enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you pick a frog and date five cards or fewer from it for Today. A weekday 9am job drafts that pick, and /pick-next adds another card whenever a slot is free. Routines sit outside that limit. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /morning-pick, /pick-next, and /weekly-review help.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas and asks from people enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do, Schedule, and Delegate cards get filed in their project, and a card that a person or a third party holds gets @waiting. A Next view shows those cards grouped by project, and each morning you pick a frog and date five cards or fewer from it for Today. A weekday 9am job drafts that pick, and /pick-next adds another card whenever a slot is free. Routines sit outside that limit. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /morning-pick, /pick-next, and /weekly-review help.">
 <!--
 Hand-drawn diagram for docs/task-workflow/README.md. Edit this file directly.
 Layout grid, viewBox 720 wide:
@@ -113,18 +113,18 @@ Layout grid, viewBox 720 wide:
         <text class="s" x="415" y="550" text-anchor="middle">neither</text>
         <text class="lb" x="480" y="460">Eisenhower</text>
 
-        <path class="e" d="M250,536 H220" marker-end="url(#ah)"/>
-        <rect class="n list" x="60" y="512" width="160" height="48" rx="10"/>
-        <text class="t" x="140" y="532" text-anchor="middle">@waiting</text>
-        <text class="s" x="140" y="549" text-anchor="middle">An agent or person has it</text>
         <path class="e" d="M470,536 H605 V298" marker-end="url(#ah)"/>
         <text class="lb" x="520" y="528" text-anchor="middle">drop</text>
 
         <path class="e" d="M360,566 V598" marker-end="url(#ah)"/>
-        <text class="lb" x="368" y="587">p1 and p2</text>
+        <text class="lb" x="368" y="587">p1 to p3</text>
         <rect class="n" x="250" y="598" width="220" height="46" rx="10"/>
         <text class="t" x="360" y="618" text-anchor="middle">File it in its project</text>
         <text class="s" x="360" y="635" text-anchor="middle">or in its area, if it's a one-off</text>
+        <path class="e" d="M250,621 H220" marker-end="url(#ah)"/>
+        <rect class="n list" x="60" y="598" width="160" height="46" rx="10"/>
+        <text class="t" x="140" y="618" text-anchor="middle">@waiting</text>
+        <text class="s" x="140" y="635" text-anchor="middle">Someone else holds it</text>
 
         <path class="e" d="M360,644 V716" marker-end="url(#ah)"/>
         <rect class="n list" x="230" y="716" width="260" height="52" rx="10"/>
@@ -135,7 +135,7 @@ Layout grid, viewBox 720 wide:
         <path class="e" d="M360,768 V840" marker-end="url(#ah)"/>
         <rect class="n list" x="230" y="840" width="260" height="46" rx="10"/>
         <text class="t" x="360" y="860" text-anchor="middle">Next</text>
-        <text class="s" x="360" y="877" text-anchor="middle">p1 and p2 cards, grouped by project</text>
+        <text class="s" x="360" y="877" text-anchor="middle">p1 to p3 cards, grouped by project</text>
         <path class="e" d="M360,886 V910" marker-end="url(#ah)"/>
         <rect class="n" x="230" y="910" width="260" height="46" rx="10"/>
         <text class="t" x="360" y="930" text-anchor="middle">Morning pick · 5 min</text>

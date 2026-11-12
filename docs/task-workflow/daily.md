@@ -33,7 +33,7 @@ When Today has no open picks left, the plan for the day is done. Run `/pick-next
 
 When a new idea comes up, add it to the Inbox and keep going. In an agent session, run `/inbox <idea>`.
 
-If you ask an agent for work that isn't on a Today or `@waiting` card, it asks once: "Not on Today. Pick it, Inbox it, or start anyway?" Pick it runs `/pick-next` for that card. Any answer is fine, and it doesn't ask again in that session.
+If you ask an agent for work that isn't on a Today or `@waiting` card, it asks once: "Not on Today. Pick it, Inbox it, or start anyway?" Pick it adds the card to the Inbox and runs `/pick-next` for it, which asks for a priority and a project and dates the card. Any answer is fine, and it doesn't ask again in that session.
 
 ## Handle the edge cases
 
@@ -46,7 +46,9 @@ If you ask an agent for work that isn't on a Today or `@waiting` card, it asks o
 | Something must happen on a given day | Set a Deadline for that day. |
 | Something happens at a set time | Put it in your calendar, not in Todoist. |
 | An urgent p1 arrives mid-day | Add it to Today. It may take you past five, because the limit covers planned work. |
-| A card is `@waiting` | It doesn't count toward the five. |
+| An agent works on a card | It counts toward the five. The agent's work is your work. |
+| A card's PR is open | The card stays on Today and counts toward the five. Complete it when the PR merges. |
+| A person or a third party takes over a card | Add `@waiting` and clear its date. The card leaves the five, and the Friday review checks on it. |
 | A personal one-off comes up, like booking a dentist appointment | It goes through Next like any card and counts toward the five. |
 | You miss the 9am run | Run `/morning-pick` yourself. |
 | It's the weekend | Do routines only. The morning pick runs on weekdays. Run `/pick-next` if you want a card. |
