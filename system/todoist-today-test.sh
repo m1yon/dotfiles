@@ -31,6 +31,17 @@ JSON
 ], "nextCursor": null}
 JSON
     ;;
+  "filter view Next --json --all --full")
+    cat <<'JSON'
+{"results": [
+  {"id": "t1", "content": "Fix appointment sync retries", "priority": "p2", "projectId": "a", "dayOrder": 2},
+  {"id": "t2", "content": "Answer the billing export question", "priority": "p1", "projectId": "m", "dayOrder": 4},
+  {"id": "t3", "content": "Book a dentist appointment", "priority": "p2", "projectId": "p", "dayOrder": 6},
+  {"id": "t5", "content": "Renew the domain", "priority": "p3", "projectId": "s", "dayOrder": -1},
+  {"id": "n1", "content": "Draft the Q3 roadmap", "priority": "p2", "projectId": "m", "dayOrder": -1}
+], "nextCursor": null}
+JSON
+    ;;
   "task list --filter @waiting --json --all")
     cat <<'JSON'
 {"results": [
@@ -59,6 +70,7 @@ check "work cards in Today's order, frog first" "Today:
 1. Fix appointment sync retries [p2] (MECA › Appointment sync) id:t1
 2. Answer the billing export question [p1] (MECA) id:t2
 3. Renew the domain [p3] (Side Projects) id:t5
+Open picks: 4 of 5
 Waiting:
 - Get the vendor's answer on export limits [p3] (MECA) id:w1"
 

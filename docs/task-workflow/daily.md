@@ -33,7 +33,7 @@ When Today has no open picks left, the plan for the day is done. Run `/pick-next
 
 When a new idea comes up, add it to the Inbox and keep going. In an agent session, run `/inbox <idea>`.
 
-If you ask an agent for work that isn't on a Today or `@waiting` card, it asks once: "Not on Today. Pick it, Inbox it, or start anyway?" Pick it adds the card to the Inbox and runs `/pick-next` for it, which asks for a priority and a project and dates the card. Any answer is fine, and it doesn't ask again in that session.
+If you ask an agent for work that isn't on a Today or `@waiting` card, it asks once with a numbered menu that shows how many of your five picks are open. "Add it to Today" adds the card to the Inbox and runs `/pick-next` for it, which asks for a priority and a project and dates the card. "Save it to the Inbox" adds the card and stops. "Start now" goes ahead without a card. When five picks are already open, the menu leaves out "Add it to Today". To swap a pick out instead, run `/pick-next`. Any answer is fine, and the agent doesn't ask again in that session.
 
 ## Handle the edge cases
 

@@ -1,6 +1,6 @@
 ---
 name: pick-next
-description: Dates one card from Michael's Todoist Next filter for today, suggested or named. Use for /pick-next, /pick-next <card>, "pick another card", or the "Pick it" answer to "Not on Today".
+description: Dates one card from Michael's Todoist Next filter for today, suggested or named. Use for /pick-next, /pick-next <card>, "pick another card", or the "Add it to Today" answer when a request matches no Today card.
 ---
 
 # Pick next

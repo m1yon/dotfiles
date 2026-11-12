@@ -6,7 +6,7 @@ Three pieces shape what agents do with Todoist: a section in the shared instruct
 
 This section goes in `dotfiles/agents/AGENTS.md`, which Claude Code and Codex share. It replaces the current `## Work tracking` section. It keeps that section's two privacy rules and drops the rest, including every rule about PRs.
 
-```markdown
+````markdown
 ## Work tracking
 Todoist is Michael's only task tracker, and it is private. Use the `td` CLI. Never use Linear.
 - Never mention Todoist, a card, or a card link in a PR, commit, branch name, or code.
@@ -14,20 +14,29 @@ Todoist is Michael's only task tracker, and it is private. Use the `td` CLI. Nev
 - Start each card you show Michael with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4, as in `🟠 p2 Fix appointment sync retries`.
 
 The rules below apply only to sessions Michael starts. Skip them in a scheduled run or a delegated child session.
-- Michael's plan for the day is his Today cards. At session start, match the request to a Today or `@waiting` card. If those cards aren't in context, run `td today --json` and `td task list --filter "@waiting" --json`. If nothing matches, ask once: "Not on Today. Pick it, Inbox it, or start anyway?" For "Pick it", add the card to the Inbox, then run `/pick-next` for it. Accept any answer, and don't ask again this session.
+- Michael's plan for the day is his Today cards. At session start, match the request to a Today or `@waiting` card. The session-start hook lists those cards and the open-pick count. An open pick is a Today card that is also in Next. If the hook's output isn't in context, run `td today --json --full --all`, `td filter view Next --json --all --full`, and `td task list --filter "@waiting" --json`. If nothing matches, ask once with this menu, with `<n>` set to the open-pick count:
+
+  ```text
+  I don't see a Today card for this. You have <n> of 5 picks open. Reply with a number or in your own words.
+  1. Add it to Today. I'll ask for a priority and a project.
+  2. Save it to the Inbox and stop here.
+  3. Start now without a card.
+  ```
+
+  At 5 or more open picks, leave out "Add it to Today" and number the other two choices from 1. For "Add it to Today", add the card to the Inbox, then run `/pick-next` for it. For "Save it to the Inbox", add the card to the Inbox and stop. Accept any answer, and don't ask again this session.
 - Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
 - When the session's card is done, offer to complete it and name the next Today card. If Today has no open picks left, say so and mention `/pick-next`. Don't suggest a card yourself.
-```
+````
 
 ## The session-start hook
 
 The hook gives each agent session the day's plan before the first prompt, so no agent has to remember to look it up.
 
 - **Event.** `SessionStart`.
-- **Commands.** `td today --json --full --all`, `td task list --filter "@waiting" --json --all`, and `td project list --json --all`, run in parallel. In a test, the hook took 0.7 seconds.
+- **Commands.** `td today --json --full --all`, `td filter view Next --json --all --full`, `td task list --filter "@waiting" --json --all`, and `td project list --json --all`, run in parallel. In a test, the hook took about 1.3 seconds. The Next call is the slowest, at about 1.2 seconds on its own.
 - **Filter.** The hook keeps cards in `MECA`, `Side Projects`, and their child projects. `Personal` and `Routines` cards stay out.
-- **Output.** The hook prints the cards in Today's order, so the frog comes first. Today's order is each card's `dayOrder`, which `/morning-pick` sets with `td day-order`. A card nobody ordered goes last. Each line ends with the card's id, so an agent can complete the card without looking it up.
+- **Output.** The hook prints the cards in Today's order, so the frog comes first. Today's order is each card's `dayOrder`, which `/morning-pick` sets with `td day-order`. A card nobody ordered goes last. Each line ends with the card's id, so an agent can complete the card without looking it up. The hook also prints the open-pick count, which covers every Today card that is also in Next, Personal cards included.
 - **Failure.** If a `td` command fails, the hook prints nothing, and the rule that matches the request to a card has the agent run `td` itself.
 - **Location.** `system/todoist-today.sh`, wired up in `system/agents.nix` next to `agent-guard`. That file sets hooks in the Claude Code managed settings and the Codex `requirements.toml`. `checks.todoist-today` runs the hook against a fake `td`.
 
@@ -37,6 +46,7 @@ Example output:
 Today:
 1. Fix appointment sync retries [p2] (MECA › Appointment sync) id:a1b2c3
 2. Answer the billing export question [p1] (MECA) id:d4e5f6
+Open picks: 3 of 5
 Waiting:
 - Get the vendor's answer on export limits [p3] (MECA) id:g7h8i9
 ```

@@ -2,11 +2,11 @@
 
 ## Guardrails ask instead of block
 
-Agents make starting work nearly free, so most new work begins in an agent session. That is where the juggling starts, and it is where the guardrails sit. Each guardrail is one question with an answer that lets you continue. "Start anyway" always works, and nothing records how often you chose it. A guardrail that blocks you or keeps score gets switched off, and then it protects nothing. A question at the moment of choice keeps the choice deliberate without making it costly.
+Agents make starting work nearly free, so most new work begins in an agent session. That is where the juggling starts, and it is where the guardrails sit. Each guardrail is one question with an answer that lets you continue. "Start now" always works, and nothing records how often you chose it. A guardrail that blocks you or keeps score gets switched off, and then it protects nothing. A question at the moment of choice keeps the choice deliberate without making it costly.
 
 ## Agents write only to the Inbox
 
-An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes lands in the Inbox at p4, with no date. Next shows only p1 to p3 cards, and Today shows only dated cards, so nothing an agent creates reaches either one until you triage it. "Pick it" goes through the Inbox too. The agent adds the card there, and `/pick-next` files and dates it with your answer.
+An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes lands in the Inbox at p4, with no date. Next shows only p1 to p3 cards, and Today shows only dated cards, so nothing an agent creates reaches either one until you triage it. "Add it to Today" goes through the Inbox too. The agent adds the card there, and `/pick-next` files and dates it with your answer.
 
 This rule is a block, not a question. The `agent-guard` hook stops any agent command that adds a card outside the Inbox or adds one with a priority or a date. The case for asking instead of blocking is about guardrails on you. An agent never needs to put a new card anywhere else, so a hard block costs nothing.
 
@@ -43,7 +43,7 @@ An earlier draft ran the stale sweep as its own Thursday-night job. Its only pur
 ## Left out on purpose
 
 - **Hard blocks on work that isn't on Today.** They'd be turned off within a week.
-- **Streaks, or a count of "start anyway" answers.** A count turns slips into guilt, and nothing in the flow uses the number.
+- **Streaks, or a count of "start now" answers.** A count turns slips into guilt, and nothing in the flow uses the number.
 - **A cap on parallel agent sessions.** The five-card pick already limits active work, because a card an agent works on counts toward the five.
 - **Agents that start p3 cards on their own.** For now, p3 is a label you read during the pick. Handing p3 cards to agents can come later.
 - **A Doing state or an `@doing` label.** You'd update it at every start and pause, which is the per-switch upkeep this design avoids. Today already shows what's in progress.
