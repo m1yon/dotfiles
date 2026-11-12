@@ -11,7 +11,7 @@ Answer these questions for each card, in order:
    - p2 Schedule. Important but not urgent.
    - p3 Delegate. Urgent but not important. Hand it to an agent or a person, and add `@waiting`.
    - Drop. Neither. Delete it.
-4. **Where does it live?** Move p1 and p2 cards to their feature project, or to their area if they're one-offs. See [Todoist setup](todoist-setup.md#projects).
+4. **Where does it live?** Move p1 and p2 cards to their feature project, or to their area if they're one-offs. Move a new routine to `Routines`, with a repeating date. See [Todoist setup](todoist-setup.md#projects).
 
 A card still at p4 hasn't been triaged.
 

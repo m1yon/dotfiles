@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas, asks from people, and a Sentry digest card all enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you date three cards or fewer from it for Today. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /pick, and /weekly-review help.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas, asks from people, and a Sentry digest card all enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you pick a frog and date five cards or fewer from it for Today. Routines sit outside that limit. New ideas loop back to the Inbox, and a Friday review, prepared at 9am by a scheduled job that adds @stale and drafts every answer, archives projects that shipped. Skill tags mark where /inbox, /triage-inbox, /pick, and /weekly-review help.">
 <!--
 Hand-drawn diagram for docs/task-workflow/README.md. Edit this file directly.
 Layout grid, viewBox 720 wide:
@@ -143,7 +143,7 @@ Layout grid, viewBox 720 wide:
         <path class="e" d="M360,886 V910" marker-end="url(#ah)"/>
         <rect class="n" x="230" y="910" width="260" height="46" rx="10"/>
         <text class="t" x="360" y="930" text-anchor="middle">Morning pick · 5 min</text>
-        <text class="s" x="360" y="947" text-anchor="middle">Date 3 cards or fewer for today</text>
+        <text class="s" x="360" y="947" text-anchor="middle">Pick a frog, date 5 cards or fewer</text>
         <path class="e" d="M360,956 V980" marker-end="url(#ah)"/>
         <rect class="n list" x="230" y="980" width="260" height="46" rx="10"/>
         <text class="t" x="360" y="1000" text-anchor="middle">Today</text>

@@ -25,18 +25,19 @@ Drafts the daily triage. See [Triage the Inbox](triage.md).
 Runs the morning pick. See [Run your day](daily.md).
 
 - Shows yesterday's unfinished cards and asks whether to keep each one.
-- Shows Next, grouped by project.
-- Suggests the oldest p2 card as the frog.
-- Dates cards for today until Today holds three or fewer, and puts the frog first.
-- If you choose a fourth card, it asks once whether to swap one out or keep four.
+- Shows Next, grouped by project, with cards whose deadline is within two days first.
+- Suggests the oldest p2 card as the frog. You choose the frog.
+- Dates cards for today until Today holds five or fewer cards from Next, and puts the frog first. Routines don't count.
+- If you choose a sixth card, it asks once whether to swap one out or keep six.
+- If a card has carried over three mornings in a row, it asks once whether to split it, hand it off, or drop it. It counts carry-overs from the card's activity log. Confirm that `td activity` records date changes before you rely on this count.
 
 ### Fresh start
 
-If Today holds cards that are three or more days overdue, `/pick` offers a fresh start before the pick. With your approval, it does these steps:
+If Today holds work cards that are three or more days overdue, `/pick` offers a fresh start before the pick. With your approval, it does these steps:
 
-1. Clears the dates on overdue cards. The cards stay in their projects, and the p1 and p2 cards show up in Next again.
+1. Clears the dates on overdue work cards. The cards stay in their projects, and the p1 and p2 cards show up in Next again. Overdue routines move to today, so their repeat schedules stay intact.
 2. Adds `@stale` to cards with no activity for 21 days, by the same rule as `/weekly-review`.
-3. Runs the normal pick on an empty Today.
+3. Runs the normal pick with no work cards on Today.
 
 ## `/weekly-review`
 
