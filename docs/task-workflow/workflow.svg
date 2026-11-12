@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 1300" width="720" height="1300" role="img" aria-label="Ideas, asks from people, and a Sentry digest card all enter the Todoist Inbox. Daily triage asks whether each item is actionable, whether it takes under two minutes, and where it sits in the Eisenhower matrix. Do and Schedule cards get filed in their project. A Next view shows those cards grouped by project, and each morning you date three cards or fewer from it for Today. New ideas loop back to the Inbox, and a Friday review fed by a weekly stale sweep archives projects that shipped. Skill tags mark where /inbox, /clarify, /pick, and /weekly-review help.">
+<!--
+Hand-drawn diagram for docs/task-workflow/README.md. Edit this file directly.
+Layout grid, viewBox 720 wide:
+- Bands, top to bottom: Capture y 0 to 200, Clarify 200 to 680, Organize 680 to 800, Do 800 to 1120, Review 1120 to 1300. Shaded bands use class "band", and "sep" lines mark the borders.
+- The main flow runs down the center column at x=360. Side outcomes sit at x 60 to 220 on the left and 510 to 700 on the right.
+- Loop-back paths (class "e loop") use two channels: x=22 on the left (New idea back to Inbox) and x=640 on the right (Friday review back to Projects). Keep new nodes out of both channels.
+- To insert a node mid-flow, move every element below it down by the same amount, including path coordinates in d="M.. V.. H..", the band rects, the sep lines, and the band labels. Then grow the viewBox height, the svg height, the clipPath rect, and the background rect by that amount. Loop paths that start or end below the insert point need their endpoints moved too.
+- Node classes: "n" step, "n list" Todoist list or view, "n ai" AI job, "dec" decision diamond, "cell c1" to "c4" Eisenhower cells, "sk" skill tag (a g holding a rect and its text, placed beside the step the skill runs). Text classes: "t" title, "s" subtitle, "lb" edge label, "bandlbl" band label.
+- Colors come from the CSS variables in the style block. Dark is the default, and light applies under prefers-color-scheme: light.
+- Render the SVG to a PNG and look at it before saving. Overlaps are easy to miss in the XML.
+-->
+<style>
+:root{--surface:#1f2335;--band:#24283b;--fg:#c0caf5;--muted:#8a92bd;--line:#3b4261;--line-strong:#565f89;--accent:#7aa2f7;--dec-fill:color-mix(in srgb,#7aa2f7 16%,#1f2335);--list-fill:color-mix(in srgb,#e0af68 15%,#1f2335);--list-stroke:#e0af68;--ai:#73daca;--edge:#8a92bd;--p1:#f7768e;--p2:#ff9e64;--p3:#7dcfff;--p4:#737aa2;
+  --font-body:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;--font-mono:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
+@media (prefers-color-scheme:light){:root{--surface:#FFFFFF;--band:#EEF1F5;--fg:#141A24;--muted:#566073;--line:#D3D9E3;--line-strong:#A9B2C1;--accent:#2C4FC4;--dec-fill:#E3E9FA;--list-fill:#FBF0DD;--list-stroke:#C49A55;--ai:#0E7A74;--edge:#6B7486;--p1:#C9372C;--p2:#B86200;--p3:#1F66D1;--p4:#6E7789}}
+.bg{fill:var(--surface)}
+.band{fill:var(--band)}
+.sep{stroke:var(--line);stroke-width:1}
+.n{fill:var(--surface);stroke:var(--line-strong);stroke-width:1.2}
+.n.list{fill:var(--list-fill);stroke:var(--list-stroke)}
+.n.ai{stroke:var(--ai);stroke-dasharray:5 4;stroke-width:1.5}
+.dec{fill:var(--dec-fill);stroke:var(--accent);stroke-width:1.3}
+.cell{stroke-width:1.2}
+.cell.c1{fill:color-mix(in srgb,var(--p1) 14%,var(--surface));stroke:var(--p1)}
+.cell.c2{fill:color-mix(in srgb,var(--p2) 14%,var(--surface));stroke:var(--p2)}
+.cell.c3{fill:color-mix(in srgb,var(--p3) 14%,var(--surface));stroke:var(--p3)}
+.cell.c4{fill:color-mix(in srgb,var(--p4) 12%,var(--surface));stroke:var(--p4)}
+.t{fill:var(--fg);font:600 13.5px var(--font-body)}
+.s{fill:var(--muted);font:400 11.5px var(--font-body)}
+.s.l{fill:var(--fg);font-size:12px}
+.lb{fill:var(--muted);font:500 10.5px var(--font-mono)}
+.lb.loop{fill:var(--accent)}
+.bandlbl{fill:var(--muted);font:600 11px var(--font-mono);letter-spacing:.08em}
+.note{fill:var(--muted);font:500 10.5px var(--font-mono)}
+.e{fill:none;stroke:var(--edge);stroke-width:1.4}
+.e.loop{stroke:var(--accent);stroke-width:1.7}
+.e.ai{stroke:var(--ai);stroke-dasharray:5 4;stroke-width:1.5}
+.head-e{fill:var(--edge)}.head-l{fill:var(--accent)}.head-a{fill:var(--ai)}
+.sk rect{fill:color-mix(in srgb,var(--skill) 16%,var(--surface));stroke:var(--skill);stroke-width:1.2}
+.sk text{fill:var(--skill);font:600 11px var(--font-mono)}
+:root{--skill:#bb9af7}
+@media (prefers-color-scheme:light){:root{--skill:#7847bd}}
+</style>
+<clipPath id="card"><rect width="720" height="1300" rx="14"/></clipPath>
+<g clip-path="url(#card)">
+<rect class="bg" x="0" y="0" width="720" height="1300"/>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head-e" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="ahl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head-l" d="M0,0 L10,5 L0,10 z"/></marker>
+          <marker id="aha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head-a" d="M0,0 L10,5 L0,10 z"/></marker>
+        </defs>
+
+        <rect class="band" x="0" y="0" width="720" height="200"/>
+        <rect class="band" x="0" y="680" width="720" height="120"/>
+        <rect class="band" x="0" y="1120" width="720" height="180"/>
+        <line class="sep" x1="0" y1="200" x2="720" y2="200"/>
+        <line class="sep" x1="0" y1="680" x2="720" y2="680"/>
+        <line class="sep" x1="0" y1="800" x2="720" y2="800"/>
+        <line class="sep" x1="0" y1="1120" x2="720" y2="1120"/>
+        <text class="bandlbl" x="34" y="26">1 · CAPTURE</text>
+        <text class="bandlbl" x="34" y="226">2 · CLARIFY</text>
+        <text class="note" x="704" y="226" text-anchor="end">once a day</text>
+        <text class="bandlbl" x="34" y="706">3 · ORGANIZE</text>
+        <text class="bandlbl" x="34" y="826">4 · DO · DAILY</text>
+        <text class="bandlbl" x="34" y="1146">5 · REVIEW · WEEKLY</text>
+
+        <rect class="n" x="60" y="44" width="180" height="56" rx="10"/>
+        <text class="t" x="150" y="67" text-anchor="middle">Your ideas</text>
+        <text class="s" x="150" y="86" text-anchor="middle">Quick Add from anywhere</text>
+        <rect class="n" x="270" y="44" width="180" height="56" rx="10"/>
+        <text class="t" x="360" y="67" text-anchor="middle">Asks from people</text>
+        <text class="s" x="360" y="86" text-anchor="middle">Slack, email, meetings</text>
+        <rect class="n ai" x="480" y="44" width="180" height="56" rx="10"/>
+        <text class="t" x="570" y="67" text-anchor="middle">Sentry triage</text>
+        <text class="s" x="570" y="86" text-anchor="middle">AI job · one digest card</text>
+
+        <path class="e" d="M150,100 C150,122 300,114 300,136" marker-end="url(#ah)"/>
+        <path class="e" d="M360,100 V136" marker-end="url(#ah)"/>
+        <path class="e ai" d="M570,100 C570,122 420,114 420,136" marker-end="url(#aha)"/>
+
+        <rect class="n list" x="230" y="136" width="260" height="48" rx="10"/>
+        <text class="t" x="360" y="157" text-anchor="middle">Inbox</text>
+        <text class="s" x="360" y="174" text-anchor="middle">Capturing never starts the work</text>
+
+        <path class="e" d="M360,184 V236" marker-end="url(#ah)"/>
+        <polygon class="dec" points="360,236 438,272 360,308 282,272"/>
+        <text class="t" x="360" y="277" text-anchor="middle">Actionable?</text>
+        <path class="e" d="M438,272 H510" marker-end="url(#ah)"/>
+        <text class="lb" x="474" y="264" text-anchor="middle">no</text>
+        <rect class="n list" x="510" y="246" width="190" height="52" rx="10"/>
+        <text class="t" x="605" y="267" text-anchor="middle">Not actionable</text>
+        <text class="s" x="605" y="285" text-anchor="middle">Trash, Someday, or Obsidian</text>
+
+        <path class="e" d="M360,308 V340" marker-end="url(#ah)"/>
+        <text class="lb" x="368" y="328">yes</text>
+        <polygon class="dec" points="360,340 438,376 360,412 282,376"/>
+        <text class="t" x="360" y="381" text-anchor="middle">Under 2 min?</text>
+        <path class="e" d="M282,376 H220" marker-end="url(#ah)"/>
+        <text class="lb" x="251" y="368" text-anchor="middle">yes</text>
+        <rect class="n" x="60" y="354" width="160" height="44" rx="10"/>
+        <text class="t" x="140" y="381" text-anchor="middle">Do it now</text>
+
+        <path class="e" d="M360,412 V446" marker-end="url(#ah)"/>
+        <text class="lb" x="368" y="433">no</text>
+        <rect class="cell c1" x="250" y="446" width="110" height="60"/>
+        <text class="t" x="305" y="472" text-anchor="middle">p1 Do</text>
+        <text class="s" x="305" y="490" text-anchor="middle">urgent + important</text>
+        <rect class="cell c2" x="360" y="446" width="110" height="60"/>
+        <text class="t" x="415" y="472" text-anchor="middle">p2 Schedule</text>
+        <text class="s" x="415" y="490" text-anchor="middle">important</text>
+        <rect class="cell c3" x="250" y="506" width="110" height="60"/>
+        <text class="t" x="305" y="532" text-anchor="middle">p3 Delegate</text>
+        <text class="s" x="305" y="550" text-anchor="middle">urgent only</text>
+        <rect class="cell c4" x="360" y="506" width="110" height="60"/>
+        <text class="t" x="415" y="532" text-anchor="middle">Drop</text>
+        <text class="s" x="415" y="550" text-anchor="middle">neither</text>
+        <text class="lb" x="480" y="460">Eisenhower</text>
+
+        <path class="e" d="M250,536 H220" marker-end="url(#ah)"/>
+        <rect class="n list" x="60" y="512" width="160" height="48" rx="10"/>
+        <text class="t" x="140" y="532" text-anchor="middle">@waiting</text>
+        <text class="s" x="140" y="549" text-anchor="middle">An agent or person has it</text>
+        <path class="e" d="M470,536 H605 V298" marker-end="url(#ah)"/>
+        <text class="lb" x="520" y="528" text-anchor="middle">drop</text>
+
+        <path class="e" d="M360,566 V598" marker-end="url(#ah)"/>
+        <text class="lb" x="368" y="587">p1 and p2</text>
+        <rect class="n" x="250" y="598" width="220" height="46" rx="10"/>
+        <text class="t" x="360" y="618" text-anchor="middle">File it in its project</text>
+        <text class="s" x="360" y="635" text-anchor="middle">or in its area, if it's a one-off</text>
+
+        <path class="e" d="M360,644 V716" marker-end="url(#ah)"/>
+        <rect class="n list" x="230" y="716" width="260" height="52" rx="10"/>
+        <text class="t" x="360" y="737" text-anchor="middle">Projects</text>
+        <text class="s" x="360" y="755" text-anchor="middle">Areas, plus one per feature</text>
+        <text class="note" x="220" y="746" text-anchor="end">e.g. MECA › Appointment sync</text>
+
+        <path class="e" d="M360,768 V840" marker-end="url(#ah)"/>
+        <rect class="n list" x="230" y="840" width="260" height="46" rx="10"/>
+        <text class="t" x="360" y="860" text-anchor="middle">Next</text>
+        <text class="s" x="360" y="877" text-anchor="middle">p1 and p2 cards, grouped by project</text>
+        <path class="e" d="M360,886 V910" marker-end="url(#ah)"/>
+        <rect class="n" x="230" y="910" width="260" height="46" rx="10"/>
+        <text class="t" x="360" y="930" text-anchor="middle">Morning pick · 5 min</text>
+        <text class="s" x="360" y="947" text-anchor="middle">Date 3 cards or fewer for today</text>
+        <path class="e" d="M360,956 V980" marker-end="url(#ah)"/>
+        <rect class="n list" x="230" y="980" width="260" height="46" rx="10"/>
+        <text class="t" x="360" y="1000" text-anchor="middle">Today</text>
+        <text class="s" x="360" y="1017" text-anchor="middle">The frog first, then the rest</text>
+        <path class="e" d="M360,1026 V1050" marker-end="url(#ah)"/>
+        <rect class="n" x="200" y="1050" width="320" height="48" rx="10"/>
+        <text class="t" x="360" y="1070" text-anchor="middle">Work</text>
+        <text class="s" x="360" y="1087" text-anchor="middle">Switch freely between Today cards</text>
+
+        <path class="e loop" d="M200,1074 H22 V160 H230" marker-end="url(#ahl)"/>
+        <text class="lb loop" x="34" y="1066">New idea? Inbox it.</text>
+        <text class="lb loop" x="34" y="1090">Agents ask first.</text>
+        <path class="e loop" d="M520,1074 H556 V1003 H490" marker-end="url(#ahl)"/>
+        <text class="lb loop" x="562" y="1034">Done?</text>
+        <text class="lb loop" x="562" y="1048">Next card.</text>
+
+        <rect class="n" x="150" y="1160" width="360" height="124" rx="10"/>
+        <text class="t" x="170" y="1185">Friday review · 30 min</text>
+        <text class="s l" x="170" y="1209">1. Empty the Inbox</text>
+        <text class="s l" x="170" y="1228">2. Keep, Someday, or delete each @stale card</text>
+        <text class="s l" x="170" y="1247">3. Check everything @waiting</text>
+        <text class="s l" x="170" y="1266">4. Archive projects that shipped</text>
+        <path class="e loop" d="M510,1180 H640 V742 H490" marker-end="url(#ahl)"/>
+        <text class="lb loop" x="632" y="1172" text-anchor="end">archives shipped</text>
+
+        <rect class="n ai" x="548" y="1216" width="160" height="64" rx="10"/>
+        <text class="t" x="628" y="1238" text-anchor="middle">Stale sweep</text>
+        <text class="s" x="628" y="1255" text-anchor="middle">AI job, weekly</text>
+        <text class="s" x="628" y="1271" text-anchor="middle">Adds @stale, never deletes</text>
+        <path class="e ai" d="M548,1248 H510" marker-end="url(#aha)"/>
+</g>
+        <g class="sk"><rect x="500" y="149" width="58" height="22" rx="11"/><text x="529" y="164" text-anchor="middle">/inbox</text></g>
+        <g class="sk"><rect x="556" y="213" width="72" height="22" rx="11"/><text x="592" y="228" text-anchor="middle">/clarify</text></g>
+        <g class="sk"><rect x="500" y="922" width="50" height="22" rx="11"/><text x="525" y="937" text-anchor="middle">/pick</text></g>
+        <g class="sk"><rect x="394" y="1171" width="106" height="22" rx="11"/><text x="447" y="1186" text-anchor="middle">/weekly-review</text></g>
+</svg>
