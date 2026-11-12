@@ -26,7 +26,7 @@ A card is stale when all of these hold:
 
 Post one message with these parts, in order:
 
-1. **Inbox.** Follow the Read and Draft sections of [triage-inbox](../triage-inbox/SKILL.md), and include its table.
+1. **Inbox.** Follow the Read and Draft sections of [triage-inbox](../triage-inbox/SKILL.md), and include the table for its first batch.
 2. **Stale cards.** One table of `@stale` cards, each with a suggestion: keep, Someday, or delete.
 3. **Waiting cards.** Each `@waiting` card with how long it has waited, and a suggestion: complete it, follow up, or take it back. The wait starts at the `updated` activity event whose `extraData.labels` has `waiting` and whose `lastLabels` doesn't. When the log doesn't reach that event, write "over N days" for the span the log covers.
 4. **Projects to archive.** Each feature project, a child of `MECA`, `Side Projects`, or `Personal`, with no open cards.
@@ -37,7 +37,7 @@ End with: "Reply `apply` to approve every draft, or name a row and give its new 
 
 | Answer | Commands |
 | --- | --- |
-| Inbox rows | The Apply section of [triage-inbox](../triage-inbox/SKILL.md). |
+| Inbox rows | The Apply section of [triage-inbox](../triage-inbox/SKILL.md). After the other answers are applied, post its remaining batches one at a time. |
 | Keep | Remove `stale` with `td task update id:<id> --labels <other labels>`, or `--no-labels` when none are left. |
 | Someday | Remove `stale` as above, run `td task update id:<id> --priority p4 --no-due`, then `td task move id:<id> --project Someday`. |
 | Delete | `td task delete id:<id> --yes` |

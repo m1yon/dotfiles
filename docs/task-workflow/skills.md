@@ -16,7 +16,7 @@ Drafts the daily triage. See [Triage the Inbox](triage.md).
 
 - Reads every Inbox card.
 - Drafts an answer for each card: actionable or not, under 2 minutes or not, a priority, and a project. For a card with a repeating date, it drafts `Routines` at p4.
-- Shows the drafts as one table, with the under-2-minute cards first.
+- Shows the drafts as one table, with the under-2-minute cards first. An Inbox of more than 10 cards goes in batches of 10. The skill applies each batch before it drafts the next.
 - Applies the rows you approve. "apply" approves every row. To change a row, name it and give the new answer.
 - Adds `@waiting` only when you say that a person or a third party holds the card. For an Obsidian answer, it adds the card's text to a note with the `obsidian-vault` skill, then deletes the card.
 

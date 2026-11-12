@@ -1,11 +1,11 @@
 ---
 name: triage-inbox
-description: Drafts the triage of Michael's Todoist Inbox as one table and applies the rows he approves. Use for /triage-inbox, "triage my Inbox", or the Inbox step of the weekly review.
+description: Drafts the triage of Michael's Todoist Inbox in batches of up to 10 cards and applies the rows he approves. Use for /triage-inbox, "triage my Inbox", or the Inbox step of the weekly review.
 ---
 
 # Triage the Inbox
 
-Draft an answer for every Inbox card, show the drafts as one table, and write to Todoist only after Michael approves.
+Work through the Inbox in batches of up to 10 top-level cards, in the order `td inbox` lists them. For each batch, draft an answer for every card, post the drafts as one table, and write to Todoist only after Michael approves. Apply the batch before you draft the next one. An Inbox of 10 cards or fewer is one batch.
 
 ## Read
 
@@ -24,7 +24,7 @@ Answer these questions for each card, in order:
 
 A card's date is the day Michael plans to work on it, and its deadline is the day it is due. Keep both as they are, except where an answer below clears them. When Michael gives a row a planned day or a deadline, apply it with `td task update id:<id> --due <YYYY-MM-DD>` or `--deadline <YYYY-MM-DD>`.
 
-Post one table with these columns: row number, card, answer, Do now, and a reason of a few words. Put the Do now rows first. End with: "Reply `apply` to approve every row, or name a row and give its new answer."
+Post the batch as one table with these columns: row number, card, answer, Do now, and a reason of a few words. Put the Do now rows first. Above the table, write the batch number and how many cards are left after it, such as "Batch 2 of 9, 72 cards after this one". End with: "Reply `apply` to approve every row, or name a row and give its new answer."
 
 ## Apply
 
@@ -41,4 +41,6 @@ Apply only the approved rows. `--labels` replaces a card's labels, so pass its c
 | Waiting | `td task update id:<id> --labels <labels>,waiting --no-due` |
 | Do now | Complete it with `td task complete id:<id>` once Michael says it's done. Otherwise file it by its priority and project. |
 
-The triage is done when every approved row is applied and `td inbox --json` lists only the rows Michael held back. Report the count for each answer.
+After a batch is applied, read the Inbox again and draft the next 10 cards. Skip the cards Michael held back earlier in this run. If Michael asks to stop, stop after the current batch is applied.
+
+The triage is done when every batch is applied and `td inbox --json --all` lists only the cards Michael held back. Report the count for each answer across all batches.

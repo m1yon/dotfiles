@@ -1,6 +1,6 @@
 # Triage the Inbox
 
-Triage the Inbox once a day. If it's long, run `/triage-inbox` first. It drafts an answer for every card, and you approve or fix them.
+Triage the Inbox once a day. If it's long, run `/triage-inbox` first. It drafts an answer for every card, 10 cards at a time, and you approve or fix each batch.
 
 Answer these questions for each card, in order:
 
