@@ -8,7 +8,7 @@ To pick by hand instead, follow these steps:
 
 1. Open Today. For each card left from yesterday, keep it or clear its date.
 2. Open the Next filter. Look first at cards with a deadline in the next two days.
-3. Choose the frog, a p2 card. `/morning-pick` suggests the oldest p2 card, because fun work keeps pushing that one back.
+3. Choose the frog, a p2 card. `/morning-pick` suggests the oldest p2 card, because fun work keeps pushing that one back. Move the `@frog` label to it.
 4. Date cards for today until Today holds five or fewer open cards from Next, counting the ones you kept and the ones you planned for today. Put the frog first.
 
 Only open cards from Next count toward the five. Routines don't count.

@@ -6,12 +6,12 @@ disable-model-invocation: true
 
 # Morning pick
 
-Draft the pick, post it as one message, and change nothing until Michael answers in this thread.
+Draft the pick, post it as one message, and change nothing until Michael answers in this thread. Start every card you show with its priority dot.
 
 ## Read
 
 1. `td today --json --full --all` lists Today, overdue cards included. A routine has a repeating date (`due.isRecurring`). Every other card is a work card.
-2. `td filter view Next --json --all --full` lists Next. JSON `priority` 4 is p1, 3 is p2, and 2 is p3.
+2. `td filter view Next --json --all --full` lists Next.
 3. `td project list --json --all` gives project names for grouping.
 
 An open pick is a Today card that is also in Next. Today's order is `dayOrder`, lowest first, and -1 means unordered.
@@ -42,6 +42,7 @@ End with: "Reply `approve`, or name the changes: a different frog, or cards in o
 
 1. If the approved picks come to more than five, ask once whether to swap one out or keep them all, and wait for the answer before any write.
 2. Date each kept and each new pick with `td task update id:<id> --due today`. Clear each dropped pick with `td task update id:<id> --no-due`.
-3. Order Today with `td day-order id:<frog> id:<pick> ...`, listing every open pick, frog first.
-4. Read `td today --json --full --all` and check that the frog has the lowest `dayOrder` of the open picks. `td day-order` reports success even for an unknown id, so this read is the proof.
-5. Reply with the final picks in order, frog first.
+3. Move the `frog` label to the frog. `td task list --filter "@frog" --json --all` lists the cards that have it. Remove it from every other card with `td task update id:<id> --labels <other labels>`, or `--no-labels` when none are left. If the frog lacks it, run `td task update id:<frog> --labels <labels>,frog`. `--labels` replaces a card's labels, so pass its current labels too.
+4. Order Today with `td day-order id:<frog> id:<pick> ...`, listing every open pick, frog first.
+5. Read `td today --json --full --all` and check that the frog has the lowest `dayOrder` of the open picks and has the `frog` label. `td day-order` reports success even for an unknown id, so this read is the proof.
+6. Reply with the final picks in order, frog first.

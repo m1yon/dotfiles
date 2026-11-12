@@ -5,12 +5,12 @@ description: Dates one card from Michael's Todoist Next filter for today, sugges
 
 # Pick next
 
-Date one card for today. Michael asked for it, so write without a separate approval.
+Date one card for today. Michael asked for it, so write without a separate approval. Start every card you show with its priority dot.
 
 ## Read
 
-1. `td today --json --full --all` lists Today. `td filter view Next --json --all --full` lists Next. JSON `priority` 4 is p1, 3 is p2, and 2 is p3.
-2. An open pick is a Today card that is also in Next. Today's order is `dayOrder`, lowest first, and -1 means unordered. The first open pick in that order is the frog when it is p2.
+1. `td today --json --full --all` lists Today. `td filter view Next --json --all --full` lists Next.
+2. An open pick is a Today card that is also in Next. Today's order is `dayOrder`, lowest first, and -1 means unordered. The frog is the open pick with the `frog` label.
 
 ## Choose the card
 

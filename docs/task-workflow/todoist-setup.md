@@ -21,23 +21,24 @@ This page is the target layout. During setup, delete every label, filter, and se
 
 ## Priorities
 
-| Priority | Eisenhower quadrant | Meaning |
-| --- | --- | --- |
-| p1 | Do | Urgent and important |
-| p2 | Schedule | Important but not urgent. The frog is a p2 card. |
-| p3 | Delegate | Urgent but not important. For now, the priority is the only marker, and Next lists p3 cards after p1 and p2. |
-| p4 | None | Not triaged yet, for a card in the Inbox. Routines and `Someday` cards also stay at p4. |
+| Priority | Dot | Eisenhower quadrant | Meaning |
+| --- | --- | --- | --- |
+| p1 | 🔴 | Do | Urgent and important |
+| p2 | 🟠 | Schedule | Important but not urgent. The frog is a p2 card. |
+| p3 | 🔵 | Delegate | Urgent but not important. For now, the priority is the only marker, and Next lists p3 cards after p1 and p2. |
+| p4 | ⚪ | None | Not triaged yet, for a card in the Inbox. Routines and `Someday` cards also stay at p4. |
 
-Dropped cards are deleted, so they have no priority.
+Dropped cards are deleted, so they have no priority. Agents start each card they show with its dot, such as `🟠 p2 Fix appointment sync retries`.
 
 ## Labels
 
-These are the only two labels.
+These are the only three labels.
 
 | Label | Meaning | Added by |
 | --- | --- | --- |
 | `@waiting` | A person or a third party holds the work. A card that an agent works on doesn't get it. | You, during triage or later |
 | `@stale` | No activity for 21 days | `/weekly-review`, or `/morning-pick` during a fresh start |
+| `@frog` | Today's frog. Only one open card has it. | `/morning-pick`, which moves it to the frog you choose |
 
 ## Filters
 
