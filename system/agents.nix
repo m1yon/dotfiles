@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  username,
   ...
 }:
 
@@ -9,7 +10,16 @@ let
   # auto-update off for third-party marketplaces unless it's set here.
   pstackUrl = "https://github.com/michael-denyer/pstack-claude.git";
 
-  agentGuard = "${pkgs.callPackage ./agent-guard.nix { }}/bin/agent-guard";
+  # Codex takes one managed_dir for its managed hooks, so both hooks are copied into it.
+  hooksDir = "${
+    pkgs.runCommand "agent-hooks" { } ''
+      mkdir -p $out/bin
+      cp ${pkgs.callPackage ./agent-guard.nix { }}/bin/agent-guard $out/bin/
+      cp ${pkgs.callPackage ./todoist-today.nix { inherit username; }}/bin/todoist-today $out/bin/
+    ''
+  }/bin";
+  agentGuard = "${hooksDir}/agent-guard";
+  todoistToday = "${hooksDir}/todoist-today";
 
   claudeManagedSettings = (pkgs.formats.json { }).generate "claude-managed-settings.json" (
     {
@@ -20,6 +30,17 @@ let
             {
               type = "command";
               command = agentGuard;
+            }
+          ];
+        }
+      ];
+      hooks.SessionStart = [
+        {
+          hooks = [
+            {
+              type = "command";
+              command = todoistToday;
+              timeout = 10;
             }
           ];
         }
@@ -55,7 +76,18 @@ let
   # Codex runs hooks from requirements.toml as managed, without asking to trust them.
   codexRequirements = (pkgs.formats.toml { }).generate "codex-requirements.toml" {
     hooks = {
-      managed_dir = builtins.dirOf agentGuard;
+      managed_dir = hooksDir;
+      SessionStart = [
+        {
+          hooks = [
+            {
+              type = "command";
+              command = todoistToday;
+              timeout = 10;
+            }
+          ];
+        }
+      ];
       PreToolUse = [
         {
           matcher = "^Bash$";
