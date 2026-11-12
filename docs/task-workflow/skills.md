@@ -1,6 +1,6 @@
 # Skills
 
-Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4.
+Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4. The frog also gets 🐸 after its priority.
 
 ## `/inbox`
 

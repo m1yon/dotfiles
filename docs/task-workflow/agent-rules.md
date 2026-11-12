@@ -11,7 +11,7 @@ This section goes in `dotfiles/agents/AGENTS.md`, which Claude Code and Codex sh
 Todoist is Michael's only task tracker, and it is private. Use the `td` CLI. Never use Linear.
 - Never mention Todoist, a card, or a card link in a PR, commit, branch name, or code.
 - Never put member names, IDs, or other member data in a card.
-- Start each card you show Michael with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4, as in `🟠 p2 Fix appointment sync retries`.
+- Start each card you show Michael with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4, as in `🟠 p2 Fix appointment sync retries`. Put 🐸 after the priority on the frog, the card with the `frog` label, as in `🟠 p2 🐸 Fix appointment sync retries`.
 
 The rules below apply only to sessions Michael starts. Skip them in a scheduled run or a delegated child session.
 - Michael's plan for the day is his Today cards. At session start, match the request to a Today or `@waiting` card. The session-start hook lists those cards and the open-pick count. An open pick is a Today card that is also in Next. If the hook's output isn't in context, run `td today --json --full --all`, `td filter view Next --json --all --full`, and `td task list --filter "@waiting" --json`. If nothing matches, ask once with this menu, with `<n>` set to the open-pick count:
@@ -36,7 +36,7 @@ The hook gives each agent session the day's plan before the first prompt, so no 
 - **Event.** `SessionStart`.
 - **Commands.** `td today --json --full --all`, `td filter view Next --json --all --full`, `td task list --filter "@waiting" --json --all`, and `td project list --json --all`, run in parallel. In a test, the hook took about 1.3 seconds. The Next call is the slowest, at about 1.2 seconds on its own.
 - **Filter.** The hook keeps cards in `MECA`, `Side Projects`, and their child projects. `Personal` and `Routines` cards stay out.
-- **Output.** The hook prints the cards in Today's order, so the frog comes first. Today's order is each card's `dayOrder`, which `/morning-pick` sets with `td day-order`. A card nobody ordered goes last. Each line ends with the card's id, so an agent can complete the card without looking it up. The hook also prints the open-pick count, which covers every Today card that is also in Next, Personal cards included.
+- **Output.** The hook prints the cards in Today's order, so the frog comes first. The frog's line starts with 🐸. Today's order is each card's `dayOrder`, which `/morning-pick` sets with `td day-order`. A card nobody ordered goes last. Each line ends with the card's id, so an agent can complete the card without looking it up. The hook also prints the open-pick count, which covers every Today card that is also in Next, Personal cards included.
 - **Failure.** If a `td` command fails, the hook prints nothing, and the rule that matches the request to a card has the agent run `td` itself.
 - **Location.** `system/todoist-today.sh`, wired up in `system/agents.nix` next to `agent-guard`. That file sets hooks in the Claude Code managed settings and the Codex `requirements.toml`. `checks.todoist-today` runs the hook against a fake `td`.
 
@@ -44,7 +44,7 @@ Example output:
 
 ```text
 Today:
-1. Fix appointment sync retries [p2] (MECA › Appointment sync) id:a1b2c3
+1. 🐸 Fix appointment sync retries [p2] (MECA › Appointment sync) id:a1b2c3
 2. Answer the billing export question [p1] (MECA) id:d4e5f6
 Open picks: 3 of 5
 Waiting:

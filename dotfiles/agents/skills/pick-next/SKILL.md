@@ -5,7 +5,7 @@ description: Dates one card from Michael's Todoist Next filter for today, sugges
 
 # Pick next
 
-Date one card for today. Michael asked for it, so write without a separate approval. Start every card you show with its priority dot.
+Date one card for today. Michael asked for it, so write without a separate approval. Start every card you show with its priority dot, and put 🐸 after the priority on the frog.
 
 ## Read
 

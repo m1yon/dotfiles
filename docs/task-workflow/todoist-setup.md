@@ -38,7 +38,7 @@ These are the only three labels.
 | --- | --- | --- |
 | `@waiting` | A person or a third party holds the work. A card that an agent works on doesn't get it. | You, during triage or later |
 | `@stale` | No activity for 21 days | `/weekly-review`, or `/morning-pick` during a fresh start |
-| `@frog` | Today's frog. Only one open card has it. | `/morning-pick`, which moves it to the frog you choose |
+| `@frog` | Today's frog. Only one open card has it. Agents mark it with 🐸. | `/morning-pick`, which moves it to the frog you choose |
 
 ## Filters
 

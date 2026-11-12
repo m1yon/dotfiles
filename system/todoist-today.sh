@@ -30,7 +30,7 @@ jq -nr \
         elif $project.parentId then project_path($project.parentId) + [$project.name]
         else [$project.name] end;
     def work: select(project_path(.projectId)[0] | IN("MECA", "Side Projects"));
-    def line: "\(.content) [\(.priority)] (\(project_path(.projectId) | join(" › "))) id:\(.id)";
+    def line: "\(if any(.labels[]?; . == "frog") then "🐸 " else "" end)\(.content) [\(.priority)] (\(project_path(.projectId) | join(" › "))) id:\(.id)";
   "Today:",
   ([$today[0].results[] | work]
     | sort_by(if .dayOrder < 0 then infinite else .dayOrder end)

@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Morning pick
 
-Draft the pick, post it as one message, and change nothing until Michael answers in this thread. Start every card you show with its priority dot.
+Draft the pick, post it as one message, and change nothing until Michael answers in this thread. Start every card you show with its priority dot, and put 🐸 after the priority on the frog this draft suggests.
 
 ## Read
 

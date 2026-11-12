@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Weekly review
 
-Mark stale cards first. That is the only change this skill makes without asking. Then post every draft in one message, and apply only the answers Michael approves in this thread. Start every card you show with its priority dot.
+Mark stale cards first. That is the only change this skill makes without asking. Then post every draft in one message, and apply only the answers Michael approves in this thread. Start every card you show with its priority dot, and put 🐸 after the priority on the frog.
 
 `--labels` replaces a card's labels, so pass its current labels too.
 
