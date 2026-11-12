@@ -36,15 +36,15 @@ Explanation:
 
 ## Build status
 
-None of this is built yet. These pages are the implementation plan, and every part ships together. Build it in this order:
+The repo parts are built: steps 1, 4, and 5. The other steps change Todoist and T3 Code, and they run once, after the repo change merges. Build it in this order:
 
-1. Remove the pieces this design replaces. Turn off the orchestrator service in the Nix config, and keep its repo for later. Delete the `group-tasks-into-projects` skill and its scheduled run.
+1. Built. Remove the pieces this design replaces. Turn off the orchestrator service in the Nix config, and keep its repo for later. Delete the `group-tasks-into-projects` skill and its scheduled run.
 2. Export every open Todoist card to a backup file.
 3. Make Todoist match [Todoist setup](todoist-setup.md). Create what's missing, and delete the labels and filters that the page doesn't list.
-4. Write `/inbox`, `/triage-inbox`, `/morning-pick`, `/pick-next`, and `/weekly-review`.
-5. Add the `AGENTS.md` section, the session-start hook, and the `agent-guard` check from [Agent rules](agent-rules.md).
+4. Built. Write `/inbox`, `/triage-inbox`, `/morning-pick`, `/pick-next`, and `/weekly-review`.
+5. Built. Add the `AGENTS.md` section, the session-start hook, and the `agent-guard` check from [Agent rules](agent-rules.md).
 6. Schedule `/morning-pick` and `/weekly-review` in T3 Code. See [AI jobs](ai-jobs.md).
-7. Move every open card outside `Someday` to the Inbox. Then delete every section, and archive every project that [Todoist setup](todoist-setup.md) doesn't list. Deleting a section deletes the cards in it, so check that each section is empty first.
+7. Move every open card outside `Someday` to the Inbox at p4. Then delete every section, and archive every project that [Todoist setup](todoist-setup.md) doesn't list. Deleting a section deletes the cards in it, so check that each section is empty first.
 8. Sort the Inbox with `/triage-inbox`.
 
 ## Edit the diagram

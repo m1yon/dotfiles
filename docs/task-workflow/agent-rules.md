@@ -24,20 +24,25 @@ The rules below apply only to sessions Michael starts. Skip them in a scheduled 
 The hook gives each agent session the day's plan before the first prompt, so no agent has to remember to look it up.
 
 - **Event.** `SessionStart`.
-- **Commands.** `td today --json` and `td task list --filter "@waiting" --json`. In a test, `td today` took 0.7 seconds.
+- **Commands.** `td today --json --full --all`, `td task list --filter "@waiting" --json --all`, and `td project list --json --all`, run in parallel. In a test, the hook took 0.7 seconds.
 - **Filter.** The hook keeps cards in `MECA`, `Side Projects`, and their child projects. `Personal` and `Routines` cards stay out.
-- **Output.** The hook prints the cards in Today's order, so the frog comes first.
-- **Location.** `system/agents.nix`, next to `agent-guard`. That file already sets hooks in the Claude Code managed settings and the Codex `requirements.toml`. If a harness has no `SessionStart` event, the rule that matches the request to a card covers it.
+- **Output.** The hook prints the cards in Today's order, so the frog comes first. Today's order is each card's `dayOrder`, which `/morning-pick` sets with `td day-order`. A card nobody ordered goes last. Each line ends with the card's id, so an agent can complete the card without looking it up.
+- **Failure.** If a `td` command fails, the hook prints nothing, and the rule that matches the request to a card has the agent run `td` itself.
+- **Location.** `system/todoist-today.sh`, wired up in `system/agents.nix` next to `agent-guard`. That file sets hooks in the Claude Code managed settings and the Codex `requirements.toml`. `checks.todoist-today` runs the hook against a fake `td`.
 
 Example output:
 
 ```text
 Today:
-1. Fix appointment sync retries [p2] (MECA › Appointment sync)
-2. Answer the billing export question [p1] (MECA)
+1. Fix appointment sync retries [p2] (MECA › Appointment sync) id:a1b2c3
+2. Answer the billing export question [p1] (MECA) id:d4e5f6
 Waiting:
-- Get the vendor's answer on export limits [p3] (MECA)
+- Get the vendor's answer on export limits [p3] (MECA) id:g7h8i9
 ```
+
+## `td day-order`
+
+`td` 5.10.0 has no command for the order of cards in Today, so the `td` wrapper in `home/shared/programs/todoist-cli.nix` adds one. `td day-order id:a id:b` puts card a, then card b, at the top of Today. It sends the Sync API command `item_update_day_orders`. The API reports success even for an unknown id, so `/morning-pick` reads Today back to check the order.
 
 ## The agent-guard check
 
