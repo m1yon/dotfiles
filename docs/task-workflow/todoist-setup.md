@@ -45,10 +45,10 @@ These are the only two filters. Today is Todoist's built-in view, not a filter.
 
 | Filter | Query | Settings |
 | --- | --- | --- |
-| Next | `(p1 \| p2 \| p3) & !@waiting & !#Someday & (no date \| today \| overdue)` | Group by project. Sort by priority. |
+| Next | `(p1 \| p2 \| p3) & !@waiting & !#Someday & (no date \| today \| overdue \| deadline before: in 3 days)` | Group by project. Sort by priority. |
 | Review | `@stale \| @waiting` | None |
 
-The morning pick comes from Next. Next leaves out cards you planned for a later day. The Friday review works through Review.
+The morning pick comes from Next. Next leaves out cards you planned for a later day, unless their deadline is within two days. The Friday review works through Review.
 
 ## Dates and deadlines
 
@@ -58,7 +58,7 @@ The morning pick comes from Next. Next leaves out cards you planned for a later 
 | Deadline | The hard deadline, the day the card is due | You, during triage or later |
 
 - An overdue card is one you planned and didn't finish.
-- A card planned for a later day stays out of Next. That morning it is on Today, and it counts toward the five.
+- A card planned for a later day stays out of Next until its deadline is within two days. On its planned morning it is on Today, and it counts toward the five.
 - Routines use repeating dates. See [Routines](#routines).
 - Deadlines need Todoist Pro.
 

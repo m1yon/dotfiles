@@ -22,7 +22,7 @@ Agent work sits inside the limit. You start the agent, steer it, and review what
 
 ## Dates mean the day you plan to do it
 
-A date on a work card is the day you plan to work on it. The pick skills date cards for today, and you can plan a card for a later day yourself. The Deadline field holds the hard deadline, the day the card is due. As a result, an overdue card is always one you planned and didn't finish, and the next morning pick settles it. A card planned for a later day stays out of Next until its morning, when it is on Today and counts toward the five. Today doubles as the in-progress list. A card on Today for a second morning is multi-day work you're still on, so there's no separate in-progress state to keep current.
+A date on a work card is the day you plan to work on it. The pick skills date cards for today, and you can plan a card for a later day yourself. The Deadline field holds the hard deadline, the day the card is due. As a result, an overdue card is always one you planned and didn't finish, and the next morning pick settles it. A card planned for a later day stays out of Next until its morning, when it is on Today and counts toward the five. A deadline within two days brings it back into Next early. Today doubles as the in-progress list. A card on Today for a second morning is multi-day work you're still on, so there's no separate in-progress state to keep current.
 
 ## This version tracks no PRs
 

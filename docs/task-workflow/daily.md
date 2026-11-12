@@ -43,7 +43,7 @@ If you ask an agent for work that isn't on a Today or `@waiting` card, it asks o
 | The same card carries over three mornings in a row | Split it, hand it off, or drop it. `/morning-pick` flags it. |
 | You miss a routine | Complete it when you get to it. Todoist moves an overdue `every` card to its next future date, so missed days don't stack up. To skip a day, postpone it to tomorrow. |
 | A card has a hard deadline | Set a Deadline. `/morning-pick` and `/pick-next` list it first from two days before the deadline. |
-| You plan to do a card on a given day | Give it that date. It stays out of Next until then. That morning it is on Today, and it counts toward the five. |
+| You plan to do a card on a given day | Give it that date. It stays out of Next until then, unless its deadline is within two days. That morning it is on Today, and it counts toward the five. |
 | Something happens at a set time | Put it in your calendar, not in Todoist. |
 | An urgent p1 arrives mid-day | Add it to Today. It may take you past five, because the limit covers planned work. |
 | An agent works on a card | It counts toward the five. The agent's work is your work. |

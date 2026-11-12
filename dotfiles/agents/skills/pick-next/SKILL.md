@@ -15,7 +15,7 @@ Date one card for today. Michael asked for it, so write without a separate appro
 ## Choose the card
 
 - **`/pick-next` with no text.** If the frog is still open, say so first. Then suggest up to three Next cards that aren't on Today, each with a one-line reason. Order them by deadline within two days, then p1, then the oldest p2 by `addedAt`, then p3. Wait for Michael's choice.
-- **`/pick-next <text>`.** Match the text to a card title in Next, then in the Inbox (`td inbox --json --all`). Ask when several cards match.
+- **`/pick-next <text>`.** Match the text to a card title in Next, then in the Inbox (`td inbox --json --all`), then in every open card (`td task list --json --all --full`). Ask when several cards match. A card planned for a later day is already filed. Name its planned day, and date it for today only if Michael says so.
   - A card in the Inbox isn't filed yet. Ask for its priority and project in one question, with a suggestion for each. Then file it with `td task update id:<id> --priority <p>` and `td task move id:<id> --project id:<project id>`.
   - When no card matches, offer to add one with `td task add "<title>"`. Then file and date it the same way.
 
