@@ -24,6 +24,7 @@ The rules below apply only to sessions Michael starts. Skip them in a scheduled 
   ```
 
   At 5 or more open picks, leave out "Add it to Today" and number the other two choices from 1. For "Add it to Today", add the card to the Inbox, then run `/pick-next` for it. For "Save it to the Inbox", add the card to the Inbox and stop. Accept any answer, and don't ask again this session.
+- As soon as the session has a card, rename the chat to the card's name with T3's `t3_thread_update` tool and `action: "rename"`. Strip Markdown from the title, so `[AGENTS.md](https://AGENTS.md)` becomes `AGENTS.md`.
 - Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
 - When the session's card is done, offer to complete it and name the next Today card. If Today has no open picks left, say so and mention `/pick-next`. Don't suggest a card yourself.
