@@ -21,7 +21,7 @@ Group Today by project, so routines sit in their own group.
 
 - Start with the frog. After that, switch between Today cards freely.
 - Do routines whenever they fit in the day.
-- When a card is done, complete it and take the next Today card. In an agent session, the agent offers to complete the card and names the next one.
+- When a card is done, complete it and take the next Today card. In an agent session, tell the agent to complete the card. It doesn't offer.
 
 ## Pick another card
 

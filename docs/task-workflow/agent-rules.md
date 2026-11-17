@@ -27,7 +27,7 @@ The rules below apply only to sessions Michael starts. Skip them in a scheduled 
 - As soon as the session has a card, rename the chat to the card's name with T3's `t3_thread_update` tool and `action: "rename"`. Strip Markdown from the title, so `[AGENTS.md](https://AGENTS.md)` becomes `AGENTS.md`.
 - Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
-- When the session's card is done, offer to complete it and name the next Today card. If Today has no open picks left, say so and mention `/pick-next`. Don't suggest a card yourself.
+- The chat's title names the session's card, so leave the card out of your replies once the session has it. Don't offer to complete it, name the next Today card, or suggest `/pick-next`. Complete the card only when Michael asks.
 ````
 
 ## The session-start hook
