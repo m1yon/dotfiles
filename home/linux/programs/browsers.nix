@@ -8,6 +8,7 @@
   programs = {
     google-chrome = {
       enable = true;
+      commandLineArgs = [ "--profile-directory=Default" ];
     };
   };
 }
