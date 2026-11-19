@@ -21,6 +21,7 @@ Group Today by project, so routines sit in their own group.
 
 - Start with the frog. After that, switch between Today cards freely.
 - Do routines whenever they fit in the day.
+- A job card on Today, such as `weekly review`, means a scheduled job waits for you in its T3 Code thread. Open the thread and answer there. The job completes the card when you're done.
 - When a card is done, complete it and take the next Today card. When an agent finishes a card's work, the last line of its reply links to the card, so you can open it in Todoist and check it off. You can also tell the agent to complete the card. Agents don't offer.
 
 ## Pick another card

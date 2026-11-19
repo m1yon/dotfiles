@@ -2,7 +2,7 @@
 
 > Be professional with my time.
 
-This is a personal task workflow built on Getting Things Done (GTD) and the Eisenhower Matrix. It runs in plain Todoist, with no custom app. Agents help at a few fixed steps, and nothing an agent creates reaches Next or Today until you triage it.
+This is a personal task workflow built on Getting Things Done (GTD) and the Eisenhower Matrix. It runs in plain Todoist, with no custom app. Agents help at a few fixed steps. Nothing an agent creates in a session reaches Next or Today until you triage it, and a scheduled job adds one card to Today only when it needs your input.
 
 ![The workflow from capture to the Friday review](workflow.svg)
 

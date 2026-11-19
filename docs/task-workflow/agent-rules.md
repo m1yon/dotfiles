@@ -57,6 +57,17 @@ Waiting:
 
 `td` 5.10.0 has no command for the order of cards in Today, so the `td` wrapper in `home/shared/programs/todoist-cli.nix` adds one. `td day-order id:a id:b` puts card a, then card b, at the top of Today. It sends the Sync API command `item_update_day_orders`. The API reports success even for an unknown id, so `/morning-pick` reads Today back to check the order.
 
+## `td job-card`
+
+A scheduled job puts a card on Today while it waits for you. `td job-card add|complete <title>` does both steps, and the `td` wrapper in `home/shared/programs/todoist-cli.nix` provides it. See [Job cards](ai-jobs.md#job-cards) for how the jobs use it.
+
+- **Match.** A title matches a card when the card's content is exactly that title, the card is open, and its date doesn't repeat. Only cards in `Routines` can match, so `complete` can never advance a routine.
+- **`add`.** If no card matches, it adds the title to `Routines`, due today, at the default p4, with a description that says a scheduled job waits in its T3 Code thread. If a card matches, it changes nothing. It exits 0 either way.
+- **`complete`.** It completes every matching card, so repeated runs end with none open. It exits 0 when none match.
+- **Usage.** `-h` and `--help` print the usage and exit 0. A wrong number of arguments or an unknown action prints the usage to stderr and exits 2, as `td day-order` does.
+
+The command stands apart from `td task add`, so the [agent-guard check](#the-agent-guard-check) stays as it is. The check doesn't see the `td task add` call inside the wrapper.
+
 ## `td` JSON priorities
 
 The Todoist API numbers priority backward: 4 is p1 and 1 is p4. `td task update --priority` and the Todoist app use p1 to p4. Agents mixed the two up, so the `td` wrapper rewrites every numeric `priority` and `lastPriority` in `--json` and `--ndjson` output to `"p1"` through `"p4"`. If `jq` can't parse the output, the wrapper prints it unchanged.
@@ -67,8 +78,9 @@ The Todoist API numbers priority backward: 4 is p1 and 1 is p4. `td task update 
 
 - It blocks `td task add` when the command sets `--project` to anything but the Inbox, or sets `--section`, `--priority`, `--due`, or `--deadline`.
 - It allows `--parent`, so an agent can add a subtask under an existing card. The subtask takes its parent's project.
+- It allows `td job-card add`, which isn't a `td task add` command. See [`td job-card`](#td-job-card).
 - It blocks `td add`, `td task quickadd`, and `td task qa` outright, because quick-add text can carry a project, a priority, or a date.
 - The block message tells the agent to add the card to the Inbox, or as a subtask of an existing card with `--parent id:<card id>`, at p4 with no date, and to ask Michael before it changes the card.
 - Picking and triage change cards with `td task update` and `td task move`, so the check doesn't affect them.
-- `checks.agent-guard` tests the check. The build also updates the matching row in the rules table of this repo's `AGENTS.md`.
+- `checks.agent-guard` tests the check, including that it allows `td job-card add` and `td job-card complete`. The build also updates the matching row in the rules table of this repo's `AGENTS.md`.
 - The check doesn't see the Todoist MCP tools.
