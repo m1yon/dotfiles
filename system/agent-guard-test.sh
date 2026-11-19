@@ -28,7 +28,6 @@ block	td task add "Fix the data race in the msgraphemail tests" --project MECA
 block	td task add "Remove the duplicated block" --project "Side Projects" --description "Repo m1yon/dotfiles; home/linux/gnome.nix (elif branch) | see log"
 block	td task add "x" --project=id:abc
 block	td task add "x" --section Todo
-block	td task add "x" --parent id:abc
 block	td task add "x" --priority p1
 block	td task add "x" --priority=p4
 block	td task add "x" --due today
@@ -52,6 +51,10 @@ block	bash -lc 'td task add "x" --project MECA'
 allow	td task add "Fix the data race" --description "Repo m1yon/dotfiles; a (b) | c" --json
 allow	td task add "x" --project Inbox
 allow	td task add "x" --project=inbox
+allow	td task add "x" --parent id:abc
+allow	td task add "x" --parent=id:abc --description "y"
+block	td task add "x" --parent id:abc --priority p1
+block	td task add "x" --parent id:abc --project MECA
 allow	td task add "Ask whether --project MECA fits"
 allow	td task update id:abc --priority p2 --due today
 allow	td task move id:abc --project MECA

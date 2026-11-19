@@ -25,7 +25,7 @@ The rules below apply only to sessions Michael starts. Skip them in a scheduled 
 
   At 5 or more open picks, leave out "Add it to Today" and number the other two choices from 1. For "Add it to Today", add the card to the Inbox, then run `/pick-next` for it. For "Save it to the Inbox", add the card to the Inbox and stop. Accept any answer, and don't ask again this session.
 - As soon as the session has a card, rename the chat to the card's name with T3's `t3_thread_update` tool and `action: "rename"`. Strip Markdown from the title, so `[AGENTS.md](https://AGENTS.md)` becomes `AGENTS.md`.
-- Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
+- Create cards only in the Inbox, at p4, with no date. A subtask of an existing card goes under that card with `td task add --parent id:<card id>`, also at p4 with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
 - The chat's title names the session's card, so leave the card out of your replies once the session has it. Don't offer to complete it, name the next Today card, or suggest `/pick-next`. Complete the card only when Michael asks.
 - When a reply finishes the work for the session's card, make its last line a link to the card, as in `🟠 p2 [Fix appointment sync retries](https://app.todoist.com/app/task/fix-appointment-sync-retries-a1b2c3)`. Take the link from the `url` field of `td task view id:<id> --json`.

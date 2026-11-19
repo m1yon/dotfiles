@@ -93,7 +93,7 @@ kill_message='pkill and killall match every process whose name or command line f
 # shellcheck disable=SC2016
 t3_service_message='Nix owns T3 Code'"'"'s background service, t3code.service, in home/linux/programs/t3code.nix of the dotfiles repo. `t3 up` and `t3 service install` or `uninstall` replace or remove that unit. Change the module, then run `task check`.'
 # shellcheck disable=SC2016
-td_message='Agents add Todoist cards only to the Inbox, at p4, with no date. Run `td task add "<title>" --description "<context>"` without --section, --parent, --priority, --due, --deadline, or a --project other than Inbox. Quick add (`td add`, `td task quickadd`) reads a project, a priority and a date out of its text, so use `td task add`. Ask Michael before you change a card'"'"'s priority, date or project. See "Work tracking" in the shared AGENTS.md.'
+td_message='Agents add Todoist cards only to the Inbox, or as a subtask of an existing card with `--parent id:<card id>`, at p4 with no date. Run `td task add "<title>" --description "<context>"` without --section, --priority, --due, --deadline, or a --project other than Inbox. Quick add (`td add`, `td task quickadd`) reads a project, a priority and a date out of its text, so use `td task add`. Ask Michael before you change a card'"'"'s priority, date or project. See "Work tracking" in the shared AGENTS.md.'
 
 has_word() {
   local word wanted
@@ -348,7 +348,7 @@ check_td() {
   esac
   for (( ; i < ${#args[@]}; i += 1)); do
     case "${args[i]}" in
-      --section | --section=* | --parent | --parent=* | --priority | --priority=* | --due | --due=* | --deadline | --deadline=*)
+      --section | --section=* | --priority | --priority=* | --due | --due=* | --deadline | --deadline=*)
         block "$td_message"
         ;;
       --project)
@@ -358,7 +358,7 @@ check_td() {
       --project=*)
         if [[ ${args[i]#*=} != [Ii][Nn][Bb][Oo][Xx] ]]; then block "$td_message"; fi
         ;;
-      --content | --description | --labels | --assignee | --duration | --order) ((i += 1)) ;;
+      --content | --description | --labels | --assignee | --duration | --order | --parent) ((i += 1)) ;;
     esac
   done
 }
