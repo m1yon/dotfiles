@@ -21,7 +21,7 @@ Group Today by project, so routines sit in their own group.
 
 - Start with the frog. After that, switch between Today cards freely.
 - Do routines whenever they fit in the day.
-- When a card is done, complete it and take the next Today card. When a Claude agent finishes a card's work, it shows Todoist's task list for that day, and you can check the card off there. You can also tell any agent to complete the card. Agents don't offer.
+- When a card is done, complete it and take the next Today card. When an agent finishes a card's work, the last line of its reply links to the card, so you can open it in Todoist and check it off. You can also tell the agent to complete the card. Agents don't offer.
 
 ## Pick another card
 

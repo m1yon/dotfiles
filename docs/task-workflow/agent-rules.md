@@ -1,6 +1,6 @@
 # Agent rules
 
-Four pieces shape what agents do with Todoist: a section in the shared instruction file, a Claude-only rule, a hook that loads the day's plan, and an `agent-guard` check that keeps new cards in the Inbox.
+Three pieces shape what agents do with Todoist: a section in the shared instruction file, a hook that loads the day's plan, and an `agent-guard` check that keeps new cards in the Inbox.
 
 ## The AGENTS.md section
 
@@ -28,19 +28,8 @@ The rules below apply only to sessions Michael starts. Skip them in a scheduled 
 - Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
 - The chat's title names the session's card, so leave the card out of your replies once the session has it. Don't offer to complete it, name the next Today card, or suggest `/pick-next`. Complete the card only when Michael asks.
+- When a reply finishes the work for the session's card, make its last line a link to the card, as in `🟠 p2 [Fix appointment sync retries](https://app.todoist.com/app/task/fix-appointment-sync-retries-a1b2c3)`. Take the link from the `url` field of `td task view id:<id> --json`.
 ````
-
-## The CLAUDE.md rule
-
-This rule goes in `dotfiles/claude/CLAUDE.md`, below its import. Codex has no Todoist MCP server, so the rule stays out of the shared file.
-
-````markdown
-## Work tracking
-
-- When a reply finishes the work for the session's card, call `mcp__claude_ai_Todoist__find-tasks-by-date` just before you write that reply. Set `startDate` to the card's due date as `YYYY-MM-DD`. T3 Code shows the result as Todoist's task list, where Michael can check the card off. Write the reply as usual, with no mention of the list or of checking the card off. Skip this when the card has no due date.
-````
-
-Todoist's MCP server attaches its task-list widget to `find-tasks-by-date` and to no other tool. T3 Code renders the widget in the thread, and each checkbox completes its card through the server's `complete-tasks` tool. The widget lists every card due that day, so the session's card appears with the rest of Today. A date, unlike `today`, leaves out overdue cards.
 
 ## The session-start hook
 
