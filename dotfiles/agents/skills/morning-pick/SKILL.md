@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Morning pick
 
-Draft the pick, post it as one message, and change nothing until Michael answers in this thread. Start every card you show with its priority dot, and put 🐸 after the priority on the frog this draft suggests.
+Draft the pick, post it as one message, and change nothing until Michael answers in this thread. Start every card you show with its priority dot. Until Michael approves, show 🐸 only on the frog this draft suggests, right after its priority. If the current frog is a different card, its title still starts with 🐸, so leave that 🐸 out when you show it.
 
 ## Read
 
@@ -42,7 +42,10 @@ End with: "Reply `approve`, or name the changes: a different frog, or cards in o
 
 1. If the approved picks come to more than five, ask once whether to swap one out or keep them all, and wait for the answer before any write.
 2. Date each kept and each new pick with `td task update id:<id> --due today`. Clear each dropped pick with `td task update id:<id> --no-due`.
-3. Move the `frog` label to the frog. `td task list --filter "@frog" --json --all` lists the cards that have it. Remove it from every other card with `td task update id:<id> --labels <other labels>`, or `--no-labels` when none are left. If the frog lacks it, run `td task update id:<frog> --labels <labels>,frog`. `--labels` replaces a card's labels, so pass its current labels too.
+3. Move the `frog` label and the 🐸 title prefix to the frog. `td task list --filter "@frog" --json --all` lists the cards that have the label.
+   - For each of those cards other than the frog, remove the label and strip the leading `🐸 ` from its title. Run `td task update id:<id> --labels <other labels> --content "<title without 🐸>"`, or `--no-labels` when none are left.
+   - For the frog, add the label if it is missing. When its title lacks the prefix, set `--content "🐸 <title>"`. One call can carry both, as in `td task update id:<frog> --labels <labels>,frog --content "🐸 <title>"`.
+   - `--labels` replaces a card's labels, so pass its current labels too.
 4. Order Today with `td day-order id:<frog> id:<pick> ...`, listing every open pick, frog first.
-5. Read `td today --json --full --all` and check that the frog has the lowest `dayOrder` of the open picks and has the `frog` label. `td day-order` reports success even for an unknown id, so this read is the proof.
+5. Read `td today --json --full --all` and check that the frog has the lowest `dayOrder` of the open picks, has the `frog` label, and has a title that starts with `🐸 `. `td day-order` reports success even for an unknown id, so this read is the proof. Then run `td task list --filter "@frog" --json --all` and check that it returns only the frog.
 6. Reply with the final picks in order, frog first.
