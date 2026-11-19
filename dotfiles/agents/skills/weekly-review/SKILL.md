@@ -18,9 +18,13 @@ A card is stale when all of these hold:
 - It was added more than 21 days ago (`addedAt`).
 - It had no edits, comments, or completed subtasks in the last 21 days.
 
-1. List open cards with `td task list --json --all --full`, and project ids with `td project list --json --all`.
-2. Read the last 21 days of activity with `td activity --since <date 21 days ago> --json`, paging with `--cursor` until `nextCursor` is null. A card had activity when its id is the `objectId` of a task event, the `parentItemId` of a comment event, or the `extraData.parentId` of a completed subtask.
-3. Add `stale` to each stale card that lacks it with `td task update id:<id> --labels <labels>,stale`.
+Two kinds of edit don't count, because jobs make them without a decision about the card:
+
+- A move made outside the Todoist apps. Agent moves are bulk runs or triage. A triage move comes with a priority change, and that change counts.
+- A label change that only adds `stale`, adds `frog`, or removes `frog`. Removing `stale` counts, because that is the Keep answer.
+
+1. Run `todoist-stale`. It applies this rule and prints the stale cards as a JSON array of `id`, `content`, and `labels`.
+2. Add `stale` to each listed card that lacks it with `td task update id:<id> --labels <labels>,stale`.
 
 ## Draft
 

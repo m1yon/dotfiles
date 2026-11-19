@@ -70,6 +70,7 @@ in
         exit "$code"
       '';
     })
+    (pkgs.callPackage ../pkgs/todoist-stale { })
   ];
 
   sops.secrets = {

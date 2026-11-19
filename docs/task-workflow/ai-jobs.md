@@ -32,5 +32,5 @@ The weekly review runs [`/weekly-review`](skills.md#weekly-review).
 | Schedule | `{ "type": "fixed_time", "timeOfDay": "09:00", "weekdays": [5] }` |
 | Thread | A new thread for each run (`bindToCurrentThread: false`) |
 
-- The job starts by marking stale cards. It adds `@stale` to cards with no edits, comments, or completed subtasks for 21 days. It skips cards in `Someday` and recurring cards.
+- The job starts by marking stale cards. It adds `@stale` to cards with no edits, comments, or completed subtasks for 21 days. It skips cards in `Someday` and recurring cards. Edits that only automation makes don't count: agent moves, and label changes that only add `@stale` or move `@frog`. See [`todoist-stale`](agent-rules.md#todoist-stale).
 - Then it drafts the rest of the review, posts it in its thread, and waits for your answers.

@@ -184,6 +184,11 @@
                 ${pkgs.callPackage ./system/todoist-today.nix { username = "michael"; }}/bin/todoist-today
               touch $out
             '';
+            todoist-stale = pkgs.runCommand "todoist-stale-test" { nativeBuildInputs = [ pkgs.jq ]; } ''
+              ${pkgs.bash}/bin/bash ${./home/shared/pkgs/todoist-stale/todoist-stale-test.sh} \
+                ${pkgs.callPackage ./home/shared/pkgs/todoist-stale { }}/bin/todoist-stale
+              touch $out
+            '';
           };
         in
         tests // { all = pkgs.linkFarmFromDrvs "all-checks" (builtins.attrValues tests); }

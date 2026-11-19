@@ -61,6 +61,15 @@ Waiting:
 
 The Todoist API numbers priority backward: 4 is p1 and 1 is p4. `td task update --priority` and the Todoist app use p1 to p4. Agents mixed the two up, so the `td` wrapper rewrites every numeric `priority` and `lastPriority` in `--json` and `--ndjson` output to `"p1"` through `"p4"`. If `jq` can't parse the output, the wrapper prints it unchanged.
 
+## `todoist-stale`
+
+`/weekly-review` and the morning pick's fresh start mark stale cards by one rule, so a command applies it. `todoist-stale` prints the stale cards as a JSON array of `id`, `content`, and `labels`. It changes nothing in Todoist. The skill adds the label.
+
+- **Rule.** A stale card is open, outside `Someday`, not recurring, and added more than 21 days ago. In the last 21 days of `td activity`, nothing touched it: no task event, no comment, and no completed subtask.
+- **Automation.** Each activity event names its client in `extraData.client`. The Todoist apps send `Todoist v… (macOS)` or `Todoist v… (iOS …)`. Agents send `todoist-cli/…`, claude.ai jobs send `Claude`, and raw API calls send `curl/…`. A move from a client other than the Todoist apps doesn't count. Agents move cards in bulk, and a triage move comes with a priority change that counts. A label change that only adds `stale`, adds `frog`, or removes `frog` doesn't count either, because the jobs make those changes on their own.
+- **Failure.** If a `td` call fails or returns no `results`, the command exits non-zero and prints nothing, so an outage never reads as "no stale cards".
+- **Location.** `home/shared/pkgs/todoist-stale`, installed next to `td` by `home/shared/programs/todoist-cli.nix`. `checks.todoist-stale` runs it against a fake `td`.
+
 ## The agent-guard check
 
 `system/agent-guard.sh` runs before each agent shell command. This check replaces its `from-agent` and `approved` check, because the new section uses neither label.
