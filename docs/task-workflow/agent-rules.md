@@ -25,7 +25,7 @@ The rules below apply only to sessions Michael starts. Skip them in a scheduled 
 
   At 5 or more open picks, leave out "Add it to Today" and number the other two choices from 1. For "Add it to Today", add the card to the Inbox, then run `/pick-next` for it. For "Save it to the Inbox", add the card to the Inbox and stop. Accept any answer, and don't ask again this session.
 - As soon as the session has a card, rename the chat to the card's name with T3's `t3_thread_update` tool and `action: "rename"`. Strip Markdown from the title, so `[AGENTS.md](https://AGENTS.md)` becomes `AGENTS.md`.
-- Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
+- Create cards only in the Inbox, at p4, with no date. A subtask of an existing card goes under that card with `td task add --parent id:<card id>`, also at p4 with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
 - The chat's title names the session's card, so leave the card out of your replies once the session has it. Don't offer to complete it, name the next Today card, or suggest `/pick-next`. Complete the card only when Michael asks.
 - When a reply finishes the work for the session's card, make its last line a link to the card, as in `🟠 p2 [Fix appointment sync retries](https://app.todoist.com/app/task/fix-appointment-sync-retries-a1b2c3)`. Take the link from the `url` field of `td task view id:<id> --json`.
@@ -65,9 +65,10 @@ The Todoist API numbers priority backward: 4 is p1 and 1 is p4. `td task update 
 
 `system/agent-guard.sh` runs before each agent shell command. This check replaces its `from-agent` and `approved` check, because the new section uses neither label.
 
-- It blocks `td task add` when the command sets `--project` to anything but the Inbox, or sets `--section`, `--parent`, `--priority`, `--due`, or `--deadline`.
+- It blocks `td task add` when the command sets `--project` to anything but the Inbox, or sets `--section`, `--priority`, `--due`, or `--deadline`.
+- It allows `--parent`, so an agent can add a subtask under an existing card. The subtask takes its parent's project.
 - It blocks `td add`, `td task quickadd`, and `td task qa` outright, because quick-add text can carry a project, a priority, or a date.
-- The block message tells the agent to add the card to the Inbox at p4 with no date, and to ask Michael before it changes the card.
+- The block message tells the agent to add the card to the Inbox, or as a subtask of an existing card with `--parent id:<card id>`, at p4 with no date, and to ask Michael before it changes the card.
 - Picking and triage change cards with `td task update` and `td task move`, so the check doesn't affect them.
 - `checks.agent-guard` tests the check. The build also updates the matching row in the rules table of this repo's `AGENTS.md`.
 - The check doesn't see the Todoist MCP tools.
