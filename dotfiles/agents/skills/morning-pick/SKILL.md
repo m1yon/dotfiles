@@ -10,7 +10,7 @@ Draft the pick, post it as one message, and change nothing until Michael answers
 
 ## Read
 
-1. `td today --json --full --all` lists Today, overdue cards included. A routine has a repeating date (`due.isRecurring`). Every other card is a work card.
+1. `td today --json --full --all` lists Today, overdue cards included. A routine is a card in the `Routines` project. Every other card is a work card.
 2. `td filter view Next --json --all --full` lists Next.
 3. `td project list --json --all` gives project names for grouping.
 
@@ -21,7 +21,7 @@ An open pick is a Today card that is also in Next. Today's order is `dayOrder`, 
 If Today holds a work card dated three or more days ago, offer a fresh start in its own message and wait. When Michael says yes:
 
 1. Clear the date on each overdue work card with `td task update id:<id> --no-due`. The cards stay in their projects and show in Next again.
-2. Move each overdue routine to today with `td task reschedule id:<id> today`, which keeps its repeat.
+2. Move each overdue routine to today with `td task reschedule id:<id> today`, which keeps any repeat.
 3. Mark stale cards by [the weekly review's rule](../weekly-review/SKILL.md#mark-stale-cards).
 4. Read Today and Next again, and draft the pick below with no work cards on Today.
 

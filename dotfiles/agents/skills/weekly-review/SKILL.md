@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Weekly review
 
-Mark stale cards first. That is the only change this skill makes without asking. Then post every draft in one message, and apply only the answers Michael approves in this thread. Start every card you show with its priority dot.
+Mark stale cards first. That and the job card are the only changes this skill makes without asking. Then post every draft in one message, and apply only the answers Michael approves in this thread. Start every card you show with its priority dot.
 
 `--labels` replaces a card's labels, so pass its current labels too.
 
@@ -14,7 +14,7 @@ Mark stale cards first. That is the only change this skill makes without asking.
 
 A card is stale when all of these hold:
 
-- It is open, outside `Someday`, and has no repeating date (`due.isRecurring`).
+- It is open, outside `Someday` and `Routines`, and has no repeating date (`due.isRecurring`).
 - It was added more than 21 days ago (`addedAt`).
 - It had no edits, comments, or completed subtasks in the last 21 days.
 
@@ -24,7 +24,7 @@ A card is stale when all of these hold:
 
 ## Draft
 
-Post one message with these parts, in order:
+First run `td job-card add "weekly review"`. It puts a card on Today while the draft waits for Michael, and it changes nothing when that card is already open. Then post one message with these parts, in order:
 
 1. **Inbox.** Follow the Read and Draft sections of [triage-inbox](../triage-inbox/SKILL.md), and include the table for its first batch.
 2. **Stale cards.** One table of `@stale` cards, each with a suggestion: keep, Someday, or delete.
@@ -46,4 +46,4 @@ End with: "Reply `apply` to approve every draft, or name a row and give its new 
 | Take it back | Remove `waiting` with `td task update id:<id> --labels <other labels>`, or `--no-labels` when none are left. |
 | Archive | `td project archive id:<id>` |
 
-The review is done when every approved answer is applied. Report the count for each answer.
+The review is done when every approved answer is applied. Then run `td job-card complete "weekly review"` and report the count for each answer.

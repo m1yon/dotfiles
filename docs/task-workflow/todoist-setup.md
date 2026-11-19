@@ -12,7 +12,7 @@ This page is the target layout. During setup, delete every label, filter, and se
 | `Personal` | Area, top level | Personal one-off cards, such as booking a dentist appointment |
 | Feature project | Child of an area | The cards for one feature, such as `MECA › Appointment sync` |
 | `Someday` | Top level | Ideas you might do later, at p4 |
-| `Routines` | Top level | Repeating cards, such as meditating and the budget |
+| `Routines` | Top level | Repeating cards, such as meditating and the budget, and the [job cards](ai-jobs.md#job-cards) that scheduled jobs add |
 
 - A feature gets its own project when it needs several cards or more than a week of work. A job with two or three steps fits on one card with subtasks.
 - Archive a feature project when it ships.
@@ -76,4 +76,4 @@ Routines live in the `Routines` project at p4. They never show up in Next, and t
 | `every` | A routine tied to the calendar. Completing an overdue card moves it to its next future date. | `every day` |
 | `every!` | A routine that repeats from when you last did it | `every! week` |
 
-The morning pick and the Friday review have no cards. Scheduled tasks start them. See [AI jobs](ai-jobs.md).
+The morning pick has no card. A scheduled task starts it, and its new thread is the reminder. The Friday review adds a [job card](ai-jobs.md#job-cards) to `Routines` while it waits for you. A job card has no repeat, but `/morning-pick` and the stale rule treat every card in `Routines` as a routine.

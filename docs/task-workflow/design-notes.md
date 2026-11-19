@@ -6,11 +6,13 @@ Agents make starting work nearly free, so most new work begins in an agent sessi
 
 ## Agents write only to the Inbox
 
-An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes lands in the Inbox at p4, with no date. Next shows only p1 to p3 cards, and Today shows only dated cards, so nothing an agent creates reaches either one until you triage it. "Add it to Today" goes through the Inbox too. The agent adds the card there, and `/pick-next` files and dates it with your answer.
+An earlier setup let automation create cards, and the list filled with work nobody chose. Now every card an agent makes in a session lands in the Inbox at p4, with no date. Next shows only p1 to p3 cards, and Today shows only dated cards, so nothing an agent creates in a session reaches either one until you triage it. "Add it to Today" goes through the Inbox too. The agent adds the card there, and `/pick-next` files and dates it with your answer.
 
-This rule is a block, not a question. The `agent-guard` hook stops any agent command that adds a card outside the Inbox or adds one with a priority or a date. The case for asking instead of blocking is about guardrails on you. An agent never needs to put a new card anywhere else, so a hard block costs nothing.
+This rule is a block, not a question. The `agent-guard` hook stops any agent command that adds a card outside the Inbox or adds one with a priority or a date. The case for asking instead of blocking is about guardrails on you. An agent in a session never needs to put a new card anywhere else, so a hard block costs nothing.
 
-The AI jobs follow the same idea. The morning pick changes nothing until you approve, and the weekly review adds one label on its own.
+A scheduled job that needs your input is the one exception. It adds a job card to `Routines`, dated today, and completes the card when you're done. A recurring routine card was the other option, but it follows the calendar instead of the job. A job card is on Today only while a thread waits for you. `td job-card` keeps one open card for each job title. The card sits in `Routines`, so it stays out of Next and out of the five picks. The `agent-guard` hook still blocks every other command that adds a card outside the Inbox.
+
+The AI jobs follow the same idea. The morning pick changes nothing until you approve. The weekly review adds one label and one job card on its own.
 
 ## The morning pick is the only limit
 
@@ -34,7 +36,7 @@ A feature project groups its cards, so Next shows them together. It says nothing
 
 ## Skills come with reminders
 
-A skill helps only if you remember to run it. So the two skills tied to a time of day run on their own. T3 Code scheduled tasks start `/morning-pick` at 9am each weekday and `/weekly-review` at 9am on Friday, so the drafts are ready when you open each thread. `/pick-next` is the exception, because you run it the moment you want more work. The session-start hook follows the same idea. It loads Today into each agent session, so no agent has to remember to look.
+A skill helps only if you remember to run it. So the two skills tied to a time of day run on their own. T3 Code scheduled tasks start `/morning-pick` at 9am each weekday and `/weekly-review` at 9am on Friday, so the drafts are ready when you open each thread. The weekly review also adds a card to Today when it posts its draft, so Today shows that the thread waits for you. `/pick-next` is the exception, because you run it the moment you want more work. The session-start hook follows the same idea. It loads Today into each agent session, so no agent has to remember to look.
 
 ## The stale sweep runs inside the weekly review
 
@@ -51,3 +53,5 @@ An earlier draft ran the stale sweep as its own Thursday-night job. Its only pur
 - **A break timer.** A phone Pomodoro timer handles breaks, outside Todoist.
 - **An impact and effort matrix.** It added a second scoring step to triage without changing which cards get picked.
 - **A custom app or an AI assistant that plans the day.** The morning pick stays yours, and an app is one more thing to maintain.
+- **A link to the thread in a job card.** T3's `t3-thread://` links have no registered handler on nixbook, so the link would be dead in Todoist.
+- **A limit on `td job-card` to scheduled runs.** Nothing in the environment marks a scheduled run reliably.

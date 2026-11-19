@@ -64,6 +64,47 @@ in
 
         td=${lib.getExe (pkgs.callPackage ../pkgs/todoist-cli { })}
 
+        if [ "''${1:-}" = job-card ]; then
+          shift
+          usage() {
+            printf '%s\n' "Usage: td job-card add|complete <title>" "" \
+              "add puts a card called <title> on Today, in Routines, unless one is already open." \
+              "complete completes every open card called <title>."
+          }
+          for arg in "$@"; do
+            case "$arg" in
+              -h | --help)
+                usage
+                exit 0
+                ;;
+              -*)
+                echo "error: unknown option '$arg'" >&2
+                usage >&2
+                exit 2
+                ;;
+            esac
+          done
+          if [ "$#" -ne 2 ] || [[ $1 != add && $1 != complete ]]; then
+            usage >&2
+            exit 2
+          fi
+          action=$1
+          title=$2
+          open=$("$td" task list --project Routines --json --all --full |
+            jq -r --arg title "$title" '.results[] | select(.content == $title and .due.isRecurring != true) | .id')
+          if [ "$action" = add ]; then
+            if [ -z "$open" ]; then
+              "$td" task add "$title" --project Routines --due today \
+                --description "A scheduled job is waiting for you in its T3 Code thread. The job completes this card when you're done."
+            fi
+          elif [ -n "$open" ]; then
+            while IFS= read -r id; do
+              "$td" task complete "id:$id"
+            done <<<"$open"
+          fi
+          exit
+        fi
+
         # td's JSON numbers priority backward, 4 for p1, while `--priority` and the
         # app say p1 to p4. Agents misread the numbers, so JSON output says "p1".
         case " $* " in

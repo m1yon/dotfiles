@@ -59,6 +59,8 @@ allow	td task add "Ask whether --project MECA fits"
 allow	td task update id:abc --priority p2 --due today
 allow	td task move id:abc --project MECA
 allow	td task list --project MECA --priority p1 --json
+allow	td job-card add "weekly review"
+allow	td job-card complete "weekly review"
 allow	td comment add id:abc --content "PR: https://github.com/m1yon/orchestrator/pull/16"
 allow	grep -n "td task add --project MECA" dotfiles/agents/AGENTS.md
 allow	git commit -m "fix: block td add and td task add --due today"
