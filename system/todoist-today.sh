@@ -32,7 +32,7 @@ jq -nr \
     def work: select(project_path(.projectId)[0] | IN("MECA", "Side Projects"));
     def line: "\(.content) [\(.priority)] (\(project_path(.projectId) | join(" › "))) id:\(.id)";
   "Today:",
-  ([$today[0].results[] | work]
+  ([$today[0].results[] | work | select(any(.labels[]?; . == "waiting") | not)]
     | sort_by(if .dayOrder < 0 then infinite else .dayOrder end)
     | if length == 0 then "(no work cards)" else to_entries[] | "\(.key + 1). \(.value | line)" end),
   ([$next[0].results[].id] as $nextIds

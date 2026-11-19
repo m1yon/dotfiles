@@ -27,6 +27,7 @@ JSON
   {"id": "t5", "content": "Renew the domain", "priority": "p3", "projectId": "s", "dayOrder": -1, "labels": ["errand"]},
   {"id": "t2", "content": "Answer the billing export question", "priority": "p1", "projectId": "m", "dayOrder": 4},
   {"id": "t3", "content": "Book a dentist appointment", "priority": "p2", "projectId": "p", "dayOrder": 6},
+  {"id": "w1", "content": "Get the vendor's answer on export limits", "priority": "p3", "projectId": "m", "dayOrder": 3, "labels": ["waiting"], "due": {"date": "2026-11-19", "isRecurring": false}},
   {"id": "t1", "content": "🐸 Fix appointment sync retries", "priority": "p2", "projectId": "a", "dayOrder": 2, "labels": ["frog"]}
 ], "nextCursor": null}
 JSON
@@ -45,7 +46,7 @@ JSON
   "task list --filter @waiting --json --all")
     cat <<'JSON'
 {"results": [
-  {"id": "w1", "content": "Get the vendor's answer on export limits", "priority": "p3", "projectId": "m"},
+  {"id": "w1", "content": "Get the vendor's answer on export limits", "priority": "p3", "projectId": "m", "labels": ["waiting"]},
   {"id": "w2", "content": "Hear back from the landlord", "priority": "p3", "projectId": "p"}
 ], "nextCursor": null}
 JSON
@@ -66,7 +67,7 @@ check() {
   fi
 }
 
-check "work cards in Today's order, frog first" "Today:
+check "work cards in Today's order, frog first, and a dated follow-up only under Waiting" "Today:
 1. 🐸 Fix appointment sync retries [p2] (MECA › Appointment sync) id:t1
 2. Answer the billing export question [p1] (MECA) id:t2
 3. Renew the domain [p3] (Side Projects) id:t5
