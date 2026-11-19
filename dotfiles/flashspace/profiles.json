@@ -12,11 +12,6 @@
               "name" : "Roblox"
             },
             {
-              "bundleIdentifier" : "com.apple.finder",
-              "iconPath" : "/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns",
-              "name" : "Finder"
-            },
-            {
               "bundleIdentifier" : "com.microsoft.Excel",
               "iconPath" : "/Applications/Microsoft Excel.app/Contents/Resources/Excel_macOS.icns",
               "name" : "Microsoft Excel"
@@ -150,6 +145,11 @@
               "bundleIdentifier" : "com.todoist.mac.Todoist",
               "iconPath" : "/Applications/Todoist.app/Contents/Resources/icon.icns",
               "name" : "Todoist"
+            },
+            {
+              "bundleIdentifier" : "com.apple.finder",
+              "iconPath" : "/System/Library/CoreServices/Finder.app/Contents/Resources/Finder.icns",
+              "name" : "Finder"
             }
           ],
           "assignAppShortcut" : "ctrl+shift+8",

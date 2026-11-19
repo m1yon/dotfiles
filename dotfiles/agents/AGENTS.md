@@ -48,11 +48,11 @@ why investigators: opus @medium
 why synthesizer: opus @xhigh
 reflect tooling: sonnet @high
 reflect judgment, divergent, synthesizer: opus @xhigh
-arena runners: opus @xhigh, sonnet @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
-arena cross-judge pool: opus @max, gpt-6-astra @max
+arena runners: opus @xhigh, sonnet @xhigh, gpt-6.1-sol @xhigh
+arena cross-judge pool: opus @maxx
 swarm workers: gpt-6.1-sol @xhigh
-architect runners: opus @xhigh, fable @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
-interrogate reviewers: opus @xhigh, fable @xhigh, gpt-6-astra @high, gpt-6.1-sol @xhigh
+architect runners: opus @xhigh, fable @xhigh, gpt-6.1-sol @xhigh
+interrogate reviewers: opus @xhigh, fable @xhigh, gpt-6.1-sol @xhigh
 thermos reviewers: gpt-6.1-sol @xhigh
 no-comments reviewer: gpt-6.1-sol @medium
 
