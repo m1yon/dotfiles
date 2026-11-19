@@ -1,6 +1,6 @@
 # Skills
 
-Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4. The frog also gets 🐸 after its priority.
+Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4. The frog's title starts with 🐸, so the 🐸 comes right after its priority.
 
 ## `/inbox`
 
@@ -30,7 +30,7 @@ Drafts the morning pick. A T3 Code scheduled task starts it at 9am every weekday
 - Suggests up to five cards for today, counting the ones you keep and the ones you planned for today, with the frog first. Routines don't count.
 - Flags each card that has carried over three mornings in a row, and suggests splitting it, handing it off, or dropping it. It counts carry-overs from the card's activity log. Keeping a card dates it for today again, and in `td activity` each date change is an `updated` event that carries `dueDate` and `lastDueDate`.
 - Posts all the drafts in one message and waits. It dates the cards you approve in the thread. If you choose a sixth card, it asks once whether to swap one out or keep six.
-- Moves the `@frog` label to the frog, and puts the frog first in Today with [`td day-order`](agent-rules.md#td-day-order).
+- Moves the `@frog` label and the 🐸 title prefix to the frog, and puts the frog first in Today with [`td day-order`](agent-rules.md#td-day-order).
 
 If you miss the 9am run, run `/morning-pick` yourself.
 

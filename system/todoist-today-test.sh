@@ -27,14 +27,14 @@ JSON
   {"id": "t5", "content": "Renew the domain", "priority": "p3", "projectId": "s", "dayOrder": -1, "labels": ["errand"]},
   {"id": "t2", "content": "Answer the billing export question", "priority": "p1", "projectId": "m", "dayOrder": 4},
   {"id": "t3", "content": "Book a dentist appointment", "priority": "p2", "projectId": "p", "dayOrder": 6},
-  {"id": "t1", "content": "Fix appointment sync retries", "priority": "p2", "projectId": "a", "dayOrder": 2, "labels": ["frog"]}
+  {"id": "t1", "content": "🐸 Fix appointment sync retries", "priority": "p2", "projectId": "a", "dayOrder": 2, "labels": ["frog"]}
 ], "nextCursor": null}
 JSON
     ;;
   "filter view Next --json --all --full")
     cat <<'JSON'
 {"results": [
-  {"id": "t1", "content": "Fix appointment sync retries", "priority": "p2", "projectId": "a", "dayOrder": 2},
+  {"id": "t1", "content": "🐸 Fix appointment sync retries", "priority": "p2", "projectId": "a", "dayOrder": 2},
   {"id": "t2", "content": "Answer the billing export question", "priority": "p1", "projectId": "m", "dayOrder": 4},
   {"id": "t3", "content": "Book a dentist appointment", "priority": "p2", "projectId": "p", "dayOrder": 6},
   {"id": "t5", "content": "Renew the domain", "priority": "p3", "projectId": "s", "dayOrder": -1},

@@ -5,7 +5,7 @@ description: Dates one card from Michael's Todoist Next filter for today, sugges
 
 # Pick next
 
-Date one card for today. Michael asked for it, so write without a separate approval. Start every card you show with its priority dot (🔴 p1, 🟠 p2, 🔵 p3, ⚪ p4) and leave out the priority label, as in `🟠 Fix appointment sync retries`. Put 🐸 after the dot on the frog, as in `🟠 🐸 Fix appointment sync retries`.
+Date one card for today. Michael asked for it, so write without a separate approval. Start every card you show with its priority dot (🔴 p1, 🟠 p2, 🔵 p3, ⚪ p4) and leave out the priority label, as in `🟠 Fix appointment sync retries`. The frog's title starts with 🐸, so it shows as `🟠 🐸 Fix appointment sync retries`.
 
 ## Read
 
@@ -28,7 +28,7 @@ List the open picks by priority, highest first, and keep `dayOrder` within a pri
 
 You have **<n> of 5** picks open:
 
-- <dot> <🐸 if frog> <open pick title>
+- <dot> <open pick title>
 
 ## Suggested next picks
 
