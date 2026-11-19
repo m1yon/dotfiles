@@ -24,7 +24,7 @@ Answer these questions for each card, in order:
 2. **Under 2 minutes?** Mark it Do now. It still gets a priority and a project, for when Michael doesn't get to it.
 3. **Eisenhower quadrant?** p1 is urgent and important. p2 is important but not urgent. p3 is urgent but not important. A card that is neither gets Delete.
 4. **Project?** The feature project the card belongs to, or its area for a one-off. A card with a repeating date (`due.isRecurring`) gets `Routines` at p4. A new routine without a repeating date gets `Routines` at p4 and a suggested due string, such as `every day` or `every! week`. When a group of cards is one new feature with more than a week of work, suggest a new feature project under its area.
-5. **Waiting?** Add `@waiting` only when Michael says a person or a third party holds the card.
+5. **Waiting?** Add `@waiting` only when Michael says a person or a third party holds the card. When he names a day to check on it, that day becomes its date.
 
 A card's date is the day Michael plans to work on it, and its deadline is the day it is due. Keep both as they are, except where an answer below clears them. When Michael gives a row a planned day or a deadline, apply it with `td task update id:<id> --due <YYYY-MM-DD>` or `--deadline <YYYY-MM-DD>`.
 
@@ -57,7 +57,7 @@ Apply only the approved rows. `--labels` replaces a card's labels, so pass its c
 | p1, p2, or p3 | `td task update id:<id> --priority <p>`, then `td task move id:<id> --project id:<project id>` |
 | New feature project | `td project create --name "<name>" --parent id:<area id> --json` first, then file the card into it. |
 | Routines | `td task update id:<id> --priority p4`, plus `--due "<due string>"` for a new routine, then `td task move id:<id> --project Routines` |
-| Waiting | `td task update id:<id> --labels <labels>,waiting --no-due` |
+| Waiting | `td task update id:<id> --labels <labels>,waiting --due <YYYY-MM-DD>` when Michael named a day, or `td task update id:<id> --labels <labels>,waiting --no-due` when he didn't |
 | Do now | Complete it with `td task complete id:<id>` once Michael says it's done. Otherwise file it by its priority and project. |
 
 After a batch is applied, read the Inbox again and draft the next 10 cards. Skip the cards Michael held back earlier in this run. If Michael asks to stop, stop after the current batch is applied.
