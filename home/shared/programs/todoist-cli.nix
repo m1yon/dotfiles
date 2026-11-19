@@ -28,8 +28,25 @@ in
         # the top of Today.
         if [ "''${1:-}" = day-order ]; then
           shift
+          usage() {
+            printf '%s\n' "Usage: td day-order id:<id>..." "" \
+              "Put the given cards at the top of Today, in the order given."
+          }
+          for arg in "$@"; do
+            case "$arg" in
+              -h | --help)
+                usage
+                exit 0
+                ;;
+              -*)
+                echo "error: unknown option '$arg'" >&2
+                usage >&2
+                exit 2
+                ;;
+            esac
+          done
           if [ "$#" -eq 0 ]; then
-            echo "usage: td day-order id:<id>..." >&2
+            usage >&2
             exit 2
           fi
           commands=$(jq -cn --arg uuid "day-order-$(date +%s)-$$" '[{
