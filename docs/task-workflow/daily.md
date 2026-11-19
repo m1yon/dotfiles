@@ -7,11 +7,12 @@ At 9am each weekday, a T3 Code scheduled task runs `/morning-pick` in a new thre
 To pick by hand instead, follow these steps:
 
 1. Open Today. For each card left from yesterday, keep it or clear its date.
-2. Open the Next filter. Look first at cards with a deadline in the next two days.
-3. Choose the frog, a p2 card. `/morning-pick` suggests the oldest p2 card, because fun work keeps pushing that one back. Move the `@frog` label to the new frog, start its title with 🐸, and remove both from the old frog.
-4. Date cards for today until Today holds five or fewer open cards from Next, counting the ones you kept and the ones you planned for today. Put the frog first.
+2. Check each follow-up on Today, a `@waiting` card with a date, and answer it. See [the edge cases](#handle-the-edge-cases).
+3. Open the Next filter. Look first at cards with a deadline in the next two days.
+4. Choose the frog, a p2 card. `/morning-pick` suggests the oldest p2 card, because fun work keeps pushing that one back. Move the `@frog` label to the new frog, start its title with 🐸, and remove both from the old frog.
+5. Date cards for today until Today holds five or fewer open cards from Next, counting the ones you kept and the ones you planned for today. Put the frog first.
 
-Only open cards from Next count toward the five. Routines don't count.
+Only open cards from Next count toward the five. Routines and follow-ups don't count.
 
 If you've been away for a few days, `/morning-pick` offers a fresh start before the pick. See [Fresh start](skills.md#fresh-start).
 
@@ -49,7 +50,8 @@ If you ask an agent for work that isn't on a Today or `@waiting` card, it asks o
 | An urgent p1 arrives mid-day | Add it to Today. It may take you past five, because the limit covers planned work. |
 | An agent works on a card | It counts toward the five. The agent's work is your work. |
 | A card's PR is open | The card stays on Today and counts toward the five. Complete it when the PR merges. |
-| A person or a third party takes over a card | Add `@waiting` and clear its date. The card leaves the five, and the Friday review checks on it. |
+| A person or a third party takes over a card | Add `@waiting`. Then give the card the day to check on it, or clear its date. The card leaves the five. With a date, it shows on Today that day. With no date, the Friday review checks on it. |
+| A follow-up is on Today | Check on the person or third party, then answer it. If it's still waiting, follow up on a day, which can be today. If you have no day to check, clear its date, and the Friday review checks on it. If the work is done, complete it. If you do the work yourself, take it back by removing `@waiting` and its date, and the card goes back to Next. `/morning-pick` suggests following up today. |
 | A personal one-off comes up, like booking a dentist appointment | It goes through Next like any card and counts toward the five. |
 | You miss the 9am run | Run `/morning-pick` yourself. |
 | It's the weekend | Do routines only. The morning pick runs on weekdays. Run `/pick-next` if you want a card. |

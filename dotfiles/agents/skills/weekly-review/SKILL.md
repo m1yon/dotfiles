@@ -16,7 +16,7 @@ First run `td job-card add "weekly review"`. It puts a card on Today while the d
 
 1. **Inbox.** Follow the Read and Draft sections of [triage-inbox](../triage-inbox/SKILL.md), and include the table for its first batch.
 2. **Oldest cards.** One table of the 10 cards with the earliest `addedAt` from `td task list --filter "no date & !#Inbox & !#Someday & !@waiting & !subtask" --json --all --full`. Show how many days ago each card was added, and suggest one answer: date it, Someday, delete, or leave it. For "date it", suggest the date.
-3. **Waiting cards.** Each `@waiting` card with how long it has waited, and a suggestion: complete it, follow up, or take it back. The wait starts at the `updated` activity event whose `extraData.labels` has `waiting` and whose `lastLabels` doesn't. When the log doesn't reach that event, write "over N days" for the span the log covers.
+3. **Waiting cards.** Each `@waiting` card with how long it has waited, its follow-up date when it has one, and a suggestion: complete it, follow up on a day, or take it back. The wait starts at the `updated` activity event whose `extraData.labels` has `waiting` and whose `lastLabels` doesn't. When the log doesn't reach that event, write "over N days" for the span the log covers.
 4. **Projects to archive.** Each feature project, a child of `MECA`, `Side Projects`, or `Personal`, with no open cards.
 
 End with: "Reply `apply` to approve every draft, or name a row and give its new answer."
@@ -31,8 +31,8 @@ End with: "Reply `apply` to approve every draft, or name a row and give its new 
 | Leave it | Nothing. The card shows again next Friday unless it gets a date. |
 | Delete | `td task delete id:<id> --yes` |
 | Complete | `td task complete id:<id>` |
-| Follow up | Nothing in Todoist. Michael follows up himself. |
-| Take it back | Remove `waiting` with `td task update id:<id> --labels <other labels>`, or `--no-labels` when none are left. |
+| Follow up on `<day>` | `td task update id:<id> --due <today or YYYY-MM-DD>` |
+| Take it back | Remove `waiting` and clear the date with `td task update id:<id> --labels <other labels> --no-due`, or `--no-labels --no-due` when none are left. The card goes back to Next. |
 | Archive | `td project archive id:<id>` |
 
 The review is done when every approved answer is applied. Then run `td job-card complete "weekly review"` and report the count for each answer.

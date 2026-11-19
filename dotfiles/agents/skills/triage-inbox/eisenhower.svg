@@ -94,7 +94,7 @@
 
     <circle cx="1130" cy="621" r="17" fill="#202020"/><text x="1130" y="627" fill="#fff" font-weight="700" text-anchor="middle">5</text>
     <text x="1160" y="618" font-weight="700">Is someone else holding it?</text>
-    <text x="1160" y="644" fill="#666" font-size="16">Add @waiting and clear the date</text>
+    <text x="1160" y="644" fill="#666" font-size="16">Add @waiting and a day to check on it</text>
   </g>
 
   <line x1="1115" y1="690" x2="1515" y2="690" stroke="#eee" stroke-width="2"/>

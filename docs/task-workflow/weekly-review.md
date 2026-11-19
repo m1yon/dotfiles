@@ -6,5 +6,5 @@ To review by hand instead, follow these steps:
 
 1. Empty the Inbox. See [Triage the Inbox](triage.md).
 2. Look over your oldest cards that have no date, outside the Inbox and Someday. Give each one a date, move it to Someday, delete it, or leave it. A dated card stays off this list until its day.
-3. Check each `@waiting` card. If the work is done, complete the card. If it's stuck, follow up or take it back.
+3. Check each `@waiting` card. If the work is done, complete the card. If it's stuck, follow up on a day by giving the card that date, or take it back by removing `@waiting` and its date.
 4. Archive each feature project that shipped.

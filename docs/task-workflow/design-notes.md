@@ -26,6 +26,12 @@ Agent work sits inside the limit. You start the agent, steer it, and review what
 
 A date on a work card is the day you plan to work on it. The pick skills date cards for today, and you can plan a card for a later day yourself. The Deadline field holds the hard deadline, the day the card is due. As a result, an overdue card is always one you planned and didn't finish, and the next morning pick settles it. A card planned for a later day stays out of Next until its morning, when it is on Today and counts toward the five. A deadline within two days brings it back into Next early. Today doubles as the in-progress list. A card on Today for a second morning is multi-day work you're still on, so there's no separate in-progress state to keep current.
 
+## A date on a waiting card is the day to check on it
+
+An earlier setup said to add `@waiting` and clear the card's date. Clearing the date was a second edit, and the app never enforced it. You added the label in Todoist and left the date. The card then sat on Today and went overdue the next day, and nothing asked about it. The morning pick asks only about open picks, which come from Next, and Next leaves out `@waiting`. A waiting card with no date came back only at the Friday review, up to six days later.
+
+Now a date on a `@waiting` card is legitimate. It is the day to check on it, and the card is a follow-up. A follow-up shows on Today that day and never counts toward the five. `/morning-pick` asks about every follow-up on Today, so the date is the reminder and there's nothing to clear. Taking a card back clears its date, so a follow-up date never turns into a planned work day. A waiting card with no date still comes back at the Friday review.
+
 ## This version tracks no PRs
 
 An earlier setup ran an orchestrator service that watched GitHub. It moved cards between columns, labeled cards whose PRs were ready for review, completed cards when their PRs merged, and created cards for PRs that had none. This version turns the service off and links no PRs to cards. A PR is part of its card's work, so the card stays on Today and keeps its slot until you complete it. An agent reviews your PRs, so a PR rarely waits long. T3 Code already shows each PR and its review, and a second copy in Todoist added upkeep. PR automation can come back later, built on this design.
