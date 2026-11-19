@@ -36,7 +36,7 @@ These are the only two labels.
 
 | Label | Meaning | Added by |
 | --- | --- | --- |
-| `@waiting` | A person or a third party holds the work. A card that an agent works on doesn't get it. | You, during triage or later |
+| `@waiting` | A person or a third party holds the work. A card that an agent works on doesn't get it. A date on the card is the day to check on it. | You, during triage or later |
 | `@frog` | Today's frog. Only one open card has it, and that card's title also starts with 🐸. | `/morning-pick`, which moves the label and the 🐸 to the frog you choose |
 
 ## Filters
@@ -54,17 +54,18 @@ The morning pick comes from Next. Next leaves out cards you planned for a later 
 
 | Field | Meaning | Set by |
 | --- | --- | --- |
-| Date | The day you plan to work on the card | `/morning-pick` and `/pick-next` for today, or you for any day |
+| Date | The day you plan to work on the card. On a `@waiting` card, the day to check on it. | `/morning-pick` and `/pick-next` for today, or you for any day |
 | Deadline | The hard deadline, the day the card is due | You, during triage or later |
 
-- An overdue card is one you planned and didn't finish.
+- An overdue work card is one you planned and didn't finish. An overdue follow-up is one you didn't check on.
 - A card planned for a later day stays out of Next until its deadline is within two days. On its planned morning it is on Today, and it counts toward the five.
+- A follow-up is a `@waiting` card with a date. It shows on Today on that date and never counts toward the five.
 - Routines use repeating dates. See [Routines](#routines).
 - Deadlines need Todoist Pro.
 
 ## Today
 
-Today is Todoist's built-in Today view. Group it by project, so routines sit in their own group. Today is also the in-progress list. A card still on Today the next morning is multi-day work you haven't finished. At the morning pick, you keep it or clear its date.
+Today is Todoist's built-in Today view. Group it by project, so routines sit in their own group. Today is also the in-progress list. A work card still on Today the next morning is multi-day work you haven't finished. At the morning pick, you keep it or clear its date. A follow-up on Today is a card to check on, and the morning pick asks you to answer it.
 
 ## Routines
 

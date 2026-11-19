@@ -18,18 +18,19 @@ Drafts the daily triage. See [Triage the Inbox](triage.md).
 - Drafts an answer for each card: actionable or not, under 2 minutes or not, a priority, and a project. For a card with a repeating date, it drafts `Routines` at p4.
 - Shows the drafts as one table, with the under-2-minute cards first. An Inbox of more than 10 cards goes in batches of 10. The skill applies each batch before it drafts the next.
 - Applies the rows you approve. "apply" approves every row. To change a row, name it and give the new answer.
-- Adds `@waiting` only when you say that a person or a third party holds the card. For an Obsidian answer, it adds the card's text to a note with the `obsidian-vault` skill, then deletes the card.
+- Adds `@waiting` only when you say that a person or a third party holds the card. When you name a day to check on it, that day becomes the card's date. For an Obsidian answer, it adds the card's text to a note with the `obsidian-vault` skill, then deletes the card.
 
 ## `/morning-pick`
 
 Drafts the morning pick. A T3 Code scheduled task starts it at 9am every weekday. See [AI jobs](ai-jobs.md#morning-pick) and [Run your day](daily.md).
 
 - Lists yesterday's unfinished picks, each with a suggested answer: keep it, or clear its date.
+- Lists each follow-up on Today, oldest date first. A follow-up is a `@waiting` card whose date is the day to check on it. Each gets a suggested answer, which is to follow up today unless you choose another. The other answers are to follow up on a later day, clear the date, complete the card, or take it back.
 - Shows Next, grouped by project, with cards whose deadline is within two days first.
 - Suggests the oldest p2 card as the frog. You choose the frog.
-- Suggests up to five cards for today, counting the ones you keep and the ones you planned for today, with the frog first. Routines don't count.
+- Suggests up to five cards for today, counting the ones you keep and the ones you planned for today, with the frog first. Routines and follow-ups don't count.
 - Flags each card that has carried over three mornings in a row, and suggests splitting it, handing it off, or dropping it. It counts carry-overs from the card's activity log. Keeping a card dates it for today again, and in `td activity` each date change is an `updated` event that carries `dueDate` and `lastDueDate`.
-- Posts all the drafts in one message and waits. It dates the cards you approve in the thread. If you choose a sixth card, it asks once whether to swap one out or keep six.
+- Posts all the drafts in one message and waits. It dates the cards you approve and applies each follow-up's answer in the thread. If you choose a sixth card, it asks once whether to swap one out or keep six.
 - Moves the `@frog` label and the 🐸 title prefix to the frog, and puts the frog first in Today with [`td day-order`](agent-rules.md#td-day-order).
 
 If you miss the 9am run, run `/morning-pick` yourself.
@@ -39,7 +40,7 @@ If you miss the 9am run, run `/morning-pick` yourself.
 If Today holds work cards that are three or more days overdue, `/morning-pick` offers a fresh start before the pick. With your approval, it does these steps:
 
 1. Clears the dates on overdue work cards. The cards stay in their projects, and they show up in Next again. Overdue routines move to today, so their repeat schedules stay intact.
-2. Drafts the normal pick with no work cards on Today.
+2. Drafts the normal pick with no work cards on Today. Follow-ups keep their dates and stay in the draft.
 
 ## `/pick-next`
 
@@ -56,7 +57,7 @@ Runs the Friday review. A T3 Code scheduled task starts it every Friday at 9am. 
 
 - Runs `/triage-inbox` to draft the Inbox triage.
 - Shows the 10 oldest cards that have no date, leaving out the Inbox, `Someday`, `@waiting` cards, and subtasks. Each card gets a suggested answer: date it, Someday, delete, or leave it. A date takes the card off the list until that day. A card you leave shows again the next Friday.
-- Lists each `@waiting` card with how long it has waited, and offers to complete it, follow up, or take it back.
+- Lists each `@waiting` card with how long it has waited and its follow-up date, if it has one. It offers to complete the card, follow up on a day, or take it back, which also clears the date.
 - Lists feature projects with no open cards, and offers to archive them.
 - Posts all the drafts in one message and waits. It applies the answers you approve in the thread.
 - Adds a `weekly review` card to Today before it posts the drafts, and completes the card when it has applied every approved answer. See [Job cards](ai-jobs.md#job-cards). The job card is the only change it makes without asking.
