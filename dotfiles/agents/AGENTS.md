@@ -28,6 +28,7 @@ The rules below apply only to sessions Michael starts. Skip them in a scheduled 
 - Create cards only in the Inbox, at p4, with no date. Change a card's priority, date, or project only when Michael approves.
 - List side work you notice at the end of your reply, and ask once whether to Inbox it.
 - The chat's title names the session's card, so leave the card out of your replies once the session has it. Don't offer to complete it, name the next Today card, or suggest `/pick-next`. Complete the card only when Michael asks.
+- When a reply finishes the work for the session's card, make its last line a link to the card, as in `🟠 p2 [Fix appointment sync retries](https://app.todoist.com/app/task/fix-appointment-sync-retries-a1b2c3)`. Take the link from the `url` field of `td task view id:<id> --json`.
 
 ## pstack model configuration
 
