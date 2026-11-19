@@ -22,8 +22,7 @@ If Today holds a work card dated three or more days ago, offer a fresh start in 
 
 1. Clear the date on each overdue work card with `td task update id:<id> --no-due`. The cards stay in their projects and show in Next again.
 2. Move each overdue routine to today with `td task reschedule id:<id> today`, which keeps any repeat.
-3. Mark stale cards by [the weekly review's rule](../weekly-review/SKILL.md#mark-stale-cards).
-4. Read Today and Next again, and draft the pick below with no work cards on Today.
+3. Read Today and Next again, and draft the pick below with no work cards on Today.
 
 When he says no, draft the pick below as usual.
 
