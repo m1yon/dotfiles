@@ -5,7 +5,7 @@ Two jobs run on a schedule. Each one makes only narrow changes on its own, so au
 | Job | Schedule | Changes on its own | Never |
 | --- | --- | --- | --- |
 | Morning pick | Weekdays at 9am | Nothing | Dates, moves, or creates cards without your approval |
-| Weekly review | Fridays at 9am | Adds `@stale` to cards with no activity for 21 days, and adds one [job card](#job-cards) while it waits for you | Deletes or moves cards, or creates any other card, without your approval |
+| Weekly review | Fridays at 9am | Adds one [job card](#job-cards) while it waits for you | Dates, deletes, or moves cards, or creates any other card, without your approval |
 
 Both jobs are T3 Code scheduled tasks. Each run opens a new thread. The morning pick has no Todoist card, so its new thread is the reminder. The weekly review adds a card to Today while it waits for you. On Fridays, both start at 9am in separate threads.
 
@@ -32,8 +32,7 @@ The weekly review runs [`/weekly-review`](skills.md#weekly-review).
 | Schedule | `{ "type": "fixed_time", "timeOfDay": "09:00", "weekdays": [5] }` |
 | Thread | A new thread for each run (`bindToCurrentThread: false`) |
 
-- The job starts by marking stale cards. It adds `@stale` to cards with no edits, comments, or completed subtasks for 21 days. It skips cards in `Someday` and `Routines`, and recurring cards.
-- Then it adds the `weekly review` job card, drafts the rest of the review, and posts it in its thread.
+- The job adds the `weekly review` job card, drafts the review, and posts the drafts in its thread.
 - It waits for your answers. When it has applied every answer you approved, it completes the card.
 
 ## Job cards

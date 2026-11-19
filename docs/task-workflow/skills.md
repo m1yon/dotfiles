@@ -1,6 +1,6 @@
 # Skills
 
-Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. The one exception is `/weekly-review`, which adds `@stale` labels and its job card on its own. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4. The frog's title starts with 🐸, so the 🐸 comes right after its priority.
+Each skill is a folder with a `SKILL.md` in `dotfiles/agents/skills`, so Claude Code and Codex both load it. `/inbox` and `/pick-next` do exactly what you ask for, so they write without a separate approval. Every other skill shows its changes and waits for your approval before it writes to Todoist. The one exception is `/weekly-review`, which adds its job card on its own. Each skill starts every card it shows with its priority dot: 🔴 p1, 🟠 p2, 🔵 p3, or ⚪ p4. The frog's title starts with 🐸, so the 🐸 comes right after its priority.
 
 ## `/inbox`
 
@@ -39,8 +39,7 @@ If you miss the 9am run, run `/morning-pick` yourself.
 If Today holds work cards that are three or more days overdue, `/morning-pick` offers a fresh start before the pick. With your approval, it does these steps:
 
 1. Clears the dates on overdue work cards. The cards stay in their projects, and they show up in Next again. Overdue routines move to today, so their repeat schedules stay intact.
-2. Adds `@stale` to cards with no activity for 21 days, by the same rule as `/weekly-review`.
-3. Drafts the normal pick with no work cards on Today.
+2. Drafts the normal pick with no work cards on Today.
 
 ## `/pick-next`
 
@@ -55,12 +54,11 @@ Adds one card from Next to Today, whenever you want one. Use it after you finish
 
 Runs the Friday review. A T3 Code scheduled task starts it every Friday at 9am. See [AI jobs](ai-jobs.md#weekly-review) and [Run the Friday review](weekly-review.md).
 
-- Adds `@stale` to cards with no activity for 21 days. It skips cards in `Someday` and `Routines`.
 - Runs `/triage-inbox` to draft the Inbox triage.
-- Shows the `@stale` cards in one table, each with a suggested answer: keep, Someday, or delete.
+- Shows the 10 oldest cards that have no date, leaving out the Inbox, `Someday`, `@waiting` cards, and subtasks. Each card gets a suggested answer: date it, Someday, delete, or leave it. A date takes the card off the list until that day. A card you leave shows again the next Friday.
 - Lists each `@waiting` card with how long it has waited, and offers to complete it, follow up, or take it back.
 - Lists feature projects with no open cards, and offers to archive them.
 - Posts all the drafts in one message and waits. It applies the answers you approve in the thread.
-- Adds a `weekly review` card to Today before it posts the drafts, and completes the card when it has applied every approved answer. See [Job cards](ai-jobs.md#job-cards). The stale label and the job card are the only changes it makes without asking.
+- Adds a `weekly review` card to Today before it posts the drafts, and completes the card when it has applied every approved answer. See [Job cards](ai-jobs.md#job-cards). The job card is the only change it makes without asking.
 
 The name avoids `/review`, which is already a code review command.

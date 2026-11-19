@@ -12,7 +12,7 @@ This rule is a block, not a question. The `agent-guard` hook stops any agent com
 
 A scheduled job that needs your input is the one exception. It adds a job card to `Routines`, dated today, and completes the card when you're done. A recurring routine card was the other option, but it follows the calendar instead of the job. A job card is on Today only while a thread waits for you. `td job-card` keeps one open card for each job title. The card sits in `Routines`, so it stays out of Next and out of the five picks. The `agent-guard` hook still blocks every other command that adds a card outside the Inbox.
 
-The AI jobs follow the same idea. The morning pick changes nothing until you approve. The weekly review adds one label and one job card on its own.
+The AI jobs follow the same idea. The morning pick changes nothing until you approve. The weekly review adds one job card on its own.
 
 ## The morning pick is the only limit
 
@@ -38,9 +38,11 @@ A feature project groups its cards, so Next shows them together. It says nothing
 
 A skill helps only if you remember to run it. So the two skills tied to a time of day run on their own. T3 Code scheduled tasks start `/morning-pick` at 9am each weekday and `/weekly-review` at 9am on Friday, so the drafts are ready when you open each thread. The weekly review also adds a card to Today when it posts its draft, so Today shows that the thread waits for you. `/pick-next` is the exception, because you run it the moment you want more work. The session-start hook follows the same idea. It loads Today into each agent session, so no agent has to remember to look.
 
-## The stale sweep runs inside the weekly review
+## The review lists the oldest cards
 
-An earlier draft ran the stale sweep as its own Thursday-night job. Its only purpose was to feed the Friday review. Running it as the first step of the review removes a job and a schedule, and the `@stale` labels are minutes old when you see them.
+An earlier version marked a card `@stale` after 21 days with no activity in its log. Agents edit cards too, so the log mixed your decisions with automated moves and label changes. One bulk move kept every card fresh for three weeks. Telling the two apart took a command that read about 2,000 events and still had to guess.
+
+The Friday review now lists the 10 oldest cards that have no date. Age needs nothing but the card. A date works as a snooze, because a dated card leaves the list until its day. A card you leave without a date shows again the next Friday, and that repeat is the nudge to decide.
 
 ## Left out on purpose
 

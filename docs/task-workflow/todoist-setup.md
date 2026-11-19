@@ -32,12 +32,11 @@ Dropped cards are deleted, so they have no priority. Agents start each card they
 
 ## Labels
 
-These are the only three labels.
+These are the only two labels.
 
 | Label | Meaning | Added by |
 | --- | --- | --- |
 | `@waiting` | A person or a third party holds the work. A card that an agent works on doesn't get it. | You, during triage or later |
-| `@stale` | No activity for 21 days | `/weekly-review`, or `/morning-pick` during a fresh start |
 | `@frog` | Today's frog. Only one open card has it, and that card's title also starts with 🐸. | `/morning-pick`, which moves the label and the 🐸 to the frog you choose |
 
 ## Filters
@@ -47,7 +46,7 @@ These are the only two filters. Today is Todoist's built-in view, not a filter.
 | Filter | Query | Settings |
 | --- | --- | --- |
 | Next | `(p1 \| p2 \| p3) & !@waiting & !#Someday & (no date \| today \| overdue \| deadline before: in 3 days)` | Group by project. Sort by priority. |
-| Review | `@stale \| @waiting` | None |
+| Review | `@waiting` | None |
 
 The morning pick comes from Next. Next leaves out cards you planned for a later day, unless their deadline is within two days. The Friday review works through Review.
 
@@ -76,4 +75,4 @@ Routines live in the `Routines` project at p4. They never show up in Next, and t
 | `every` | A routine tied to the calendar. Completing an overdue card moves it to its next future date. | `every day` |
 | `every!` | A routine that repeats from when you last did it | `every! week` |
 
-The morning pick has no card. A scheduled task starts it, and its new thread is the reminder. The Friday review adds a [job card](ai-jobs.md#job-cards) to `Routines` while it waits for you. A job card has no repeat, but `/morning-pick` and the stale rule treat every card in `Routines` as a routine.
+The morning pick has no card. A scheduled task starts it, and its new thread is the reminder. The Friday review adds a [job card](ai-jobs.md#job-cards) to `Routines` while it waits for you. A job card has no repeat, but `/morning-pick` treats every card in `Routines` as a routine.
